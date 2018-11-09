@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, http://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
@@ -40,10 +42,10 @@ using OpenSim.Region.Framework.Scenes;
 namespace OpenSim.Region.OptionalModules
 {
     /// <summary>
-    /// Enables Prim limits for parcel.
+    ///     Enables Prim limits for parcel.
     /// </summary>
     /// <remarks>
-    /// This module selectivly enables parcel prim limits.
+    ///     This module selectivly enables parcel prim limits.
     /// </remarks>
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "PrimLimitsModule")]
     public class PrimLimitsModule : INonSharedRegionModule
@@ -64,10 +66,12 @@ namespace OpenSim.Region.OptionalModules
 
             List<string> modules = new List<string>(permissionModules.Split(',').Select(m => m.Trim()));
 
-            if(!modules.Contains("PrimLimitsModule"))
+            if (!modules.Contains("PrimLimitsModule"))
+            {
                 return;
+            }
 
-            m_log.DebugFormat("[PRIM LIMITS]: Initialized module");
+            m_log.DebugFormat("[Prim Limits]: Initialized module");
             m_enabled = true;
         }
 
@@ -78,7 +82,9 @@ namespace OpenSim.Region.OptionalModules
         public void AddRegion(Scene scene)
         {
             if (!m_enabled)
+            {
                 return;
+            }
 
             m_scene = scene;
             scene.Permissions.OnRezObject += CanRezObject;
@@ -86,13 +92,15 @@ namespace OpenSim.Region.OptionalModules
             scene.Permissions.OnObjectEnterWithScripts += CanObjectEnterWithScripts;
             scene.Permissions.OnDuplicateObject += CanDuplicateObject;
 
-            m_log.DebugFormat("[PRIM LIMITS]: Region {0} added", scene.RegionInfo.RegionName);
+            m_log.DebugFormat("[Prim Limits]: Region {0} added", scene.RegionInfo.RegionName);
         }
 
         public void RemoveRegion(Scene scene)
         {
             if (!m_enabled)
+            {
                 return;
+            }
 
             m_scene.Permissions.OnRezObject -= CanRezObject;
             m_scene.Permissions.OnObjectEntry -= CanObjectEnter;
@@ -107,7 +115,6 @@ namespace OpenSim.Region.OptionalModules
 
         private bool CanRezObject(int objectCount, UUID ownerID, Vector3 objectPosition)
         {
-            
             ILandObject lo = m_scene.LandChannel.GetLandObject(objectPosition.X, objectPosition.Y);
 
             string response = DoCommonChecks(objectCount, ownerID, lo);
@@ -117,10 +124,11 @@ namespace OpenSim.Region.OptionalModules
                 m_dialogModule.SendAlertToUser(ownerID, response);
                 return false;
             }
+
             return true;
         }
 
-        //OnDuplicateObject
+        // OnDuplicateObject
         private bool CanDuplicateObject(SceneObjectGroup sog, ScenePresence sp)
         {
             Vector3 objectPosition = sog.AbsolutePosition;
@@ -133,6 +141,7 @@ namespace OpenSim.Region.OptionalModules
                 m_dialogModule.SendAlertToUser(sp.UUID, response);
                 return false;
             }
+
             return true;
         }
 
@@ -140,24 +149,34 @@ namespace OpenSim.Region.OptionalModules
         {
             float newX = newPoint.X;
             float newY = newPoint.Y;
+
             if (newX < -1.0f || newX > (m_scene.RegionInfo.RegionSizeX + 1.0f) ||
-                newY < -1.0f || newY > (m_scene.RegionInfo.RegionSizeY + 1.0f) )
+                newY < -1.0f || newY > (m_scene.RegionInfo.RegionSizeY + 1.0f))
+            {
                 return true;
+            }
 
             if (sog == null)
+            {
                 return false;
+            }
 
             ILandObject newParcel = m_scene.LandChannel.GetLandObject(newX, newY);
 
             if (newParcel == null)
+            {
                 return true;
+            }
 
-            if(!enteringRegion)
+            if (!enteringRegion)
             {
                 Vector3 oldPoint = sog.AbsolutePosition;
                 ILandObject oldParcel = m_scene.LandChannel.GetLandObject(oldPoint.X, oldPoint.Y);
-                if(oldParcel != null && oldParcel.Equals(newParcel))
+
+                if (oldParcel != null && oldParcel.Equals(newParcel))
+                {
                     return true;
+                }
             }
 
             int objectCount = sog.PrimCount;
@@ -168,20 +187,28 @@ namespace OpenSim.Region.OptionalModules
 
             if (response != null)
             {
-                if(m_dialogModule != null)
+                if (m_dialogModule != null)
+                {
                     m_dialogModule.SendAlertToUser(sog.OwnerID, response);
+                }
+
                 return false;
             }
+
             return true;
         }
 
         private bool CanObjectEnterWithScripts(SceneObjectGroup sog, ILandObject newParcel)
         {
             if (sog == null)
+            {
                 return false;
+            }
 
             if (newParcel == null)
+            {
                 return true;
+            }
 
             int objectCount = sog.PrimCount;
 
@@ -190,7 +217,9 @@ namespace OpenSim.Region.OptionalModules
             string response = DoCommonChecks(objectCount, sog.OwnerID, newParcel);
 
             if (response != null)
+            {
                 return false;
+            }
 
             return true;
         }
@@ -200,13 +229,15 @@ namespace OpenSim.Region.OptionalModules
             string response = null;
 
             int OwnedParcelsCapacity = lo.GetSimulatorMaxPrimCount();
-            if ((objectCount + lo.PrimCounts.Total) > OwnedParcelsCapacity)
+
+            if ((objectCount + lo.PrimCounts.Simulator) > OwnedParcelsCapacity)
             {
                 response = "Unable to rez object because the parcel is full";
             }
             else
             {
                 int maxPrimsPerUser = m_scene.RegionInfo.MaxPrimsPerUser;
+
                 if (maxPrimsPerUser >= 0)
                 {
                     // per-user prim limit is set
@@ -214,10 +245,12 @@ namespace OpenSim.Region.OptionalModules
                     {
                         // caller is not the sole Parcel owner
                         EstateSettings estateSettings = m_scene.RegionInfo.EstateSettings;
+
                         if (ownerID != estateSettings.EstateOwner)
                         {
                             // caller is NOT the Estate owner
                             List<UUID> mgrs = new List<UUID>(estateSettings.EstateManagers);
+
                             if (!mgrs.Contains(ownerID))
                             {
                                 // caller is not an Estate Manager
@@ -230,6 +263,7 @@ namespace OpenSim.Region.OptionalModules
                     }
                 }
             }
+
             return response;
         }
     }
