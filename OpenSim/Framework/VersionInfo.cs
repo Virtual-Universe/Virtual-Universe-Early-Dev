@@ -27,7 +27,8 @@
 ///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// </license>
 
-namespace OpenSim.Framework
+
+namespace OpenSim
 {
     public class VersionInfo
     {
@@ -71,7 +72,7 @@ namespace OpenSim.Framework
         ///         "SIMULATION/0.3"
         ///             - This is the latest, and it supports teleports to variable-sized regions
         ///             - Older versions can teleport to this one, but only if the destination region
-        ///             is 256x256
+        ///                 is 256x256
         ///         "SIMULATION/0.2"
         ///             - A source simulator which only implements "SIMULATION/0.1" can still teleport here
         ///             - this protocol is more efficient than "SIMULATION/0.1"
