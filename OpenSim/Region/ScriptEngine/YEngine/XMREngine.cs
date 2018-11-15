@@ -28,9 +28,21 @@
 // based on YEngine from Mike Rieker (Dreamnation) and Melanie Thielker
 // but with several changes to be more cross platform.
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflections;
+using System.Reflections.Generic;
+using System.Text;
+using System.Text;
+using System.Threading;
+using System.Timers;
+using System.Xml;
 using log4net;
 using Mono.Addins;
 using Nini.Config;
+using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
 using OpenSim.Framework.Monitoring;
@@ -40,17 +52,6 @@ using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.ScriptEngine.Interfaces;
 using OpenSim.Region.ScriptEngine.Shared;
 using OpenSim.Region.ScriptEngine.Shared.Api;
-using OpenMetaverse;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading;
-using System.Timers;
-using System.Xml;
 
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
@@ -1211,15 +1212,10 @@ namespace OpenSim.Region.ScriptEngine.Yengine
 
                 // Requested engine not defined, warn on console.
                 // Then we try to handle it if we're the default engine, else we ignore it.
-                m_log.Warn("[YEngine]: " + itemID.ToString() + " requests undefined/disabled engine " + engineName);
-                m_log.Info("[YEngine]: - " + part.GetWorldPosition());
-                m_log.Info("[YEngine]: first line: " + firstline);
                 if(defEngine != ScriptEngineName)
                 {
-                    m_log.Info("[YEngine]: leaving it to the default script engine (" + defEngine + ") to process it");
                     return;
                 }
-                m_log.Info("[YEngine]: will attempt to processing it anyway as default script engine");
             }
 
             // Put on object/instance lists.
@@ -1884,7 +1880,7 @@ namespace OpenSim.Region.ScriptEngine.Yengine
         public static Thread StartMyThread(ThreadStart start, string name, ThreadPriority priority)
         {
             m_log.Debug("[YEngine]: starting thread " + name);
-            Thread thread = WorkManager.StartThread(start, name, priority, true, false, false);
+            Thread thread = WorkManager.StartThread(start, name, priority, false, false);
             return thread;
         }
 
