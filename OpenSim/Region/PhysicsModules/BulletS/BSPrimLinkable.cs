@@ -49,6 +49,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
         // This adds the overrides for link() and delink() so the prim is linkable.
 
         public BSLinkset Linkset { get; set; }
+        
         // The index of this child prim.
         public int LinksetChildIndex { get; set; }
 
@@ -75,6 +76,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
         public override void link(OpenSim.Region.PhysicsModules.SharedBase.PhysicsActor obj)
         {
             BSPrimLinkable parent = obj as BSPrimLinkable;
+
             if (parent != null)
             {
                 BSPhysObject parentBefore = Linkset.LinksetRoot;    // DEBUG
@@ -85,6 +87,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
                 DetailLog("{0},BSPrimLinkable.link,call,parentBefore={1}, childrenBefore=={2}, parentAfter={3}, childrenAfter={4}",
                     LocalID, parentBefore.LocalID, childrenBefore, Linkset.LinksetRoot.LocalID, Linkset.NumberOfChildren);
             }
+
             return;
         }
 
@@ -100,6 +103,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
 
             DetailLog("{0},BSPrimLinkable.delink,parentBefore={1},childrenBefore={2},parentAfter={3},childrenAfter={4}, ",
                 LocalID, parentBefore.LocalID, childrenBefore, Linkset.LinksetRoot.LocalID, Linkset.NumberOfChildren);
+
             return;
         }
 
@@ -110,6 +114,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
             set
             {
                 base.Position = value;
+
                 PhysScene.TaintedObject(LocalID, "BSPrimLinkable.setPosition", delegate ()
                 {
                     Linkset.UpdateProperties(UpdatedProperties.Position, this);
@@ -124,6 +129,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
             set
             {
                 base.Orientation = value;
+
                 PhysScene.TaintedObject(LocalID, "BSPrimLinkable.setOrientation", delegate ()
                 {
                     Linkset.UpdateProperties(UpdatedProperties.Orientation, this);
@@ -150,24 +156,32 @@ namespace OpenSim.Region.PhysicsModule.BulletS
         public override void UpdatePhysicalParameters()
         {
             base.UpdatePhysicalParameters();
+         
             // Recompute any linkset parameters.
             // When going from non-physical to physical, this re-enables the constraints that
             //     had been automatically disabled when the mass was set to zero.
             // For compound based linksets, this enables and disables interactions of the children.
             if (Linkset != null)    // null can happen during initialization
+            {
                 Linkset.Refresh(this);
+            }
         }
 
         // When the prim is made dynamic or static, the linkset needs to change.
         protected override void MakeDynamic(bool makeStatic)
         {
             base.MakeDynamic(makeStatic);
+
             if (Linkset != null)    // null can happen during initialization
             {
                 if (makeStatic)
+                {
                     Linkset.MakeStatic(this);
+                }
                 else
+                {
                     Linkset.MakeDynamic(this);
+                }
             }
         }
 
@@ -192,15 +206,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
                 // TODO: this will have to change when linksets are articulated.
                 base.UpdateProperties(entprop);
             }
-            /*
-        else
-        {
-            // For debugging, report the movement of children
-            DetailLog("{0},BSPrim.UpdateProperties,child,pos={1},orient={2},vel={3},accel={4},rotVel={5}",
-                    LocalID, entprop.Position, entprop.Rotation, entprop.Velocity,
-                    entprop.Acceleration, entprop.RotationalVelocity);
-        }
-             */
+
             // The linkset might like to know about changing locations
             Linkset.UpdateProperties(UpdatedProperties.EntPropUpdates, this);
         }
@@ -211,17 +217,20 @@ namespace OpenSim.Region.PhysicsModule.BulletS
         public override bool Collide(BSPhysObject collidee, OMV.Vector3 contactPoint, OMV.Vector3 contactNormal, float pentrationDepth)
         {
             bool ret = false;
+            
             // Ask the linkset if it wants to handle the collision
             if (!Linkset.HandleCollide(this, collidee, contactPoint, contactNormal, pentrationDepth))
             {
                 // The linkset didn't handle it so pass the collision through normal processing
                 ret = base.Collide(collidee, contactPoint, contactNormal, pentrationDepth);
             }
+
             return ret;
         }
 
         // A linkset reports any collision on any part of the linkset.
         public long SomeCollisionSimulationStep = 0;
+
         public override bool HasSomeCollision
         {
             get
@@ -231,9 +240,13 @@ namespace OpenSim.Region.PhysicsModule.BulletS
             set
             {
                 if (value)
+                {
                     SomeCollisionSimulationStep = PhysScene.SimulationStep;
+                }
                 else
+                {
                     SomeCollisionSimulationStep = 0;
+                }
 
                 base.HasSomeCollision = value;
             }
@@ -243,6 +256,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
         public bool ConvertLinkset(BSLinkset.LinksetImplementation newType)
         {
             bool ret = false;
+
             if (LinksetType != newType)
             {
                 DetailLog("{0},BSPrimLinkable.ConvertLinkset,oldT={1},newT={2}", LocalID, LinksetType, newType);
@@ -260,10 +274,14 @@ namespace OpenSim.Region.PhysicsModule.BulletS
 
                 // Create a list of the children (mainly because can't interate through a list that's changing)
                 List<BSPrimLinkable> children = new List<BSPrimLinkable>();
+
                 oldLinkset.ForEachMember((child) =>
                 {
                     if (!oldLinkset.IsRoot(child))
+                    {
                         children.Add(child);
+                    }
+
                     return false;   // 'false' says to continue to next member
             });
 
@@ -272,6 +290,7 @@ namespace OpenSim.Region.PhysicsModule.BulletS
                 {
                     oldLinkset.RemoveMeFromLinkset(child, true /*inTaintTime*/);
                 }
+
                 foreach (BSPrimLinkable child in children)
                 {
                     newLinkset.AddMeToLinkset(child);
@@ -282,61 +301,57 @@ namespace OpenSim.Region.PhysicsModule.BulletS
                 newLinkset.Refresh(this);
                 this.ForceBodyShapeRebuild(true /* inTaintTime */);
             }
+
             return ret;
         }
 
         #region Extension
+
         public override object Extension(string pFunct, params object[] pParams)
         {
             DetailLog("{0} BSPrimLinkable.Extension,op={1},nParam={2}", LocalID, pFunct, pParams.Length);
             object ret = null;
+
             switch (pFunct)
             {
-                // physGetLinksetType();
-                // pParams = [ BSPhysObject root, null ]
                 case ExtendedPhysics.PhysFunctGetLinksetType:
                     {
                         ret = (object)LinksetType;
                         DetailLog("{0},BSPrimLinkable.Extension.physGetLinksetType,type={1}", LocalID, ret);
                         break;
                     }
-                // physSetLinksetType(type);
-                // pParams = [ BSPhysObject root, null, integer type ]
                 case ExtendedPhysics.PhysFunctSetLinksetType:
                     {
                         if (pParams.Length > 2)
                         {
                             BSLinkset.LinksetImplementation linksetType = (BSLinkset.LinksetImplementation)pParams[2];
+
                             if (Linkset.IsRoot(this))
                             {
                                 PhysScene.TaintedObject(LocalID, "BSPrim.PhysFunctSetLinksetType", delegate ()
                                 {
-                            // Cause the linkset type to change
-                            DetailLog("{0},BSPrimLinkable.Extension.physSetLinksetType, oldType={1},newType={2}",
+                                    // Cause the linkset type to change
+                                    DetailLog("{0},BSPrimLinkable.Extension.physSetLinksetType, oldType={1},newType={2}",
                                                         LocalID, Linkset.LinksetImpl, linksetType);
                                     ConvertLinkset(linksetType);
                                 });
                             }
+
                             ret = (object)(int)linksetType;
                         }
+
                         break;
                     }
-                // physChangeLinkType(linknum, typeCode);
-                // pParams = [ BSPhysObject root, BSPhysObject child, integer linkType ]
                 case ExtendedPhysics.PhysFunctChangeLinkType:
                     {
                         ret = Linkset.Extension(pFunct, pParams);
                         break;
                     }
-                // physGetLinkType(linknum);
-                // pParams = [ BSPhysObject root, BSPhysObject child ]
                 case ExtendedPhysics.PhysFunctGetLinkType:
                     {
                         ret = Linkset.Extension(pFunct, pParams);
                         break;
                     }
-                // physChangeLinkParams(linknum, [code, value, code, value, ...]);
-                // pParams = [ BSPhysObject root, BSPhysObject child, object[] [ string op, object opParam, string op, object opParam, ... ] ]
                 case ExtendedPhysics.PhysFunctChangeLinkParams:
                     {
                         ret = Linkset.Extension(pFunct, pParams);
@@ -346,8 +361,10 @@ namespace OpenSim.Region.PhysicsModule.BulletS
                     ret = base.Extension(pFunct, pParams);
                     break;
             }
+
             return ret;
         }
+  
         #endregion  // Extension
     }
 }
