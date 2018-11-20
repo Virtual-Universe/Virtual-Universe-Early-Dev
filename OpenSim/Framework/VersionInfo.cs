@@ -27,7 +27,6 @@
 ///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// </license>
 
-
 namespace OpenSim
 {
     public class VersionInfo
@@ -35,7 +34,7 @@ namespace OpenSim
         public const string VersionNumber = "2.0.1.0";
         public const string AssemblyVersionNumber = "2.0.1.0";
 
-        public const Flavour VERSION_FLAVOUR = Flavour.Dev;
+        public const Flavour VERSION_FLAVOUR = Flavour.Release;
 
         public enum Flavour
         {

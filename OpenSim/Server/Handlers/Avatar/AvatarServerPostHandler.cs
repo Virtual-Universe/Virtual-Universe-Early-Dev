@@ -1,47 +1,49 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, http://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
-using Nini.Config;
-using log4net;
 using System;
-using System.Reflection;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
-using System.Collections.Generic;
+using log4net;
+using Nini.Config;
+using OpenMetaverse;
+using OpenSim.Framework;
+using OpenSim.Framework.Servers.HttpServer;
+using OpenSim.Framework.ServiceAuth;
 using OpenSim.Server.Base;
 using OpenSim.Services.Interfaces;
-using OpenSim.Framework;
-using OpenSim.Framework.ServiceAuth;
-using OpenSim.Framework.Servers.HttpServer;
-using OpenMetaverse;
 
 namespace OpenSim.Server.Handlers.Avatar
 {
@@ -51,29 +53,30 @@ namespace OpenSim.Server.Handlers.Avatar
 
         private IAvatarService m_AvatarService;
 
-        public AvatarServerPostHandler(IAvatarService service, IServiceAuth auth) :
-                base("POST", "/avatar", auth)
+        public AvatarServerPostHandler(IAvatarService service, IServiceAuth auth) : base("POST", "/avatar", auth)
         {
             m_AvatarService = service;
         }
 
-        protected override byte[] ProcessRequest(string path, Stream requestData,
-                IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+        protected override byte[] ProcessRequest(string path, Stream requestData, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
             string body;
-            using(StreamReader sr = new StreamReader(requestData))
-                body = sr.ReadToEnd();
-            body = body.Trim();
 
-            //m_log.DebugFormat("[XXX]: query String: {0}", body);
+            using (StreamReader sr = new StreamReader(requestData))
+            {
+                body = sr.ReadToEnd();
+            }
+
+            body = body.Trim();
 
             try
             {
-                Dictionary<string, object> request =
-                        ServerUtils.ParseQueryString(body);
+                Dictionary<string, object> request = ServerUtils.ParseQueryString(body);
 
                 if (!request.ContainsKey("METHOD"))
+                {
                     return FailureResult();
+                }
 
                 string method = request["METHOD"].ToString();
 
@@ -90,15 +93,15 @@ namespace OpenSim.Server.Handlers.Avatar
                     case "removeitems":
                         return RemoveItems(request);
                 }
-                m_log.DebugFormat("[AVATAR HANDLER]: unknown method request: {0}", method);
+
+                m_log.DebugFormat("[Avatar Handler]: unknown method request: {0}", method);
             }
             catch (Exception e)
             {
-                m_log.Debug("[AVATAR HANDLER]: Exception {0}" + e);
+                m_log.Debug("[Avatar Handler]: Exception {0}" + e);
             }
 
             return FailureResult();
-
         }
 
         byte[] GetAvatar(Dictionary<string, object> request)
@@ -106,19 +109,29 @@ namespace OpenSim.Server.Handlers.Avatar
             UUID user = UUID.Zero;
 
             if (!request.ContainsKey("UserID"))
+            {
                 return FailureResult();
+            }
 
             if (UUID.TryParse(request["UserID"].ToString(), out user))
             {
                 AvatarData avatar = m_AvatarService.GetAvatar(user);
+
                 if (avatar == null)
+                {
                     return FailureResult();
+                }
 
                 Dictionary<string, object> result = new Dictionary<string, object>();
+
                 if (avatar == null)
+                {
                     result["result"] = "null";
+                }
                 else
+                {
                     result["result"] = avatar.ToKeyValuePairs();
+                }
 
                 string xmlString = ServerUtils.BuildXmlResponse(result);
 
@@ -133,16 +146,23 @@ namespace OpenSim.Server.Handlers.Avatar
             UUID user = UUID.Zero;
 
             if (!request.ContainsKey("UserID"))
+            {
                 return FailureResult();
+            }
 
             if (!UUID.TryParse(request["UserID"].ToString(), out user))
+            {
                 return FailureResult();
+            }
 
             RemoveRequestParamsNotForStorage(request);
 
             AvatarData avatar = new AvatarData(request);
+
             if (m_AvatarService.SetAvatar(user, avatar))
+            {
                 return SuccessResult();
+            }
 
             return FailureResult();
         }
@@ -150,22 +170,30 @@ namespace OpenSim.Server.Handlers.Avatar
         byte[] ResetAvatar(Dictionary<string, object> request)
         {
             UUID user = UUID.Zero;
+
             if (!request.ContainsKey("UserID"))
+            {
                 return FailureResult();
+            }
 
             if (!UUID.TryParse(request["UserID"].ToString(), out user))
+            {
                 return FailureResult();
+            }
 
             RemoveRequestParamsNotForStorage(request);
 
             if (m_AvatarService.ResetAvatar(user))
+            {
                 return SuccessResult();
+            }
 
             return FailureResult();
         }
 
         /// <summary>
-        /// Remove parameters that were used to invoke the method and should not in themselves be persisted.
+        ///     Remove parameters that were used to invoke
+        ///     the method and should not in themselves be persisted.
         /// </summary>
         /// <param name='request'></param>
         private void RemoveRequestParamsNotForStorage(Dictionary<string, object> request)
@@ -182,13 +210,19 @@ namespace OpenSim.Server.Handlers.Avatar
             string[] names, values;
 
             if (!request.ContainsKey("UserID") || !request.ContainsKey("Names") || !request.ContainsKey("Values"))
+            {
                 return FailureResult();
+            }
 
             if (!UUID.TryParse(request["UserID"].ToString(), out user))
+            {
                 return FailureResult();
+            }
 
             if (!(request["Names"] is List<string> || request["Values"] is List<string>))
+            {
                 return FailureResult();
+            }
 
             RemoveRequestParamsNotForStorage(request);
 
@@ -198,7 +232,9 @@ namespace OpenSim.Server.Handlers.Avatar
             values = _values.ToArray();
 
             if (m_AvatarService.SetItems(user, names, values))
+            {
                 return SuccessResult();
+            }
 
             return FailureResult();
         }
@@ -209,36 +245,40 @@ namespace OpenSim.Server.Handlers.Avatar
             string[] names;
 
             if (!request.ContainsKey("UserID") || !request.ContainsKey("Names"))
+            {
                 return FailureResult();
+            }
 
             if (!UUID.TryParse(request["UserID"].ToString(), out user))
+            {
                 return FailureResult();
+            }
 
             if (!(request["Names"] is List<string>))
+            {
                 return FailureResult();
+            }
 
             List<string> _names = (List<string>)request["Names"];
             names = _names.ToArray();
 
             if (m_AvatarService.RemoveItems(user, names))
+            {
                 return SuccessResult();
+            }
 
             return FailureResult();
         }
-
-
 
         private byte[] SuccessResult()
         {
             XmlDocument doc = new XmlDocument();
 
-            XmlNode xmlnode = doc.CreateNode(XmlNodeType.XmlDeclaration,
-                    "", "");
+            XmlNode xmlnode = doc.CreateNode(XmlNodeType.XmlDeclaration, "", "");
 
             doc.AppendChild(xmlnode);
 
-            XmlElement rootElement = doc.CreateElement("", "ServerResponse",
-                    "");
+            XmlElement rootElement = doc.CreateElement("", "ServerResponse", "");
 
             doc.AppendChild(rootElement);
 
@@ -254,13 +294,11 @@ namespace OpenSim.Server.Handlers.Avatar
         {
             XmlDocument doc = new XmlDocument();
 
-            XmlNode xmlnode = doc.CreateNode(XmlNodeType.XmlDeclaration,
-                    "", "");
+            XmlNode xmlnode = doc.CreateNode(XmlNodeType.XmlDeclaration, "", "");
 
             doc.AppendChild(xmlnode);
 
-            XmlElement rootElement = doc.CreateElement("", "ServerResponse",
-                    "");
+            XmlElement rootElement = doc.CreateElement("", "ServerResponse", "");
 
             doc.AppendChild(rootElement);
 
@@ -271,6 +309,5 @@ namespace OpenSim.Server.Handlers.Avatar
 
             return Util.DocToBytes(doc);
         }
-
     }
 }

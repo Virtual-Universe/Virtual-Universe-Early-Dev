@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, http://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
@@ -52,7 +54,8 @@ namespace OpenSim.Framework.Servers
         public IConfigSource Config { get; protected set; }
 
         /// <summary>
-        /// Console to be used for any command line output.  Can be null, in which case there should be no output.
+        ///     Console to be used for any command line output. 
+        ///     Can be null, in which case there should be no output.
         /// </summary>
         protected ICommandConsole m_console;
 
@@ -68,7 +71,8 @@ namespace OpenSim.Framework.Servers
         protected ServerStatsCollector m_serverStatsCollector;
 
         /// <summary>
-        /// Server version information.  Usually VersionInfo + information about git commit, operating system, etc.
+        ///     Server version information.
+        ///     Usually VersionInfo + information about git commit, operating system, etc.
         /// </summary>
         protected string m_version;
 
@@ -82,9 +86,9 @@ namespace OpenSim.Framework.Servers
         protected void CreatePIDFile(string path)
         {
             if (File.Exists(path))
-                m_log.ErrorFormat(
-                    "[SERVER BASE]: Previous pid file {0} still exists on startup.  Possibly previously unclean shutdown.",
-                    path);
+            {
+                m_log.ErrorFormat("[Sserver Base]: Previous pid file {0} still exists on startup.  Possibly previously unclean shutdown.", path);
+            }
 
             try
             {
@@ -98,11 +102,11 @@ namespace OpenSim.Framework.Servers
 
                 m_pidFile = path;
 
-                m_log.InfoFormat("[SERVER BASE]: Created pid file {0}", m_pidFile);
+                m_log.InfoFormat("[Server Base]: Created pid file {0}", m_pidFile);
             }
             catch (Exception e)
             {
-                m_log.Warn(string.Format("[SERVER BASE]: Could not create PID file at {0} ", path), e);
+                m_log.Warn(string.Format("[Server Base]: Could not create PID file at {0} ", path), e);
             }
         }
 
@@ -116,7 +120,7 @@ namespace OpenSim.Framework.Servers
                 }
                 catch (Exception e)
                 {
-                    m_log.Error(string.Format("[SERVER BASE]: Error whilst removing {0} ", m_pidFile), e);
+                    m_log.Error(string.Format("[Server Base]: Error whilst removing {0} ", m_pidFile), e);
                 }
 
                 m_pidFile = String.Empty;
@@ -124,22 +128,24 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Log information about the circumstances in which we're running (OpenSimulator version number, CLR details,
-        /// etc.).
+        ///     Log information about the circumstances in which
+        ///     we're running (Universe version number, CLR details,
+        ///     etc.).
         /// </summary>
         public void LogEnvironmentInformation()
         {
-            // FIXME: This should be done down in ServerBase but we need to sort out and refactor the log4net
-            // XmlConfigurator calls first accross servers.
-            m_log.InfoFormat("[SERVER BASE]: Starting in {0}", m_startupDirectory);
+            /// <summary>
+            ///     FIXME
+            ///         This should be done down in ServerBase, but we need
+            ///         to sort out and refactor the log4net XmlConfigurator
+            ///           calls first accorssed servers.
+            /// </summary>
+            m_log.InfoFormat("[Server Base]: Starting in {0}", m_startupDirectory);
 
-            m_log.InfoFormat("[SERVER BASE]: OpenSimulator version: {0}", m_version);
+            m_log.InfoFormat("[Server Base]: OpenSimulator version: {0}", m_version);
 
-            // clr version potentially is more confusing than helpful, since it doesn't tell us if we're running under Mono/MS .NET and
-            // the clr version number doesn't match the project version number under Mono.
-            //m_log.Info("[STARTUP]: Virtual machine runtime version: " + Environment.Version + Environment.NewLine);
             m_log.InfoFormat(
-                "[SERVER BASE]: Operating system version: {0}, .NET platform {1}, {2}-bit",
+                "[Server Base]: Operating system version: {0}, .NET platform {1}, {2}-bit",
                 Environment.OSVersion, Environment.OSVersion.Platform, Util.Is64BitProcess() ? "64" : "32");
         }
 
@@ -175,7 +181,9 @@ namespace OpenSim.Framework.Servers
 
                 // If there is no threshold set then the threshold is effectively everything.
                 if (null == m_consoleAppender.Threshold)
+                {
                     m_consoleAppender.Threshold = Level.All;
+                }
 
                 Notice(String.Format("Console log level is {0}", m_consoleAppender.Threshold));
             }
@@ -183,35 +191,40 @@ namespace OpenSim.Framework.Servers
             if (m_logFileAppender != null && startupConfig != null)
             {
                 string cfgFileName = startupConfig.GetString("LogFile", null);
+
                 if (cfgFileName != null)
                 {
                     m_logFileAppender.File = cfgFileName;
                     m_logFileAppender.ActivateOptions();
                 }
 
-                m_log.InfoFormat("[SERVER BASE]: Logging started to file {0}", m_logFileAppender.File);
+                m_log.InfoFormat("[Server Base]: Logging started to file {0}", m_logFileAppender.File);
             }
 
             if (m_statsLogFileAppender != null && startupConfig != null)
             {
                 string cfgStatsFileName = startupConfig.GetString("StatsLogFile", null);
+
                 if (cfgStatsFileName != null)
                 {
                     m_statsLogFileAppender.File = cfgStatsFileName;
                     m_statsLogFileAppender.ActivateOptions();
                 }
 
-                m_log.InfoFormat("[SERVER BASE]: Stats Logging started to file {0}", m_statsLogFileAppender.File);
+                m_log.InfoFormat("[Server Base]: Stats Logging started to file {0}", m_statsLogFileAppender.File);
             }
         }
 
         /// <summary>
-        /// Register common commands once m_console has been set if it is going to be set
+        ///     Register common commands once m_console
+        ///     has been set if it is going to be set
         /// </summary>
         public void RegisterCommonCommands()
         {
             if (m_console == null)
+            {
                 return;
+            }
 
             m_console.Commands.AddCommand(
                 "General", false, "show info", "show info", "Show general information about the server", HandleShow);
@@ -275,13 +288,13 @@ namespace OpenSim.Framework.Servers
                 "Show thread status.  Synonym for \"show threads\"",
                 (string module, string[] args) => Notice(GetThreadsReport()));
 
-            m_console.Commands.AddCommand (
+            m_console.Commands.AddCommand(
                 "Debug", false, "debug threadpool set",
                 "debug threadpool set worker|iocp min|max <n>",
                 "Set threadpool parameters.  For debug purposes.",
                 HandleDebugThreadpoolSet);
 
-            m_console.Commands.AddCommand (
+            m_console.Commands.AddCommand(
                 "Debug", false, "debug threadpool status",
                 "debug threadpool status",
                 "Show current debug threadpool parameters.",
@@ -297,12 +310,6 @@ namespace OpenSim.Framework.Servers
                     + "  2 = full stack trace; don't log common threads\n"
                     + "  3 = full stack trace, including common threads\n",
                 HandleDebugThreadpoolLevel);
-
-//            m_console.Commands.AddCommand(
-//                "Debug", false, "show threadpool calls active",
-//                "show threadpool calls active",
-//                "Show details about threadpool calls that are still active (currently waiting or in progress)",
-//                HandleShowThreadpoolCallsActive);
 
             m_console.Commands.AddCommand(
                 "Debug", false, "show threadpool calls complete",
@@ -332,8 +339,6 @@ namespace OpenSim.Framework.Servers
 
         public void RegisterCommonComponents(IConfigSource configSource)
         {
-//            IConfig networkConfig = configSource.Configs["Network"];
-
             m_serverStatsCollector = new ServerStatsCollector();
             m_serverStatsCollector.Initialise(configSource);
             m_serverStatsCollector.Start();
@@ -346,6 +351,7 @@ namespace OpenSim.Framework.Servers
             int namedCalls = 0;
 
             ConsoleDisplayList cdl = new ConsoleDisplayList();
+
             foreach (KeyValuePair<string, int> kvp in calls)
             {
                 if (kvp.Value > 0)
@@ -375,6 +381,7 @@ namespace OpenSim.Framework.Servers
             int namedCallsMade = 0;
 
             ConsoleDisplayList cdl = new ConsoleDisplayList();
+
             foreach (KeyValuePair<string, int> kvp in calls)
             {
                 cdl.AddRow(kvp.Key, kvp.Value);
@@ -418,7 +425,9 @@ namespace OpenSim.Framework.Servers
             int newThreads;
 
             if (!ConsoleUtil.TryParseConsoleInt(m_console, args[5], out newThreads))
+            {
                 return;
+            }
 
             string poolType = args[3];
             string bound = args[4];
@@ -433,14 +442,18 @@ namespace OpenSim.Framework.Servers
                     ThreadPool.GetMinThreads(out workerThreads, out iocpThreads);
 
                     if (!ThreadPool.SetMinThreads(newThreads, iocpThreads))
+                    {
                         fail = true;
+                    }
                 }
                 else
                 {
                     ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
 
                     if (!ThreadPool.SetMaxThreads(newThreads, iocpThreads))
+                    {
                         fail = true;
+                    }
                 }
             }
             else
@@ -450,14 +463,18 @@ namespace OpenSim.Framework.Servers
                     ThreadPool.GetMinThreads(out workerThreads, out iocpThreads);
 
                     if (!ThreadPool.SetMinThreads(workerThreads, newThreads))
+                    {
                         fail = true;
+                    }
                 }
                 else
                 {
                     ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
 
                     if (!ThreadPool.SetMaxThreads(workerThreads, newThreads))
+                    {
                         fail = true;
+                    }
                 }
             }
 
@@ -545,7 +562,7 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Change and load configuration file data.
+        ///     Change and load configuration file data.
         /// </summary>
         /// <param name="module"></param>
         /// <param name="cmd"></param>
@@ -572,6 +589,7 @@ namespace OpenSim.Framework.Servers
                             IConfig c;
                             IConfigSource source = new IniConfigSource();
                             c = source.AddConfig(cmdparams[1]);
+
                             if (c != null)
                             {
                                 string _value = String.Join(" ", cmdparams, 3, cmdparams.Length - 3);
@@ -592,15 +610,18 @@ namespace OpenSim.Framework.Servers
                                 Notice("[{0}]", config.Name);
                                 string[] keys = config.GetKeys();
                                 foreach (string key in keys)
+                                {
                                     Notice("  {0} = {1}", key, config.GetString(key));
+                                }
                             }
                         }
                         else if (cmdparams.Length == 2 || cmdparams.Length == 3)
                         {
                             IConfig config = Config.Configs[cmdparams[1]];
+
                             if (config == null)
                             {
-                                Notice("Section \"{0}\" does not exist.",cmdparams[1]);
+                                Notice("Section \"{0}\" does not exist.", cmdparams[1]);
                                 break;
                             }
                             else
@@ -608,8 +629,11 @@ namespace OpenSim.Framework.Servers
                                 if (cmdparams.Length == 2)
                                 {
                                     Notice("[{0}]", config.Name);
+
                                     foreach (string key in config.GetKeys())
+                                    {
                                         Notice("  {0} = {1}", key, config.GetString(key));
+                                    }
                                 }
                                 else
                                 {
@@ -673,11 +697,15 @@ namespace OpenSim.Framework.Servers
             Level consoleLevel = repository.LevelMap[rawLevel];
 
             if (consoleLevel != null)
+            {
                 m_consoleAppender.Threshold = consoleLevel;
+            }
             else
+            {
                 Notice(
                     "{0} is not a valid logging level.  Valid logging levels are ALL, DEBUG, INFO, WARN, ERROR, FATAL, OFF",
                     rawLevel);
+            }
 
             ShowLogLevel();
         }
@@ -699,30 +727,34 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Run an optional startup list of commands
+        ///     Run an optional startup list of commands
         /// </summary>
         /// <param name="fileName"></param>
         protected void RunCommandScript(string fileName)
         {
             if (m_console == null)
+            {
                 return;
+            }
 
             if (File.Exists(fileName))
             {
-                m_log.Info("[SERVER BASE]: Running " + fileName);
+                m_log.Info("[Server Base]: Running " + fileName);
 
                 using (StreamReader readFile = File.OpenText(fileName))
                 {
                     string currentCommand;
+
                     while ((currentCommand = readFile.ReadLine()) != null)
                     {
                         currentCommand = currentCommand.Trim();
+
                         if (!(currentCommand == ""
                             || currentCommand.StartsWith(";")
                             || currentCommand.StartsWith("//")
                             || currentCommand.StartsWith("#")))
                         {
-                            m_log.Info("[SERVER BASE]: Running '" + currentCommand + "'");
+                            m_log.Info("[Server Base]: Running '" + currentCommand + "'");
                             m_console.RunCommand(currentCommand);
                         }
                     }
@@ -731,7 +763,7 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Return a report about the uptime of this server
+        ///     Return a report about the uptime of this server
         /// </summary>
         /// <returns></returns>
         protected string GetUptimeReport()
@@ -747,16 +779,21 @@ namespace OpenSim.Framework.Servers
         {
             Notice(GetVersionText());
             Notice("Startup directory: " + m_startupDirectory);
+
             if (null != m_consoleAppender)
+            {
                 Notice(String.Format("Console log level: {0}", m_consoleAppender.Threshold));
+            }
         }
 
         /// <summary>
-        /// Enhance the version string with extra information if it's available.
+        ///     Enhance the version string with
+        ///     extra information if it's available.
         /// </summary>
         protected void EnhanceVersionInformation()
         {
             string buildVersion = string.Empty;
+
 
             // The subversion information is deprecated and will be removed at a later date
             // Add subversion revision information if available
@@ -776,33 +813,30 @@ namespace OpenSim.Framework.Servers
             if (File.Exists(manualVersionFileName))
             {
                 using (StreamReader CommitFile = File.OpenText(manualVersionFileName))
+                {
                     buildVersion = CommitFile.ReadLine();
+                }
 
                 m_version += buildVersion ?? "";
             }
             else if (File.Exists(gitRefPointerPath))
             {
-//                m_log.DebugFormat("[SERVER BASE]: Found {0}", gitRefPointerPath);
-
                 string rawPointer = "";
 
                 using (StreamReader pointerFile = File.OpenText(gitRefPointerPath))
+                {
                     rawPointer = pointerFile.ReadLine();
-
-//                m_log.DebugFormat("[SERVER BASE]: rawPointer [{0}]", rawPointer);
+                }
 
                 Match m = Regex.Match(rawPointer, "^ref: (.+)$");
 
                 if (m.Success)
                 {
-//                    m_log.DebugFormat("[SERVER BASE]: Matched [{0}]", m.Groups[1].Value);
-
                     string gitRef = m.Groups[1].Value;
                     string gitRefPath = gitDir + gitRef;
+
                     if (File.Exists(gitRefPath))
                     {
-//                        m_log.DebugFormat("[SERVER BASE]: Found gitRefPath [{0}]", gitRefPath);
-
                         using (StreamReader refFile = File.OpenText(gitRefPath))
                         {
                             string gitHash = refFile.ReadLine();
@@ -826,12 +860,14 @@ namespace OpenSim.Framework.Servers
                 {
                     StreamReader EntriesFile = File.OpenText(svnFileName);
                     inputLine = EntriesFile.ReadLine();
+
                     while (inputLine != null)
                     {
                         // using the dir svn revision at the top of entries file
                         strcmp = String.Compare(inputLine, "dir");
+
                         if (strcmp == 0)
-                       {
+                        {
                             buildVersion = EntriesFile.ReadLine();
                             break;
                         }
@@ -840,6 +876,7 @@ namespace OpenSim.Framework.Servers
                             inputLine = EntriesFile.ReadLine();
                         }
                     }
+
                     EntriesFile.Close();
                 }
 
@@ -854,7 +891,7 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Get a report about the registered threads in this server.
+        ///     Get a report about the registered threads in this server.
         /// </summary>
         protected string GetThreadsReport()
         {
@@ -891,16 +928,18 @@ namespace OpenSim.Framework.Servers
 
             sb.Append("\n");
             int totalThreads = Process.GetCurrentProcess().Threads.Count;
+
             if (totalThreads > 0)
+            {
                 sb.AppendFormat("Total process threads active: {0}\n\n", totalThreads);
+            }
 
             return sb.ToString();
         }
 
         /// <summary>
-        /// Get a thread pool report.
+        ///     Get a thread pool report.
         /// </summary>
-        /// <returns></returns>
         public static string GetThreadPoolReport()
         {
 
@@ -956,7 +995,7 @@ namespace OpenSim.Framework.Servers
                     waitingCallbacks = stpi.WaitingCallbacks;
                 }
             }
- 
+
             if (threadPoolUsed != null)
             {
                 sb.Append("\nThreadpool (excluding script engine pools)\n");
@@ -984,6 +1023,7 @@ namespace OpenSim.Framework.Servers
             }
 
             int threadId;
+
             if (!int.TryParse(cmd[2], out threadId))
             {
                 MainConsole.Instance.Output("ERROR: Thread id must be an integer");
@@ -991,15 +1031,19 @@ namespace OpenSim.Framework.Servers
             }
 
             if (Watchdog.AbortThread(threadId))
+            {
                 MainConsole.Instance.OutputFormat("Aborted thread with id {0}", threadId);
+            }
             else
+            {
                 MainConsole.Instance.OutputFormat("ERROR - Thread with id {0} not found in managed threads", threadId);
+            }
         }
 
         /// <summary>
-        /// Console output is only possible if a console has been established.
-        /// That is something that cannot be determined within this class. So
-        /// all attempts to use the console MUST be verified.
+        ///     Console output is only possible if a console has been established.
+        ///     That is something that cannot be determined within this class. So
+        ///     all attempts to use the console MUST be verified.
         /// </summary>
         /// <param name="msg"></param>
         protected void Notice(string msg)
@@ -1011,16 +1055,18 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Console output is only possible if a console has been established.
-        /// That is something that cannot be determined within this class. So
-        /// all attempts to use the console MUST be verified.
+        ///     Console output is only possible if a console has been established.
+        ///     That is something that cannot be determined within this class. So
+        ///     all attempts to use the console MUST be verified.
         /// </summary>
         /// <param name="format"></param>
         /// <param name="components"></param>
         protected void Notice(string format, params object[] components)
         {
             if (m_console != null)
+            {
                 m_console.OutputFormat(format, components);
+            }
         }
 
         public virtual void Shutdown()
@@ -1030,8 +1076,9 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Should be overriden and referenced by descendents if they need to perform extra shutdown processing
+        ///     Should be overriden and referenced by descendents
+        ///     if they need to perform extra shutdown processing
         /// </summary>
-        protected virtual void ShutdownSpecific() {}
+        protected virtual void ShutdownSpecific() { }
     }
 }
