@@ -1,44 +1,46 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, http://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
-using System.Collections.Generic;
-using System.IO;
-using Nini.Config;
-using OpenSim.Framework;
-using OpenSim.Server.Base;
-using OpenSim.Services.Interfaces;
-using OpenSim.Framework.Servers.HttpServer;
-using OpenSim.Server.Handlers.Base;
 using log4net;
+using Nini.Config;
 using OpenMetaverse;
+using OpenSim.Framework;
+using OpenSim.Framework.Servers.HttpServer;
+using OpenSim.Server.Base;
+using OpenSim.Server.Handlers.Base;
+using OpenSim.Services.Interfaces;
 
 namespace OpenSim.Groups
 {
@@ -60,24 +62,34 @@ namespace OpenSim.Groups
             base(config, server, configName)
         {
             if (configName != String.Empty)
+            {
                 m_ConfigName = configName;
+            }
 
             m_log.DebugFormat("[Groups.RobustHGConnector]: Starting with config name {0}", m_ConfigName);
 
-            string homeURI = Util.GetConfigVarFromSections<string>(config, "HomeURI",
-                new string[] { "Startup", "Hypergrid", m_ConfigName}, string.Empty);
+            string homeURI = Util.GetConfigVarFromSections<string>(config, "HomeURI", new string[] { "Startup", "Hypergrid", m_ConfigName }, string.Empty);
+
             if (homeURI == string.Empty)
+            {
                 throw new Exception(String.Format("[Groups.RobustHGConnector]: please provide the HomeURI [Startup] or in section {0}", m_ConfigName));
+            }
 
             IConfig cnf = config.Configs[m_ConfigName];
+
             if (cnf == null)
+            {
                 throw new Exception(String.Format("[Groups.RobustHGConnector]: {0} section does not exist", m_ConfigName));
+            }
 
             if (im == null)
             {
                 string imDll = cnf.GetString("OfflineIMService", string.Empty);
+
                 if (imDll == string.Empty)
+                {
                     throw new Exception(String.Format("[Groups.RobustHGConnector]: please provide OfflineIMService in section {0}", m_ConfigName));
+                }
 
                 Object[] args = new Object[] { config };
                 im = ServerUtils.LoadPlugin<IOfflineIMService>(imDll, args);
@@ -86,8 +98,11 @@ namespace OpenSim.Groups
             if (users == null)
             {
                 string usersDll = cnf.GetString("UserAccountService", string.Empty);
+
                 if (usersDll == string.Empty)
+                {
                     throw new Exception(String.Format("[Groups.RobustHGConnector]: please provide UserAccountService in section {0}", m_ConfigName));
+                }
 
                 Object[] args = new Object[] { config };
                 users = ServerUtils.LoadPlugin<IUserAccountService>(usersDll, args);
@@ -97,7 +112,6 @@ namespace OpenSim.Groups
 
             server.AddStreamHandler(new HGGroupsServicePostHandler(m_GroupsService));
         }
-
     }
 
     public class HGGroupsServicePostHandler : BaseStreamHandler
@@ -106,35 +120,35 @@ namespace OpenSim.Groups
 
         private HGGroupsService m_GroupsService;
 
-        public HGGroupsServicePostHandler(HGGroupsService service) :
-            base("POST", "/hg-groups")
+        public HGGroupsServicePostHandler(HGGroupsService service) : base("POST", "/hg-groups")
         {
             m_GroupsService = service;
         }
 
-        protected override byte[] ProcessRequest(string path, Stream requestData,
-                IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+        protected override byte[] ProcessRequest(string path, Stream requestData, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
             string body;
-            using(StreamReader sr = new StreamReader(requestData))
+            using (StreamReader sr = new StreamReader(requestData))
+            {
                 body = sr.ReadToEnd();
+            }
 
             body = body.Trim();
 
-            //m_log.DebugFormat("[XXX]: query String: {0}", body);
-
             try
             {
-                Dictionary<string, object> request =
-                        ServerUtils.ParseQueryString(body);
+                Dictionary<string, object> request = ServerUtils.ParseQueryString(body);
 
                 if (!request.ContainsKey("METHOD"))
+                {
                     return FailureResult();
+                }
 
                 string method = request["METHOD"].ToString();
                 request.Remove("METHOD");
 
                 m_log.DebugFormat("[Groups.RobustHGConnector]: {0}", method);
+
                 switch (method)
                 {
                     case "POSTGROUP":
@@ -153,8 +167,8 @@ namespace OpenSim.Groups
                         return HandleGetGroupRoles(request);
                     case "GETROLEMEMBERS":
                         return HandleGetRoleMembers(request);
-
                 }
+
                 m_log.DebugFormat("[Groups.RobustHGConnector]: unknown method request: {0}", method);
             }
             catch (Exception e)
@@ -172,8 +186,9 @@ namespace OpenSim.Groups
             if (!request.ContainsKey("RequestingAgentID") || !request.ContainsKey("GroupID")
                 || !request.ContainsKey("AgentID")
                 || !request.ContainsKey("AccessToken") || !request.ContainsKey("Location"))
+            {
                 NullResult(result, "Bad network data");
-
+            }
             else
             {
                 string RequestingAgentID = request["RequestingAgentID"].ToString();
@@ -182,8 +197,11 @@ namespace OpenSim.Groups
                 string accessToken = request["AccessToken"].ToString();
                 string location = request["Location"].ToString();
                 string name = string.Empty;
+
                 if (request.ContainsKey("Name"))
+                {
                     name = request["Name"].ToString();
+                }
 
                 string reason = string.Empty;
                 bool success = m_GroupsService.CreateGroupProxy(RequestingAgentID, agentID, accessToken, groupID, location, name, out reason);
@@ -193,7 +211,6 @@ namespace OpenSim.Groups
 
             string xmlString = ServerUtils.BuildXmlResponse(result);
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(xmlString);
         }
 
@@ -201,9 +218,10 @@ namespace OpenSim.Groups
         {
             Dictionary<string, object> result = new Dictionary<string, object>();
 
-            if (!request.ContainsKey("AccessToken") || !request.ContainsKey("AgentID") ||
-                !request.ContainsKey("GroupID"))
+            if (!request.ContainsKey("AccessToken") || !request.ContainsKey("AgentID") || !request.ContainsKey("GroupID"))
+            {
                 NullResult(result, "Bad network data");
+            }
             else
             {
                 UUID groupID = new UUID(request["GroupID"].ToString());
@@ -211,12 +229,15 @@ namespace OpenSim.Groups
                 string token = request["AccessToken"].ToString();
 
                 if (!m_GroupsService.RemoveAgentFromGroup(agentID, agentID, groupID, token))
+                {
                     NullResult(result, "Internal error");
+                }
                 else
+                {
                     result["RESULT"] = "true";
+                }
             }
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(ServerUtils.BuildXmlResponse(result));
         }
 
@@ -225,7 +246,9 @@ namespace OpenSim.Groups
             Dictionary<string, object> result = new Dictionary<string, object>();
 
             if (!request.ContainsKey("RequestingAgentID") || !request.ContainsKey("AccessToken"))
+            {
                 NullResult(result, "Bad network data");
+            }
             else
             {
                 string RequestingAgentID = request["RequestingAgentID"].ToString();
@@ -235,20 +258,29 @@ namespace OpenSim.Groups
                 string groupName = string.Empty;
 
                 if (request.ContainsKey("GroupID"))
+                {
                     groupID = new UUID(request["GroupID"].ToString());
+                }
+
                 if (request.ContainsKey("Name"))
+                {
                     groupName = request["Name"].ToString();
+                }
 
                 ExtendedGroupRecord grec = m_GroupsService.GetGroupRecord(RequestingAgentID, groupID, groupName, token);
+
                 if (grec == null)
+                {
                     NullResult(result, "Group not found");
+                }
                 else
+                {
                     result["RESULT"] = GroupsDataUtils.GroupRecord(grec);
+                }
             }
 
             string xmlString = ServerUtils.BuildXmlResponse(result);
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(xmlString);
         }
 
@@ -257,7 +289,9 @@ namespace OpenSim.Groups
             Dictionary<string, object> result = new Dictionary<string, object>();
 
             if (!request.ContainsKey("RequestingAgentID") || !request.ContainsKey("GroupID") || !request.ContainsKey("AccessToken"))
+            {
                 NullResult(result, "Bad network data");
+            }
             else
             {
                 UUID groupID = new UUID(request["GroupID"].ToString());
@@ -265,6 +299,7 @@ namespace OpenSim.Groups
                 string token = request["AccessToken"].ToString();
 
                 List<ExtendedGroupMembersData> members = m_GroupsService.GetGroupMembers(requestingAgentID, groupID, token);
+
                 if (members == null || (members != null && members.Count == 0))
                 {
                     NullResult(result, "No members");
@@ -273,6 +308,7 @@ namespace OpenSim.Groups
                 {
                     Dictionary<string, object> dict = new Dictionary<string, object>();
                     int i = 0;
+
                     foreach (ExtendedGroupMembersData m in members)
                     {
                         dict["m-" + i++] = GroupsDataUtils.GroupMembersData(m);
@@ -284,7 +320,6 @@ namespace OpenSim.Groups
 
             string xmlString = ServerUtils.BuildXmlResponse(result);
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(xmlString);
         }
 
@@ -293,7 +328,9 @@ namespace OpenSim.Groups
             Dictionary<string, object> result = new Dictionary<string, object>();
 
             if (!request.ContainsKey("RequestingAgentID") || !request.ContainsKey("GroupID") || !request.ContainsKey("AccessToken"))
+            {
                 NullResult(result, "Bad network data");
+            }
             else
             {
                 UUID groupID = new UUID(request["GroupID"].ToString());
@@ -301,6 +338,7 @@ namespace OpenSim.Groups
                 string token = request["AccessToken"].ToString();
 
                 List<GroupRolesData> roles = m_GroupsService.GetGroupRoles(requestingAgentID, groupID, token);
+
                 if (roles == null || (roles != null && roles.Count == 0))
                 {
                     NullResult(result, "No members");
@@ -309,8 +347,11 @@ namespace OpenSim.Groups
                 {
                     Dictionary<string, object> dict = new Dictionary<string, object>();
                     int i = 0;
+
                     foreach (GroupRolesData r in roles)
+                    {
                         dict["r-" + i++] = GroupsDataUtils.GroupRolesData(r);
+                    }
 
                     result["RESULT"] = dict;
                 }
@@ -318,7 +359,6 @@ namespace OpenSim.Groups
 
             string xmlString = ServerUtils.BuildXmlResponse(result);
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(xmlString);
         }
 
@@ -327,7 +367,9 @@ namespace OpenSim.Groups
             Dictionary<string, object> result = new Dictionary<string, object>();
 
             if (!request.ContainsKey("RequestingAgentID") || !request.ContainsKey("GroupID") || !request.ContainsKey("AccessToken"))
+            {
                 NullResult(result, "Bad network data");
+            }
             else
             {
                 UUID groupID = new UUID(request["GroupID"].ToString());
@@ -335,6 +377,7 @@ namespace OpenSim.Groups
                 string token = request["AccessToken"].ToString();
 
                 List<ExtendedGroupRoleMembersData> rmembers = m_GroupsService.GetGroupRoleMembers(requestingAgentID, groupID, token);
+
                 if (rmembers == null || (rmembers != null && rmembers.Count == 0))
                 {
                     NullResult(result, "No members");
@@ -343,8 +386,11 @@ namespace OpenSim.Groups
                 {
                     Dictionary<string, object> dict = new Dictionary<string, object>();
                     int i = 0;
+
                     foreach (ExtendedGroupRoleMembersData rm in rmembers)
+                    {
                         dict["rm-" + i++] = GroupsDataUtils.GroupRoleMembersData(rm);
+                    }
 
                     result["RESULT"] = dict;
                 }
@@ -352,7 +398,6 @@ namespace OpenSim.Groups
 
             string xmlString = ServerUtils.BuildXmlResponse(result);
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(xmlString);
         }
 
@@ -363,24 +408,36 @@ namespace OpenSim.Groups
             if (!request.ContainsKey("RequestingAgentID") || !request.ContainsKey("GroupID") || !request.ContainsKey("NoticeID") ||
                 !request.ContainsKey("FromName") || !request.ContainsKey("Subject") || !request.ContainsKey("Message") ||
                 !request.ContainsKey("HasAttachment"))
+            {
                 NullResult(result, "Bad network data");
-
+            }
             else
             {
-
                 bool hasAtt = bool.Parse(request["HasAttachment"].ToString());
                 byte attType = 0;
                 string attName = string.Empty;
                 string attOwner = string.Empty;
                 UUID attItem = UUID.Zero;
+
                 if (request.ContainsKey("AttachmentType"))
+                {
                     attType = byte.Parse(request["AttachmentType"].ToString());
+                }
+
                 if (request.ContainsKey("AttachmentName"))
+                {
                     attName = request["AttachmentType"].ToString();
+                }
+
                 if (request.ContainsKey("AttachmentItemID"))
+                {
                     attItem = new UUID(request["AttachmentItemID"].ToString());
+                }
+
                 if (request.ContainsKey("AttachmentOwnerID"))
+                {
                     attOwner = request["AttachmentOwnerID"].ToString();
+                }
 
                 bool success = m_GroupsService.AddNotice(request["RequestingAgentID"].ToString(), new UUID(request["GroupID"].ToString()),
                         new UUID(request["NoticeID"].ToString()), request["FromName"].ToString(), request["Subject"].ToString(),
@@ -391,7 +448,6 @@ namespace OpenSim.Groups
 
             string xmlString = ServerUtils.BuildXmlResponse(result);
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(xmlString);
         }
 
@@ -400,29 +456,22 @@ namespace OpenSim.Groups
             Dictionary<string, object> result = new Dictionary<string, object>();
 
             if (!request.ContainsKey("NoticeID") || !request.ContainsKey("GroupID"))
+            {
                 NullResult(result, "Bad network data");
-
+            }
             else
             {
                 UUID noticeID = new UUID(request["NoticeID"].ToString());
                 UUID groupID = new UUID(request["GroupID"].ToString());
 
                 bool success = m_GroupsService.VerifyNotice(noticeID, groupID);
-                //m_log.DebugFormat("[XXX]: VerifyNotice returned {0}", success);
                 result["RESULT"] = success.ToString();
             }
 
             string xmlString = ServerUtils.BuildXmlResponse(result);
 
-            //m_log.DebugFormat("[XXX]: resp string: {0}", xmlString);
             return Util.UTF8NoBomEncoding.GetBytes(xmlString);
         }
-
-        //
-        //
-        //
-        //
-        //
 
         #region Helpers
 
