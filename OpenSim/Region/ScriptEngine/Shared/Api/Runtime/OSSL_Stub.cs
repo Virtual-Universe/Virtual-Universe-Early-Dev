@@ -136,11 +136,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             m_OSSL_Functions.osParcelSetDetails(pos,rules);
         }
 
-        public double osList2Double(LSL_Types.list src, int index)
-        {
-            return m_OSSL_Functions.osList2Double(src, index);
-        }
-
         public string osSetDynamicTextureURL(string dynamicID, string contentType, string url, string extraParams,
                                              int timer)
         {
@@ -294,12 +289,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
 
         // Animation Functions
 
-        public void osAvatarPlayAnimation(string avatar, string animation)
+        public void osAvatarPlayAnimation(LSL_Key avatar, string animation)
         {
             m_OSSL_Functions.osAvatarPlayAnimation(avatar, animation);
         }
 
-        public void osAvatarStopAnimation(string avatar, string animation)
+        public void osAvatarStopAnimation(LSL_Key avatar, string animation)
         {
             m_OSSL_Functions.osAvatarStopAnimation(avatar, animation);
         }
@@ -1281,6 +1276,96 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
         public void osPreloadSound(LSL_Integer linknum, LSL_String sound)
         {
             m_OSSL_Functions.osPreloadSound(linknum, sound);
+        }
+
+        public LSL_String osDetectedCountry(LSL_Integer number)
+        {
+            return m_OSSL_Functions.osDetectedCountry(number);
+        }
+
+        public LSL_String osGetAgentCountry(LSL_Key agentId)
+        {
+            return m_OSSL_Functions.osGetAgentCountry(agentId);
+        }
+
+        public LSL_String osStringSubString(LSL_String src, LSL_Integer offset)
+        {
+            return m_OSSL_Functions.osStringSubString(src, offset);
+        }
+
+        public LSL_String osStringSubString(LSL_String src, LSL_Integer offset, LSL_Integer length)
+        {
+            return m_OSSL_Functions.osStringSubString(src, offset, length);
+        }
+
+        public LSL_Integer osStringStartsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringStartsWith(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringEndsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringEndsWith(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringIndexOf(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringIndexOf(LSL_String src, LSL_String value, LSL_Integer offset, LSL_Integer count, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringIndexOf(src, value, offset, count, ignorecase);
+        }
+
+        public LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringLastIndexOf(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value, LSL_Integer offset, LSL_Integer count, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringLastIndexOf(src, value, offset, count, ignorecase);
+        }
+
+        public LSL_String osStringRemove(LSL_String src, LSL_Integer offset, LSL_Integer count)
+        {
+            return m_OSSL_Functions.osStringRemove(src, offset, count);
+        }
+
+        public LSL_String osStringReplace(LSL_String src, LSL_String oldvalue, LSL_String newvalue)
+        {
+            return m_OSSL_Functions.osStringReplace(src, oldvalue, newvalue);
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b)
+        {
+            return m_OSSL_Functions.osApproxEquals(a, b);
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b, LSL_Float margin)
+        {
+            return m_OSSL_Functions.osApproxEquals(a, b, margin);
+        }
+
+        public LSL_Integer osApproxEquals(vector va, vector vb)
+        {
+            return m_OSSL_Functions.osApproxEquals(va, vb);
+        }
+
+        public LSL_Integer osApproxEquals(vector va, vector vb, LSL_Float margin)
+        {
+            return m_OSSL_Functions.osApproxEquals(va, vb, margin);
+        }
+
+        public LSL_Integer osApproxEquals(rotation ra, rotation rb)
+        {
+            return m_OSSL_Functions.osApproxEquals(ra, rb);
+        }
+
+        public LSL_Integer osApproxEquals(rotation ra, rotation rb, LSL_Float margin)
+        {
+            return m_OSSL_Functions.osApproxEquals(ra, rb, margin);
         }
     }
 }

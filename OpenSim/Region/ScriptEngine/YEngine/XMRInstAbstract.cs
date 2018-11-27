@@ -452,6 +452,11 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             return newuse;
         }
 
+        public virtual void AddHeapUse(int delta)
+        {
+            Interlocked.Add(ref heapUsed, delta);
+        }
+
         public int xmrHeapLeft()
         {
             return heapLimit - heapUsed;
@@ -775,76 +780,6 @@ namespace OpenSim.Region.ScriptEngine.Yengine
                 this.ehArgs = saveEHArgs;
                 this.eventCode = saveEventCode;
             }
-        }
-
-        /**
-         * @brief Sane substring functions.
-         */
-        public string xmrSubstring(string s, int offset)
-        {
-            if(offset >= s.Length)
-                return "";
-            return s.Substring(offset);
-        }
-
-        // C# style
-        public string xmrSubstring(string s, int offset, int length)
-        {
-            if(length <= 0)
-                return "";
-            if(offset >= s.Length)
-                return "";
-            if(length > s.Length - offset)
-                length = s.Length - offset;
-            return s.Substring(offset, length);
-        }
-
-        // java style
-        public string xmrJSubstring(string s, int beg, int end)
-        {
-            if(end <= beg)
-                return "";
-            if(beg >= s.Length)
-                return "";
-            if(end > s.Length)
-                end = s.Length;
-            return s.Substring(beg, end - beg);
-        }
-
-        /**
-         * @brief String begins and ends with test.
-         */
-        public bool xmrStringStartsWith(string s, string t)
-        {
-            return s.StartsWith(t);
-        }
-
-        public bool xmrStringEndsWith(string s, string t)
-        {
-            return s.EndsWith(t);
-        }
-
-        /**
-         * @brief [Last]IndexOf with starting position (just like C#)
-         */
-        public int xmrStringIndexOf(string haystack, string needle)
-        {
-            return haystack.IndexOf(needle);
-        }
-
-        public int xmrStringIndexOf(string haystack, string needle, int startat)
-        {
-            return haystack.IndexOf(needle, startat);
-        }
-
-        public int xmrStringLastIndexOf(string haystack, string needle)
-        {
-            return haystack.LastIndexOf(needle);
-        }
-
-        public int xmrStringLastIndexOf(string haystack, string needle, int startat)
-        {
-            return haystack.LastIndexOf(needle, startat);
         }
 
         /**

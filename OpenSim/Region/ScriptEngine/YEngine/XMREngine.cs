@@ -28,22 +28,9 @@
 // based on YEngine from Mike Rieker (Dreamnation) and Melanie Thielker
 // but with several changes to be more cross platform.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Reflection;
-using System.Text;
-using System.Text;
-using System.Threading;
-using System.Timers;
-using System.Xml;
 using log4net;
 using Mono.Addins;
 using Nini.Config;
-using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
 using OpenSim.Framework.Monitoring;
@@ -53,6 +40,17 @@ using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.ScriptEngine.Interfaces;
 using OpenSim.Region.ScriptEngine.Shared;
 using OpenSim.Region.ScriptEngine.Shared.Api;
+using OpenMetaverse;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Reflection.Emit;
+using System.Text;
+using System.Threading;
+using System.Timers;
+using System.Xml;
 
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
@@ -89,7 +87,6 @@ namespace OpenSim.Region.ScriptEngine.Yengine
         private string m_ScriptBasePath;
         private bool m_Enabled = false;
         public bool m_StartProcessing = false;
-        public bool m_UseSourceHashCode = false;
         private Dictionary<UUID, ArrayList> m_ScriptErrors =
                 new Dictionary<UUID, ArrayList>();
         private Dictionary<UUID, List<UUID>> m_ObjectItemList =
@@ -210,7 +207,6 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             if(!m_Enabled)
                 return;
 
-            m_UseSourceHashCode = m_Config.GetBoolean("UseSourceHashCode", false);
             numThreadScriptWorkers = m_Config.GetInt("NumThreadScriptWorkers", 1);
 
             m_TraceCalls = m_Config.GetBoolean("TraceCalls", false);
@@ -977,7 +973,6 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             XMRInstance instance = GetInstance(itemID);
             if(instance != null)
                 instance.ApiReset();
-
         }
 
         public void ResetScript(UUID itemID)
@@ -1097,17 +1092,27 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             if(stateN == null)
                 return false;
 
-            if(stateN.GetAttribute("Engine") != ScriptEngineName)
+            bool isX = false;
+            string sen = stateN.GetAttribute("Engine");
+            if (sen == null)
                 return false;
-
-            // <ScriptState>...</ScriptState> contains contents of .state file.
-            XmlElement scriptStateN = (XmlElement)stateN.SelectSingleNode("ScriptState");
+            if (sen != ScriptEngineName)
+            {   
+                if(sen != "XEngine")
+                    return false;
+                isX = true;
+            }
+                // <ScriptState>...</ScriptState> contains contents of .state file.
+                XmlElement scriptStateN = (XmlElement)stateN.SelectSingleNode("ScriptState");
             if(scriptStateN == null)
                 return false;
 
-            string sen = stateN.GetAttribute("Engine");
-            if((sen == null) || (sen != ScriptEngineName))
-                return false;
+            if(!isX)
+            {
+                sen = stateN.GetAttribute("Engine");
+                if ((sen == null) || (sen != ScriptEngineName))
+                    return false;
+            }
 
             XmlAttribute assetA = doc.CreateAttribute("", "Asset", "");
             assetA.Value = stateN.GetAttribute("Asset");
@@ -1115,11 +1120,11 @@ namespace OpenSim.Region.ScriptEngine.Yengine
 
             // Write out the .state file with the <ScriptState ...>...</ScriptState> XML text
             string statePath = XMRInstance.GetStateFileName(m_ScriptBasePath, itemID);
-            FileStream ss = File.Create(statePath);
-            StreamWriter sw = new StreamWriter(ss);
-            sw.Write(scriptStateN.OuterXml);
-            sw.Close();
-            ss.Close();
+            using (FileStream ss = File.Create(statePath))
+            {
+                using (StreamWriter sw = new StreamWriter(ss))
+                    sw.Write(scriptStateN.OuterXml);
+            }
 
             return true;
         }
@@ -1169,6 +1174,9 @@ namespace OpenSim.Region.ScriptEngine.Yengine
         public void OnRezScript(uint localID, UUID itemID, string script,
                 int startParam, bool postOnRez, string defEngine, int stateSource)
         {
+            if (script.StartsWith("//MRM:"))
+                return;
+
             SceneObjectPart part = m_Scene.GetSceneObjectPart(localID);
             TaskInventoryItem item = part.Inventory.GetInventoryItem(itemID);
 
@@ -1180,22 +1188,29 @@ namespace OpenSim.Region.ScriptEngine.Yengine
 
             TraceCalls("[YEngine]: OnRezScript(...,{0},...)", itemID.ToString());
 
-            // Assume script uses the default engine, whatever that is.
+            // Assume script uses the default engine
             string engineName = defEngine;
 
-            // Very first line might contain "//" scriptengine ":".
-            string firstline = "";
-            if(script.StartsWith("//"))
+            // Very first line might contain // scriptengine : language
+            string langsrt = "";
+            if (script.StartsWith("//"))
             {
                 int lineEnd = script.IndexOf('\n');
-                if(lineEnd > 1)
-                    firstline = script.Substring(0, lineEnd).Trim();
-                int colon = firstline.IndexOf(':');
-                if(colon >= 2)
+                if(lineEnd > 5)
                 {
-                    engineName = firstline.Substring(2, colon - 2).Trim();
-                    if(engineName == "")
-                        engineName = defEngine;
+                    string firstline = script.Substring(2, lineEnd - 2).Trim();
+                    int colon = firstline.IndexOf(':');
+                    if(colon >= 3)
+                    {
+                        engineName = firstline.Substring(0, colon).TrimEnd();
+                        if(string.IsNullOrEmpty(engineName))
+                            engineName = defEngine;
+                    }
+                    if (colon > 0 && colon < firstline.Length - 2)
+                    {
+                        langsrt = firstline.Substring(colon + 1).Trim();
+                        langsrt = langsrt.ToLower();
+                    }
                 }
             }
 
@@ -1213,11 +1228,19 @@ namespace OpenSim.Region.ScriptEngine.Yengine
 
                 // Requested engine not defined, warn on console.
                 // Then we try to handle it if we're the default engine, else we ignore it.
+//                m_log.Warn("[YEngine]: " + itemID.ToString() + " requests undefined/disabled engine " + engineName);
+//                m_log.Info("[YEngine]: - " + part.GetWorldPosition());
+//                m_log.Info("[YEngine]: first line: " + firstline);
                 if(defEngine != ScriptEngineName)
                 {
+//                    m_log.Info("[YEngine]: leaving it to the default script engine (" + defEngine + ") to process it");
                     return;
                 }
+//                m_log.Info("[YEngine]: will attempt to processing it anyway as default script engine");
             }
+
+            if(!string.IsNullOrEmpty(langsrt) && langsrt !="lsl")
+                return;
 
             // Put on object/instance lists.
             XMRInstance instance = (XMRInstance)Activator.CreateInstance(ScriptCodeGen.xmrInstSuperType);

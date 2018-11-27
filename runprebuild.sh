@@ -16,12 +16,6 @@ case "$1" in
   ;;
 
 
-  'vs2010')
-  
-    mono Prebuild.exe /target vs2015
-  
-  ;;
-
   *)
 
     mono Prebuild.exe /target nant

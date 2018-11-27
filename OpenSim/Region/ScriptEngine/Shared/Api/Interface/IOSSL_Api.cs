@@ -158,8 +158,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         void osTeleportOwner(LSL_Types.Vector3 position, LSL_Types.Vector3 lookat);
 
         // Animation commands
-        void osAvatarPlayAnimation(string avatar, string animation);
-        void osAvatarStopAnimation(string avatar, string animation);
+        void osAvatarPlayAnimation(LSL_Key avatarId, string animation);
+        void osAvatarStopAnimation(LSL_Key avatarId, string animation);
 
         #region Attachment commands
 
@@ -243,8 +243,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         string osDrawImage(string drawList, int width, int height, string imageUrl);
         vector osGetDrawStringSize(string contentType, string text, string fontName, int fontSize);
         void osSetStateEvents(int events);
-
-        double osList2Double(LSL_Types.list src, int index);
 
         void osSetRegionWaterHeight(double height);
         void osSetRegionSunSettings(bool useEstateSun, bool sunFixed, double sunHour);
@@ -528,5 +526,26 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         void osTriggerSound(LSL_Integer linknum, LSL_String sound, LSL_Float volume);
         void osTriggerSoundLimited(LSL_Integer linknum, LSL_String sound, LSL_Float volume,
                  vector top_north_east, vector bottom_south_west);
+
+        LSL_String osDetectedCountry(LSL_Integer number);
+        LSL_String osGetAgentCountry(LSL_Key agentId);
+
+        LSL_String osStringSubString(LSL_String src, LSL_Integer start);
+        LSL_String osStringSubString(LSL_String src, LSL_Integer start, LSL_Integer length);
+        LSL_Integer osStringStartsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase);
+        LSL_Integer osStringEndsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase);
+        LSL_Integer osStringIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase);
+        LSL_Integer osStringIndexOf(LSL_String src, LSL_String value, LSL_Integer start, LSL_Integer count, LSL_Integer ignorecase);
+        LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase);
+        LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value, LSL_Integer start, LSL_Integer count, LSL_Integer ignorecase);
+        LSL_String osStringRemove(LSL_String src, LSL_Integer start, LSL_Integer count);
+        LSL_String osStringReplace(LSL_String src, LSL_String oldvalue, LSL_String newvalue);
+
+        LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b);
+        LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b, LSL_Float margin);
+        LSL_Integer osApproxEquals(vector va, vector vb);
+        LSL_Integer osApproxEquals(vector va, vector vb, LSL_Float margin);
+        LSL_Integer osApproxEquals(rotation ra, rotation rb);
+        LSL_Integer osApproxEquals(rotation ra, rotation rb, LSL_Float margin);
     }
 }

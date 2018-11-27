@@ -34,34 +34,38 @@ namespace OpenSim.Framework
     public class Constants
     {
         /// <summary>
-        ///     'RegionSize' is the legacy region size.
-        ///     DO NOT USE THIS FOR ANY NEW CODE. 
-        ///     Use Scene.RegionInfo.RegionSize[XYZ] as a region might not
-        ///      be the legacy region size.
+        ///     RegionSize
+        ///         RegionSize is the legacy region size.
+        ///         DO NOT USE this for any new code.  Instead please use
+        ///         Scene.RegionInfo.RegionSize[XYZ] as a region might not
+        ///         be the legacy region size.
         /// </summary>
         public const uint RegionSize = 256;
         public const uint RegionHeight = 4096;
 
         /// <summary>
-        ///     This could be a parameters but, really, 
-        ///     a region of greater than this is pretty unmanageable
+        ///     This could be a parameter but, a region of
+        ///     greater then this is pretty much unmanageable.
         /// </summary>
         public const uint MaximumRegionSize = 8192;
 
         /// <summary>
-        ///     Since terrain is stored in 16x16 heights,
-        ///     regions must be a multiple of this number
-        ///     and that is the minimum
+        ///     Since the terrain is stored in 16x16 heights,
+        ///     regions must be a multiple of this number and 
+        ///     that is the minimum.
         /// </summary>
         public const int MinRegionSize = 16;
         public const int TerrainPatchSize = 16;
 
+        /// <summary>
+        ///     Default texture
+        /// </summary>
         public const string DefaultTexture = "89556747-24cb-43ed-920b-47caed15465f";
 
         /// <summary>
         ///     Default directories
         /// </summary>
-        public const string DEFAULT_CRASH_DIR = "crahses";
+        public const string DEFAULT_CRASH_DIR = "Data/Crashes";
 
         public enum EstateAccessCodex : uint
         {
@@ -79,8 +83,7 @@ namespace OpenSim.Framework
             EstateManagers = 10
         }
 
-        [Flags]
-        public enum TeleportFlags : uint
+        [Flags]public enum TeleportFlags : uint
         {
             /// <summary>
             ///     No flags set, or teleport failed
@@ -91,92 +94,90 @@ namespace OpenSim.Framework
             ///     Set when newbie leaves help island for first time
             /// </summary>
             SetHomeToTarget = 1 << 0,
-
+            
             /// <summary></summary>
             SetLastToTarget = 1 << 1,
-
+            
             /// <summary>
             ///     Via Lure
             /// </summary>
             ViaLure = 1 << 2,
-
+            
             /// <summary>
             ///     Via Landmark
             /// </summary>
             ViaLandmark = 1 << 3,
-
+            
             /// <summary>
             ///     Via Location
             /// </summary>
             ViaLocation = 1 << 4,
-
+            
             /// <summary>
             ///     Via Home
             /// </summary>
             ViaHome = 1 << 5,
-
+            
             /// <summary>
             ///     Via Telehub
             /// </summary>
             ViaTelehub = 1 << 6,
-
+            
             /// <summary>
             ///     Via Login
             /// </summary>
             ViaLogin = 1 << 7,
-
+            
             /// <summary>
             ///     Linden Summoned
             /// </summary>
             ViaGodlikeLure = 1 << 8,
-
+            
             /// <summary>
             ///     Linden Forced me
             /// </summary>
             Godlike = 1 << 9,
-
+            
             /// <summary></summary>
             NineOneOne = 1 << 10,
-
+            
             /// <summary>
             ///     Agent Teleported Home via Script
             /// </summary>
             DisableCancel = 1 << 11,
-
+            
             /// <summary></summary>
             ViaRegionID = 1 << 12,
-
+            
             /// <summary></summary>
             IsFlying = 1 << 13,
-
+            
             /// <summary></summary>
             ResetHome = 1 << 14,
-
+            
             /// <summary>
-            ///     forced to new location for 
-            ///     example when avatar is banned
-            ///     or ejected
+            ///     forced to new location for example
+            ///     when avatar is banned or ejected
             /// </summary>
             ForceRedirect = 1 << 15,
-
+            
             /// <summary>
             ///     Teleport Finished via a Lure
             /// </summary>
             FinishedViaLure = 1 << 26,
-
+            
             /// <summary>
             ///     Finished, Sim Changed
             /// </summary>
             FinishedViaNewSim = 1 << 28,
-
+            
             /// <summary>
             ///     Finished, Same Sim
             /// </summary>
             FinishedViaSameSim = 1 << 29,
-
+            
             /// <summary>
-            ///     Agent coming into the 
-            ///     grid from another grid
+            ///     Agent coming into the grid from another grid
             /// </summary>
             ViaHGLogin = 1 << 30
         }

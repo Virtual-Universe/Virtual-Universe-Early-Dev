@@ -141,7 +141,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         internal ThreatLevel m_MaxThreatLevel = ThreatLevel.VeryLow;
         internal float m_ScriptDelayFactor = 1.0f;
         internal float m_ScriptDistanceFactor = 1.0f;
-        internal bool m_debuggerSafe = true;
         internal Dictionary<string, FunctionPerms > m_FunctionPerms = new Dictionary<string, FunctionPerms >();
         protected IUrlModule m_UrlModule = null;
         protected ISoundModule m_SoundModule = null;
@@ -157,8 +156,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_osslconfig = m_ScriptEngine.ConfigSource.Configs["OSSL"];
             if(m_osslconfig == null)
                 m_osslconfig = m_ScriptEngine.Config;
-
-            m_debuggerSafe = m_osslconfig.GetBoolean("DebuggerSafe", m_debuggerSafe);
 
             m_UrlModule = m_ScriptEngine.World.RequestModuleInterface<IUrlModule>();
             m_SoundModule = m_ScriptEngine.World.RequestModuleInterface<ISoundModule>();
@@ -226,14 +223,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
         internal void OSSLError(string msg)
         {
-            if (m_debuggerSafe)
-            {
-                OSSLShoutError(msg);
-            }
-            else
-            {
-                throw new ScriptException("OSSL Runtime Error: " + msg);
-            }
+            throw new ScriptException("OSSL Runtime Error: " + msg);
         }
 
         /// <summary>
@@ -1128,15 +1118,10 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         }
 
         // Adam's super super custom animation functions
-        public void osAvatarPlayAnimation(string avatar, string animation)
+        public void osAvatarPlayAnimation(LSL_Key avatar, string animation)
         {
             CheckThreatLevel(ThreatLevel.VeryHigh, "osAvatarPlayAnimation");
 
-            AvatarPlayAnimation(avatar, animation);
-        }
-
-        private void AvatarPlayAnimation(string avatar, string animation)
-        {
             UUID avatarID;
             if(!UUID.TryParse(avatar, out avatarID))
                 return;
@@ -1166,44 +1151,32 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 target.Animator.AddAnimation(animID, m_host.UUID);
         }
 
-        public void osAvatarStopAnimation(string avatar, string animation)
+        public void osAvatarStopAnimation(LSL_Key avatar, string animation)
         {
             CheckThreatLevel(ThreatLevel.VeryHigh, "osAvatarStopAnimation");
 
-            AvatarStopAnimation(avatar, animation);
-        }
+            UUID avatarID;
+            if(!UUID.TryParse(avatar, out avatarID))
+                return;
 
-        private void AvatarStopAnimation(string avatar, string animation)
-        {
-            UUID avatarID = (UUID)avatar;
+            ScenePresence target = World.GetScenePresence(avatarID);
+            if (target == null)
+                return;
 
-            // FIXME: What we really want to do here is factor out the similar code in llStopAnimation() to a common
-            // method (though see that doesn't do the is animation check, which is probably a bug) and have both
-            // these functions call that common code.  However, this does mean navigating the brain-dead requirement
-            // of calling InitLSL()
-            if (World.Entities.ContainsKey(avatarID) && World.Entities[avatarID] is ScenePresence)
+            UUID animID;
+            if (!UUID.TryParse(animation, out animID))
             {
-                ScenePresence target = (ScenePresence)World.Entities[avatarID];
-                if (target != null)
-                {
-                    UUID animID;
-
-                    if (!UUID.TryParse(animation, out animID))
-                    {
-                        TaskInventoryItem item = m_host.Inventory.GetInventoryItem(animation);
-                        if (item != null && item.Type == (int)AssetType.Animation)
-                            animID = item.AssetID;
-                        else
-                            animID = UUID.Zero;
-                    }
-
-
-                    if (animID == UUID.Zero)
-                        target.Animator.RemoveAnimation(animation);
-                    else
-                        target.Animator.RemoveAnimation(animID, true);
-                }
+                TaskInventoryItem item = m_host.Inventory.GetInventoryItem(animation);
+                if (item != null && item.Type == (int)AssetType.Animation)
+                    animID = item.AssetID;
+                else
+                    animID = UUID.Zero;
             }
+
+            if (animID == UUID.Zero)
+                target.Animator.RemoveAnimation(animation);
+            else
+                target.Animator.RemoveAnimation(animID, true);
         }
 
         //Texture draw functions
@@ -1683,7 +1656,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     case ScriptBaseClass.PARCEL_DETAILS_OWNER:
                         if(es != null && !es.IsEstateManagerOrOwner(m_host.OwnerID))
                         {
-                            OSSLError("script owner does not have permission to modify the parcel owner");
+                            OSSLShoutError("script owner does not have permission to modify the parcel owner");
                         }
                         else
                         {
@@ -1718,7 +1691,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                                         if (groupsModule != null)
                                             member = groupsModule.GetMembershipData(uuid, newLand.OwnerID);
                                         if (member == null)
-                                            OSSLError(string.Format("land owner is not member of the new group for parcel"));
+                                            OSSLShoutError(string.Format("land owner is not member of the new group for parcel"));
                                         else
                                         {
                                             changed = true;
@@ -1730,14 +1703,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         }
                         else
                         {
-                            OSSLError("script owner does not have permission to modify the parcel group");
+                            OSSLShoutError("script owner does not have permission to modify the parcel group");
                         }
                         break;
 
                     case ScriptBaseClass.PARCEL_DETAILS_CLAIMDATE:
                         if(es != null && !es.IsEstateManagerOrOwner(m_host.OwnerID))
                         {
-                            OSSLError("script owner does not have permission to modify the parcel CLAIM DATE");
+                            OSSLShoutError("script owner does not have permission to modify the parcel CLAIM DATE");
                         }
                         else
                         {
@@ -1810,26 +1783,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     });
                 }
             }
-        }
-
-        public double osList2Double(LSL_Types.list src, int index)
-        {
-            // There is really no double type in OSSL. C# and other
-            // have one, but the current implementation of LSL_Types.list
-            // is not allowed to contain any.
-            // This really should be removed.
-            //
-            CheckThreatLevel();
-
-            if (index < 0)
-            {
-                index = src.Length + index;
-            }
-            if (index >= src.Length)
-            {
-                return 0.0;
-            }
-            return Convert.ToDouble(src.Data[index]);
         }
 
         public void osSetParcelMediaURL(string url)
@@ -3360,13 +3313,39 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             CheckThreatLevel(ThreatLevel.High, "osNpcPlayAnimation");
 
             INPCModule module = World.RequestModuleInterface<INPCModule>();
-            if (module != null)
-            {
-                UUID npcID = new UUID(npc.m_string);
+            if (module == null)
+                return;
 
-                if (module.CheckPermissions(npcID, m_host.OwnerID))
-                    AvatarPlayAnimation(npcID.ToString(), animation);
+            UUID npcID;
+            if(!UUID.TryParse(npc.m_string, out npcID))
+                return;
+
+            ScenePresence target = World.GetScenePresence(npcID);
+            if (target == null || !target.IsNPC)
+                return;
+
+            if (!module.CheckPermissions(npcID, m_host.OwnerID))
+                return;
+
+            UUID animID = UUID.Zero;
+            m_host.TaskInventory.LockItemsForRead(true);
+            foreach (KeyValuePair<UUID, TaskInventoryItem> inv in m_host.TaskInventory)
+            {
+               if (inv.Value.Type == (int)AssetType.Animation)
+               {
+                   if (inv.Value.Name == animation)
+                   {
+                       animID = inv.Value.AssetID;
+                       break;
+                   }
+               }
             }
+            m_host.TaskInventory.LockItemsForRead(false);
+
+            if (animID == UUID.Zero)
+                target.Animator.AddAnimation(animation, m_host.UUID);
+            else
+                target.Animator.AddAnimation(animID, m_host.UUID);
         }
 
         public void osNpcStopAnimation(LSL_Key npc, string animation)
@@ -3374,13 +3353,34 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             CheckThreatLevel(ThreatLevel.High, "osNpcStopAnimation");
 
             INPCModule module = World.RequestModuleInterface<INPCModule>();
-            if (module != null)
-            {
-                UUID npcID = new UUID(npc.m_string);
+            if (module == null)
+                return;
 
-                if (module.CheckPermissions(npcID, m_host.OwnerID))
-                    AvatarStopAnimation(npcID.ToString(), animation);
+            UUID npcID;
+            if (!UUID.TryParse(npc.m_string, out npcID))
+                return;
+
+            ScenePresence target = World.GetScenePresence(npcID);
+            if (target == null || !target.IsNPC)
+                return;
+
+            if (!module.CheckPermissions(npcID, m_host.OwnerID))
+                return;
+
+            UUID animID;
+            if (!UUID.TryParse(animation, out animID))
+            {
+                TaskInventoryItem item = m_host.Inventory.GetInventoryItem(animation);
+                if (item != null && item.Type == (int)AssetType.Animation)
+                    animID = item.AssetID;
+                else
+                    animID = UUID.Zero;
             }
+
+            if (animID == UUID.Zero)
+                target.Animator.RemoveAnimation(animation);
+            else
+                target.Animator.RemoveAnimation(animID, true);
         }
 
         public void osNpcWhisper(LSL_Key npc, int channel, string message)
@@ -5102,5 +5102,326 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 return m_host.ParentGroup.GetLinkNumPart(linkType);
             }
         }
+
+        // funtions to retrieve user country
+        // adaptation cm* counter parts from Avination Careminster extensions API
+        // included in Avination code contribution
+        // for now users country can only be set directly on DB
+
+        public LSL_String osDetectedCountry(LSL_Integer number)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel(ThreatLevel.Moderate, "osDetectedCountry");
+
+            if (World.UserAccountService == null)
+                return String.Empty;
+            DetectParams detectedParams = m_ScriptEngine.GetDetectParams(m_item.ItemID, number);
+            if (detectedParams == null)
+                return String.Empty;
+            UUID key = detectedParams.Key;
+            if (key == UUID.Zero)
+                return String.Empty;
+            UserAccount account = World.UserAccountService.GetUserAccount(World.RegionInfo.ScopeID, key);
+            return account.UserCountry;
+        }
+
+        public LSL_String osGetAgentCountry(LSL_Key id)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel(ThreatLevel.Moderate, "osGetAgentCountry");
+
+            if (World.UserAccountService == null)
+                return String.Empty;
+
+            UUID key;
+            if (!UUID.TryParse(id, out key))
+                return String.Empty;
+            if (key == UUID.Zero)
+                return String.Empty;
+
+            //if owner is not god, target must be in region, or nearby regions
+            if (!World.Permissions.IsGod(m_host.OwnerID))
+            {
+                ScenePresence sp = World.GetScenePresence(key);
+                if(sp == null)
+                    return String.Empty;
+            }
+
+            UserAccount account = World.UserAccountService.GetUserAccount(World.RegionInfo.ScopeID, key);
+            return account.UserCountry;
+        }
+
+        public LSL_String osStringSubString(LSL_String src, LSL_Integer offset)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return "";
+            if (offset >= src.Length)
+                return "";
+            if (offset <= 0)
+                return src;
+            return ((string)src).Substring(offset);
+        }
+
+        public LSL_String osStringSubString(LSL_String src, LSL_Integer offset, LSL_Integer length)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return "";
+            if (length <= 0 || offset >= src.Length)
+                return "";
+            if (offset <= 0)
+            {
+                if(length == src.Length)
+                    return src;
+                offset = 0;
+            }
+            if (length > src.Length - offset)
+                length = src.Length - offset;
+            return ((string)src).Substring(offset, length);
+        }
+
+        public LSL_Integer osStringStartsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return 0;
+            if (string.IsNullOrEmpty(value))
+                return 0;
+
+            bool ign = (ignorecase != 0);
+            return ((string)src).StartsWith(value, ignorecase, Culture.GetDefaultCurrentCulture()) ? 1 : 0;
+        }
+
+        public LSL_Integer osStringEndsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return 0;
+            if (string.IsNullOrEmpty(value))
+                return 0;
+
+            bool ign = (ignorecase != 0);
+            return ((string)src).EndsWith(value, ign, Culture.GetDefaultCurrentCulture()) ? 1 : 0;
+        }
+
+        public LSL_Integer osStringIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return -1;
+            if (string.IsNullOrEmpty(value))
+                return -1;
+
+            if (ignorecase == 0)
+                return ((string)src).IndexOf(value, StringComparison.CurrentCulture);
+            return ((string)src).IndexOf(value, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public LSL_Integer osStringIndexOf(LSL_String src, LSL_String value,
+            LSL_Integer offset, LSL_Integer count, LSL_Integer ignorecase)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return -1;
+            if (string.IsNullOrEmpty(value))
+                return -1;
+            if (offset >= src.Length)
+                return -1;
+            else if (offset < 0)
+                offset = 0;
+
+            if (count <= 0)
+                count = src.Length - offset;
+            else if (count > src.Length - offset)
+                count = src.Length - offset;
+
+            if (ignorecase == 0)
+                return ((string)src).IndexOf(value, offset, count, StringComparison.CurrentCulture);
+            return ((string)src).IndexOf(value, offset, count, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return -1;
+            if (string.IsNullOrEmpty(value))
+                return -1;
+
+            if (ignorecase == 0)
+                return ((string)src).LastIndexOf(value, StringComparison.CurrentCulture);
+            return ((string)src).LastIndexOf(value, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value,
+            LSL_Integer offset, LSL_Integer count, LSL_Integer ignorecase)
+        {
+            m_host.AddScriptLPS(1);
+            CheckThreatLevel();
+
+            if (string.IsNullOrEmpty(src))
+                return -1;
+            if (string.IsNullOrEmpty(value))
+                return -1;
+            if (offset >= src.Length)
+                return -1;
+            if (offset < 0)
+                offset = 0;
+
+            if (count <= 0)
+                count = src.Length - offset;
+            else if (count > src.Length - offset)
+                count = src.Length - offset;
+
+            if (ignorecase == 0)
+                return ((string)src).LastIndexOf(value, offset, count, StringComparison.CurrentCulture);
+            return ((string)src).LastIndexOf(value, offset, count, StringComparison.CurrentCultureIgnoreCase);
+        }
+
+        public LSL_String osStringRemove(LSL_String src, LSL_Integer offset, LSL_Integer count)
+        {
+            if (string.IsNullOrEmpty(src))
+                return "";
+            if (offset >= src.Length)
+                return "";
+            if (offset < 0)
+                offset = 0;
+
+            if (count <= 0)
+                count = src.Length - offset;
+            else if (count > src.Length - offset)
+                count = src.Length - offset;
+
+            if (count >= src.Length)
+                return "";
+
+
+            return ((string)src).Remove(offset, count);
+        }
+
+        public LSL_String osStringReplace(LSL_String src, LSL_String oldvalue, LSL_String newvalue)
+        {
+            if (string.IsNullOrEmpty(src))
+                return "";
+            if (string.IsNullOrEmpty(oldvalue))
+                return "";
+            if (string.IsNullOrEmpty(newvalue))
+                newvalue = null;
+
+            return ((string)src).Replace(oldvalue, newvalue);
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b)
+        {
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+            return 1;
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b, LSL_Float margin)
+        {
+            double e = Math.Abs(margin);
+            if (a > b + e || a < b - e)
+                return 0;
+            return 1;
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Vector va, LSL_Vector vb)
+        {
+            double a = va.x;
+            double b = vb.x;
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+            a = va.y;
+            b = vb.y;
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+            a = va.z;
+            b = vb.z;
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+
+            return 1;
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Vector va, LSL_Vector vb, LSL_Float margin)
+        {
+            double e = Math.Abs(margin);
+            double a = va.x;
+            double b = vb.x;
+            if (a > b + e || a < b - e)
+                return 0;
+            a = va.y;
+            b = vb.y;
+            if (a > b + e || a < b - e)
+                return 0;
+            a = va.z;
+            b = vb.z;
+            if (a > b + e || a < b - e)
+                return 0;
+
+            return 1;
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Rotation ra, LSL_Rotation rb)
+        {
+            double a = ra.x;
+            double b = rb.x;
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+            a = ra.y;
+            b = rb.y;
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+            a = ra.z;
+            b = rb.z;
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+            a = ra.s;
+            b = rb.s;
+            if (a > b + 1.0e-6 || a < b - 1.0e-6)
+                return 0;
+
+            return 1;
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Rotation ra, LSL_Rotation rb, LSL_Float margin)
+        {
+            double e = Math.Abs(margin);
+            double a = ra.x;
+            double b = rb.x;
+            if (a > b + e || a < b - e)
+                return 0;
+            a = ra.y;
+            b = rb.y;
+            if (a > b + e || a < b - e)
+                return 0;
+            a = ra.z;
+            b = rb.z;
+            if (a > b + e || a < b - e)
+                return 0;
+            a = ra.s;
+            b = rb.s;
+            if (a > b + e || a < b - e)
+                return 0;
+
+            return 1;
+        }
+
     }
 }
