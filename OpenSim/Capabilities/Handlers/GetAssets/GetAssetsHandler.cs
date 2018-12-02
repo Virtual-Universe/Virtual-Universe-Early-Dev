@@ -151,6 +151,11 @@ namespace OpenSim.Capabilities.Handlers
                 return responsedata;
             }
 
+            responsedata["content_type"] = asset.Metadata.ContentType;
+            responsedata["bin_response_data"] = asset.Data;
+            responsedata["int_bytes"] = asset.Data.Length;
+            responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.OK;
+
             string range = String.Empty;
 
             if (((Hashtable)request["headers"])["range"] != null)
@@ -161,15 +166,15 @@ namespace OpenSim.Capabilities.Handlers
             {
                 range = (string)((Hashtable)request["headers"])["Range"];
             }
-
-            responsedata["content_type"] = asset.Metadata.ContentType;
+            else
+            {
+                // FUll asset
+                return responsedata;
+            }
 
             if (String.IsNullOrEmpty(range))
             {
-                // full asset
-                responsedata["bin_response_data"] = asset.Data;
-                responsedata["int_bytes"] = asset.Data.Length;
-                responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.OK;
+                // Full asset
                 return responsedata;
             }
 
@@ -178,8 +183,11 @@ namespace OpenSim.Capabilities.Handlers
 
             if (Util.TryParseHttpRange(range, out start, out end))
             {
-                // Before clamping start make sure we can satisfy it in order to avoid
-                // sending back the last byte instead of an error status
+                /// <summary>
+                ///     Before clamping start, lets make sure we can
+                ///     satisfy it in order to avoid sending back the
+                ///     last byte instead of an error status
+                /// </summary>
                 if (start >= asset.Data.Length)
                 {
                     responsedata["str_response_string"] = "This range doesnt exist.";
@@ -202,18 +210,12 @@ namespace OpenSim.Capabilities.Handlers
                 headers["Content-Range"] = String.Format("bytes {0}-{1}/{2}", start, end, asset.Data.Length);
                 responsedata["headers"] = headers;
                 responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.PartialContent;
-
-                byte[] d = new byte[len];
-                Array.Copy(asset.Data, start, d, 0, len);
-                responsedata["bin_response_data"] = d;
+                responsedata["bin_start"] = start;
                 responsedata["int_bytes"] = len;
                 return responsedata;
             }
 
-            m_log.Warn("[Get Assets]: Failed to parse a range, sending full asset: " + assetStr);
-            responsedata["bin_response_data"] = asset.Data;
-            responsedata["int_bytes"] = asset.Data.Length;
-            responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.OK;
+            m_log.Warn("[Get Asset]: Failed to parse a range, sending full asset: " + assetStr);
             return responsedata;
         }
     }
