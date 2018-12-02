@@ -113,9 +113,6 @@ namespace OpenSim.Capabilities.Handlers
                 return responsedata;
             }
 
-            Hashtable headers = new Hashtable();
-            responsedata["headers"] = headers;
-
             string range = String.Empty;
 
             if (((Hashtable)request["headers"])["range"] != null)
@@ -127,11 +124,12 @@ namespace OpenSim.Capabilities.Handlers
                 range = (string)((Hashtable)request["headers"])["Range"];
             }
 
+            responsedata["content_type"] = "application/vnd.ll.mesh";
+
             if (String.IsNullOrEmpty(range))
             {
                 // full mesh
                 responsedata["str_response_string"] = Convert.ToBase64String(mesh.Data);
-                responsedata["content_type"] = "application/vnd.ll.mesh";
                 responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.OK;
                 return responsedata;
             }
@@ -139,7 +137,7 @@ namespace OpenSim.Capabilities.Handlers
             // range request
             int start, end;
 
-            if (TryParseRange(range, out start, out end))
+            if (Util.TryParseHttpRange(range, out start, out end))
             {
                 // Before clamping start make sure we can satisfy it in order to avoid
                 // sending back the last byte instead of an error status
@@ -153,8 +151,10 @@ namespace OpenSim.Capabilities.Handlers
                 start = Utils.Clamp(start, 0, end);
                 int len = end - start + 1;
 
-                responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.PartialContent;
+                Hashtable headers = new Hashtable();
                 headers["Content-Range"] = String.Format("bytes {0}-{1}/{2}", start, end, mesh.Data.Length);
+                responsedata["headers"] = headers;
+                responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.PartialContent;
 
                 byte[] d = new byte[len];
                 Array.Copy(mesh.Data, start, d, 0, len);
@@ -165,28 +165,8 @@ namespace OpenSim.Capabilities.Handlers
 
             m_log.Warn("[Get Mesh]: Failed to parse a range from GetMesh request, sending full asset: " + (string)request["uri"]);
             responsedata["str_response_string"] = Convert.ToBase64String(mesh.Data);
-            responsedata["content_type"] = "application/vnd.ll.mesh";
             responsedata["int_response_code"] = (int)System.Net.HttpStatusCode.OK;
             return responsedata;
-        }
-
-        private bool TryParseRange(string header, out int start, out int end)
-        {
-            if (header.StartsWith("bytes="))
-            {
-                string[] rangeValues = header.Substring(6).Split('-');
-
-                if (rangeValues.Length == 2)
-                {
-                    if (Int32.TryParse(rangeValues[0], out start) && Int32.TryParse(rangeValues[1], out end))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            start = end = 0;
-            return false;
         }
     }
 }

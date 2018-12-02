@@ -131,16 +131,6 @@ namespace OpenSim.Capabilities.Handlers
             return ret;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="httpRequest"></param>
-        /// <param name="httpResponse"></param>
-        /// <param name="textureID"></param>
-        /// <param name="format"></param>
-        /// <returns>
-        ///     False for "caller try another codec"; true otherwise
-        /// </returns>
         private bool FetchTexture(Hashtable request, Hashtable response, UUID textureID, string format)
         {
             AssetBase texture;
@@ -179,7 +169,7 @@ namespace OpenSim.Capabilities.Handlers
 
                         if (newTexture.Data.Length == 0)
                         {
-                            // Caller try another codec please
+                            // Caller please try another codec
                             return false;
                         }
 
@@ -223,7 +213,7 @@ namespace OpenSim.Capabilities.Handlers
                 // Range request
                 int start, end;
 
-                if (TryParseRange(range, out start, out end))
+                if (Util.TryParseHttpRange(range, out start, out end))
                 {
                     // Before clamping start make sure we can satisfy it in order to avoid
                     // sending back the last byte instead of an error status
@@ -231,31 +221,24 @@ namespace OpenSim.Capabilities.Handlers
                     {
                         /// <summary>
                         ///     Stricly speaking, as per http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html,
-                        ///     we should be sending back Requested Range Not Satisfiable 
-                        ///     (416) here.  However, it appears that at least recent implementations
-                        ///     of the Linden Lab viewer (3.2.1 and 3.3.4 and probably earlier), 
-                        ///     a viewer that has previously received a very small texture  may
-                        ///     attempt to fetch bytes from the server past the range of data that 
-                        ///     it received originally.  Whether this happens appears to depend on whether
-                        ///     the viewer's estimation of how large a request it needs to make for certain
-                        ///     discard levels (http://wiki.secondlife.com/wiki/Image_System#Discard_Level_and_Mip_Mapping), 
-                        ///     chiefly discard level 2. 
-                        ///     
-                        ///     If this estimate is greater than the total texture size, 
-                        ///     returning a RequestedRangeNotSatisfiable here will cause the viewer to 
-                        ///     treat the texture as bad and never display the full resolution
-                        ///     However, if we return PartialContent (or OK) instead, the viewer
-                        ///     will display that resolution.
+                        ///     we should be sending back Requested Range Not Satisfiable (416) here.
+                        ///     However, it appears that at least recent implementations of the Linden Lab viewer
+                        ///     (3.2.1 and 3.3.4 and probably earlier), a viewer that has previously
+                        ///     received a very small texture  may attempt to fetch bytes from the server past the
+                        ///     range of data that it received originally.  Whether this happens appears to depend on whether
+                        ///     the viewer's estimation of how large a request it needs to make for certain discard levels
+                        ///     (http://wiki.secondlife.com/wiki/Image_System#Discard_Level_and_Mip_Mapping), chiefly discard
+                        ///     level 2.  If this estimate is greater than the total texture size, returning a 
+                        ///     RequestedRangeNotSatisfiable here will cause the viewer to treat the texture 
+                        ///     as bad and never display the full resolution However, if we return PartialContent
+                        ///     (or OK) instead, the viewer will display that resolution.
                         /// </summary>
-
-                        // viewers don't seem to handle RequestedRangeNotSatisfiable 
-                        // and keep retrying with same parameters
                         response["int_response_code"] = (int)System.Net.HttpStatusCode.NotFound;
                     }
                     else
                     {
-                        // Handle the case where no second range value was given. 
-                        // This is equivalent to requesting the rest of the entity.
+                        // Handle the case where no second range value was given.  This is equivalent to requesting
+                        // the rest of the entity.
                         if (end == -1)
                         {
                             end = int.MaxValue;
@@ -300,60 +283,6 @@ namespace OpenSim.Capabilities.Handlers
             }
         }
 
-        /// <summary>
-        ///     Parse a range header.
-        /// </summary>
-        /// <remarks>
-        ///     As per http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html,
-        ///     this obeys range headers with two values (e.g. 533-4165) and 
-        ///     no second value (e.g. 533-).
-        /// 
-        ///     Where there is no value, -1 is returned.
-        ///     FIXME: Need to cover the case where only a second value is specified
-        ///     (e.g. -4165), probably by returning -1 for start.
-        /// </remarks>
-        /// <returns></returns>
-        /// <param name='header'></param>
-        /// <param name='start'>
-        ///     Start of the range.  Undefined if this was not a number.
-        /// </param>
-        /// <param name='end'>
-        ///     End of the range.  Will be -1 if no end specified.
-        ///     Undefined if there was a raw string but this was not a number.
-        /// </param>
-        private bool TryParseRange(string header, out int start, out int end)
-        {
-            start = end = 0;
-
-            if (header.StartsWith("bytes="))
-            {
-                string[] rangeValues = header.Substring(6).Split('-');
-
-                if (rangeValues.Length == 2)
-                {
-                    if (!Int32.TryParse(rangeValues[0], out start))
-                    {
-                        return false;
-                    }
-
-                    string rawEnd = rangeValues[1];
-
-                    if (rawEnd == "")
-                    {
-                        end = -1;
-                        return true;
-                    }
-                    else if (Int32.TryParse(rawEnd, out end))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            start = end = 0;
-            return false;
-        }
-
         private byte[] ConvertTextureData(AssetBase texture, string format)
         {
             m_log.DebugFormat("[Get Texture]: Converting texture {0} to {1}", texture.ID, format);
@@ -384,6 +313,7 @@ namespace OpenSim.Capabilities.Handlers
                         if (codec != null)
                         {
                             mTexture.Save(imgstream, codec, myEncoderParameters);
+
                             // Write the stream to a byte array for output
                             data = imgstream.ToArray();
                         }
