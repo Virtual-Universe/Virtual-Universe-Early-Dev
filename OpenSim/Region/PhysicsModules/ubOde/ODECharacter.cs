@@ -973,10 +973,10 @@ namespace OpenSim.Region.PhysicsModule.ubOde
 
             if(collider != IntPtr.Zero)
             {
+                m_parent_scene.actor_name_map.Remove(collider);
                 SafeNativeMethods.SpaceDestroy(collider);
                 collider = IntPtr.Zero;
             }
-
         }
 
         //in place 2D rotation around Z assuming rot is normalised and is a rotation around Z
