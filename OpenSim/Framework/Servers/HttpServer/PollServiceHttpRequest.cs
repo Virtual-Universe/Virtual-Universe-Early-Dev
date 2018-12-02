@@ -47,10 +47,9 @@ namespace OpenSim.Framework.Servers.HttpServer
         public readonly IHttpRequest Request;
         public readonly int RequestTime;
         public readonly UUID RequestID;
-        public int  contextHash;
+        public int contextHash;
 
-        public PollServiceHttpRequest(
-            PollServiceEventArgs pPollServiceArgs, IHttpClientContext pHttpContext, IHttpRequest pRequest)
+        public PollServiceHttpRequest(PollServiceEventArgs pPollServiceArgs, IHttpClientContext pHttpContext, IHttpRequest pRequest)
         {
             PollServiceArgs = pPollServiceArgs;
             HttpContext = pHttpContext;
@@ -73,7 +72,6 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             response.SendChunked = false;
             response.ContentLength64 = buffer.Length;
-            response.ContentEncoding = Encoding.UTF8;
 
             try
             {
@@ -104,7 +102,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         {
             int responsecode;
             string responseString = String.Empty;
-            byte[] responseData = null;
+            byte[] responseBytes = null;
             string contentType;
 
             if (responsedata == null)
@@ -122,7 +120,7 @@ namespace OpenSim.Framework.Servers.HttpServer
 
                     if (responsedata["bin_response_data"] != null)
                     {
-                        responseData = (byte[])responsedata["bin_response_data"];
+                        responseBytes = (byte[])responsedata["bin_response_data"];
                     }
                     else
                     {
@@ -167,22 +165,18 @@ namespace OpenSim.Framework.Servers.HttpServer
                 response.AddHeader("Access-Control-Allow-Origin", (string)responsedata["access_control_allow_origin"]);
             }
 
-            // Even though only one other part of the entire 
-            // code uses HTTPHandlers, we shouldn't expect this
-            // and should check for NullReferenceExceptions
             if (string.IsNullOrEmpty(contentType))
             {
                 contentType = "text/html";
             }
 
-            // The client ignores anything but 200 here
-            // for web login, so ensure that this is 200 for that
+            // The client ignores anything but 200 here for 
+            // web login, so ensure that this is 200 for that
             response.StatusCode = responsecode;
 
             if (responsecode == (int)OSHttpStatusCode.RedirectMovedPermanently)
             {
                 response.RedirectLocation = (string)responsedata["str_redirect_location"];
-                response.StatusCode = responsecode;
             }
 
             response.AddHeader("Content-Type", contentType);
@@ -199,9 +193,9 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             byte[] buffer;
 
-            if (responseData != null)
+            if (responseBytes != null)
             {
-                buffer = responseData;
+                buffer = responseBytes;
             }
             else
             {
@@ -219,8 +213,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                     buffer = Convert.FromBase64String(responseString);
                 }
 
-                response.SendChunked = false;
-                response.ContentLength64 = buffer.Length;
                 response.ContentEncoding = Encoding.UTF8;
             }
 
