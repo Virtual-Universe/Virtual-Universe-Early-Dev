@@ -47,7 +47,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         public readonly IHttpRequest Request;
         public readonly int RequestTime;
         public readonly UUID RequestID;
-        public int contextHash;
+        public int  contextHash;
 
         public PollServiceHttpRequest(PollServiceEventArgs pPollServiceArgs, IHttpClientContext pHttpContext, IHttpRequest pRequest)
         {
@@ -66,7 +66,13 @@ namespace OpenSim.Framework.Servers.HttpServer
                 Request.Body.Dispose();
             }
 
-            OSHttpResponse response = new OSHttpResponse(new HttpResponse(HttpContext, Request), HttpContext);
+            OSHttpResponse response = new OSHttpResponse(new HttpResponse(HttpContext, Request));
+
+            if (responsedata == null)
+            {
+                SendNoContentError(response);
+                return;
+            }
 
             int responsecode = 200;
             string responseString = String.Empty;
@@ -75,56 +81,44 @@ namespace OpenSim.Framework.Servers.HttpServer
             int rangeStart = 0;
             int rangeLen = -1;
 
-            if (responsedata == null)
+            try
             {
-                responsecode = 500;
-                responseString = "No response could be obtained";
-                contentType = "text/plain";
-                responsedata = new Hashtable();
+                if (responsedata["int_response_code"] != null)
+                {
+                    responsecode = (int)responsedata["int_response_code"];
+                }
+
+                if (responsedata["bin_response_data"] != null)
+                {
+                    buffer = (byte[])responsedata["bin_response_data"];
+                    responsedata["bin_response_data"] = null;
+
+                    if (responsedata["bin_start"] != null)
+                    {
+                        rangeStart = (int)responsedata["bin_start"];
+                    }
+
+                    if (responsedata["int_bytes"] != null)
+                    {
+                        rangeLen = (int)responsedata["int_bytes"];
+                    }
+                }
+                else
+                {
+                    responseString = (string)responsedata["str_response_string"];
+                }
+
+                contentType = (string)responsedata["content_type"];
+
+                if (responseString == null)
+                {
+                    responseString = String.Empty;
+                }
             }
-            else
+            catch
             {
-                try
-                {
-                    if (responsedata["int_response_code"] != null)
-                    {
-                        responsecode = (int)responsedata["int_response_code"];
-                    }
-
-                    if (responsedata["bin_response_data"] != null)
-                    {
-                        buffer = (byte[])responsedata["bin_response_data"];
-                        responsedata["bin_response_data"] = null;
-
-                        if (responsedata["bin_start"] != null)
-                        {
-                            rangeStart = (int)responsedata["bin_start"];
-                        }
-
-                        if (responsedata["int_bytes"] != null)
-                        {
-                            rangeLen = (int)responsedata["int_bytes"];
-                        }
-                    }
-                    else
-                    {
-                        responseString = (string)responsedata["str_response_string"];
-                    }
-
-                    contentType = (string)responsedata["content_type"];
-
-                    if (responseString == null)
-                    {
-                        responseString = String.Empty;
-                    }
-                }
-                catch
-                {
-                    responsecode = 500;
-                    responseString = "No response could be obtained";
-                    contentType = "text/plain";
-                    responsedata = new Hashtable();
-                }
+                SendNoContentError(response);
+                return;
             }
 
             if (responsedata.ContainsKey("error_status_text"))
@@ -139,11 +133,12 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             if (responsedata.ContainsKey("keepalive"))
             {
-                bool keepalive = (bool)responsedata["keepalive"];
-                response.KeepAlive = keepalive;
+                response.KeepAlive = (bool)responsedata["keepalive"];
             }
 
-            // Cross-Origin Resource Sharing with simple requests
+            /// <summary>
+            ///     Crossing-Origin Resource Sharing with simple requests
+            /// </summary>
             if (responsedata.ContainsKey("access_control_allow_origin"))
             {
                 response.AddHeader("Access-Control-Allow-Origin", (string)responsedata["access_control_allow_origin"]);
@@ -175,7 +170,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
             }
 
-            if (buffer == null)
+            if(buffer == null)
             {
                 if (!(contentType.Contains("image")
                     || contentType.Contains("x-shockwave-flash")
@@ -208,30 +203,36 @@ namespace OpenSim.Framework.Servers.HttpServer
                 rangeLen = buffer.Length - rangeStart;
             }
 
-            response.SendChunked = false;
             response.ContentLength64 = rangeLen;
 
             try
             {
                 if (rangeLen > 0)
                 {
-                    response.OutputStream.Write(buffer, rangeStart, rangeLen);
+                    response.RawBufferStart = rangeStart;
+                    response.RawBufferLen = rangeLen;
+                    response.RawBuffer = buffer;
                 }
 
                 buffer = null;
 
                 response.Send();
+                response.RawBuffer = null;
             }
             catch (Exception ex)
             {
                 if (ex is System.Net.Sockets.SocketException)
                 {
-                    // only mute connection reset by peer so we are not totally blind for now
+                    /// <summary>
+                    ///     Only mute connections reset by peer
+                    ///     so we are not totally blind for now
+                    /// </summary>
                     if (((System.Net.Sockets.SocketException)ex).SocketErrorCode != System.Net.Sockets.SocketError.ConnectionReset)
                     {
                         m_log.Warn("[Poll Service Worker Thread]: Error ", ex);
                     }
                 }
+
                 else
                 {
                     m_log.Warn("[Poll Service Worker Thread]: Error ", ex);
@@ -241,9 +242,26 @@ namespace OpenSim.Framework.Servers.HttpServer
             PollServiceArgs.RequestsHandled++;
         }
 
+        internal void SendNoContentError(OSHttpResponse response)
+        {
+            response.ContentLength64 = 0;
+            response.ContentEncoding = Encoding.UTF8;
+            response.StatusCode = 500;
+
+            try
+            {
+                response.Send();
+            }
+            catch
+            {
+            }
+
+            return;
+        }
+
         internal void DoHTTPstop()
         {
-            OSHttpResponse response = new OSHttpResponse(new HttpResponse(HttpContext, Request), HttpContext);
+            OSHttpResponse response = new OSHttpResponse(new HttpResponse(HttpContext, Request));
 
             if (Request.Body.CanRead)
             {
@@ -253,7 +271,6 @@ namespace OpenSim.Framework.Servers.HttpServer
             response.ContentLength64 = 0;
             response.ContentEncoding = Encoding.UTF8;
             response.KeepAlive = false;
-            response.SendChunked = false;
             response.StatusCode = 503;
 
             try

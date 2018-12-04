@@ -35,8 +35,8 @@ using HttpServer;
 namespace OpenSim.Framework.Servers.HttpServer
 {
     /// <summary>
-    ///     OSHttpResponse is the OpenSim representation of an HTTP
-    ///     response.
+    ///     OSHttpResponse is the Virtual Universe representation of an HTTP
+    /// response.
     /// </summary>
     public class OSHttpResponse : IOSHttpResponse
     {
@@ -144,6 +144,24 @@ namespace OpenSim.Framework.Servers.HttpServer
             get { return _httpResponse.Body; }
         }
 
+        public byte[] RawBuffer
+        {
+            get { return _httpResponse.RawBuffer; }
+            set { _httpResponse.RawBuffer = value; }
+        }
+
+        public int RawBufferStart
+        {
+            get { return _httpResponse.RawBufferStart; }
+            set { _httpResponse.RawBufferStart = value; }
+        }
+
+        public int RawBufferLen
+        {
+            get { return _httpResponse.RawBufferLen; }
+            set { _httpResponse.RawBufferLen = value; }
+        }
+
         /// <summary>
         ///     Set a redirct location.
         /// </summary>
@@ -180,7 +198,6 @@ namespace OpenSim.Framework.Servers.HttpServer
         }
 
         protected IHttpResponse _httpResponse;
-        private IHttpClientContext _httpClientContext;
 
         public OSHttpResponse() {}
 
@@ -193,27 +210,28 @@ namespace OpenSim.Framework.Servers.HttpServer
         ///     Instantiate an OSHttpResponse object from an OSHttpRequest
         /// object.
         /// </summary
-        /// <param name="req">Incoming OSHttpRequest to which we are
-        /// replying</param>
+        /// <param name="req">
+        ///     Incoming OSHttpRequest to which we are replying
+        /// </param>
         public OSHttpResponse(OSHttpRequest req)
         {
             _httpResponse = new HttpResponse(req.IHttpClientContext, req.IHttpRequest);
-            _httpClientContext = req.IHttpClientContext;
         }
 
-        public OSHttpResponse(HttpResponse resp, IHttpClientContext clientContext)
+        public OSHttpResponse(HttpResponse resp)
         {
             _httpResponse = resp;
-            _httpClientContext = clientContext;
         }
 
         /// <summary>
         ///     Add a header field and content to the response.
         /// </summary>
-        /// <param name="key">string containing the header field
-        /// name</param>
-        /// <param name="value">string containing the header field
-        /// value</param>
+        /// <param name="key">
+        ///     string containing the header field name
+        /// </param>
+        /// <param name="value">
+        ///     string containing the header field value
+        /// </param>
         public void AddHeader(string key, string value)
         {
             _httpResponse.AddHeader(key, value);
@@ -224,15 +242,8 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </summary>
         public void Send()
         {
+            _httpResponse.Chunked = false;
             _httpResponse.Send();
-        }
-
-        public void FreeContext()
-        {
-            if (_httpClientContext != null)
-            {
-                _httpClientContext.Close();
-            }
         }
     }
 }

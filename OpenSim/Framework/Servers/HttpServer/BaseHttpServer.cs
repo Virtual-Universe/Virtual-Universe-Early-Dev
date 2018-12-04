@@ -31,6 +31,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
@@ -39,7 +40,6 @@ using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Reflection;
-using System.Globalization;
 using System.Text;
 using System.Threading;
 using System.Xml;
@@ -73,8 +73,10 @@ namespace OpenSim.Framework.Servers.HttpServer
 
         /// <summary>
         ///     Gets or sets the debug level.
-        ///     See MainServer.DebugLevel
         /// </summary>
+        /// <remark>
+        ///     See MainServer.DebugLevel.
+        /// </remark>
         public int DebugLevel { get; set; }
 
         /// <summary>
@@ -99,9 +101,11 @@ namespace OpenSim.Framework.Servers.HttpServer
         protected Dictionary<string, JsonRPCMethod> jsonRpcHandlers = new Dictionary<string, JsonRPCMethod>();
         protected Dictionary<string, bool> m_rpcHandlersKeepAlive = new Dictionary<string, bool>();
 
-        // Moving away from the monolithic and going to /registered/
+        /// <summary>
+        ///     Moving away from the monolithic
+        ///     and going to /registered/
+        /// </summary>
         protected DefaultLLSDMethod m_defaultLlsdHandler = null;
-
         protected Dictionary<string, LLSDMethod> m_llsdHandlers = new Dictionary<string, LLSDMethod>();
         protected Dictionary<string, IRequestHandler> m_streamHandlers = new Dictionary<string, IRequestHandler>();
         protected Dictionary<string, GenericHTTPMethod> m_HTTPHandlers = new Dictionary<string, GenericHTTPMethod>();
@@ -206,7 +210,9 @@ namespace OpenSim.Framework.Servers.HttpServer
                                     m_certIPs.Add(ia.ToString());
                                 }
                             }
-                            catch { }
+                            catch
+                            {
+                            }
                         }
                     }
                 }
@@ -312,7 +318,7 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             if (indx2 != -1)
             {
-                // THere can only be one
+                // There can only be one
                 return false;
             }
 
@@ -378,7 +384,6 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             return false;
         }
-
         /// <summary>
         ///     Add a stream handler to the http server.
         ///     If the handler already exists, then nothing happens.
@@ -518,7 +523,10 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
             }
 
-            //must already have a handler for that path so return false
+            /// <summary>
+            ///     Must already have a handler for that path so
+            ///     we return false
+            /// </summary>
             return false;
         }
 
@@ -667,13 +675,16 @@ namespace OpenSim.Framework.Servers.HttpServer
                 return;
             }
 
-            OSHttpResponse resp = new OSHttpResponse(new HttpResponse(context, request), context);
+            OSHttpResponse resp = new OSHttpResponse(new HttpResponse(context, request));
 
             HandleRequest(req, resp);
 
-            // !!!HACK ALERT!!!
-            // There seems to be a bug in the underlying http code that makes subsequent requests
-            // come up with trash in Accept headers. Until that gets fixed, we're cleaning them up here.
+            /// <summary>
+            ///     There appears to be a bug in the underlying
+            ///     http code that makes subsequent requests 
+            ///     come up with trash in Accept Headers.  Until that
+            ///     gets fixed, we are cleaning them up here.
+            /// </summary>
             if (request.AcceptTypes != null)
             {
                 for (int i = 0; i < request.AcceptTypes.Length; i++)
@@ -724,8 +735,6 @@ namespace OpenSim.Framework.Servers.HttpServer
             {
                 Culture.SetCurrentCulture();
 
-                response.SendChunked = false;
-
                 string path = request.RawUrl;
                 string handlerKey = GetHandlerKey(request.HttpMethod, path);
                 byte[] buffer = null;
@@ -737,9 +746,11 @@ namespace OpenSim.Framework.Servers.HttpServer
                         LogIncomingToStreamHandler(request, requestHandler);
                     }
 
-                    // Lets do this defaulting before in case handler 
-                    // has varying content types.
-                    response.ContentType = requestHandler.ContentType; 
+                    /// <summary>
+                    ///     Lets do this defaulting before in case handler
+                    ///     has varying content type
+                    /// </summary>
+                    response.ContentType = requestHandler.ContentType;
 
                     if (requestHandler is IStreamedRequestHandler)
                     {
@@ -761,7 +772,6 @@ namespace OpenSim.Framework.Servers.HttpServer
 
                         Hashtable keysvals = new Hashtable();
                         Hashtable headervals = new Hashtable();
-
                         string[] querystringkeys = request.QueryString.AllKeys;
                         string[] rHeaders = request.Headers.AllKeys;
 
@@ -894,25 +904,37 @@ namespace OpenSim.Framework.Servers.HttpServer
                         response.ContentLength64 = buffer.LongLength;
                     }
 
-                    response.OutputStream.Write(buffer, 0, buffer.Length);
+                    response.RawBufferStart = 0;
+                    response.RawBufferLen = buffer.Length;
+                    response.RawBuffer = buffer;
                 }
 
-                // Do not include the time taken to actually send the response to the caller in the measurement
-                // time.  This is to avoid logging when it's the client that is slow to process rather than the
-                // server
+                /// <summary>
+                ///     Do not include the time taken to actually send the
+                ///     response to the collar in the measurement time.
+                ///     
+                ///     This is to avoid logging when it is the client that is slow
+                ///     to process rather then the server.
+                /// </summary>
                 requestEndTick = Environment.TickCount;
 
+                buffer = null;
                 response.Send();
+                response.RawBuffer = null;
             }
             catch (SocketException e)
             {
-                // At least on linux, it appears that if the client makes a request without requiring the response,
-                // an unconnected socket exception is thrown when we close the response output stream.  There's no
-                // obvious way to tell if the client didn't require the response, so instead we'll catch and ignore
-                // the exception instead.
-                //
-                // An alternative may be to turn off all response write exceptions on the HttpListener, but let's go
-                // with the minimum first
+                /// <summary>
+                ///     At least on linux, it would appear that the client makes
+                ///     a request without requiring the response, an unconnected socket
+                ///     socket exception is thrown when we close the response output stream.
+                ///     
+                ///     There is no obvious way to tell if the client did not require the
+                ///     response, so instead we will catch and ignore the exception instead.
+                ///     
+                ///     An alternative may be to turn off all response write exceptions on
+                ///     the HttpListener, but lets go with the minimum first.
+                /// </summary>
                 m_log.Warn(String.Format("[Base Http Server]: HandleRequest threw {0}.\nNOTE: this may be spurious on Linux ", e.Message), e);
             }
             catch (IOException e)
@@ -940,8 +962,10 @@ namespace OpenSim.Framework.Servers.HttpServer
                     request.InputStream.Close();
                 }
 
-                // Every month or so this will wrap and give bad numbers, not really a problem
-                // since its just for reporting
+                /// <summary>
+                ///     Every month or so this will wrap and give bad numbers,
+                ///     it is not really a problem since it is just for reporting.
+                /// </summary>
                 int tickdiff = requestEndTick - requestStartTick;
 
                 if (tickdiff > 3000 && (requestHandler == null || requestHandler.Name == null || requestHandler.Name != "GetTexture"))
@@ -1022,8 +1046,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         {
             if (request.ContentType == "application/octet-stream")
             {
-                // Never log these as they are
-                // just binary data
+                // Never log these as they are just binary data
                 return;
             }
 
@@ -1082,8 +1105,7 @@ namespace OpenSim.Framework.Servers.HttpServer
             {
                 foreach (string pattern in m_streamHandlers.Keys)
                 {
-                    if ((handlerKey == pattern)
-                        || (handlerKey.StartsWith(pattern) && (HANDLER_SEPARATORS.IndexOf(handlerKey[pattern.Length]) >= 0)))
+                    if ((handlerKey == pattern) || (handlerKey.StartsWith(pattern) && (HANDLER_SEPARATORS.IndexOf(handlerKey[pattern.Length]) >= 0)))
                     {
                         if (String.IsNullOrEmpty(bestMatch) || pattern.Length > bestMatch.Length)
                         {
@@ -1113,8 +1135,7 @@ namespace OpenSim.Framework.Servers.HttpServer
             {
                 foreach (string pattern in m_pollHandlers.Keys)
                 {
-                    if ((handlerKey == pattern)
-                        || (handlerKey.StartsWith(pattern) && (HANDLER_SEPARATORS.IndexOf(handlerKey[pattern.Length]) >= 0)))
+                    if ((handlerKey == pattern) || (handlerKey.StartsWith(pattern) && (HANDLER_SEPARATORS.IndexOf(handlerKey[pattern.Length]) >= 0)))
                     {
                         if (String.IsNullOrEmpty(bestMatch) || pattern.Length > bestMatch.Length)
                         {
@@ -1137,15 +1158,14 @@ namespace OpenSim.Framework.Servers.HttpServer
         }
 
         private bool TryGetHTTPHandler(string handlerKey, out GenericHTTPMethod HTTPHandler)
-        { 
+        {
             string bestMatch = null;
 
             lock (m_HTTPHandlers)
             {
                 foreach (string pattern in m_HTTPHandlers.Keys)
                 {
-                    if ((handlerKey == pattern)
-                        || (handlerKey.StartsWith(pattern) && (HANDLER_SEPARATORS.IndexOf(handlerKey[pattern.Length]) >= 0)))
+                    if ((handlerKey == pattern) || (handlerKey.StartsWith(pattern) && (HANDLER_SEPARATORS.IndexOf(handlerKey[pattern.Length]) >= 0)))
                     {
                         if (String.IsNullOrEmpty(bestMatch) || pattern.Length > bestMatch.Length)
                         {
@@ -1168,11 +1188,8 @@ namespace OpenSim.Framework.Servers.HttpServer
         }
 
         /// <summary>
-        ///     Try all the registered xmlrpc handlers
-        ///     when an xmlrpc request is received.
-        ///     
-        ///     Sends back an XMLRPC unknown request response
-        ///     if no handler is registered for the requested method.
+        ///     Try all the registered xmlrpc handlers when an xmlrpc request is received.
+        ///     Sends back an XMLRPC unknown request response if no handler is registered for the requested method.
         /// </summary>
         /// <param name="request"></param>
         /// <param name="response"></param>
@@ -1341,9 +1358,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                         xmlRpcResponse = new XmlRpcResponse();
 
                         // Code set in accordance with http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php
-                        xmlRpcResponse.SetFault(
-                            XmlRpcErrorCodes.SERVER_ERROR_METHOD,
-                            String.Format("Requested method [{0}] not found", methodName));
+                        xmlRpcResponse.SetFault(XmlRpcErrorCodes.SERVER_ERROR_METHOD, String.Format("Requested method [{0}] not found", methodName));
                     }
 
                     response.ContentType = "text/xml";
@@ -1373,14 +1388,12 @@ namespace OpenSim.Framework.Servers.HttpServer
                     response.KeepAlive = false;
 
                     m_log.ErrorFormat(
-                        "[Base Http Server]: Handler not found for http request {0} {1}",
-                        request.HttpMethod, request.Url.PathAndQuery);
+                        "[Base Http Server]: Handler not found for http request {0} {1}", request.HttpMethod, request.Url.PathAndQuery);
                 }
             }
 
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
 
-            response.SendChunked = false;
             response.ContentLength64 = buffer.Length;
             response.ContentEncoding = Encoding.UTF8;
 
@@ -1500,9 +1513,10 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             if (requestBody.Length == 0)
             {
-                // Get request
+                // Get Request
                 requestBody = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><llsd><map><key>request</key><string>get</string></map></llsd>";
             }
+
             try
             {
                 llsdRequest = OSDParser.Deserialize(requestBody);
@@ -1525,7 +1539,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                 {
                     // we didn't find a registered llsd handler to service this request
                     // check if we have a default llsd handler
-
                     if (m_defaultLlsdHandler != null)
                     {
                         // LibOMV path
@@ -1559,7 +1572,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                 buffer = BuildLLSDResponse(request, response, llsdResponse);
             }
 
-            response.SendChunked = false;
             response.ContentLength64 = buffer.Length;
             response.ContentEncoding = Encoding.UTF8;
             response.KeepAlive = true;
@@ -1611,9 +1623,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// <summary>
         ///     Checks if we have an Exact path in the LLSD handlers for the path provided
         /// </summary>
-        /// <param name="path">
-        ///     URI of the request
-        /// </param>
+        /// <param name="path">URI of the request</param>
         /// <returns>
         ///     true if we have one, false if not
         /// </returns>
@@ -1672,12 +1682,9 @@ namespace OpenSim.Framework.Servers.HttpServer
         }
 
         /// <summary>
-        ///     Checks if we have an Exact path in
-        ///     the HTTP handlers for the path provided
+        ///     Checks if we have an Exact path in the HTTP handlers for the path provided
         /// </summary>
-        /// <param name="path">
-        ///     URI of the request
-        /// </param>
+        /// <param name="path">URI of the request</param>
         /// <returns>
         ///     true if we have one, false if not
         /// </returns>
@@ -1733,13 +1740,6 @@ namespace OpenSim.Framework.Servers.HttpServer
         private bool TryGetLLSDHandler(string path, out LLSDMethod llsdHandler)
         {
             llsdHandler = null;
-
-            /// <summary>
-            ///     Pull out the first part of the path
-            ///     splitting the path by '/' means we'll get the following return..
-            ///     {0}/{1}/{2}
-            ///     where {0} isn't something we really control 100%
-            /// </summary>
             string[] pathbase = path.Split('/');
             string searchquery = "/";
 
@@ -1758,17 +1758,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
             }
 
-            /// <summary>
-            ///     while the matching algorithm below doesn't
-            ///     require it, we're expecting a query in the form
-            ///
-            ///         [] = optional
-            ///         /resource/UUID/action[/action]
-            ///
-            ///     now try to get the closest match to the reigstered path
-            ///     at least for OGP, registered path would probably
-            ///     only consist of the /resource/
-            /// </summary>
             string bestMatch = null;
 
             lock (m_llsdHandlers)
@@ -1779,8 +1768,8 @@ namespace OpenSim.Framework.Servers.HttpServer
                     {
                         if (String.IsNullOrEmpty(bestMatch) || searchquery.Length > bestMatch.Length)
                         {
-                            // You have to specifically register for '/' 
-                            // and to get it, you must specificaly request it
+                            // You have to specifically register for '/' and to get it, 
+                            // you must specificaly request it
                             if (pattern == "/" && searchquery == "/" || pattern != "/")
                             {
                                 bestMatch = pattern;
@@ -1826,6 +1815,19 @@ namespace OpenSim.Framework.Servers.HttpServer
 
         private byte[] HandleContentVerbs(OSHttpRequest request, OSHttpResponse response)
         { 
+            /// <summary>
+            ///     This is a test.  There's a workable alternative..  as this way sucks.
+            ///     We'd like to put this into a text file parhaps that's easily editable.
+            ///
+            ///     For this test to work, I used the following secondlife.exe parameters
+            ///     "C:\Program Files\SecondLifeWindLight\SecondLifeWindLight.exe" -settings settings_windlight.xml -channel "Second Life WindLight"  -set SystemLanguage en-us -loginpage http://10.1.1.2:8002/?show_login_form=TRUE -loginuri http://10.1.1.2:8002 -user 10.1.1.2
+            ///
+            ///     Even after all that, there's still an error, but it's a start.
+            ///
+            ///     I depend on show_login_form being in the secondlife.exe parameters to figure out
+            ///     to display the form, or process it.
+            ///     a better way would be nifty.
+            /// </summary>
             byte[] buffer;
 
             Stream requestStream = request.InputStream;
@@ -1910,7 +1912,6 @@ namespace OpenSim.Framework.Servers.HttpServer
         private bool TryGetHTTPHandlerPathBased(string path, out GenericHTTPMethod httpHandler)
         {
             httpHandler = null;
-
             string[] pathbase = path.Split('/');
             string searchquery = "/";
 
@@ -2033,16 +2034,20 @@ namespace OpenSim.Framework.Servers.HttpServer
                 response.AddHeader("Access-Control-Allow-Origin", (string)responsedata["access_control_allow_origin"]);
             }
 
-            // Even though only one other part of the entire 
-            // code uses HTTPHandlers, we shouldn't expect this
-            // and should check for NullReferenceExceptions
+            /// <summary>
+            ///     Even though only one other part of the entire 
+            ///     code uses HTTPHandlers, we shouldn't expect this
+            ///     and should check for NullReferenceExceptions
+            /// </summary>
             if (string.IsNullOrEmpty(contentType))
             {
                 contentType = "text/html";
             }
 
-            // The client ignores anything but 200 here for web login,
-            // so ensure that this is 200 for that
+            /// <summary>
+            ///     The client ignores anything but 200 here for web login,
+            ///     so ensure that this is 200 for that
+            /// </summary>
             response.StatusCode = responsecode;
 
             if (responsecode == (int)OSHttpStatusCode.RedirectMovedPermanently)
@@ -2062,7 +2067,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                     response.AddHeader(header, headerdata[header].ToString());
                 }
             }
-
 
             byte[] buffer;
 
@@ -2086,7 +2090,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                     buffer = Convert.FromBase64String(responseString);
                 }
 
-                response.SendChunked = false;
                 response.ContentLength64 = buffer.Length;
                 response.ContentEncoding = Encoding.UTF8;
             }
@@ -2103,7 +2106,6 @@ namespace OpenSim.Framework.Servers.HttpServer
             string responseString = GetHTTP404(host);
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
 
-            response.SendChunked = false;
             response.ContentLength64 = buffer.Length;
             response.ContentEncoding = Encoding.UTF8;
 
@@ -2119,7 +2121,6 @@ namespace OpenSim.Framework.Servers.HttpServer
             string responseString = GetHTTP500();
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
 
-            response.SendChunked = false;
             response.ContentLength64 = buffer.Length;
             response.ContentEncoding = Encoding.UTF8;
 
@@ -2166,7 +2167,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
 
                 m_httpListener2.RequestReceived += OnRequest;
-
                 m_httpListener2.Start(64);
 
                 lock (m_generalLock)
@@ -2189,8 +2189,11 @@ namespace OpenSim.Framework.Servers.HttpServer
                 m_log.Error("[Base Http Server]: Error - " + e.Message);
                 m_log.Error("[Base Http Server]: Tip: Do you have permission to listen on port " + m_port + "?");
 
-                // We want this exception to halt the entire server since in current configurations we aren't too
-                // useful without inbound HTTP.
+                /// <summary>
+                ///     We want this exception to halt the entire 
+                ///     server since in current configurations we aren't too
+                ///     useful without inbound HTTP.
+                /// </summary>
                 throw e;
             }
 
@@ -2216,6 +2219,7 @@ namespace OpenSim.Framework.Servers.HttpServer
             {
                 case SocketError.NotSocket:
                     NotSocketErrors++;
+
                     break;
             }
         }
@@ -2271,8 +2275,8 @@ namespace OpenSim.Framework.Servers.HttpServer
         {
             if (path == null)
             {
-                // Caps module is not loaded, it will
-                // try to remove handler where path = null
+                // Caps module is not loaded
+                // tries to remove handler where path is null
                 return;
             }
 
@@ -2396,6 +2400,12 @@ namespace OpenSim.Framework.Servers.HttpServer
 
     /// <summary>
     ///     Relays HttpServer log messages to our own logging mechanism.
+    /// 
+    ///     To use this you must uncomment the switch section
+    ///
+    ///     You may also be able to get additional trace information
+    ///     from HttpServer if you uncomment the UseTraceLogs
+    ///     property in StartHttp() for the HttpListener
     /// </summary>
     public class HttpServerLogWriter : ILogWriter
     {
