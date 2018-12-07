@@ -1485,7 +1485,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
             }
 
-            response.KeepAlive = true;
             string responseData = string.Empty;
 
             responseData = jsonRpcResponse.Serialize();
@@ -1496,6 +1495,8 @@ namespace OpenSim.Framework.Servers.HttpServer
 
         private byte[] HandleLLSDRequests(OSHttpRequest request, OSHttpResponse response)
         {
+            bool notfound = false;
+
             Stream requestStream = request.InputStream;
 
             string requestBody;
@@ -1546,14 +1547,22 @@ namespace OpenSim.Framework.Servers.HttpServer
                     }
                     else
                     {
-                        // Oops, no handler for this..   give em the failed message
-                        llsdResponse = GenerateNoLLSDHandlerResponse();
+                        // There is currently no handler for this
+                        // so give the failed message.
+                        notfound = true;
                     }
                 }
             }
             else
             {
-                llsdResponse = GenerateNoLLSDHandlerResponse();
+                notfound = true;
+            }
+
+            if (notfound)
+            {
+                response.StatusCode = (int)HttpStatusCode.NotFound;
+                response.StatusDescription = "Not found";
+                return null;
             }
 
             byte[] buffer = new byte[0];
@@ -1574,8 +1583,6 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             response.ContentLength64 = buffer.Length;
             response.ContentEncoding = Encoding.UTF8;
-            response.KeepAlive = true;
-
             return buffer;
         }
 
@@ -1789,15 +1796,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                     return true;
                 }
             }
-        }
-
-        private OSDMap GenerateNoLLSDHandlerResponse()
-        {
-            OSDMap map = new OSDMap();
-            map["reason"] = OSD.FromString("LLSDRequest");
-            map["message"] = OSD.FromString("No handler registered for LLSD Requests");
-            map["login"] = OSD.FromString("false");
-            return map;
         }
 
         public byte[] HandleHTTPRequest(OSHttpRequest request, OSHttpResponse response)
