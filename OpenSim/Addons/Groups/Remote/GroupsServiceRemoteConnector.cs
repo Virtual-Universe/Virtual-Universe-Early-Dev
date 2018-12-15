@@ -1,43 +1,43 @@
-﻿/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+﻿/*
+ * Copyright (c) Contributors, http://opensimulator.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the OpenSimulator Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using log4net;
-using Nini.Config;
-using OpenMetaverse;
+
 using OpenSim.Framework;
 using OpenSim.Framework.ServiceAuth;
 using OpenSim.Server.Base;
+
+using OpenMetaverse;
+using log4net;
+using Nini.Config;
 
 namespace OpenSim.Groups
 {
@@ -53,20 +53,14 @@ namespace OpenSim.Groups
         {
             IConfig groupsConfig = config.Configs["Groups"];
             string url = groupsConfig.GetString("GroupsServerURI", string.Empty);
-
             if (!Uri.IsWellFormedUriString(url, UriKind.Absolute))
-            {
                 throw new Exception(string.Format("[Groups.RemoteConnector]: Malformed groups server URL {0}. Fix it or disable the Groups feature.", url));
-            }
 
             m_ServerURI = url;
-
             if (!m_ServerURI.EndsWith("/"))
-            {
                 m_ServerURI += "/";
-            }
 
-            // This is from BaseServiceConnector
+            /// This is from BaseServiceConnector
             string authType = Util.GetConfigVarFromSections<string>(config, "AuthType", new string[] { "Network", "Groups" }, "None");
 
             switch (authType)
@@ -75,12 +69,14 @@ namespace OpenSim.Groups
                     m_Auth = new BasicHttpAuthentication(config, "Groups");
                     break;
             }
+            ///
 
             m_log.DebugFormat("[Groups.RemoteConnector]: Groups server at {0}, authentication {1}",
                 m_ServerURI, (m_Auth == null ? "None" : m_Auth.GetType().ToString()));
         }
 
-        public ExtendedGroupRecord CreateGroup(string RequestingAgentID, string name, string charter, bool showInList, UUID insigniaID, int membershipFee, bool openEnrollment, bool allowPublish, bool maturePublish, UUID founderID, out string reason)
+        public ExtendedGroupRecord CreateGroup(string RequestingAgentID, string name, string charter, bool showInList, UUID insigniaID, int membershipFee, bool openEnrollment,
+                                bool allowPublish, bool maturePublish, UUID founderID, out string reason)
         {
             reason = string.Empty;
 
@@ -101,9 +97,7 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("PUTGROUP", sendData);
 
             if (ret == null)
-            {
                 return null;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
             {
@@ -112,6 +106,7 @@ namespace OpenSim.Groups
             }
 
             return GroupsDataUtils.GroupRecord((Dictionary<string, object>)ret["RESULT"]);
+
         }
 
         public ExtendedGroupRecord UpdateGroup(string RequestingAgentID, UUID groupID, string charter, bool showInList, UUID insigniaID, int membershipFee, bool openEnrollment, bool allowPublish, bool maturePublish)
@@ -132,9 +127,7 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("PUTGROUP", sendData);
 
             if (ret == null || (ret != null && (!ret.ContainsKey("RESULT") || ret["RESULT"].ToString() == "NULL")))
-            {
                 return null;
-            }
 
             return GroupsDataUtils.GroupRecord((Dictionary<string, object>)ret["RESULT"]);
         }
@@ -142,30 +135,20 @@ namespace OpenSim.Groups
         public ExtendedGroupRecord GetGroupRecord(string RequestingAgentID, UUID GroupID, string GroupName)
         {
             if (GroupID == UUID.Zero && (GroupName == null || (GroupName != null && GroupName == string.Empty)))
-            {
                 return null;
-            }
 
             Dictionary<string, object> sendData = new Dictionary<string, object>();
-
             if (GroupID != UUID.Zero)
-            {
                 sendData["GroupID"] = GroupID.ToString();
-            }
-
             if (!string.IsNullOrEmpty(GroupName))
-            {
                 sendData["Name"] = GroupsDataUtils.Sanitize(GroupName);
-            }
 
             sendData["RequestingAgentID"] = RequestingAgentID;
 
             Dictionary<string, object> ret = MakeRequest("GETGROUP", sendData);
 
             if (ret == null || (ret != null && (!ret.ContainsKey("RESULT") || ret["RESULT"].ToString() == "NULL")))
-            {
                 return null;
-            }
 
             return GroupsDataUtils.GroupRecord((Dictionary<string, object>)ret["RESULT"]);
         }
@@ -173,11 +156,8 @@ namespace OpenSim.Groups
         public List<DirGroupsReplyData> FindGroups(string RequestingAgentID, string query)
         {
             List<DirGroupsReplyData> hits = new List<DirGroupsReplyData>();
-
             if (string.IsNullOrEmpty(query))
-            {
                 return hits;
-            }
 
             Dictionary<string, object> sendData = new Dictionary<string, object>();
             sendData["Query"] = query;
@@ -186,19 +166,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("FINDGROUPS", sendData);
 
             if (ret == null)
-            {
                 return hits;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return hits;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return hits;
-            }
 
             foreach (object v in ((Dictionary<string, object>)ret["RESULT"]).Values)
             {
@@ -213,7 +187,7 @@ namespace OpenSim.Groups
         {
             reason = string.Empty;
 
-            Dictionary<string, object> sendData = new Dictionary<string, object>();
+            Dictionary<string, object> sendData = new Dictionary<string,object>();
             sendData["AgentID"] = AgentID;
             sendData["GroupID"] = GroupID.ToString();
             sendData["RoleID"] = RoleID.ToString();
@@ -222,14 +196,10 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("ADDAGENTTOGROUP", sendData);
 
             if (ret == null)
-            {
                 return null;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return null;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
             {
@@ -238,6 +208,7 @@ namespace OpenSim.Groups
             }
 
             return GroupsDataUtils.GroupMembershipData((Dictionary<string, object>)ret["RESULT"]);
+
         }
 
         public void RemoveAgentFromGroup(string RequestingAgentID, string AgentID, UUID GroupID)
@@ -253,29 +224,19 @@ namespace OpenSim.Groups
         {
             Dictionary<string, object> sendData = new Dictionary<string, object>();
             sendData["AgentID"] = AgentID;
-
             if (GroupID != UUID.Zero)
-            {
                 sendData["GroupID"] = GroupID.ToString();
-            }
-
             sendData["RequestingAgentID"] = RequestingAgentID;
             Dictionary<string, object> ret = MakeRequest("GETMEMBERSHIP", sendData);
 
             if (ret == null)
-            {
                 return null;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return null;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return null;
-            }
 
             return GroupsDataUtils.GroupMembershipData((Dictionary<string, object>)ret["RESULT"]);
         }
@@ -291,19 +252,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("GETMEMBERSHIP", sendData);
 
             if (ret == null)
-            {
                 return memberships;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return memberships;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return memberships;
-            }
 
             foreach (object v in ((Dictionary<string, object>)ret["RESULT"]).Values)
             {
@@ -325,19 +280,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("GETGROUPMEMBERS", sendData);
 
             if (ret == null)
-            {
                 return members;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return members;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return members;
-            }
 
             foreach (object v in ((Dictionary<string, object>)ret["RESULT"]).Values)
             {
@@ -364,14 +313,10 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("PUTROLE", sendData);
 
             if (ret == null)
-            {
                 return false;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return false;
-            }
 
             if (ret["RESULT"].ToString().ToLower() != "true")
             {
@@ -396,19 +341,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("PUTROLE", sendData);
 
             if (ret == null)
-            {
                 return false;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return false;
-            }
 
             if (ret["RESULT"].ToString().ToLower() != "true")
-            {
                 return false;
-            }
 
             return true;
         }
@@ -432,19 +371,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("GETGROUPROLES", sendData);
 
             if (ret == null)
-            {
                 return roles;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return roles;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return roles;
-            }
 
             foreach (object v in ((Dictionary<string, object>)ret["RESULT"]).Values)
             {
@@ -465,19 +398,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("GETROLEMEMBERS", sendData);
 
             if (ret == null)
-            {
                 return rmembers;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return rmembers;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return rmembers;
-            }
 
             foreach (object v in ((Dictionary<string, object>)ret["RESULT"]).Values)
             {
@@ -500,19 +427,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("AGENTROLE", sendData);
 
             if (ret == null)
-            {
                 return false;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return false;
-            }
 
             if (ret["RESULT"].ToString().ToLower() != "true")
-            {
                 return false;
-            }
 
             return true;
         }
@@ -529,19 +450,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("AGENTROLE", sendData);
 
             if (ret == null)
-            {
                 return false;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return false;
-            }
 
             if (ret["RESULT"].ToString().ToLower() != "true")
-            {
                 return false;
-            }
 
             return true;
         }
@@ -557,19 +472,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("GETAGENTROLES", sendData);
 
             if (ret == null)
-            {
                 return roles;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return roles;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return roles;
-            }
 
             foreach (object v in ((Dictionary<string, object>)ret["RESULT"]).Values)
             {
@@ -591,19 +500,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("SETACTIVE", sendData);
 
             if (ret == null)
-            {
                 return null;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return null;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return null;
-            }
 
             return GroupsDataUtils.GroupMembershipData((Dictionary<string, object>)ret["RESULT"]);
         }
@@ -644,19 +547,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("INVITE", sendData);
 
             if (ret == null)
-            {
                 return false;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return false;
-            }
 
             if (ret["RESULT"].ToString().ToLower() != "true") // it may return "NULL"
-            {
                 return false;
-            }
 
             return true;
         }
@@ -671,19 +568,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("INVITE", sendData);
 
             if (ret == null)
-            {
                 return null;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return null;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return null;
-            }
 
             return GroupsDataUtils.GroupInviteInfo((Dictionary<string, object>)ret["RESULT"]);
         }
@@ -708,7 +599,6 @@ namespace OpenSim.Groups
             sendData["Subject"] = GroupsDataUtils.Sanitize(subject);
             sendData["Message"] = GroupsDataUtils.Sanitize(message);
             sendData["HasAttachment"] = hasAttachment.ToString();
-
             if (hasAttachment)
             {
                 sendData["AttachmentType"] = attType.ToString();
@@ -716,25 +606,18 @@ namespace OpenSim.Groups
                 sendData["AttachmentItemID"] = attItemID.ToString();
                 sendData["AttachmentOwnerID"] = attOwnerID;
             }
-
             sendData["RequestingAgentID"] = RequestingAgentID;
 
             Dictionary<string, object> ret = MakeRequest("ADDNOTICE", sendData);
 
             if (ret == null)
-            {
                 return false;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return false;
-            }
 
             if (ret["RESULT"].ToString().ToLower() != "true")
-            {
                 return false;
-            }
 
             return true;
         }
@@ -748,19 +631,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("GETNOTICES", sendData);
 
             if (ret == null)
-            {
                 return null;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return null;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return null;
-            }
 
             return GroupsDataUtils.GroupNoticeInfo((Dictionary<string, object>)ret["RESULT"]);
         }
@@ -775,19 +652,13 @@ namespace OpenSim.Groups
             Dictionary<string, object> ret = MakeRequest("GETNOTICES", sendData);
 
             if (ret == null)
-            {
                 return notices;
-            }
 
             if (!ret.ContainsKey("RESULT"))
-            {
                 return notices;
-            }
 
             if (ret["RESULT"].ToString() == "NULL")
-            {
                 return notices;
-            }
 
             foreach (object v in ((Dictionary<string, object>)ret["RESULT"]).Values)
             {
@@ -805,18 +676,17 @@ namespace OpenSim.Groups
             sendData["METHOD"] = method;
 
             string reply = string.Empty;
-
             lock (m_Lock)
-            {
-                reply = SynchronousRestFormsRequester.MakeRequest("POST", m_ServerURI + "groups", ServerUtils.BuildQueryString(sendData), m_Auth);
-            }
+                reply = SynchronousRestFormsRequester.MakeRequest("POST",
+                         m_ServerURI + "groups",
+                         ServerUtils.BuildQueryString(sendData),
+                         m_Auth);
 
             if (reply == string.Empty)
-            {
                 return null;
-            }
 
-            Dictionary<string, object> replyData = ServerUtils.ParseXmlResponse(reply);
+            Dictionary<string, object> replyData = ServerUtils.ParseXmlResponse(
+                    reply);
 
             return replyData;
         }
