@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModule.BasicPhysics.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModule.BasicPhysics.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/BasicPhysics/obj/Debug/OpenSim.Region.PhysicsModule.BasicPhysics.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/BasicPhysics/obj/Debug/OpenSim.Region.PhysicsModule.BasicPhysics.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/BasicPhysics/obj/Debug/OpenSim.Region.PhysicsModule.BasicPhysics.pdb

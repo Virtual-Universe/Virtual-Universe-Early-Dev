@@ -35,7 +35,7 @@ namespace OpenSim.Region.PhysicsModule.ODE
             get { return null; }
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             IConfig config = source.Configs["Startup"];
             if (config != null)
@@ -62,7 +62,7 @@ namespace OpenSim.Region.PhysicsModule.ODE
                 Util.LoadArchSpecificWindowsDll("ode.dll");
 
             // Initializing ODE only when a scene is created allows alternative ODE plugins to co-habit (according to
-            // http://opensimulator.org/mantis/view.php?id=2750).
+            // https://virtual-planets.org/mantis/view.php?id=2750).
             SafeNativeMethods.InitODE();
 
             m_scene = new OdeScene(scene, m_config, Name, Version);

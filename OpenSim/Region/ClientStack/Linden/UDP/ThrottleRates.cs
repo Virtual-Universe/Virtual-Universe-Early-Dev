@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -66,9 +66,6 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// </summary>
         public Int64 MinimumAdaptiveThrottleRate;
 
-        /// <summary>Amount of the texture throttle to steal for the task throttle</summary>
-        public double CannibalizeTextureRate;
-
         public int ClientMaxRate;
         public float BrustTime;
 
@@ -104,12 +101,6 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 //                AdaptiveThrottlesEnabled = throttleConfig.GetBoolean("enable_adaptive_throttles", false);
                 AdaptiveThrottlesEnabled = false;
                 MinimumAdaptiveThrottleRate = throttleConfig.GetInt("adaptive_throttle_min_bps", 32000);
-
-                // http textures do use udp bandwidth setting
-//                CannibalizeTextureRate = (double)throttleConfig.GetFloat("CannibalizeTextureRate", 0.0f);
-//                CannibalizeTextureRate = Util.Clamp<double>(CannibalizeTextureRate,0.0, 0.9);
-                CannibalizeTextureRate = 0f;
-
             }
             catch (Exception) { }
         }

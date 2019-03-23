@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.FreeswitchService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.FreeswitchService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/FreeswitchService/obj/Debug/OpenSim.Services.FreeswitchService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/FreeswitchService/obj/Debug/OpenSim.Services.FreeswitchService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/FreeswitchService/obj/Debug/OpenSim.Services.FreeswitchService.pdb

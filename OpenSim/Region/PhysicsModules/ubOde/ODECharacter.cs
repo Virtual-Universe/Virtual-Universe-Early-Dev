@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -1143,7 +1143,7 @@ namespace OpenSim.Region.PhysicsModule.ubOde
         /// This is the avatar's movement control + PID Controller
         /// </summary>
         /// <param name="timeStep"></param>
-        public void Move(List<OdeCharacter> defects)
+        public void Move()
         {
             if(Body == IntPtr.Zero)
                 return;
@@ -1180,40 +1180,50 @@ namespace OpenSim.Region.PhysicsModule.ubOde
                 _zeroPosition = localpos;
             }
 
-            if(!localpos.IsFinite())
-            {
-                m_log.Warn("[PHYSICS]: Avatar Position is non-finite!");
-                defects.Add(this);
-                // _parent_scene.RemoveCharacter(this);
-
-                // destroy avatar capsule and related ODE data
-                AvatarGeomAndBodyDestroy();
-                return;
-            }
-
             // check outbounds forcing to be in world
             bool fixbody = false;
-            if(localpos.X < 0.0f)
+            float tmp = localpos.X;
+            if ((Single.IsNaN(tmp) || Single.IsInfinity(tmp)))
+            {
+                fixbody = true;
+                localpos.X = 128f;
+            }
+            else if (tmp < 0.0f)
             {
                 fixbody = true;
                 localpos.X = 0.1f;
             }
-            else if(localpos.X > m_parent_scene.WorldExtents.X - 0.1f)
+            else if (tmp > m_parent_scene.WorldExtents.X - 0.1f)
             {
                 fixbody = true;
                 localpos.X = m_parent_scene.WorldExtents.X - 0.1f;
             }
-            if(localpos.Y < 0.0f)
+
+            tmp = localpos.Y;
+            if ((Single.IsNaN(tmp) || Single.IsInfinity(tmp)))
+            {
+                fixbody = true;
+                localpos.X = 128f;
+            }
+            else if (tmp < 0.0f)
             {
                 fixbody = true;
                 localpos.Y = 0.1f;
             }
-            else if(localpos.Y > m_parent_scene.WorldExtents.Y - 0.1)
+            else if(tmp > m_parent_scene.WorldExtents.Y - 0.1)
             {
                 fixbody = true;
                 localpos.Y = m_parent_scene.WorldExtents.Y - 0.1f;
             }
-            if(fixbody)
+
+            tmp = localpos.Z;
+            if ((Single.IsNaN(tmp) || Single.IsInfinity(tmp)))
+            {
+                fixbody = true;
+                localpos.Z = 128f;
+            }
+
+            if (fixbody)
             {
                 m_freemove = false;
                 SafeNativeMethods.BodySetPosition(Body,localpos.X,localpos.Y,localpos.Z);
@@ -1387,7 +1397,7 @@ namespace OpenSim.Region.PhysicsModule.ubOde
                         _zeroFlag = false;
                         fz /= m_PIDHoverTau;
 
-                        float tmp = Math.Abs(fz);
+                        tmp = Math.Abs(fz);
                         if(tmp > 50)
                             fz = 50 * Math.Sign(fz);
                         else if(tmp < 0.1)
@@ -1425,37 +1435,41 @@ namespace OpenSim.Region.PhysicsModule.ubOde
 
             if(!m_freemove)
             {
-
                 //  if velocity is zero, use position control; otherwise, velocity control
-                if(tviszero && m_iscolliding && !m_flying)
+                if(tviszero) 
                 {
-                    //  keep track of where we stopped.  No more slippin' & slidin'
-                    if(!_zeroFlag)
+                    if(m_iscolliding || m_flying)
                     {
-                        _zeroFlag = true;
-                        _zeroPosition = localpos;
-                    }
-                    if(m_pidControllerActive)
-                    {
-                        // We only want to deactivate the PID Controller if we think we want to have our surrogate
-                        // react to the physics scene by moving it's position.
-                        // Avatar to Avatar collisions
-                        // Prim to avatar collisions
+                        //  keep track of where we stopped.  No more slippin' & slidin'
+                        if (!_zeroFlag)
+                        {
+                            _zeroFlag = true;
+                            _zeroPosition = localpos;
+                        }
+                        if(m_pidControllerActive)
+                        {
+                            // We only want to deactivate the PID Controller if we think we want to have our surrogate
+                            // react to the physics scene by moving it's position.
+                            // Avatar to Avatar collisions
+                            // Prim to avatar collisions
 
-                        vec.X = -vel.X * PID_D * 2f + (_zeroPosition.X - localpos.X) * (PID_P * 5);
-                        vec.Y = -vel.Y * PID_D * 2f + (_zeroPosition.Y - localpos.Y) * (PID_P * 5);
-                        if(vel.Z > 0)
-                            vec.Z += -vel.Z * PID_D + (_zeroPosition.Z - localpos.Z) * PID_P;
-                        else
-                            vec.Z += (-vel.Z * PID_D + (_zeroPosition.Z - localpos.Z) * PID_P) * 0.2f;
-                        /*
-                                                if (flying)
-                                                {
-                                                    vec.Z += -vel.Z * PID_D + (_zeroPosition.Z - localpos.Z) * PID_P;
-                                                }
-                        */
+                            vec.X = -vel.X * PID_D * 2f + (_zeroPosition.X - localpos.X) * (PID_P * 5);
+                            vec.Y = -vel.Y * PID_D * 2f + (_zeroPosition.Y - localpos.Y) * (PID_P * 5);
+                            if(vel.Z > 0)
+                                vec.Z += -vel.Z * PID_D + (_zeroPosition.Z - localpos.Z) * PID_P;
+                            else
+                                vec.Z += (-vel.Z * PID_D + (_zeroPosition.Z - localpos.Z) * PID_P) * 0.2f;
+                        }
                     }
-                    //PidStatus = true;
+                    else
+                    {
+                        _zeroFlag = false;
+                        vec.X += (ctz.X - vel.X) * PID_D * 0.833f;
+                        vec.Y += (ctz.Y - vel.Y) * PID_D * 0.833f;
+                        // hack for  breaking on fall
+                        if (ctz.Z == -9999f)
+                            vec.Z += -vel.Z * PID_D - m_parent_scene.gravityz * m_mass;
+                    }
                 }
                 else
                 {
@@ -1529,7 +1543,7 @@ namespace OpenSim.Region.PhysicsModule.ubOde
                             vec.X += (ctz.X - vel.X) * PID_D * 0.833f;
                             vec.Y += (ctz.Y - vel.Y) * PID_D * 0.833f;
                             // hack for  breaking on fall
-                            if(ctz.Z == -9999f)
+                            if (ctz.Z == -9999f)
                                 vec.Z += -vel.Z * PID_D - m_parent_scene.gravityz * m_mass;
                         }
                     }
@@ -1573,20 +1587,10 @@ namespace OpenSim.Region.PhysicsModule.ubOde
 
             if(vec.IsFinite())
             {
-                if(vec.X != 0 || vec.Y !=0 || vec.Z !=0)
+                if((vec.X != 0 || vec.Y !=0 || vec.Z !=0))
                     SafeNativeMethods.BodyAddForce(Body,vec.X,vec.Y,vec.Z);
             }
-            else
-            {
-                m_log.Warn("[PHYSICS]: Got a NaN force vector in Move()");
-                m_log.Warn("[PHYSICS]: Avatar Position is non-finite!");
-                defects.Add(this);
-                // _parent_scene.RemoveCharacter(this);
-                // destroy avatar capsule and related ODE data
-                AvatarGeomAndBodyDestroy();
-                return;
-            }
-
+ 
             // update our local ideia of position velocity and aceleration
             //            _position = localpos;
             _position = localpos;

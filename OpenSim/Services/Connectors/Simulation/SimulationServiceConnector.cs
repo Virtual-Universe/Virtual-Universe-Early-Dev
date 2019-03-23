@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -323,7 +323,7 @@ namespace OpenSim.Services.Connectors.Simulation
 
             try
             {
-                OSDMap result = WebUtil.ServiceOSDRequest(uri, request, "QUERYACCESS", 30000, false, false);
+                OSDMap result = WebUtil.ServiceOSDRequest(uri, request, "QUERYACCESS", 30000, false, false, true);
                 bool success = result["success"].AsBoolean();
                 if (result.ContainsKey("_Result"))
                 {
@@ -359,7 +359,7 @@ namespace OpenSim.Services.Connectors.Simulation
 
                 if (!success || ctx.InboundVersion == 0f || ctx.OutboundVersion == 0f)
                 {
-                    // If we don't check this then OpenSimulator 0.7.3.1 and some period before will never see the
+                    // If we don't check this then Virtual Universe 0.7.3.1 and some period before will never see the
                     // actual failure message
                     if (!result.ContainsKey("_Result"))
                     {

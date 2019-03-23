@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -108,7 +108,7 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
 
         #region INonSharedRegionModule Members
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             // wrap this in a try block so that defaults will work if
             // the config file doesn't specify otherwise.
@@ -144,7 +144,7 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
             m_pending = Queue.Synchronized(m_pendingQ);
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -734,7 +734,7 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
         }
 
         /// These are duplicated from ScriptBaseClass
-        /// http://opensimulator.org/mantis/view.php?id=6106#c21945
+        /// https://virtual-planets.org/mantis/view.php?id=6106#c21945
         #region Constants for the bitfield parameter of osListenRegex
 
         /// <summary>
@@ -912,7 +912,7 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
                 UUID hostID, int channel, string name, UUID id,
                 string message)
         {
-            Initialise(handle, localID, ItemID, hostID, channel, name, id,
+            Initialize(handle, localID, ItemID, hostID, channel, name, id,
                     message, 0);
         }
 
@@ -920,25 +920,25 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
                 UUID hostID, int channel, string name, UUID id,
                 string message, int regexBitfield)
         {
-            Initialise(handle, localID, ItemID, hostID, channel, name, id,
+            Initialize(handle, localID, ItemID, hostID, channel, name, id,
                     message, regexBitfield);
         }
 
         public ListenerInfo(ListenerInfo li, string name, UUID id,
                 string message)
         {
-            Initialise(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
+            Initialize(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
                     li.m_channel, name, id, message, 0);
         }
 
         public ListenerInfo(ListenerInfo li, string name, UUID id,
                 string message, int regexBitfield)
         {
-            Initialise(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
+            Initialize(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
                     li.m_channel, name, id, message, regexBitfield);
         }
 
-        private void Initialise(int handle, uint localID, UUID ItemID,
+        private void Initialize(int handle, uint localID, UUID ItemID,
                 UUID hostID, int channel, string name, UUID id,
                 string message, int regexBitfield)
         {

@@ -1,31 +1,29 @@
-/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Virtual Universe Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections;
@@ -43,12 +41,9 @@ using OpenSim.Services.Interfaces;
 namespace OpenSim.Framework.Capabilities
 {
     /// <summary>
-    ///     Probably not a particularly nice way of allow
-    ///     us to get the scene presence from the scene
-    ///     (chiefly so that we can popup a message on
-    ///     the user's client if the inventory service
-    ///     has permanently failed).  But I didn't want
-    ///     to just pass the whole Scene into CAPS.
+    /// Probably not a particularly nice way of allow us to get the scene presence from the scene (chiefly so that
+    /// we can popup a message on the user's client if the inventory service has permanently failed).  But I didn't want
+    /// to just pass the whole Scene into CAPS.
     /// </summary>
     public delegate IClientAPI GetClientDelegate(UUID agentID);
 
@@ -58,15 +53,15 @@ namespace OpenSim.Framework.Capabilities
         private uint m_httpListenPort;
 
         /// <summary>
-        ///     This is the uuid portion of every CAPS path. 
-        ///     It is used to make capability urls private to the requester.
+        /// This is the uuid portion of every CAPS path.  It is used to make capability urls private to the requester.
         /// </summary>
         private string m_capsObjectPath;
         public string CapsObjectPath { get { return m_capsObjectPath; } }
 
         private CapsHandlers m_capsHandlers;
 
-        private Dictionary<string, PollServiceEventArgs> m_pollServiceHandlers = new Dictionary<string, PollServiceEventArgs>();
+        private Dictionary<string, PollServiceEventArgs> m_pollServiceHandlers
+            = new Dictionary<string, PollServiceEventArgs>();
 
         private Dictionary<string, string> m_externalCapsHandlers = new Dictionary<string, string>();
 
@@ -120,7 +115,19 @@ namespace OpenSim.Framework.Capabilities
             get { return m_externalCapsHandlers; }
         }
 
-        public Caps(IHttpServer httpServer, string httpListen, uint httpPort, string capsPath, UUID agent, string regionName)
+        [Flags]
+        public enum CapsFlags : uint
+        {
+            None = 0,
+            SentSeeds = 1,
+
+            ObjectAnim = 0x10
+        }
+
+        public CapsFlags Flags { get; set; }
+
+        public Caps(IHttpServer httpServer, string httpListen, uint httpPort, string capsPath,
+                    UUID agent, string regionName)
         {
             m_capsObjectPath = capsPath;
             m_httpListener = httpServer;
@@ -138,17 +145,22 @@ namespace OpenSim.Framework.Capabilities
             m_agentID = agent;
             m_capsHandlers = new CapsHandlers(httpServer, httpListen, httpPort);
             m_regionName = regionName;
+            Flags = CapsFlags.None;
             m_capsActive.Reset();
         }
 
         ~Caps()
         {
-            m_capsActive.Dispose();
+            Flags = CapsFlags.None;
+            if (m_capsActive != null)
+            {
+                m_capsActive.Dispose();
+                m_capsActive = null;
+            }
         }
 
         /// <summary>
-        ///     Register a handler.
-        ///     This allows modules to register handlers.
+        /// Register a handler.  This allows modules to register handlers.
         /// </summary>
         /// <param name="capName"></param>
         /// <param name="handler"></param>
@@ -160,13 +172,13 @@ namespace OpenSim.Framework.Capabilities
         public void RegisterPollHandler(string capName, PollServiceEventArgs pollServiceHandler)
         {
             m_pollServiceHandlers.Add(capName, pollServiceHandler);
+
             m_httpListener.AddPollServiceHTTPHandler(pollServiceHandler.Url, pollServiceHandler);
         }
 
         /// <summary>
-        ///     Register an external handler. 
-        ///     The service for this capability is somewhere else
-        ///     given by the URL.
+        /// Register an external handler. The service for this capability is somewhere else
+        /// given by the URL.
         /// </summary>
         /// <param name="capsName"></param>
         /// <param name="url"></param>
@@ -176,7 +188,7 @@ namespace OpenSim.Framework.Capabilities
         }
 
         /// <summary>
-        ///     Remove all CAPS service handlers.
+        /// Remove all CAPS service handlers.
         /// </summary>
         public void DeregisterHandlers()
         {
@@ -189,7 +201,6 @@ namespace OpenSim.Framework.Capabilities
             {
                 m_httpListener.RemovePollServiceHTTPHandler("", handler.Url);
             }
-
             m_pollServiceHandlers.Clear();
         }
 
@@ -204,8 +215,8 @@ namespace OpenSim.Framework.Capabilities
         }
 
         /// <summary>
-        ///     Return an LLSD-serializable Hashtable describing the
-        ///     capabilities and their handler details.
+        /// Return an LLSD-serializable Hashtable describing the
+        /// capabilities and their handler details.
         /// </summary>
         /// <param name="excludeSeed">If true, then exclude the seed cap.</param>
         public Hashtable GetCapsDetails(bool excludeSeed, List<string> requestedCaps)
@@ -217,9 +228,7 @@ namespace OpenSim.Framework.Capabilities
                 foreach (KeyValuePair<string, PollServiceEventArgs> kvp in m_pollServiceHandlers)
                 {
                     if (!requestedCaps.Contains(kvp.Key))
-                    {
                         continue;
-                    }
 
                     string hostName = m_httpListenerHostName;
                     uint port = (MainServer.Instance == null) ? 0 : MainServer.Instance.Port;
@@ -240,13 +249,12 @@ namespace OpenSim.Framework.Capabilities
             foreach (KeyValuePair<string, string> kvp in ExternalCapsHandlers)
             {
                 if (!requestedCaps.Contains(kvp.Key))
-                {
                     continue;
-                }
 
                 caps[kvp.Key] = kvp.Value;
             }
 
+            Flags |= CapsFlags.SentSeeds;
             return caps;
         }
 

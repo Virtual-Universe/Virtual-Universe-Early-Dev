@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -60,7 +60,7 @@ namespace OpenSim.Tests.Common
 
         // Test client specific events - for use by tests to implement some IClientAPI behaviour.
         public event Action<RegionInfo, Vector3, Vector3> OnReceivedMoveAgentIntoRegion;
-        public event Action<ulong, IPEndPoint> OnTestClientInformClientOfNeighbour;
+        public event Action<ulong, IPEndPoint> OnTestClientInformClientOfNeighbor;
         public event TestClientOnSendRegionTeleportDelegate OnTestClientSendRegionTeleport;
 
         public event Action<ISceneEntity, PrimUpdateFlags> OnReceivedEntityUpdate;
@@ -119,7 +119,7 @@ namespace OpenSim.Tests.Common
 
         public event DeRezObject OnDeRezObject;
         public event RezRestoreToWorld OnRezRestoreToWorld;
-        public event Action<IClientAPI> OnRegionHandShakeReply;
+        public event Action<IClientAPI, uint> OnRegionHandShakeReply;
         public event GenericCall1 OnRequestWearables;
         public event Action<IClientAPI, bool> OnCompleteMovementToRegion;
         public event UpdateAgent OnPreAgentUpdate;
@@ -354,6 +354,8 @@ namespace OpenSim.Tests.Common
 
         public ISceneAgent SceneAgent { get; set; }
 
+        public bool SupportObjectAnimations { get; set; }
+
         /// <value>
         /// The last caps seed url that this client was given.
         /// </value>
@@ -441,6 +443,7 @@ namespace OpenSim.Tests.Common
         public virtual int NextAnimationSequenceNumber
         {
             get { return 1; }
+            set { }
         }
 
         public IScene Scene
@@ -573,10 +576,6 @@ namespace OpenSim.Tests.Common
         {
         }
 
-        public virtual void SendStartPingCheck(byte seq)
-        {
-        }
-
         public virtual void SendAvatarPickerReply(AvatarPickerReplyAgentDataArgs AgentData, List<AvatarPickerReplyDataArgs> Data)
         {
         }
@@ -650,14 +649,11 @@ namespace OpenSim.Tests.Common
             return false;
         }
 
-        public virtual void SendLayerData(float[] map)
+        public virtual void SendLayerData()
         {
         }
 
-        public virtual void SendLayerData(int px, int py, float[] map)
-        {
-        }
-        public virtual void SendLayerData(int px, int py, float[] map, bool track)
+        public void SendLayerData(int[] map)
         {
         }
 
@@ -692,10 +688,10 @@ namespace OpenSim.Tests.Common
             return agentData;
         }
 
-        public virtual void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourExternalEndPoint)
+        public virtual void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborExternalEndPoint)
         {
-            if (OnTestClientInformClientOfNeighbour != null)
-                OnTestClientInformClientOfNeighbour(neighbourHandle, neighbourExternalEndPoint);
+            if (OnTestClientInformClientOfNeighbor != null)
+                OnTestClientInformClientOfNeighbor(neighborHandle, neighborExternalEndPoint);
         }
 
         public virtual void SendRegionTeleport(
@@ -880,11 +876,11 @@ namespace OpenSim.Tests.Common
         {
         }
 
-        public virtual void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args)
+        public virtual void SendRegionHandshake()
         {
             if (OnRegionHandShakeReply != null)
             {
-                OnRegionHandShakeReply(this);
+                OnRegionHandShakeReply(this, 0);
             }
         }
 
@@ -1401,5 +1397,8 @@ namespace OpenSim.Tests.Common
         public void SendPartPhysicsProprieties(ISceneEntity entity)
         {
         }
+
+        public void CheckViewerCaps() { }
+
     }
 }

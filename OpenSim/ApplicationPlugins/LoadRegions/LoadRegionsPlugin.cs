@@ -1,38 +1,35 @@
-/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Virtual Universe Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Mono.Addins;
 using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Region.CoreModules.Agent.AssetTransaction;
@@ -41,10 +38,11 @@ using OpenSim.Region.CoreModules.Scripting.DynamicTexture;
 using OpenSim.Region.CoreModules.Scripting.LoadImageURL;
 using OpenSim.Region.CoreModules.Scripting.XMLRPC;
 using OpenSim.Services.Interfaces;
+using Mono.Addins;
 
 namespace OpenSim.ApplicationPlugins.LoadRegions
 {
-    [Extension(Path = "/OpenSim/Startup", Id = "LoadRegions", NodeName = "Plugin")]
+    [Extension(Path="/OpenSim/Startup", Id="LoadRegions", NodeName="Plugin")]
     public class LoadRegionsPlugin : IApplicationPlugin, IRegionCreator
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
@@ -70,42 +68,51 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
 
         protected OpenSimBase m_openSim;
 
-        public void Initialise()
+        public void Initialize()
         {
-            m_log.Error("[Load Regions Plugin]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitialisedException(Name);
+            m_log.Error("[LOAD REGIONS PLUGIN]: " + Name + " cannot be default-initialized!");
+            throw new PluginNotInitializedException(Name);
         }
 
-        public void Initialise(OpenSimBase openSim)
+        public void Initialize(OpenSimBase openSim)
         {
             m_openSim = openSim;
             m_openSim.ApplicationRegistry.RegisterInterface<IRegionCreator>(this);
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
-            IRegionLoader regionLoader;
+            //m_log.Info("[LOADREGIONS]: Load Regions addin being initialized");
 
+            IRegionLoader regionLoader;
             if (m_openSim.ConfigSource.Source.Configs["Startup"].GetString("region_info_source", "filesystem") == "filesystem")
             {
-                m_log.Info("[Load Regions Plugin]: Loading region configurations from filesystem");
+                m_log.Info("[LOAD REGIONS PLUGIN]: Loading region configurations from filesystem");
                 regionLoader = new RegionLoaderFileSystem();
             }
             else
             {
-                m_log.Info("[Load Regions Plugin]: Loading region configurations from web");
+                m_log.Info("[LOAD REGIONS PLUGIN]: Loading region configurations from web");
                 regionLoader = new RegionLoaderWebServer();
             }
 
             regionLoader.SetIniConfigSource(m_openSim.ConfigSource.Source);
             RegionInfo[] regionsToLoad = regionLoader.LoadRegions();
 
-            m_log.Info("[Load Regions Plugin]: Loading specific shared modules...");
-            m_log.Info("[Load Regions Plugin]: Done.");
+            m_log.Info("[LOAD REGIONS PLUGIN]: Loading specific shared modules...");
+            //m_log.Info("[LOAD REGIONS PLUGIN]: DynamicTextureModule...");
+            //m_openSim.ModuleLoader.LoadDefaultSharedModule(new DynamicTextureModule());
+            //m_log.Info("[LOAD REGIONS PLUGIN]: LoadImageURLModule...");
+            //m_openSim.ModuleLoader.LoadDefaultSharedModule(new LoadImageURLModule());
+            //m_log.Info("[LOAD REGIONS PLUGIN]: XMLRPCModule...");
+            //m_openSim.ModuleLoader.LoadDefaultSharedModule(new XMLRPCModule());
+//            m_log.Info("[LOADREGIONSPLUGIN]: AssetTransactionModule...");
+//            m_openSim.ModuleLoader.LoadDefaultSharedModule(new AssetTransactionModule());
+            m_log.Info("[LOAD REGIONS PLUGIN]: Done.");
 
             if (!CheckRegionsForSanity(regionsToLoad))
             {
-                m_log.Error("[Load Regions Plugin]: Halting startup due to conflicts in region configurations");
+                m_log.Error("[LOAD REGIONS PLUGIN]: Halting startup due to conflicts in region configurations");
                 Environment.Exit(1);
             }
 
@@ -114,7 +121,9 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
             for (int i = 0; i < regionsToLoad.Length; i++)
             {
                 IScene scene;
-                m_log.Debug("[Load Regions Plugin]: Creating Region: " + regionsToLoad[i].RegionName + " (ThreadID: " + Thread.CurrentThread.ManagedThreadId.ToString() + ")");
+                m_log.Debug("[LOAD REGIONS PLUGIN]: Creating Region: " + regionsToLoad[i].RegionName + " (ThreadID: " +
+                            Thread.CurrentThread.ManagedThreadId.ToString() +
+                            ")");
 
                 bool changed = m_openSim.PopulateRegionEstateInfo(regionsToLoad[i]);
 
@@ -122,9 +131,7 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
                 createdScenes.Add(scene);
 
                 if (changed)
-                {
                     m_openSim.EstateDataService.StoreEstateSettings(regionsToLoad[i].EstateSettings);
-                }
             }
 
             foreach (IScene scene in createdScenes)
@@ -132,7 +139,6 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
                 scene.Start();
 
                 m_newRegionCreatedHandler = OnNewRegionCreated;
-
                 if (m_newRegionCreatedHandler != null)
                 {
                     m_newRegionCreatedHandler(scene);
@@ -147,25 +153,22 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
         #endregion
 
         /// <summary>
-        ///     Check that region configuration information makes sense.
+        /// Check that region configuration information makes sense.
         /// </summary>
         /// <param name="regions"></param>
-        /// <returns>
-        ///     True if we're sane, false if we're insane
-        /// </returns>
+        /// <returns>True if we're sane, false if we're insane</returns>
         private bool CheckRegionsForSanity(RegionInfo[] regions)
         {
             if (regions.Length == 0)
-            {
                 return true;
-            }
 
             foreach (RegionInfo region in regions)
             {
                 if (region.RegionID == UUID.Zero)
                 {
                     m_log.ErrorFormat(
-                        "[Load Regions Plugin]: Region {0} has invalid UUID {1}", region.RegionName, region.RegionID);
+                        "[LOAD REGIONS PLUGIN]: Region {0} has invalid UUID {1}",
+                        region.RegionName, region.RegionID);
                     return false;
                 }
             }
@@ -177,20 +180,22 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
                     if (regions[i].RegionID == regions[j].RegionID)
                     {
                         m_log.ErrorFormat(
-                            "[Load Regions Plugin]: Regions {0} and {1} have the same UUID {2}", regions[i].RegionName, regions[j].RegionName, regions[i].RegionID);
+                            "[LOAD REGIONS PLUGIN]: Regions {0} and {1} have the same UUID {2}",
+                            regions[i].RegionName, regions[j].RegionName, regions[i].RegionID);
                         return false;
                     }
-                    else if (regions[i].RegionLocX == regions[j].RegionLocX && regions[i].RegionLocY == regions[j].RegionLocY)
+                    else if (
+                        regions[i].RegionLocX == regions[j].RegionLocX && regions[i].RegionLocY == regions[j].RegionLocY)
                     {
                         m_log.ErrorFormat(
-                            "[Load Regions Plugin]: Regions {0} and {1} have the same grid location ({2}, {3})",
+                            "[LOAD REGIONS PLUGIN]: Regions {0} and {1} have the same grid location ({2}, {3})",
                             regions[i].RegionName, regions[j].RegionName, regions[i].RegionLocX, regions[i].RegionLocY);
                         return false;
                     }
                     else if (regions[i].InternalEndPoint.Port == regions[j].InternalEndPoint.Port)
                     {
                         m_log.ErrorFormat(
-                            "[Load Regions Plugin]: Regions {0} and {1} have the same internal IP port {2}",
+                            "[LOAD REGIONS PLUGIN]: Regions {0} and {1} have the same internal IP port {2}",
                             regions[i].RegionName, regions[j].RegionName, regions[i].InternalEndPoint.Port);
                         return false;
                     }

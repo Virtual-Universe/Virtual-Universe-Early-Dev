@@ -1,31 +1,29 @@
-/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Virtual Universe Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections.Generic;
@@ -57,21 +55,19 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
 
         private void Init()
         {
-            /// <summary>
-            ///     Create an inventory that looks like this:
-            ///
-            ///     /My Inventory
-            ///         <other system folders>
-            ///             /Objects
-            ///                 Some Object
-            ///             /Notecards
-            ///                 Notecard 1
-            ///                 Notecard 2
-            ///             /Test Folder
-            ///                 Link to notecard  -> /Notecards/Notecard 2
-            ///                 Link to Objects folder -> /Objects
-            ///         </other>
-            /// </summary>
+            // Create an inventory that looks like this:
+            //
+            // /My Inventory
+            //   <other system folders>
+            //   /Objects
+            //      Some Object
+            //   /Notecards
+            //      Notecard 1
+            //      Notecard 2
+            //   /Test Folder
+            //      Link to notecard  -> /Notecards/Notecard 2
+            //      Link to Objects folder -> /Objects
+
             m_scene = new SceneHelpers().SetupScene();
 
             m_scene.InventoryService.CreateUserInventory(m_userID);
@@ -99,7 +95,6 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
             item.Folder = m_notecardsFolder;
             item.Name = "Test Notecard 1";
             m_scene.InventoryService.AddItem(item);
-
             // Add another notecard
             item.ID = new UUID("20000000-0000-0000-0000-000000000002");
             item.AssetID = new UUID("a0000000-0000-0000-0000-00000000000a");
@@ -223,6 +218,11 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
             // Make sure the folder link is included
             Assert.That(llsdresponse.Contains("Link to Objects folder"), Is.True, "Link to Objects folder is missing");
 
+/* contents of link folder are not supposed to be listed
+            // Make sure the objects inside the Objects folder are included
+            // Note: I'm not entirely sure this is needed, but that's what I found in the implementation
+            Assert.That(llsdresponse.Contains("Some Object"), Is.True, "Some Object item (contents of the source) is missing");
+*/
             // Make sure that the source item is before the link item
             pos1 = llsdresponse.IndexOf("Some Object");
             pos2 = llsdresponse.IndexOf("Link to Objects folder");
@@ -270,6 +270,7 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
         [Test]
         public void Test_005_FolderZero()
         {
+
             TestHelpers.InMethod();
 
             Init();
@@ -286,8 +287,11 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
 
             Assert.That(llsdresponse != null, Is.True, "Incorrect null response");
             Assert.That(llsdresponse != string.Empty, Is.True, "Incorrect empty response");
+            // we do return a answer now
+            //Assert.That(llsdresponse.Contains("bad_folders</key><array><uuid>00000000-0000-0000-0000-000000000000"), Is.True, "Folder Zero should be a bad folder");
 
             Console.WriteLine(llsdresponse);
         }
     }
+
 }

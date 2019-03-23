@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -125,7 +125,6 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
                 using (Font myFont = new Font(fontName, fontSize))
                 {
                     SizeF stringSize = new SizeF();
-
                     // XXX: This lock may be unnecessary.
                     lock (m_graph)
                     {
@@ -141,7 +140,7 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
 
         #region ISharedRegionModule Members
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig cfg = config.Configs["VectorRender"];
             if (null != cfg)
@@ -156,7 +155,7 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
             m_graph = Graphics.FromImage(bitmap);
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -354,26 +353,23 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
                 // under lock.
                 lock (this)
                 {
+
+                    if (alpha == 256 && bgColor.A != 255)
+                        alpha = bgColor.A;
+
                     if (alpha == 256)
                     {
                         bitmap = new Bitmap(width, height, PixelFormat.Format32bppRgb);
                         graph = Graphics.FromImage(bitmap);
-                        using (SolidBrush bgFillBrush = new SolidBrush(bgColor))
-                        {
-                            graph.FillRectangle(bgFillBrush, 0, 0, width, height);
-                        }
+                        graph.Clear(bgColor);
                     }
                     else
                     {
+                        Color newbg = Color.FromArgb(alpha, bgColor);
                         bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
                         graph = Graphics.FromImage(bitmap);
-                        Color newbg = Color.FromArgb(alpha,bgColor);
-                        using (SolidBrush bgFillBrush = new SolidBrush(newbg))
-                        {
-                            graph.FillRectangle(bgFillBrush, 0, 0, width, height);
-                        }
+                        graph.Clear(newbg);
                     }
-
                     GDIDraw(data, graph, altDataDelim, out reuseable);
                 }
 
@@ -507,10 +503,24 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
 
                 foreach (string line in GetLines(data, dataDelim))
                 {
-                    string nextLine = line.Trim();
+                    string nextLine = line.TrimStart();
 
 //                    m_log.DebugFormat("[VECTOR RENDER MODULE]: Processing line '{0}'", nextLine);
 
+                    if (nextLine.StartsWith("Text") && nextLine.Length > 5)
+                    {
+                        int start = 4;
+                        if (nextLine[4] == ' ')
+                            start++;
+                        if (start < nextLine.Length)
+                        {
+                            nextLine = nextLine.Substring(start);
+                            graph.DrawString(nextLine, myFont, myBrush, startPoint);
+                        }
+                        continue;
+                    }
+
+                    nextLine = nextLine.TrimEnd();
                     if (nextLine.StartsWith("ResetTransf"))
                     {
                         graph.ResetTransform();
@@ -554,12 +564,6 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
                         graph.DrawLine(drawPen, startPoint, endPoint);
                         startPoint.X = endPoint.X;
                         startPoint.Y = endPoint.Y;
-                    }
-                    else if (nextLine.StartsWith("Text"))
-                    {
-                        nextLine = nextLine.Remove(0, 4);
-                        nextLine = nextLine.Trim();
-                        graph.DrawString(nextLine, myFont, myBrush, startPoint);
                     }
                     else if (nextLine.StartsWith("Image"))
                     {

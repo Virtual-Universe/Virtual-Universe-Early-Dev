@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -60,10 +60,10 @@ namespace OpenSim.Services.Connectors.Friends
 
         public FriendsServicesConnector(IConfigSource source)
         {
-            Initialise(source);
+            Initialize(source);
         }
 
-        public virtual void Initialise(IConfigSource source)
+        public virtual void Initialize(IConfigSource source)
         {
             IConfig gridConfig = source.Configs["FriendsService"];
             if (gridConfig == null)
@@ -81,7 +81,7 @@ namespace OpenSim.Services.Connectors.Friends
                 throw new Exception("Friends connector init error");
             }
             m_ServerURI = serviceURI;
-            base.Initialise(source, "FriendsService");
+            base.Initialize(source, "FriendsService");
         }
 
 
@@ -128,7 +128,7 @@ namespace OpenSim.Services.Connectors.Friends
 
                         List<FriendInfo> finfos = new List<FriendInfo>();
                         Dictionary<string, object>.ValueCollection finfosList = replyData.Values;
-                        //m_log.DebugFormat("[FRIENDS SERVICE CONNECTOR]: get neighbours returned {0} elements", rinfosList.Count);
+                        //m_log.DebugFormat("[FRIENDS SERVICE CONNECTOR]: get neighbors returned {0} elements", rinfosList.Count);
                         foreach (object f in finfosList)
                         {
                             if (f is Dictionary<string, object>)

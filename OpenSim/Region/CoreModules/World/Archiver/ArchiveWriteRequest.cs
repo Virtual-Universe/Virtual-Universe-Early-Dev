@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -290,6 +290,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
                 assetGatherer.GatherAll();
 
                 GC.Collect();
+
                 int errors = assetGatherer.FailedUUIDs.Count;
                 m_log.DebugFormat(
                     "[ARCHIVER]: {0} region scene objects to save reference {1} possible assets",
@@ -600,7 +601,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
             m_log.InfoFormat("[ARCHIVER]: Adding scene objects to archive.");
 
             // Write out scene object metadata
-            IRegionSerialiserModule serializer = scene.RequestModuleInterface<IRegionSerialiserModule>();
+            IRegionSerializerModule serializer = scene.RequestModuleInterface<IRegionSerializerModule>();
             foreach (SceneObjectGroup sceneObject in sceneObjects)
             {
                 //m_log.DebugFormat("[ARCHIVER]: Saving {0} {1}, {2}", entity.Name, entity.UUID, entity.GetType());

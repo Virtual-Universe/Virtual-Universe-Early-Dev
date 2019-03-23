@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -25,6 +25,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Text;
 using System.Net;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
@@ -58,11 +59,13 @@ namespace OpenSim.Region.Framework.Interfaces
         void ChatterBoxSessionAgentListUpdates(UUID sessionID, UUID fromAgent, UUID anotherAgent,
                                 bool canVoiceChat, bool isModerator, bool textMute, bool isEnterorLeave);
         void ChatterBoxForceClose(UUID toAgent, UUID sessionID, string reason);
-        void ParcelProperties(ParcelPropertiesMessage parcelPropertiesMessage, UUID avatarID);
+        //void ParcelProperties(ParcelPropertiesMessage parcelPropertiesMessage, UUID avatarID);
         void GroupMembershipData(UUID receiverAgent, GroupMembershipData[] data);
-        OSD ScriptRunningEvent(UUID objectID, UUID itemID, bool running, bool mono);
+        void ScriptRunningEvent(UUID objectID, UUID itemID, bool running, UUID avatarID);
         OSD BuildEvent(string eventName, OSD eventBody);
         void partPhysicsProperties(uint localID, byte physhapetype, float density, float friction, float bounce, float gravmod, UUID avatarID);
 
+        StringBuilder StartEvent(string eventName);
+        string EndEvent(StringBuilder sb);
     }
 }

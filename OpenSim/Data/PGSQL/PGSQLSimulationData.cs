@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -69,14 +69,14 @@ namespace OpenSim.Data.PGSQL
 
         public PGSQLSimulationData(string connectionString)
         {
-            Initialise(connectionString);
+            Initialize(connectionString);
         }
 
         /// <summary>
-        /// Initialises the region datastore
+        /// Initializes the region datastore
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        public void Initialise(string connectionString)
+        public void Initialize(string connectionString)
         {
             m_connectionString = connectionString;
             _Database = new PGSQLManager(connectionString);
@@ -353,7 +353,7 @@ namespace OpenSim.Data.PGSQL
             ""PhysicsShapeType"" = :PhysicsShapeType, ""Density"" = :Density, ""GravityModifier"" = :GravityModifier, ""Friction"" = :Friction, ""Restitution"" = :Restitution, 
             ""PassCollisions"" = :PassCollisions, ""RotationAxisLocks"" = :RotationAxisLocks, ""RezzerID"" = :RezzerID,
             ""ClickAction"" = :ClickAction, ""Material"" = :Material, ""CollisionSound"" = :CollisionSound, ""CollisionSoundVolume"" = :CollisionSoundVolume, ""PassTouches"" = :PassTouches,
-            ""LinkNumber"" = :LinkNumber, ""MediaURL"" = :MediaURL, ""DynAttrs"" = :DynAttrs,
+            ""LinkNumber"" = :LinkNumber, ""MediaURL"" = :MediaURL, ""DynAttrs"" = :DynAttrs, ""Vehicle"" = :Vehicle,
             ""PhysInertia"" = :PhysInertia
         WHERE ""UUID"" = :UUID ;
 
@@ -368,7 +368,7 @@ namespace OpenSim.Data.PGSQL
             ""OmegaY"", ""OmegaZ"", ""CameraEyeOffsetX"", ""CameraEyeOffsetY"", ""CameraEyeOffsetZ"", ""CameraAtOffsetX"", ""CameraAtOffsetY"", ""CameraAtOffsetZ"",
             ""ForceMouselook"", ""ScriptAccessPin"", ""AllowedDrop"", ""DieAtEdge"", ""SalePrice"", ""SaleType"", ""ColorR"", ""ColorG"", ""ColorB"", ""ColorA"",
             ""ParticleSystem"", ""ClickAction"", ""Material"", ""CollisionSound"", ""CollisionSoundVolume"", ""PassTouches"", ""LinkNumber"", ""MediaURL"", ""DynAttrs"",
-            ""PhysicsShapeType"", ""Density"", ""GravityModifier"", ""Friction"", ""Restitution"", ""PassCollisions"", ""RotationAxisLocks"", ""RezzerID"" , ""PhysInertia""
+            ""PhysicsShapeType"", ""Density"", ""GravityModifier"", ""Friction"", ""Restitution"", ""PassCollisions"", ""RotationAxisLocks"", ""RezzerID"" , ""Vehicle"", ""PhysInertia""
             ) Select
             :UUID, :CreationDate, :Name, :Text, :Description, :SitName, :TouchName, :ObjectFlags, :OwnerMask, :NextOwnerMask, :GroupMask,
             :EveryoneMask, :BaseMask, :PositionX, :PositionY, :PositionZ, :GroupPositionX, :GroupPositionY, :GroupPositionZ, :VelocityX,
@@ -379,7 +379,7 @@ namespace OpenSim.Data.PGSQL
             :OmegaY, :OmegaZ, :CameraEyeOffsetX, :CameraEyeOffsetY, :CameraEyeOffsetZ, :CameraAtOffsetX, :CameraAtOffsetY, :CameraAtOffsetZ,
             :ForceMouselook, :ScriptAccessPin, :AllowedDrop, :DieAtEdge, :SalePrice, :SaleType, :ColorR, :ColorG, :ColorB, :ColorA,
             :ParticleSystem, :ClickAction, :Material, :CollisionSound, :CollisionSoundVolume, :PassTouches, :LinkNumber, :MediaURL, :DynAttrs,
-            :PhysicsShapeType, :Density, :GravityModifier, :Friction, :Restitution, :PassCollisions, :RotationAxisLocks, :RezzerID, :PhysInertia
+            :PhysicsShapeType, :Density, :GravityModifier, :Friction, :Restitution, :PassCollisions, :RotationAxisLocks, :RezzerID, :Vehicle, :PhysInertia
             where not EXISTS (SELECT ""UUID"" FROM prims WHERE ""UUID"" = :UUID);
         ";
 
@@ -610,7 +610,7 @@ namespace OpenSim.Data.PGSQL
         // Legacy entry point for when terrain was always a 256x256 heightmap
         public void StoreTerrain(double[,] terrain, UUID regionID)
         {
-            StoreTerrain(new HeightmapTerrainData(terrain), regionID);
+            StoreTerrain(new TerrainData(terrain), regionID);
         }
 
         /// <summary>
@@ -1742,7 +1742,10 @@ namespace OpenSim.Data.PGSQL
 
             prim.Sound = new UUID((Guid)primRow["LoopedSound"]);
             prim.SoundGain = Convert.ToSingle(primRow["LoopedSoundGain"]);
-            prim.SoundFlags = 1; // If it's persisted at all, it's looped
+            if (prim.Sound != UUID.Zero)
+                prim.SoundFlags = 1; // If it's persisted at all, it's looped
+            else
+                prim.SoundFlags = 0;
 
             if (!(primRow["TextureAnimation"] is DBNull))
                 prim.TextureAnimation = (Byte[])primRow["TextureAnimation"];
@@ -1797,7 +1800,7 @@ namespace OpenSim.Data.PGSQL
             if (!(primRow["DynAttrs"] is System.DBNull) && (string)primRow["DynAttrs"] != "")
                 prim.DynAttrs = DAMap.FromXml((string)primRow["DynAttrs"]);
             else
-                prim.DynAttrs = new DAMap();
+                prim.DynAttrs = null;
 
             prim.PhysicsShapeType = Convert.ToByte(primRow["PhysicsShapeType"]);
             prim.Density = Convert.ToSingle(primRow["Density"]);
@@ -1805,8 +1808,15 @@ namespace OpenSim.Data.PGSQL
             prim.Friction = Convert.ToSingle(primRow["Friction"]);
             prim.Restitution = Convert.ToSingle(primRow["Restitution"]);
             prim.RotationAxisLocks = Convert.ToByte(primRow["RotationAxisLocks"]);
-            
-            
+
+            SOPVehicle vehicle = null;
+            if (!(primRow["Vehicle"] is System.DBNull))
+            {
+                vehicle = SOPVehicle.FromXml2(primRow["Vehicle"].ToString());
+                if (vehicle != null)
+                    prim.VehicleParams = vehicle;
+            }
+
             PhysicsInertiaData pdata = null;
             if (!(primRow["PhysInertia"] is System.DBNull))
                 pdata = PhysicsInertiaData.FromXml2(primRow["PhysInertia"].ToString());
@@ -2214,8 +2224,7 @@ namespace OpenSim.Data.PGSQL
 
             parameters.Add(_Database.CreateParameter("PassTouches", (bool)prim.PassTouches));
             parameters.Add(_Database.CreateParameter("PassCollisions", (bool)prim.PassCollisions));
-            
-            
+
             if (prim.PassTouches)
                 parameters.Add(_Database.CreateParameter("PassTouches", true));
             else
@@ -2228,14 +2237,18 @@ namespace OpenSim.Data.PGSQL
 
             parameters.Add(_Database.CreateParameter("LinkNumber", prim.LinkNum));
             parameters.Add(_Database.CreateParameter("MediaURL", prim.MediaUrl));
-            
+
+            if (prim.VehicleParams != null)
+                parameters.Add(_Database.CreateParameter("Vehicle", prim.VehicleParams.ToXml2()));
+            else
+                parameters.Add(_Database.CreateParameter("Vehicle", String.Empty));
+
             if (prim.PhysicsInertia != null)
                 parameters.Add(_Database.CreateParameter("PhysInertia", prim.PhysicsInertia.ToXml2()));
             else
                 parameters.Add(_Database.CreateParameter("PhysInertia", String.Empty));
 
-
-            if (prim.DynAttrs.CountNamespaces > 0)
+            if (prim.DynAttrs != null && prim.DynAttrs.CountNamespaces > 0)
                 parameters.Add(_Database.CreateParameter("DynAttrs", prim.DynAttrs.ToXml()));
             else
                 parameters.Add(_Database.CreateParameter("DynAttrs", null));

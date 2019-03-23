@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/obj/Debug/OpenSim.Framework.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/obj/Debug/OpenSim.Framework.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/obj/Debug/OpenSim.Framework.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/obj/Debug/OpenSim.Framework.pdb

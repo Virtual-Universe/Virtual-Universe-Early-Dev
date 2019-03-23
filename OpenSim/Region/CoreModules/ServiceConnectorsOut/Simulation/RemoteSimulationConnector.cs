@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -63,7 +63,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         #region Region Module interface
 
-        public virtual void Initialise(IConfigSource configSource)
+        public virtual void Initialize(IConfigSource configSource)
         {
             IConfig moduleConfig = configSource.Configs["Modules"];
             if (moduleConfig != null)
@@ -73,7 +73,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
                 {
                     m_localBackend = new LocalSimulationConnectorModule();
 
-                    m_localBackend.InitialiseService(configSource);
+                    m_localBackend.InitializeService(configSource);
 
                     m_remoteConnector = new SimulationServiceConnector();
 
@@ -84,7 +84,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
             }
         }
 
-        public virtual void PostInitialise()
+        public virtual void PostInitialize()
         {
         }
 

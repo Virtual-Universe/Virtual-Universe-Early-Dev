@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -83,7 +83,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
             get { return "BasicInventoryAccessModule"; }
         }
 
-        public virtual void Initialise(IConfigSource source)
+        public virtual void Initialize(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -93,7 +93,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
                 {
                     m_Enabled = true;
 
-                    InitialiseCommon(source);
+                    InitializeCommon(source);
 
                     m_log.InfoFormat("[INVENTORY ACCESS MODULE]: {0} enabled.", Name);
                 }
@@ -104,7 +104,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
         /// Common module config for both this and descendant classes.
         /// </summary>
         /// <param name="source"></param>
-        protected virtual void InitialiseCommon(IConfigSource source)
+        protected virtual void InitializeCommon(IConfigSource source)
         {
             IConfig inventoryConfig = source.Configs["Inventory"];
 
@@ -115,7 +115,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
                 CoalesceMultipleObjectsToInventory = true;
         }
 
-        public virtual void PostInitialise()
+        public virtual void PostInitialize()
         {
         }
 
@@ -526,16 +526,23 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
             item.AssetType = (int)AssetType.Object;
             item.AssetID = asset.FullID;
 
-            if (DeRezAction.SaveToExistingUserInventoryItem == action)
+            if (action == DeRezAction.SaveToExistingUserInventoryItem)
             {
                 m_Scene.InventoryService.UpdateItem(item);
             }
             else
             {
-                AddPermissions(item, objlist[0], objlist, remoteClient);
+                bool isowner = remoteClient != null && item.Owner == remoteClient.AgentId;
+                if(action == DeRezAction.Return)
+                    AddPermissions(item, objlist[0], objlist, null);
+                else if(action == DeRezAction.Delete && !isowner)
+                    AddPermissions(item, objlist[0], objlist, null);
+                else
+                   AddPermissions(item, objlist[0], objlist, remoteClient);
+
                 m_Scene.AddInventoryItem(item);
 
-                if (remoteClient != null && item.Owner == remoteClient.AgentId)
+                if (isowner)
                 {
                     remoteClient.SendInventoryItemCreateUpdate(item, 0);
                 }
@@ -1010,7 +1017,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
                     group.CreateScriptInstances(0, true, m_Scene.DefaultScriptEngine, 1);
                     rootPart.ParentGroup.ResumeScripts();
 
-                    group.ScheduleGroupForFullUpdate();
+                    group.ScheduleGroupForFullAnimUpdate();
                 }
                 else
                     m_Scene.AddNewSceneObject(group, true, false);

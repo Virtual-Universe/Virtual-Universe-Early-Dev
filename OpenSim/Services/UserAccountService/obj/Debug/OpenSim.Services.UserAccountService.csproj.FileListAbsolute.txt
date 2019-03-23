@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.UserAccountService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.UserAccountService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/UserAccountService/obj/Debug/OpenSim.Services.UserAccountService.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/UserAccountService/obj/Debug/OpenSim.Services.UserAccountService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/UserAccountService/obj/Debug/OpenSim.Services.UserAccountService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/UserAccountService/obj/Debug/OpenSim.Services.UserAccountService.pdb

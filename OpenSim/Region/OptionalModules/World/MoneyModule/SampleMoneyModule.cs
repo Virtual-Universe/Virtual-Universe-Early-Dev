@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -121,7 +121,7 @@ namespace OpenSim.Region.OptionalModules.World.MoneyModule
         /// Called on startup so the module can be configured.
         /// </summary>
         /// <param name="config">Configuration source.</param>
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_gConfig = config;
             ReadConfigAndPopulate();
@@ -212,7 +212,7 @@ namespace OpenSim.Region.OptionalModules.World.MoneyModule
             return give_result;
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -819,7 +819,7 @@ namespace OpenSim.Region.OptionalModules.World.MoneyModule
 
             Scene s = LocateSceneClientIn(remoteClient.AgentId);
 
-            // Implmenting base sale data checking here so the default OpenSimulator implementation isn't useless
+            // Implmenting base sale data checking here so the default Virtual Universe implementation isn't useless
             // combined with other implementations.  We're actually validating that the client is sending the data
             // that it should.   In theory, the client should already know what to send here because it'll see it when it
             // gets the object data.   If the data sent by the client doesn't match the object, the viewer probably has an

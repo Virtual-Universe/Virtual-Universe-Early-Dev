@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/ConvexDecompositionDotNet/obj/Debug/OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/ConvexDecompositionDotNet/obj/Debug/OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/ConvexDecompositionDotNet/obj/Debug/OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet.pdb

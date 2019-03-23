@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -47,24 +47,25 @@ namespace OpenSim.Data
             if ((id == null) || (id == DBNull.Value))
                 return UUID.Zero;
 
-            if (id.GetType() == typeof(Guid))
+            Type idtype = id.GetType();
+
+            if (idtype == typeof(Guid))
                 return new UUID((Guid)id);
 
-            if (id.GetType() == typeof(byte[]))
+            if (id.GetType() == typeof(string))
             {
-                if (((byte[])id).Length == 0)
-                    return UUID.Zero;
-                else if (((byte[])id).Length == 16)
-                    return new UUID((byte[])id, 0);
-            }
-            else if (id.GetType() == typeof(string))
-            {
-                if (((string)id).Length == 0)
-                    return UUID.Zero;
-                else if (((string)id).Length == 36)
-                    return new UUID((string)id);
+                Guid gg; 
+                if (Guid.TryParse((string)id, out gg))
+                    return new UUID(gg);
+                return UUID.Zero;
             }
 
+            if (idtype == typeof(byte[]))
+            {
+                if (((byte[])id).Length < 16)
+                    return UUID.Zero;
+                return new UUID((byte[])id, 0);
+            }
             throw new Exception("Failed to convert db value to UUID: " + id.ToString());
         }
     }

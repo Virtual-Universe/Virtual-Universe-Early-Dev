@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.CoreModules.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.CoreModules.Tests.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/CoreModules/obj/Debug/OpenSim.Region.CoreModules.Tests.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/CoreModules/obj/Debug/OpenSim.Region.CoreModules.Tests.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/CoreModules/obj/Debug/OpenSim.Region.CoreModules.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/CoreModules/obj/Debug/OpenSim.Region.CoreModules.Tests.pdb

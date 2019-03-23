@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -63,7 +63,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Groups
 
         #region ISharedRegionModule Members
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig groupsConfig = config.Configs["Groups"];
 
@@ -101,7 +101,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Groups
                     if (m_SceneList.Count == 0)
                     {
                         osGroup.GroupID = opensimulatorGroupID;
-                        osGroup.GroupName = "OpenSimulator Testing";
+                        osGroup.GroupName = "Virtual Universe Testing";
                         osGroup.GroupPowers =
                                 (uint)(GroupPowers.AllowLandmark |
                                        GroupPowers.AllowSetHome);
@@ -135,7 +135,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Groups
         {
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

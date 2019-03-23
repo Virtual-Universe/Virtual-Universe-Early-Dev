@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -60,12 +60,12 @@ namespace OpenSim.Region.OptionalModules.UDP.Linden
 
         public Type ReplaceableInterface { get { return null; } }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
 //            m_log.DebugFormat("[LINDEN UDP INFO MODULE]: INITIALIZED MODULE");
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
 //            m_log.DebugFormat("[LINDEN UDP INFO MODULE]: POST INITIALIZED MODULE");
         }
@@ -96,7 +96,7 @@ namespace OpenSim.Region.OptionalModules.UDP.Linden
                 "Show queue data for each client",
                 "Without the 'full' option, only root agents are shown.\n"
                     + "With the 'full' option child agents are also shown.\n\n"
-                    + "Type          - Rt is a root (avatar) client whilst cd is a child (neighbour interacting) client.\n"
+                    + "Type          - Rt is a root (avatar) client whilst cd is a child (neighbor interacting) client.\n"
                     + "Since Last In - Time in milliseconds since last packet received.\n"
                     + "Pkts In       - Number of packets processed from the client.\n"
                     + "Pkts Out      - Number of packets sent to the client.\n"

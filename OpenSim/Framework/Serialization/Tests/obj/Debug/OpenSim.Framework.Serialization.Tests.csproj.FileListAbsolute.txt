@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Serialization.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Serialization.Tests.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Serialization/Tests/obj/Debug/OpenSim.Framework.Serialization.Tests.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Serialization/Tests/obj/Debug/OpenSim.Framework.Serialization.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Serialization/Tests/obj/Debug/OpenSim.Framework.Serialization.Tests.pdb

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -63,10 +63,10 @@ namespace OpenSim.Services.Connectors
 
         public GridServicesConnector(IConfigSource source)
         {
-            Initialise(source);
+            Initialize(source);
         }
 
-        public virtual void Initialise(IConfigSource source)
+        public virtual void Initialize(IConfigSource source)
         {
             IConfig gridConfig = source.Configs["GridService"];
             if (gridConfig == null)
@@ -85,7 +85,7 @@ namespace OpenSim.Services.Connectors
             }
             m_ServerURI = serviceURI;
 
-            base.Initialise(source, "GridService");
+            base.Initialize(source, "GridService");
         }
 
 
@@ -184,14 +184,14 @@ namespace OpenSim.Services.Connectors
             return false;
         }
 
-        public List<GridRegion> GetNeighbours(UUID scopeID, UUID regionID)
+        public List<GridRegion> GetNeighbors(UUID scopeID, UUID regionID)
         {
             Dictionary<string, object> sendData = new Dictionary<string, object>();
 
             sendData["SCOPEID"] = scopeID.ToString();
             sendData["REGIONID"] = regionID.ToString();
 
-            sendData["METHOD"] = "get_neighbours";
+            sendData["METHOD"] = "get_neighbors";
 
             List<GridRegion> rinfos = new List<GridRegion>();
 
@@ -214,7 +214,7 @@ namespace OpenSim.Services.Connectors
             if (replyData != null)
             {
                 Dictionary<string, object>.ValueCollection rinfosList = replyData.Values;
-                //m_log.DebugFormat("[GRID CONNECTOR]: get neighbours returned {0} elements", rinfosList.Count);
+                //m_log.DebugFormat("[GRID CONNECTOR]: get neighbors returned {0} elements", rinfosList.Count);
                 foreach (object r in rinfosList)
                 {
                     if (r is Dictionary<string, object>)
@@ -225,7 +225,7 @@ namespace OpenSim.Services.Connectors
                 }
             }
             else
-                m_log.DebugFormat("[GRID CONNECTOR]: GetNeighbours {0}, {1} received null response",
+                m_log.DebugFormat("[GRID CONNECTOR]: GetNeighbors {0}, {1} received null response",
                     scopeID, regionID);
 
             return rinfos;

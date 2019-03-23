@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -94,19 +94,15 @@ namespace OpenSim.Region.Framework.Scenes
                 m_inventoryDeletes.Enqueue(dtis);
             }
 
-            if (Enabled)
-                lock (m_inventoryTicker)
-                    m_inventoryTicker.Start();
-
-            // Visually remove it, even if it isnt really gone yet.  This means that if we crash before the object
-            // has gone to inventory, it will reappear in the region again on restart instead of being lost.
-            // This is not ideal since the object will still be available for manipulation when it should be, but it's
-            // better than losing the object for now.
             if (permissionToDelete)
             {
                 foreach (SceneObjectGroup g in objectGroups)
                     g.DeleteGroupFromScene(false);
             }
+
+            if (Enabled)
+                lock (m_inventoryTicker)
+                    m_inventoryTicker.Start();
         }
 
         private void InventoryRunDeleteTimer(object sender, ElapsedEventArgs e)

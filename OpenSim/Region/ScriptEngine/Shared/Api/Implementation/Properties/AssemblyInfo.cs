@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("OpenSim.Region.ScriptEngine.Shared.Api")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://opensimulator.org")]
+[assembly: AssemblyCompany("https://virtual-planets.org")]
 [assembly: AssemblyProduct("OpenSim")]
-[assembly: AssemblyCopyright("OpenSimulator developers")]
+[assembly: AssemblyCopyright("Virtual Universe developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -2691,12 +2691,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 remaining = m_LSL_Api.GetPrimParams(part, rules, ref retVal);
             }
 
-            while (remaining.Length > 2)
+            while (remaining.Length > 1)
             {
                 linknumber = remaining.GetLSLIntegerItem(0);
-                rules = remaining.GetSublist(1, -1);
                 parts = m_LSL_Api.GetLinkParts(linknumber);
+                if(parts.Count == 0)
+                    break;
 
+                rules = remaining.GetSublist(1, -1);
                 foreach (SceneObjectPart part in parts)
                     remaining = m_LSL_Api.GetPrimParams(part, rules, ref retVal);
             }
@@ -3627,7 +3629,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             CheckThreatLevel(ThreatLevel.Severe, "osKickAvatar");
 
-            World.ForEachRootScenePresence(delegate(ScenePresence sp)
+            World.ForEachRootScenePresence(delegate (ScenePresence sp)
             {
                 if (sp.Firstname == FirstName && sp.Lastname == SurName)
                 {
@@ -3641,18 +3643,43 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             });
         }
 
-        public LSL_Float osGetHealth(string avatar)
+        public void osKickAvatar(LSL_Key agentKey, string alert)
+        {
+            CheckThreatLevel(ThreatLevel.Severe, "osKickAvatar");
+
+            UUID id;
+            if (!UUID.TryParse(agentKey, out id) || id == UUID.Zero)
+                return;
+
+            ScenePresence sp = World.GetScenePresence(id);
+            if(sp == null)
+                return;
+
+            // kick client...
+            if (alert != null)
+                sp.ControllingClient.Kick(alert);
+
+            // ...and close on our side
+            sp.Scene.CloseAgent(id, false);
+        }
+
+        public LSL_Float osGetHealth(LSL_Key agentKey)
         {
             CheckThreatLevel(ThreatLevel.None, "osGetHealth");
 
             LSL_Float health = new LSL_Float(-1);
-            ScenePresence presence = World.GetScenePresence(new UUID(avatar));
+
+            UUID id;
+            if (!UUID.TryParse(agentKey, out id) || id == UUID.Zero)
+                return health;
+
+            ScenePresence presence = World.GetScenePresence(id);
             if (presence != null)
                 health = presence.Health;
             return health;
         }
 
-        public void osCauseDamage(string avatar, double damage)
+        public void osCauseDamage(LSL_Key avatar, LSL_Float damage)
         {
             CheckThreatLevel(ThreatLevel.High, "osCauseDamage");
 
@@ -3681,7 +3708,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             }
         }
 
-        public void osCauseHealing(string avatar, double healing)
+        public void osCauseHealing(LSL_Key avatar, LSL_Float healing)
         {
             CheckThreatLevel(ThreatLevel.High, "osCauseHealing");
 
@@ -3702,7 +3729,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             presence.setHealthWithUpdate(health);
         }
 
-        public void osSetHealth(string avatar, double health)
+        public void osSetHealth(LSL_Key avatar, LSL_Float health)
         {
             CheckThreatLevel(ThreatLevel.High, "osSetHealth");
 
@@ -3720,7 +3747,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             }
         }
 
-        public void osSetHealRate(string avatar, double healrate)
+        public void osSetHealRate(LSL_Key avatar, LSL_Float healrate)
         {
             CheckThreatLevel(ThreatLevel.High, "osSetHealRate");
 
@@ -3735,7 +3762,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             presence.HealRate = (float)healrate;
         }
 
-        public LSL_Float osGetHealRate(string avatar)
+        public LSL_Float osGetHealRate(LSL_Key avatar)
         {
             CheckThreatLevel(ThreatLevel.None, "osGetHealRate");
 
@@ -3860,29 +3887,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             DateTime date = new DateTime(epochTicks);
 
             return date.ToString("yyyy-MM-ddTHH:mm:ss.fffffffZ");
-        }
-
-        /// <summary>
-        /// Get the description from an inventory item
-        /// </summary>
-        /// <param name="inventoryName"></param>
-        /// <returns>Item description</returns>
-        public LSL_String osGetInventoryDesc(string item)
-        {
-            CheckThreatLevel();
-
-            lock (m_host.TaskInventory)
-            {
-                foreach (KeyValuePair<UUID, TaskInventoryItem> inv in m_host.TaskInventory)
-                {
-                    if (inv.Value.Name == item)
-                    {
-                        return inv.Value.Description.ToString();
-                    }
-                }
-            }
-
-            return String.Empty;
         }
 
         /// <summary>
@@ -4847,8 +4851,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             return Math.Atan2(mcross, dot);
         }
 
-
-//******* link sound
        public void osAdjustSoundVolume(LSL_Integer linknum, LSL_Float volume)
         {
             m_host.AddScriptLPS(1);
@@ -5379,5 +5381,65 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             return 1;
         }
 
+        public LSL_Key osGetInventoryLastOwner(LSL_String itemNameorid)
+        {
+            m_host.AddScriptLPS(1);
+
+            TaskInventoryItem item = null;
+            UUID itemID;
+            if (UUID.TryParse(itemNameorid, out itemID))
+                item = m_host.Inventory.GetInventoryItem(itemID);
+            else
+                item = m_host.Inventory.GetInventoryItem(itemNameorid);
+
+            if (item == null)
+                return UUID.Zero.ToString();
+
+            UUID id = item.LastOwnerID;
+            if(id == UUID.Zero)
+                id= item.OwnerID;
+            return id.ToString();
+        }
+
+        public LSL_String osGetInventoryName(LSL_Key itemId)
+        {
+            m_host.AddScriptLPS(1);
+
+            TaskInventoryItem item = null;
+            UUID itemID;
+            if (UUID.TryParse(itemId, out itemID))
+                item = m_host.Inventory.GetInventoryItem(itemID);
+
+            if (item == null)
+                return String.Empty;
+
+            return item.Name;
+        }
+
+        public LSL_String osGetInventoryDesc(LSL_String itemNameorid)
+        {
+            m_host.AddScriptLPS(1);
+
+            TaskInventoryItem item = null;
+            UUID itemID;
+            if (UUID.TryParse(itemNameorid, out itemID))
+                item = m_host.Inventory.GetInventoryItem(itemID);
+            else
+                item = m_host.Inventory.GetInventoryItem(itemNameorid);
+
+            if (item == null)
+                return String.Empty;
+
+            return item.Description;
+        }
+
+        public LSL_Key osGetLastChangedEventKey()
+        {
+            m_host.AddScriptLPS(1);
+            DetectParams detectedParams = m_ScriptEngine.GetDetectParams(m_item.ItemID, 0);
+            if (detectedParams == null)
+                return String.Empty;
+            return detectedParams.Key.ToString();
+        }
     }
 }

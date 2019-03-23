@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.SQLite.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.SQLite.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/SQLite/obj/Debug/OpenSim.Data.SQLite.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/SQLite/obj/Debug/OpenSim.Data.SQLite.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/SQLite/obj/Debug/OpenSim.Data.SQLite.pdb

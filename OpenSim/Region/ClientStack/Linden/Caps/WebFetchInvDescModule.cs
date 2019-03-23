@@ -1,31 +1,29 @@
-/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Virtual Universe Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections;
@@ -34,24 +32,24 @@ using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Mono.Addins;
 using Nini.Config;
+using Mono.Addins;
 using OpenMetaverse;
-using OpenMetaverse.StructuredData;
-using OpenSim.Capabilities.Handlers;
-using OpenSim.Framework.Capabilities;
-using OpenSim.Framework.Monitoring;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
+using OpenSim.Framework.Capabilities;
 using OpenSim.Services.Interfaces;
 using Caps = OpenSim.Framework.Capabilities.Caps;
+using OpenSim.Capabilities.Handlers;
+using OpenSim.Framework.Monitoring;
+
+using OpenMetaverse.StructuredData;
 
 namespace OpenSim.Region.ClientStack.Linden
 {
     /// <summary>
-    ///     This module implements both WebFetchInventoryDescendents
-    ///     and FetchInventoryDescendents2 capabilities.
+    /// This module implements both WebFetchInventoryDescendents and FetchInventoryDescendents2 capabilities.
     /// </summary>
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "WebFetchInvDescModule")]
     public class WebFetchInvDescModule : INonSharedRegionModule
@@ -66,20 +64,18 @@ namespace OpenSim.Region.ClientStack.Linden
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        ///     Control whether requests will be processed asynchronously.
+        /// Control whether requests will be processed asynchronously.
         /// </summary>
         /// <remarks>
-        ///     Defaults to true.  Can currently not be changed once a
-        ///     region has been added to the module.
+        /// Defaults to true.  Can currently not be changed once a region has been added to the module.
         /// </remarks>
         public bool ProcessQueuedRequestsAsync { get; private set; }
 
         /// <summary>
-        ///     Number of inventory requests processed by this module.
+        /// Number of inventory requests processed by this module.
         /// </summary>
         /// <remarks>
-        ///     It's the PollServiceRequestManager that actually sends
-        ///     completed requests back to the requester.
+        /// It's the PollServiceRequestManager that actually sends completed requests back to the requester.
         /// </remarks>
         public static int ProcessedRequestsCount { get; set; }
 
@@ -94,6 +90,7 @@ namespace OpenSim.Region.ClientStack.Linden
         private bool m_Enabled;
 
         private string m_fetchInventoryDescendents2Url;
+//        private string m_webFetchInventoryDescendentsUrl;
 
         private static FetchInvDescHandler m_webFetchHandler;
 
@@ -105,24 +102,23 @@ namespace OpenSim.Region.ClientStack.Linden
 
         #region ISharedRegionModule Members
 
-        public WebFetchInvDescModule() : this(true) { }
+        public WebFetchInvDescModule() : this(true) {}
 
         public WebFetchInvDescModule(bool processQueuedResultsAsync)
         {
             ProcessQueuedRequestsAsync = processQueuedResultsAsync;
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             IConfig config = source.Configs["ClientStack.LindenCaps"];
-
             if (config == null)
-            {
                 return;
-            }
 
             m_fetchInventoryDescendents2Url = config.GetString("Cap_FetchInventoryDescendents2", string.Empty);
+//            m_webFetchInventoryDescendentsUrl = config.GetString("Cap_WebFetchInventoryDescendents", string.Empty);
 
+//            if (m_fetchInventoryDescendents2Url != string.Empty || m_webFetchInventoryDescendentsUrl != string.Empty)
             if (m_fetchInventoryDescendents2Url != string.Empty)
             {
                 m_Enabled = true;
@@ -132,9 +128,7 @@ namespace OpenSim.Region.ClientStack.Linden
         public void AddRegion(Scene s)
         {
             if (!m_Enabled)
-            {
                 return;
-            }
 
             Scene = s;
         }
@@ -142,9 +136,7 @@ namespace OpenSim.Region.ClientStack.Linden
         public void RemoveRegion(Scene s)
         {
             if (!m_Enabled)
-            {
                 return;
-            }
 
             Scene.EventManager.OnRegisterCaps -= RegisterCaps;
 
@@ -158,12 +150,9 @@ namespace OpenSim.Region.ClientStack.Linden
         public void RegionLoaded(Scene s)
         {
             if (!m_Enabled)
-            {
                 return;
-            }
 
             if (s_processedRequestsStat == null)
-            {
                 s_processedRequestsStat =
                     new Stat(
                         "ProcessedFetchInventoryRequests",
@@ -176,10 +165,8 @@ namespace OpenSim.Region.ClientStack.Linden
                         MeasuresOfInterest.AverageChangeOverTime,
                         stat => { stat.Value = ProcessedRequestsCount; },
                         StatVerbosity.Debug);
-            }
 
             if (s_queuedRequestsStat == null)
-            {
                 s_queuedRequestsStat =
                     new Stat(
                         "QueuedFetchInventoryRequests",
@@ -192,7 +179,6 @@ namespace OpenSim.Region.ClientStack.Linden
                         MeasuresOfInterest.AverageChangeOverTime,
                         stat => { stat.Value = m_queue.Count; },
                         StatVerbosity.Debug);
-            }
 
             StatsManager.RegisterStat(s_processedRequestsStat);
             StatsManager.RegisterStat(s_queuedRequestsStat);
@@ -208,7 +194,6 @@ namespace OpenSim.Region.ClientStack.Linden
             m_NumberScenes++;
 
             int nworkers = 2; // was 2
-
             if (ProcessQueuedRequestsAsync && m_workerThreads == null)
             {
                 m_workerThreads = new Thread[nworkers];
@@ -226,31 +211,27 @@ namespace OpenSim.Region.ClientStack.Linden
             }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
         public void Close()
         {
             if (!m_Enabled)
-            {
                 return;
-            }
 
             if (ProcessQueuedRequestsAsync)
             {
                 if (m_NumberScenes <= 0 && m_workerThreads != null)
                 {
                     m_log.DebugFormat("[WebFetchInvDescModule] Closing");
-
                     foreach (Thread t in m_workerThreads)
-                    {
                         Watchdog.AbortThread(t.ManagedThreadId);
-                    }
 
                     m_workerThreads = null;
                 }
             }
+//            m_queue.Dispose();
         }
 
         public string Name { get { return "WebFetchInvDescModule"; } }
@@ -283,11 +264,8 @@ namespace OpenSim.Region.ClientStack.Linden
                     lock (responses)
                     {
                         responses.Remove(x);
-
-                        lock (dropedResponses)
-                        {
+                        lock(dropedResponses)
                             dropedResponses.Add(x);
-                        }
                     }
                 };
 
@@ -329,18 +307,16 @@ namespace OpenSim.Region.ClientStack.Linden
 
             public void Process(APollRequest requestinfo)
             {
-                if (m_module == null || m_module.Scene == null || m_module.Scene.ShuttingDown)
-                {
+                if(m_module == null || m_module.Scene == null || m_module.Scene.ShuttingDown)
                     return;
-                }
 
                 UUID requestID = requestinfo.reqID;
 
-                lock (responses)
+                lock(responses)
                 {
-                    lock (dropedResponses)
+                    lock(dropedResponses)
                     {
-                        if (dropedResponses.Contains(requestID))
+                        if(dropedResponses.Contains(requestID))
                         {
                             dropedResponses.Remove(requestID);
                             return;
@@ -358,12 +334,11 @@ namespace OpenSim.Region.ClientStack.Linden
                                     requestinfo.request["body"].ToString(),
                                     String.Empty, String.Empty, null, null)
                         );
-
                 lock (responses)
                 {
-                    lock (dropedResponses)
+                    lock(dropedResponses)
                     {
-                        if (dropedResponses.Contains(requestID))
+                        if(dropedResponses.Contains(requestID))
                         {
                             dropedResponses.Remove(requestID);
                             requestinfo.request.Clear();
@@ -373,13 +348,9 @@ namespace OpenSim.Region.ClientStack.Linden
                     }
 
                     if (responses.ContainsKey(requestID))
-                    {
-                        m_log.WarnFormat("[Fetch Inventory Descendents2 Module]: Caught in the act of loosing responses! Please report this on mantis #7054");
-                    }
-
+                        m_log.WarnFormat("[FETCH INVENTORY DESCENDENTS2 MODULE]: Caught in the act of loosing responses! Please report this on mantis #7054");
                     responses[requestID] = response;
                 }
-
                 requestinfo.request.Clear();
                 WebFetchInvDescModule.ProcessedRequestsCount++;
             }
@@ -399,9 +370,9 @@ namespace OpenSim.Region.ClientStack.Linden
             {
                 return;
             }
+            // handled by the simulator
             else if (url == "localhost")
             {
-                // Handled by the simulator
                 capUrl = "/CAPS/" + UUID.Random() + "/";
 
                 // Register this as a poll service
@@ -410,41 +381,40 @@ namespace OpenSim.Region.ClientStack.Linden
 
                 caps.RegisterPollHandler(capName, args);
             }
+            // external handler
             else
             {
-                // External Handler
                 capUrl = url;
                 IExternalCapsModule handler = Scene.RequestModuleInterface<IExternalCapsModule>();
-
                 if (handler != null)
-                {
-                    handler.RegisterExternalUserCapsHandler(agentID, caps, capName, capUrl);
-                }
+                    handler.RegisterExternalUserCapsHandler(agentID,caps,capName,capUrl);
                 else
-                {
                     caps.RegisterHandler(capName, capUrl);
-                }
             }
         }
 
         private static void DoInventoryRequests()
         {
-            while (true)
+            bool running = true;
+            while (running)
             {
-                APollRequest poolreq;
-
-                if (m_queue.TryTake(out poolreq, 4500))
+                try
                 {
-                    Watchdog.UpdateThread();
-
-                    if (poolreq.thepoll != null)
+                    APollRequest poolreq;
+                    if (m_queue.TryTake(out poolreq, 4500))
                     {
-                        poolreq.thepoll.Process(poolreq);
+                        Watchdog.UpdateThread();
+                        if (poolreq.thepoll != null)
+                            poolreq.thepoll.Process(poolreq);
+                        poolreq = null;
                     }
-
-                    poolreq = null;
+                    Watchdog.UpdateThread();
                 }
-                Watchdog.UpdateThread();
+                catch (ThreadAbortException)
+                {
+                    Thread.ResetAbort();
+                    running = false;
+                }
             }
         }
     }

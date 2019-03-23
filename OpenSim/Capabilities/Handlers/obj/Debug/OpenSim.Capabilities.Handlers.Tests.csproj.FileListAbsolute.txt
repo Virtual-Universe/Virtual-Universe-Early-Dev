@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Capabilities.Handlers.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Capabilities.Handlers.Tests.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/Handlers/obj/Debug/OpenSim.Capabilities.Handlers.Tests.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/Handlers/obj/Debug/OpenSim.Capabilities.Handlers.Tests.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/Handlers/obj/Debug/OpenSim.Capabilities.Handlers.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/Handlers/obj/Debug/OpenSim.Capabilities.Handlers.Tests.pdb

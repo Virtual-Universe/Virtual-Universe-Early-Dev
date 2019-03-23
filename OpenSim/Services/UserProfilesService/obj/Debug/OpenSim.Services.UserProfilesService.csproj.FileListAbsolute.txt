@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.UserProfilesService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.UserProfilesService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/UserProfilesService/obj/Debug/OpenSim.Services.UserProfilesService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/UserProfilesService/obj/Debug/OpenSim.Services.UserProfilesService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/UserProfilesService/obj/Debug/OpenSim.Services.UserProfilesService.pdb

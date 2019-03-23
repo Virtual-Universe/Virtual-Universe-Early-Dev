@@ -1,7 +1,7 @@
-#!/usr/bin/env python
+﻿#!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # 
-# Copyright (c) Contributors, http://opensimulator.org/
+# Copyright (c) Contributors, https://virtual-planets.org/
 # See CONTRIBUTORS.TXT for a full list of copyright holders.
 # 
 # Redistribution and use in source and binary forms, with or without

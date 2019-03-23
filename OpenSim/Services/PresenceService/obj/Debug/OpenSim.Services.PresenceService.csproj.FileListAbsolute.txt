@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.PresenceService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.PresenceService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/PresenceService/obj/Debug/OpenSim.Services.PresenceService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/PresenceService/obj/Debug/OpenSim.Services.PresenceService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/PresenceService/obj/Debug/OpenSim.Services.PresenceService.pdb

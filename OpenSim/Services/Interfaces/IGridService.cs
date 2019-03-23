@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -58,12 +58,12 @@ namespace OpenSim.Services.Interfaces
         bool DeregisterRegion(UUID regionID);
 
         /// <summary>
-        /// Get information about the regions neighbouring the given co-ordinates (in meters).
+        /// Get information about the regions neighboring the given co-ordinates (in meters).
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
         /// <returns></returns>
-        List<GridRegion> GetNeighbours(UUID scopeID, UUID regionID);
+        List<GridRegion> GetNeighbors(UUID scopeID, UUID regionID);
 
         GridRegion GetRegionByUUID(UUID scopeID, UUID regionID);
 
@@ -107,10 +107,10 @@ namespace OpenSim.Services.Interfaces
         List<GridRegion> GetHyperlinks(UUID scopeID);
 
         /// <summary>
-        /// Get internal OpenSimulator region flags.
+        /// Get internal Virtual Universe region flags.
         /// </summary>
         /// <remarks>
-        /// See OpenSimulator.Framework.RegionFlags.  These are not returned in the GridRegion structure -
+        /// See Virtual Universe.Framework.RegionFlags.  These are not returned in the GridRegion structure -
         /// they currently need to be requested separately.  Possibly this should change to avoid multiple service calls
         /// in some situations.
         /// </remarks>

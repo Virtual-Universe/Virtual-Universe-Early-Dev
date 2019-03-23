@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyrightD
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -41,7 +41,7 @@ using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
-using Caps=OpenSim.Framework.Capabilities.Caps;
+using Caps = OpenSim.Framework.Capabilities.Caps;
 
 namespace OpenSim.Region.CoreModules.Framework
 {
@@ -64,7 +64,7 @@ namespace OpenSim.Region.CoreModules.Framework
         protected Dictionary<UUID, Dictionary<ulong, string>> m_childrenSeeds
             = new Dictionary<UUID, Dictionary<ulong, string>>();
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
         }
 
@@ -102,7 +102,7 @@ namespace OpenSim.Region.CoreModules.Framework
             m_scene.UnregisterModuleInterface<ICapabilitiesModule>(this);
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -121,15 +121,7 @@ namespace OpenSim.Region.CoreModules.Framework
         public void CreateCaps(UUID agentId, uint circuitCode)
         {
             int ts = Util.EnvironmentTickCount();
-/*  this as no business here...
- * must be done elsewhere ( and is )
-            int flags = m_scene.GetUserFlags(agentId);
 
-            m_log.ErrorFormat("[CreateCaps]: banCheck {0} ", Util.EnvironmentTickCountSubtract(ts));
-
-            if (m_scene.RegionInfo.EstateSettings.IsBanned(agentId, flags))
-                return;
-*/
             Caps caps;
             String capsObjectPath = GetCapsPath(agentId);
 
@@ -139,12 +131,8 @@ namespace OpenSim.Region.CoreModules.Framework
                 {
                     Caps oldCaps = m_capsObjects[circuitCode];
 
-
                     if (capsObjectPath == oldCaps.CapsObjectPath)
                     {
-//                        m_log.WarnFormat(
-//                           "[CAPS]: Reusing caps for agent {0} in region {1}.  Old caps path {2}, new caps path {3}. ",
-//                            agentId, m_scene.RegionInfo.RegionName, oldCaps.CapsObjectPath, capsObjectPath);
                         return;
                     }
                     else
@@ -160,27 +148,22 @@ namespace OpenSim.Region.CoreModules.Framework
                     }
                 }
 
-//                m_log.DebugFormat(
-//                    "[CAPS]: Adding capabilities for agent {0} in {1} with path {2}",
-//                    agentId, m_scene.RegionInfo.RegionName, capsObjectPath);
-
                 caps = new Caps(MainServer.Instance, m_scene.RegionInfo.ExternalHostName,
                         (MainServer.Instance == null) ? 0: MainServer.Instance.Port,
                         capsObjectPath, agentId, m_scene.RegionInfo.RegionName);
 
-                m_log.DebugFormat("[CreateCaps]: new caps agent {0}, circuit {1}, path {2}, time {3} ",agentId,
+                m_log.DebugFormat("[Create Caps]: new caps agent {0}, circuit {1}, path {2}, time {3} ",agentId,
                     circuitCode,caps.CapsObjectPath, Util.EnvironmentTickCountSubtract(ts));
 
                 m_capsObjects[circuitCode] = caps;
             }
-            m_scene.EventManager.TriggerOnRegisterCaps(agentId, caps);
-//            m_log.ErrorFormat("[CreateCaps]: end {0} ", Util.EnvironmentTickCountSubtract(ts));
 
+            m_scene.EventManager.TriggerOnRegisterCaps(agentId, caps);
         }
 
         public void RemoveCaps(UUID agentId, uint circuitCode)
         {
-            m_log.DebugFormat("[CAPS]: Remove caps for agent {0} in region {1}", agentId, m_scene.RegionInfo.RegionName);
+            m_log.DebugFormat("[Caps]: Remove caps for agent {0} in region {1}", agentId, m_scene.RegionInfo.RegionName);
             lock (m_childrenSeeds)
             {
                 if (m_childrenSeeds.ContainsKey(agentId))
@@ -210,7 +193,7 @@ namespace OpenSim.Region.CoreModules.Framework
                         }
                     }
                     m_log.WarnFormat(
-                        "[CAPS]: Received request to remove CAPS handler for root agent {0} in {1}, but no such CAPS handler found!",
+                        "[Caps]: Received request to remove CAPS handler for root agent {0} in {1}, but no such CAPS handler found!",
                         agentId, m_scene.RegionInfo.RegionName);
                 }
             }
@@ -306,8 +289,6 @@ namespace OpenSim.Region.CoreModules.Framework
 
         public void SetChildrenSeed(UUID agentID, Dictionary<ulong, string> seeds)
         {
-            //m_log.DebugFormat(" !!! Setting child seeds in {0} to {1}", m_scene.RegionInfo.RegionName, seeds.Count);
-
             lock (m_childrenSeeds)
                 m_childrenSeeds[agentID] = seeds;
         }
@@ -387,227 +368,22 @@ namespace OpenSim.Region.CoreModules.Framework
 
         private void BuildDetailedStatsByCapReport(StringBuilder sb, string capName)
         {
-            /*
-            sb.AppendFormat("Capability name {0}\n", capName);
-
-            ConsoleDisplayTable cdt = new ConsoleDisplayTable();
-            cdt.AddColumn("User Name", 34);
-            cdt.AddColumn("Req Received", 12);
-            cdt.AddColumn("Req Handled", 12);
-            cdt.Indent = 2;
-
-            Dictionary<string, int> receivedStats = new Dictionary<string, int>();
-            Dictionary<string, int> handledStats = new Dictionary<string, int>();
-
-            m_scene.ForEachScenePresence(
-                sp =>
-                {
-                    Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
-
-                    if (caps == null)
-                        return;
-
-                    Dictionary<string, IRequestHandler> capsHandlers = caps.CapsHandlers.GetCapsHandlers();
-
-                    IRequestHandler reqHandler;
-                    if (capsHandlers.TryGetValue(capName, out reqHandler))
-                    {
-                        receivedStats[sp.Name] = reqHandler.RequestsReceived;
-                        handledStats[sp.Name] = reqHandler.RequestsHandled;
-                    }
-                    else
-                    {
-                        PollServiceEventArgs pollHandler = null;
-                        if (caps.TryGetPollHandler(capName, out pollHandler))
-                        {
-                            receivedStats[sp.Name] = pollHandler.RequestsReceived;
-                            handledStats[sp.Name] = pollHandler.RequestsHandled;
-                        }
-                    }
-                }
-            );
-
-            foreach (KeyValuePair<string, int> kvp in receivedStats.OrderByDescending(kp => kp.Value))
-            {
-                cdt.AddRow(kvp.Key, kvp.Value, handledStats[kvp.Key]);
-            }
-
-            sb.Append(cdt.ToString());
-            */
         }
 
         private void BuildSummaryStatsByCapReport(StringBuilder sb)
         {
-            /*
-            ConsoleDisplayTable cdt = new ConsoleDisplayTable();
-            cdt.AddColumn("Name", 34);
-            cdt.AddColumn("Req Received", 12);
-            cdt.AddColumn("Req Handled", 12);
-            cdt.Indent = 2;
-
-            Dictionary<string, int> receivedStats = new Dictionary<string, int>();
-            Dictionary<string, int> handledStats = new Dictionary<string, int>();
-
-            m_scene.ForEachScenePresence(
-                sp =>
-                {
-                    Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
-
-                    if (caps == null)
-                        return;
-
-                    foreach (IRequestHandler reqHandler in caps.CapsHandlers.GetCapsHandlers().Values)
-                    {
-                        string reqName = reqHandler.Name ?? "";
-
-                        if (!receivedStats.ContainsKey(reqName))
-                        {
-                            receivedStats[reqName] = reqHandler.RequestsReceived;
-                            handledStats[reqName] = reqHandler.RequestsHandled;
-                        }
-                        else
-                        {
-                            receivedStats[reqName] += reqHandler.RequestsReceived;
-                            handledStats[reqName] += reqHandler.RequestsHandled;
-                        }
-                    }
-
-                    foreach (KeyValuePair<string, PollServiceEventArgs> kvp in caps.GetPollHandlers())
-                    {
-                        string name = kvp.Key;
-                        PollServiceEventArgs pollHandler = kvp.Value;
-
-                        if (!receivedStats.ContainsKey(name))
-                        {
-                            receivedStats[name] = pollHandler.RequestsReceived;
-                            handledStats[name] = pollHandler.RequestsHandled;
-                        }
-                            else
-                        {
-                            receivedStats[name] += pollHandler.RequestsReceived;
-                            handledStats[name] += pollHandler.RequestsHandled;
-                        }
-                    }
-                }
-            );
-
-            foreach (KeyValuePair<string, int> kvp in receivedStats.OrderByDescending(kp => kp.Value))
-                cdt.AddRow(kvp.Key, kvp.Value, handledStats[kvp.Key]);
-
-            sb.Append(cdt.ToString());
-            */
         }
 
         private void HandleShowCapsStatsByUserCommand(string module, string[] cmdParams)
         {
-            /*
-            if (SceneManager.Instance.CurrentScene != null && SceneManager.Instance.CurrentScene != m_scene)
-                return;
-
-            if (cmdParams.Length != 5 && cmdParams.Length != 7)
-            {
-                MainConsole.Instance.Output("Usage: show caps stats by user [<first-name> <last-name>]");
-                return;
-            }
-
-            StringBuilder sb = new StringBuilder();
-            sb.AppendFormat("Region {0}:\n", m_scene.Name);
-
-            if (cmdParams.Length == 5)
-            {
-                BuildSummaryStatsByUserReport(sb);
-            }
-            else if (cmdParams.Length == 7)
-            {
-                string firstName = cmdParams[5];
-                string lastName = cmdParams[6];
-
-                ScenePresence sp = m_scene.GetScenePresence(firstName, lastName);
-
-                if (sp == null)
-                    return;
-
-                BuildDetailedStatsByUserReport(sb, sp);
-            }
-
-            MainConsole.Instance.Output(sb.ToString());
-            */
         }
 
         private void BuildDetailedStatsByUserReport(StringBuilder sb, ScenePresence sp)
         {
-            /*
-            sb.AppendFormat("Avatar name {0}, type {1}\n", sp.Name, sp.IsChildAgent ? "child" : "root");
-
-            ConsoleDisplayTable cdt = new ConsoleDisplayTable();
-            cdt.AddColumn("Cap Name", 34);
-            cdt.AddColumn("Req Received", 12);
-            cdt.AddColumn("Req Handled", 12);
-            cdt.Indent = 2;
-
-            Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
-
-            if (caps == null)
-                return;
-
-            List<CapTableRow> capRows = new List<CapTableRow>();
-
-            foreach (IRequestHandler reqHandler in caps.CapsHandlers.GetCapsHandlers().Values)
-                capRows.Add(new CapTableRow(reqHandler.Name, reqHandler.RequestsReceived, reqHandler.RequestsHandled));
-
-            foreach (KeyValuePair<string, PollServiceEventArgs> kvp in caps.GetPollHandlers())
-                capRows.Add(new CapTableRow(kvp.Key, kvp.Value.RequestsReceived, kvp.Value.RequestsHandled));
-
-            foreach (CapTableRow ctr in capRows.OrderByDescending(ctr => ctr.RequestsReceived))
-                cdt.AddRow(ctr.Name, ctr.RequestsReceived, ctr.RequestsHandled);
-
-            sb.Append(cdt.ToString());
-            */
         }
 
         private void BuildSummaryStatsByUserReport(StringBuilder sb)
         {
-            /*
-            ConsoleDisplayTable cdt = new ConsoleDisplayTable();
-            cdt.AddColumn("Name", 32);
-            cdt.AddColumn("Type", 5);
-            cdt.AddColumn("Req Received", 12);
-            cdt.AddColumn("Req Handled", 12);
-            cdt.Indent = 2;
-
-            m_scene.ForEachScenePresence(
-                sp =>
-                {
-                    Caps caps = m_scene.CapsModule.GetCapsForUser(sp.UUID);
-
-                    if (caps == null)
-                        return;
-
-                    Dictionary<string, IRequestHandler> capsHandlers = caps.CapsHandlers.GetCapsHandlers();
-
-                    int totalRequestsReceived = 0;
-                    int totalRequestsHandled = 0;
-
-                    foreach (IRequestHandler reqHandler in capsHandlers.Values)
-                    {
-                        totalRequestsReceived += reqHandler.RequestsReceived;
-                        totalRequestsHandled += reqHandler.RequestsHandled;
-                    }
-
-                    Dictionary<string, PollServiceEventArgs> capsPollHandlers = caps.GetPollHandlers();
-
-                    foreach (PollServiceEventArgs handler in capsPollHandlers.Values)
-                    {
-                        totalRequestsReceived += handler.RequestsReceived;
-                        totalRequestsHandled += handler.RequestsHandled;
-                    }
-
-                    cdt.AddRow(sp.Name, sp.IsChildAgent ? "child" : "root", totalRequestsReceived, totalRequestsHandled);
-                }
-            );
-
-            sb.Append(cdt.ToString());
-            */
         }
 
         private class CapTableRow

@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModule.ubOdeMeshing.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModule.ubOdeMeshing.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/ubOdeMeshing/obj/Debug/OpenSim.Region.PhysicsModule.ubOdeMeshing.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/ubOdeMeshing/obj/Debug/OpenSim.Region.PhysicsModule.ubOdeMeshing.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/ubOdeMeshing/obj/Debug/OpenSim.Region.PhysicsModule.ubOdeMeshing.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/ubOdeMeshing/obj/Debug/OpenSim.Region.PhysicsModule.ubOdeMeshing.pdb

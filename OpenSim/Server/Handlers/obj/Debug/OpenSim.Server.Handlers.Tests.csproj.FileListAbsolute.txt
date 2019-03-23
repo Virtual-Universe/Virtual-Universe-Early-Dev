@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Server.Handlers.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Server.Handlers.Tests.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Server/Handlers/obj/Debug/OpenSim.Server.Handlers.Tests.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Server/Handlers/obj/Debug/OpenSim.Server.Handlers.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Server/Handlers/obj/Debug/OpenSim.Server.Handlers.Tests.pdb

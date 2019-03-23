@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -30,13 +30,13 @@ using System;
 namespace OpenSim.Framework
 {
     /// <summary>
-    /// Exception thrown if Initialise has been called, but failed.
+    /// Exception thrown if Initialize has been called, but failed.
     /// </summary>
-    public class PluginNotInitialisedException : Exception
+    public class PluginNotInitializedException : Exception
     {
-        public PluginNotInitialisedException () : base() {}
-        public PluginNotInitialisedException (string msg) : base(msg) {}
-        public PluginNotInitialisedException (string msg, Exception e) : base(msg, e) {}
+        public PluginNotInitializedException () : base() {}
+        public PluginNotInitializedException (string msg) : base(msg) {}
+        public PluginNotInitializedException (string msg, Exception e) : base(msg, e) {}
     }
 
     /// <summary>
@@ -57,23 +57,23 @@ namespace OpenSim.Framework
         string Name { get; }
 
         /// <summary>
-        /// Default-initialises the plugin
+        /// Default-initializes the plugin
         /// </summary>
-        void Initialise();
+        void Initialize();
     }
 
     /// <summary>
-    /// Any plugins which need to pass parameters to their initialisers must
-    /// inherit this class and use it to set the PluginLoader Initialiser property
+    /// Any plugins which need to pass parameters to their initializers must
+    /// inherit this class and use it to set the PluginLoader Initializer property
     /// </summary>
-    public class PluginInitialiserBase
+    public class PluginInitializerBase
     {
         // this would be a lot simpler if C# supported currying or typedefs
 
         // default initialisation
-        public virtual void Initialise (IPlugin plugin)
+        public virtual void Initialize (IPlugin plugin)
         {
-            plugin.Initialise();
+            plugin.Initialize();
         }
     }
 

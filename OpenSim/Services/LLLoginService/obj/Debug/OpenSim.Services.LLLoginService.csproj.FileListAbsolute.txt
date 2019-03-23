@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.LLLoginService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.LLLoginService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/LLLoginService/obj/Debug/OpenSim.Services.LLLoginService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/LLLoginService/obj/Debug/OpenSim.Services.LLLoginService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/LLLoginService/obj/Debug/OpenSim.Services.LLLoginService.pdb

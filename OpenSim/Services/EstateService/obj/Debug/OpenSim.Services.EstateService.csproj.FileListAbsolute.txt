@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.EstateService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.EstateService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/EstateService/obj/Debug/OpenSim.Services.EstateService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/EstateService/obj/Debug/OpenSim.Services.EstateService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/EstateService/obj/Debug/OpenSim.Services.EstateService.pdb

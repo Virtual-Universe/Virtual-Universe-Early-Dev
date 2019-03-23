@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -54,8 +54,6 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
 
         public bool RecyclePackets { get; set; }
-
-        public bool RecycleDataBlocks { get; set; }
 
         /// <summary>
         /// The number of packets pooled
@@ -105,8 +103,6 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         {
             // defaults
             RecyclePackets = true;
-            //            RecycleDataBlocks = true;
-            RecycleDataBlocks = false;
         }
 
         /// <summary>
@@ -209,32 +205,23 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             {
                 case PacketType.ObjectUpdate:
                     ObjectUpdatePacket oup = (ObjectUpdatePacket)packet;
-
-                    if (RecycleDataBlocks)
-                    {
-                        foreach (ObjectUpdatePacket.ObjectDataBlock oupod in oup.ObjectData)
-                            ReturnDataBlock<ObjectUpdatePacket.ObjectDataBlock>(oupod);
-                    }
-
                     oup.ObjectData = null;
                     trypool = true;
                     break;
 
                 case PacketType.ImprovedTerseObjectUpdate:
                     ImprovedTerseObjectUpdatePacket itoup = (ImprovedTerseObjectUpdatePacket)packet;
-
-                    if (RecycleDataBlocks)
-                    {
-                        foreach (ImprovedTerseObjectUpdatePacket.ObjectDataBlock itoupod in itoup.ObjectData)
-                            ReturnDataBlock<ImprovedTerseObjectUpdatePacket.ObjectDataBlock>(itoupod);
-                    }
-
                     itoup.ObjectData = null;
                     trypool = true;
                     break;
 
-                case PacketType.AgentUpdate:
                 case PacketType.PacketAck:
+                    PacketAckPacket ackup = (PacketAckPacket)packet;
+                    ackup.Packets = null;
+                    trypool = true;
+                    break;
+
+                case PacketType.AgentUpdate:
                     trypool = true;
                     break;
                 default:

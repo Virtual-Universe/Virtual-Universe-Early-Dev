@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.MuteListService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.MuteListService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/MuteListService/obj/Debug/OpenSim.Services.MuteListService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/MuteListService/obj/Debug/OpenSim.Services.MuteListService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/MuteListService/obj/Debug/OpenSim.Services.MuteListService.pdb

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -153,7 +153,7 @@ namespace OpenSim.Framework
         private bool m_DenyAnonymous = false;
         public bool DenyAnonymous
         {
-            get { return m_DenyAnonymous; }
+            get { return (DoDenyAnonymous && m_DenyAnonymous); }
             set { m_DenyAnonymous = value; }
         }
 
@@ -233,7 +233,7 @@ namespace OpenSim.Framework
         private bool m_DenyMinors = false;
         public bool DenyMinors
         {
-            get { return m_DenyMinors; }
+            get { return (DoDenyMinors && m_DenyMinors); }
             set { m_DenyMinors = value; }
         }
 
@@ -379,14 +379,14 @@ namespace OpenSim.Framework
 
                 if (!HasAccess(avatarID))
                 {
-                    if (DoDenyMinors && DenyMinors)
+                    if (DenyMinors)
                     {
                         if ((userFlags & 32) == 0)
                         {
                             return true;
                         }
                     }
-                    if (DoDenyAnonymous && DenyAnonymous)
+                    if (DenyAnonymous)
                     {
                         if ((userFlags & 4) == 0)
                         {

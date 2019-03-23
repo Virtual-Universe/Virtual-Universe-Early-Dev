@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -69,14 +69,14 @@ namespace OpenSim.Region.PhysicsModule.ODE.Tests
 
             //IMesher mesher = new OpenSim.Region.PhysicsModule.Meshing.Meshmerizer();
             //INonSharedRegionModule mod = mesher as INonSharedRegionModule;
-            //mod.Initialise(openSimINI);
+            //mod.Initialize(openSimINI);
             //mod.AddRegion(scene);
             //mod.RegionLoaded(scene);
 
             //            pScene = new OdeScene();
             odemodule = new OpenSim.Region.PhysicsModule.ODE.OdeModule();
             Console.WriteLine("HERE " + (odemodule == null ? "Null" : "Not null"));
-            odemodule.Initialise(openSimINI);
+            odemodule.Initialize(openSimINI);
             odemodule.AddRegion(scene);
             odemodule.RegionLoaded(scene);
 
@@ -85,7 +85,7 @@ namespace OpenSim.Region.PhysicsModule.ODE.Tests
             // Getting Physics Scene
             //ps = cbt.GetScene("test");
             // Initializing Physics Scene.
-            //ps.Initialise(imp.GetMesher(TopConfig), null, Vector3.Zero);
+            //ps.Initialize(imp.GetMesher(TopConfig), null, Vector3.Zero);
             float[] _heightmap = new float[(int)Constants.RegionSize * (int)Constants.RegionSize];
             for (int i = 0; i < ((int)Constants.RegionSize * (int)Constants.RegionSize); i++)
             {

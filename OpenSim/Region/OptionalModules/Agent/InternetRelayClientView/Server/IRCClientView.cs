@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -75,7 +75,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             m_client = client;
             m_scene = scene;
 
-            WorkManager.StartThread(InternalLoop, "IRCClientView", ThreadPriority.Normal, false, true);
+            WorkManager.StartThread(InternalLoop, "IRCClientView");
         }
 
         private void SendServerCommand(string command)
@@ -288,7 +288,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         {
             if (m_hasUser && m_hasNick)
             {
-                SendServerCommand("001 " + m_nick + " :Welcome to OpenSimulator IRCd");
+                SendServerCommand("001 " + m_nick + " :Welcome to Virtual Universe IRCd");
                 SendServerCommand("002 " + m_nick + " :Running OpenSimVersion");
                 SendServerCommand("003 " + m_nick + " :This server was created over 9000 years ago");
                 SendServerCommand("004 " + m_nick + " :opensimirc r1 aoOirw abeiIklmnoOpqrstv");
@@ -305,7 +305,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
                 m_nick = m_username.Replace(" ", "");
 
                 IRC_SendReplyJoin();
-                IRC_SendChannelPrivmsg("System", "Welcome to OpenSimulator.");
+                IRC_SendChannelPrivmsg("System", "Welcome to Virtual Universe.");
                 IRC_SendChannelPrivmsg("System", "You are in a maze of twisty little passages, all alike.");
                 IRC_SendChannelPrivmsg("System", "It is pitch black. You are likely to be eaten by a grue.");
 
@@ -408,14 +408,14 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
         private void IRC_SendMOTD()
         {
-            SendServerCommand("375 :- OpenSimulator Message of the day -");
+            SendServerCommand("375 :- Virtual Universe Message of the day -");
             SendServerCommand("372 :- Hiya!");
             SendServerCommand("376 :End of /MOTD command");
         }
 
         private void IRC_SendReplyTopic()
         {
-            SendServerCommand("332 " + IrcRegionName + " :OpenSimulator IRC Server");
+            SendServerCommand("332 " + IrcRegionName + " :Virtual Universe IRC Server");
         }
 
         private void IRC_SendReplyUsers()
@@ -630,6 +630,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         public int NextAnimationSequenceNumber
         {
             get { return 0; }
+            set { }
         }
 
         public string Name
@@ -698,7 +699,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         public event TeleportCancel OnTeleportCancel;
         public event DeRezObject OnDeRezObject;
         public event RezRestoreToWorld OnRezRestoreToWorld;
-        public event Action<IClientAPI> OnRegionHandShakeReply;
+        public event Action<IClientAPI, uint> OnRegionHandShakeReply;
         public event GenericCall1 OnRequestWearables;
         public event Action<IClientAPI, bool> OnCompleteMovementToRegion;
         public event UpdateAgent OnPreAgentUpdate;
@@ -931,13 +932,13 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             OnSetAppearance(this, appearance.Texture, (byte[])appearance.VisualParams.Clone(),appearance.AvatarSize, new WearableCacheItem[0]);
         }
 
-        public void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args)
+        public void SendRegionHandshake()
         {
             m_log.Info("[IRCd ClientStack] Completing Handshake to Region");
 
             if (OnRegionHandShakeReply != null)
             {
-                OnRegionHandShakeReply(this);
+                OnRegionHandShakeReply(this, 0);
             }
 
             if (OnCompleteMovementToRegion != null)
@@ -962,11 +963,6 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         }
 
         public void SendCachedTextureResponse(ISceneEntity avatar, int serial, List<CachedTextureResponseArg> cachedTextures)
-        {
-
-        }
-
-        public void SendStartPingCheck(byte seq)
         {
 
         }
@@ -1013,19 +1009,16 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             return false;
         }
 
-        public void SendLayerData(float[] map)
+        public void SendLayerData()
         {
-
         }
 
-        public void SendLayerData(int px, int py, float[] map)
+        public void SendLayerData(int[] map)
         {
-
         }
 
         public void SendWindData(int version, Vector2[] windSpeeds)
         {
-
         }
 
         public void SendCloudData(int version, float[] cloudCover)
@@ -1038,7 +1031,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
         }
 
-        public void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourExternalEndPoint)
+        public void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborExternalEndPoint)
         {
 
         }
@@ -1779,5 +1772,8 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         {
             return 0;
         }
+
+        public void CheckViewerCaps() { }
+
     }
 }

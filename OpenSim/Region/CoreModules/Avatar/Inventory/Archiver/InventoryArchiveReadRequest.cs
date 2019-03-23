@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -500,7 +500,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
         /// <returns>true if asset was successfully loaded, false otherwise</returns>
         private bool LoadAsset(string assetPath, byte[] data)
         {
-            //IRegionSerialiser serialiser = scene.RequestModuleInterface<IRegionSerialiser>();
+            //IRegionSerializer serializer = scene.RequestModuleInterface<IRegionSerializer>();
             // Right now we're nastily obtaining the UUID from the filename
             string filename = assetPath.Remove(0, ArchiveConstants.ASSETS_PATH.Length);
             int i = filename.LastIndexOf(ArchiveConstants.ASSET_EXTENSION_SEPARATOR);

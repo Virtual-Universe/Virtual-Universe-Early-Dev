@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/pCampBot.exe
+/home/dev/Desktop/OpenSim-Dev/bin/pCampBot.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/pCampBot/obj/Debug/pCampBot.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/pCampBot/obj/Debug/pCampBot.exe
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/pCampBot/obj/Debug/pCampBot.pdb

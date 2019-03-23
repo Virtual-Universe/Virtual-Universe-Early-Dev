@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -64,10 +64,10 @@ namespace OpenSim.Data.SQLite
 
         public SQLiteEstateStore(string connectionString)
         {
-            Initialise(connectionString);
+            Initialize(connectionString);
         }
 
-        public void Initialise(string connectionString)
+        public void Initialize(string connectionString)
         {
             if (Util.IsWindows())
                 Util.LoadArchSpecificWindowsDll("sqlite3.dll");
@@ -124,7 +124,7 @@ namespace OpenSim.Data.SQLite
             }
             catch (SqliteException)
             {
-                m_log.Error("[SQLITE]: There was an issue loading the estate settings.  This can happen the first time running OpenSimulator with CSharpSqlite the first time.  OpenSimulator will probably crash, restart it and it should be good to go.");
+                m_log.Error("[SQLITE]: There was an issue loading the estate settings.  This can happen the first time running Virtual Universe with CSharpSqlite the first time.  Virtual Universe will probably crash, restart it and it should be good to go.");
             }
 
             if (r != null && r.Read())

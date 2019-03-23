@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -351,14 +351,14 @@ namespace OpenSim.Region.OptionalModules.Avatar.Chat
 
                     m_log.InfoFormat("[IRC-Connector-{0}]: Connected to {1}:{2}", idn, m_server, m_port);
 
-                    WorkManager.StartThread(ListenerRun, "IRCConnectionListenerThread", ThreadPriority.Normal, true, false);
+                    WorkManager.StartThread(ListenerRun, "IRCConnectionListenerThread", false, false);
 
                     // This is the message order recommended by RFC 2812
                     if (m_password != null)
                         m_writer.WriteLine(String.Format("PASS {0}", m_password));
                     m_writer.WriteLine(String.Format("NICK {0}", m_nick));
                     m_writer.Flush();
-                    m_writer.WriteLine(m_user);
+                    m_writer.WriteLine(String.Format("USER {0} 0 * :OpenSim Relay",m_user));
                     m_writer.Flush();
                 }
                 catch (Exception e)
@@ -637,6 +637,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Chat
                 case "003": // Welcome ...
                     break;
                 case "004": // Server information
+
                     m_log.DebugFormat("[IRC-Connector-{0}] [{1}] parms = <{2}>", idn, cmd, parms);
                     commArgs = parms.Split(CS_SPACE);
                     c_server = commArgs[1];

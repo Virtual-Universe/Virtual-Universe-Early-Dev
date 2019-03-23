@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -66,7 +66,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
         public event ConsoleMessage OnConsoleMessage;
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             m_commands.AddCommand( "Help", false, "help", "help [<item>]", "Display help on a particular command or on a list of commands in a category", Help);
         }
@@ -89,7 +89,7 @@ namespace OpenSim.Region.ClientStack.Linden
             m_eventQueue = m_scene.RequestModuleInterface<IEventQueue>();
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -104,8 +104,8 @@ namespace OpenSim.Region.ClientStack.Linden
 
         public void RegisterCaps(UUID agentID, Caps caps)
         {
-            if (!m_scene.RegionInfo.EstateSettings.IsEstateManagerOrOwner(agentID) && !m_scene.Permissions.IsGod(agentID))
-                return;
+//            if (!m_scene.RegionInfo.EstateSettings.IsEstateManagerOrOwner(agentID) && !m_scene.Permissions.IsGod(agentID))
+//                return;
 
             UUID capID = UUID.Random();
 
@@ -190,6 +190,12 @@ namespace OpenSim.Region.ClientStack.Linden
                 message = reader.ReadToEnd();
 
             OSD osd = OSDParser.DeserializeLLSDXml(message);
+
+            if (!m_scene.RegionInfo.EstateSettings.IsEstateManagerOrOwner(m_agentID) && !m_isGod)
+            {
+                m_consoleModule.SendConsoleOutput(m_agentID, "No access");
+                return new byte[0];
+            }
 
             string cmd = osd.AsString();
             if (cmd == "set console on")

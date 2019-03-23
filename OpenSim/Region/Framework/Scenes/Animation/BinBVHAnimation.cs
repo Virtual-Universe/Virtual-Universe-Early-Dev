@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -409,20 +409,11 @@ namespace OpenSim.Region.Framework.Scenes.Animation
             for (int j = 0; j < keycount; j++)
             {
                 binBVHJointKey pJKey = new binBVHJointKey();
-                if (!BitConverter.IsLittleEndian)
-                {
-                    pJKey.time = Utils.UInt16ToFloat(BinBVHUtil.EndianSwap(data, i, 2), 0, InPoint, OutPoint); i += 2;
-                    x = Utils.UInt16ToFloat(BinBVHUtil.EndianSwap(data, i, 2), 0, min, max); i += 2;
-                    y = Utils.UInt16ToFloat(BinBVHUtil.EndianSwap(data, i, 2), 0, min, max); i += 2;
-                    z = Utils.UInt16ToFloat(BinBVHUtil.EndianSwap(data, i, 2), 0, min, max); i += 2;
-                }
-                else
-                {
-                    pJKey.time = Utils.UInt16ToFloat(data, i, InPoint, OutPoint); i += 2;
-                    x = Utils.UInt16ToFloat(data, i, min, max); i += 2;
-                    y = Utils.UInt16ToFloat(data, i, min, max); i += 2;
-                    z = Utils.UInt16ToFloat(data, i, min, max); i += 2;
-                }
+                pJKey.time = Utils.BytesUInt16ToFloat(data, i, InPoint, OutPoint); i += 2;
+                x = Utils.BytesUInt16ToFloat(data, i, min, max); i += 2;
+                y = Utils.BytesUInt16ToFloat(data, i, min, max); i += 2;
+                z = Utils.BytesUInt16ToFloat(data, i, min, max); i += 2;
+
                 pJKey.key_element = new Vector3(x, y, z);
                 m_keys[j] = pJKey;
             }

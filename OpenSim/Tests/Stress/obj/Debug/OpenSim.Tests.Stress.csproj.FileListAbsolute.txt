@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Stress.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Stress.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Stress/obj/Debug/OpenSim.Tests.Stress.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Stress/obj/Debug/OpenSim.Tests.Stress.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Stress/obj/Debug/OpenSim.Tests.Stress.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Stress/obj/Debug/OpenSim.Tests.Stress.pdb

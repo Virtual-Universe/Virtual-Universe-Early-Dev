@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -729,7 +729,7 @@ namespace OpenSim.Framework
 
         public static bool LoadArchSpecificWindowsDll(string libraryName, string path)
         {
-            // We do this so that OpenSimulator on Windows loads the correct native library depending on whether
+            // We do this so that Virtual Universe on Windows loads the correct native library depending on whether
             // it's running as a 32-bit process or a 64-bit one.  By invoking LoadLibary here, later DLLImports
             // will find it already loaded later on.
             //
@@ -2436,34 +2436,6 @@ namespace OpenSim.Framework
         }
 
         #region FireAndForget Threading Pattern
-
-        /// <summary>
-        /// Created to work around a limitation in Mono with nested delegates
-        /// </summary>
-        private sealed class FireAndForgetWrapper
-        {
-            private static object syncRoot = new Object();
-
-            public void FireAndForget(System.Threading.WaitCallback callback)
-            {
-                callback.BeginInvoke(null, EndFireAndForget, callback);
-            }
-
-            public void FireAndForget(System.Threading.WaitCallback callback, object obj)
-            {
-                callback.BeginInvoke(obj, EndFireAndForget, callback);
-            }
-
-            private static void EndFireAndForget(IAsyncResult ar)
-            {
-                System.Threading.WaitCallback callback = (System.Threading.WaitCallback)ar.AsyncState;
-
-                try { callback.EndInvoke(ar); }
-                catch (Exception ex) { m_log.Error("[UTIL]: Asynchronous method threw an exception: " + ex.Message, ex); }
-
-                ar.AsyncWaitHandle.Close();
-            }
-        }
 
         public static void InitThreadPool(int minThreads, int maxThreads)
         {

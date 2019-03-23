@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -101,7 +101,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
 
         private IFreeswitchService m_FreeswitchService;
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_Config = config.Configs["FreeSwitchVoice"];
 
@@ -183,31 +183,9 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
                 m_log.ErrorFormat("[FreeSwitchVoice]: plugin initialization failed: {0} {1}", e.Message, e.StackTrace);
                 return;
             }
-
-            // This here is a region module trying to make a global setting.
-            // Not really a good idea but it's Windows only, so I can't test.
-            try
-            {
-                ServicePointManager.ServerCertificateValidationCallback += CustomCertificateValidation;
-            }
-            catch (NotImplementedException)
-            {
-                try
-                {
-#pragma warning disable 0612, 0618
-                    // Mono does not implement the ServicePointManager.ServerCertificateValidationCallback yet!  Don't remove this!
-                    ServicePointManager.CertificatePolicy = new MonoCert();
-#pragma warning restore 0612, 0618
-                }
-                catch (Exception)
-                {
-                    // COmmented multiline spam log message
-                    //m_log.Error("[FreeSwitchVoice]: Certificate validation handler change not supported.  You may get ssl certificate validation errors teleporting from your region to some SSL regions.");
-                }
-            }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -297,7 +275,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
         //
         // Note that OnRegisterCaps is called here via a closure
         // delegate containing the scene of the respective region (see
-        // Initialise()).
+        // Initialize()).
         // </summary>
         public void OnRegisterCaps(Scene scene, UUID agentID, Caps caps)
         {
@@ -394,7 +372,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
                                                 String.Format("http://{0}:{1}{2}/", m_openSimWellKnownHTTPAddress,
                                                               m_freeSwitchServicePort, m_freeSwitchAPIPrefix));
 
-                string r = LLSDHelpers.SerialiseLLSDReply(voiceAccountResponse);
+                string r = LLSDHelpers.SerializeLLSDReply(voiceAccountResponse);
 
 //                m_log.DebugFormat("[FreeSwitchVoice][PROVISIONVOICE]: avatar \"{0}\": {1}", avatarName, r);
 
@@ -477,7 +455,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
                 creds["channel_uri"] = channelUri;
 
                 parcelVoiceInfo = new LLSDParcelVoiceInfoResponse(scene.RegionInfo.RegionName, land.LocalID, creds);
-                string r = LLSDHelpers.SerialiseLLSDReply(parcelVoiceInfo);
+                string r = LLSDHelpers.SerializeLLSDReply(parcelVoiceInfo);
 
 //                m_log.DebugFormat("[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": Parcel \"{1}\" ({2}): avatar \"{3}\": {4}",
 //                                  scene.RegionInfo.RegionName, land.Name, land.LocalID, avatarName, r);
@@ -541,6 +519,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
             forwardreq.Method = method;
             forwardreq.ContentType = contenttype;
             forwardreq.KeepAlive = false;
+            forwardreq.ServerCertificateValidationCallback = CustomCertificateValidation;
 
             if (method == "POST")
             {
@@ -883,17 +862,5 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
 
             return response;
         }
-    }
-
-    public class MonoCert : ICertificatePolicy
-    {
-        #region ICertificatePolicy Members
-
-        public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem)
-        {
-            return true;
-        }
-
-        #endregion
     }
 }

@@ -1,0 +1,149 @@
+<?xml version="1.0" ?>
+<project name="OpenSim.Region.OptionalModules" default="build">
+	  <target name="build">
+		  <echo message="Build Directory is ${project::get-base-directory()}/${build.dir}" />
+		  <mkdir dir="${project::get-base-directory()}/${build.dir}" />
+		  <copy todir="${project::get-base-directory()}/${build.dir}" flatten="true">
+			  <fileset basedir="${project::get-base-directory()}">
+			  </fileset>
+		  </copy>
+		  <copy todir="${project::get-base-directory()}/${build.dir}">
+			  <fileset basedir=".">
+			  </fileset>
+		  </copy>
+		  <csc  target="library" debug="${build.debug}" platform="${build.platform}" unsafe="True" warnaserror="False" define="TRACE;DEBUG" nostdlib="False" main="" output="${project::get-base-directory()}/${build.dir}/${project::get-name()}.dll" noconfig="true">
+			  <resources prefix="OpenSim.Region.OptionalModules" dynamicprefix="true" >
+			  </resources>
+			  <sources failonempty="true">
+				  <include name="Agent/InternetRelayClientView/IRCStackModule.cs" />
+				  <include name="Agent/InternetRelayClientView/Server/IRCClientView.cs" />
+				  <include name="Agent/InternetRelayClientView/Server/IRCServer.cs" />
+				  <include name="Agent/TextureSender/J2KDecoderCommandModule.cs" />
+				  <include name="Agent/UDP/Linden/LindenUDPInfoModule.cs" />
+				  <include name="Asset/AssetInfoModule.cs" />
+				  <include name="Avatar/Animations/AnimationsCommandModule.cs" />
+				  <include name="Avatar/Appearance/AppearanceInfoModule.cs" />
+				  <include name="Avatar/Chat/ChannelState.cs" />
+				  <include name="Avatar/Chat/IRCBridgeModule.cs" />
+				  <include name="Avatar/Chat/IRCConnector.cs" />
+				  <include name="Avatar/Chat/RegionState.cs" />
+				  <include name="Avatar/Concierge/ConciergeModule.cs" />
+				  <include name="Avatar/Friends/FriendsCommandsModule.cs" />
+				  <include name="Avatar/SitStand/SitStandCommandsModule.cs" />
+				  <include name="Avatar/Voice/FreeSwitchVoice/FreeSwitchVoiceModule.cs" />
+				  <include name="Avatar/Voice/VivoxVoice/VivoxVoiceModule.cs" />
+				  <include name="Avatar/XmlRpcGroups/GroupsMessagingModule.cs" />
+				  <include name="Avatar/XmlRpcGroups/GroupsModule.cs" />
+				  <include name="Avatar/XmlRpcGroups/IGroupsServicesConnector.cs" />
+				  <include name="Avatar/XmlRpcGroups/SimianGroupsServicesConnectorModule.cs" />
+				  <include name="Avatar/XmlRpcGroups/XmlRpcGroupsServicesConnectorModule.cs" />
+				  <include name="DataSnapshot/DataRequestHandler.cs" />
+				  <include name="DataSnapshot/DataSnapshotManager.cs" />
+				  <include name="DataSnapshot/EstateSnapshot.cs" />
+				  <include name="DataSnapshot/LLSDDiscovery.cs" />
+				  <include name="DataSnapshot/LandSnapshot.cs" />
+				  <include name="DataSnapshot/ObjectSnapshot.cs" />
+				  <include name="DataSnapshot/SnapshotStore.cs" />
+				  <include name="DataSnapshot/Interfaces/IDataSnapshot.cs" />
+				  <include name="DataSnapshot/Interfaces/IDataSnapshotProvider.cs" />
+				  <include name="Example/BareBonesNonShared/BareBonesNonSharedModule.cs" />
+				  <include name="Example/BareBonesShared/BareBonesSharedModule.cs" />
+				  <include name="Example/WebSocketEchoTest/WebSocketEchoModule.cs" />
+				  <include name="Framework/Monitoring/EtcdMonitoringModule.cs" />
+				  <include name="Materials/MaterialsModule.cs" />
+				  <include name="PhysicsParameters/PhysicsParameters.cs" />
+				  <include name="PrimLimitsModule/PrimLimitsModule.cs" />
+				  <include name="Properties/AssemblyInfo.cs" />
+				  <include name="Scripting/JsonStore/JsonStore.cs" />
+				  <include name="Scripting/JsonStore/JsonStoreCommands.cs" />
+				  <include name="Scripting/JsonStore/JsonStoreModule.cs" />
+				  <include name="Scripting/JsonStore/JsonStoreScriptModule.cs" />
+				  <include name="Scripting/RegionReadyModule/RegionReadyModule.cs" />
+				  <include name="Scripting/XmlRpcRouterModule/XmlRpcGridRouterModule.cs" />
+				  <include name="Scripting/XmlRpcRouterModule/XmlRpcRouterModule.cs" />
+				  <include name="ServiceConnectorsIn/Freeswitch/FreeswitchServiceInConnectorModule.cs" />
+				  <include name="UserStatistics/ActiveConnectionsAJAX.cs" />
+				  <include name="UserStatistics/Clients_report.cs" />
+				  <include name="UserStatistics/Default_Report.cs" />
+				  <include name="UserStatistics/HTMLUtil.cs" />
+				  <include name="UserStatistics/IStatsReport.cs" />
+				  <include name="UserStatistics/LogLinesAJAX.cs" />
+				  <include name="UserStatistics/Prototype_distributor.cs" />
+				  <include name="UserStatistics/Sessions_Report.cs" />
+				  <include name="UserStatistics/SimStatsAJAX.cs" />
+				  <include name="UserStatistics/Updater_distributor.cs" />
+				  <include name="UserStatistics/WebStatsModule.cs" />
+				  <include name="ViewerSupport/CameraOnlyModeModule.cs" />
+				  <include name="ViewerSupport/DynamicFloaterModule.cs" />
+				  <include name="ViewerSupport/DynamicMenuModule.cs" />
+				  <include name="ViewerSupport/GodNamesModule.cs" />
+				  <include name="ViewerSupport/SimulatorFeaturesHelper.cs" />
+				  <include name="ViewerSupport/SpecialUIModule.cs" />
+				  <include name="World/AutoBackup/AutoBackupModule.cs" />
+				  <include name="World/AutoBackup/AutoBackupModuleState.cs" />
+				  <include name="World/MoneyModule/SampleMoneyModule.cs" />
+				  <include name="World/NPC/NPCAvatar.cs" />
+				  <include name="World/NPC/NPCModule.cs" />
+				  <include name="World/SceneCommands/SceneCommandsModule.cs" />
+				  <include name="World/WorldView/WorldViewModule.cs" />
+				  <include name="World/WorldView/WorldViewRequestHandler.cs" />
+			  </sources>
+			  <references basedir="${project::get-base-directory()}">
+				  <lib>
+					  <include name="${project::get-base-directory()}" />
+					  <include name="${project::get-base-directory()}/../../../VirtualUniverse/bin" />
+				  </lib>
+                <include name="../../../VirtualUniverse/bin/DotNetOpenMail.dll"/>
+                <include name="../../../VirtualUniverse/bin/Ionic.Zip.dll"/>
+                <include name="../../../VirtualUniverse/bin/log4net.dll"/>
+                <include name="../../../VirtualUniverse/bin/Mono.Addins.dll"/>
+                <include name="../../../VirtualUniverse/bin/Mono.Data.SqliteClient.dll"/>
+                <include name="../../../VirtualUniverse/bin/NDesk.Options.dll"/>
+                <include name="../../../VirtualUniverse/bin/netcd.dll"/>
+                <include name="../../../VirtualUniverse/bin/Nini.dll"/>
+                <include name="../../../VirtualUniverse/bin/OpenMetaverse.dll"/>
+                <include name="../../../VirtualUniverse/bin/OpenMetaverse.StructuredData.dll"/>
+                <include name="../../../VirtualUniverse/bin/OpenMetaverseTypes.dll"/>
+                <include name="OpenSim.Capabilities.dll" />
+                <include name="OpenSim.Data.dll" />
+                <include name="OpenSim.Framework.dll" />
+                <include name="OpenSim.Framework.Console.dll" />
+                <include name="OpenSim.Framework.Monitoring.dll" />
+                <include name="OpenSim.Framework.Servers.dll" />
+                <include name="OpenSim.Framework.Servers.HttpServer.dll" />
+                <include name="OpenSim.Region.ClientStack.LindenUDP.dll" />
+                <include name="OpenSim.Region.CoreModules.dll" />
+                <include name="OpenSim.Region.Framework.dll" />
+                <include name="OpenSim.Region.PhysicsModules.SharedBase.dll" />
+                <include name="OpenSim.Server.Base.dll" />
+                <include name="OpenSim.Server.Handlers.dll" />
+                <include name="OpenSim.Services.Base.dll" />
+                <include name="OpenSim.Services.Connectors.dll" />
+                <include name="OpenSim.Services.Interfaces.dll" />
+                <include name="System.dll" />
+                <include name="System.Core.dll" />
+                <include name="System.Data.dll" />
+                <include name="System.Drawing.dll" />
+                <include name="System.Web.dll" />
+                <include name="System.Xml.dll" />
+                <include name="../../../VirtualUniverse/bin/XMLRPC.dll"/>
+			  </references>
+		  </csc>
+        <echo message="Copying from [${project::get-base-directory()}/${build.dir}/] to [${project::get-base-directory()}/../../../VirtualUniverse/bin/" />
+        <mkdir dir="${project::get-base-directory()}/../../../VirtualUniverse/bin/"/>
+        <copy todir="${project::get-base-directory()}/../../../VirtualUniverse/bin/">
+            <fileset basedir="${project::get-base-directory()}/${build.dir}/" >
+                <include name="*.dll"/>
+                <include name="*.exe"/>
+                <include name="*.mdb" if='${build.debug}'/>
+                <include name="*.pdb" if='${build.debug}'/>
+            </fileset>
+        </copy>
+	  </target>
+	  <target name="clean">
+		  <delete dir="${bin.dir}" failonerror="false" />
+		  <delete dir="${obj.dir}" failonerror="false" />
+	  </target>
+	  <target name="doc" description="Creates documentation.">
+	  </target>
+</project>

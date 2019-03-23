@@ -1,31 +1,29 @@
-/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Virtual Universe Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections.Generic;
@@ -35,18 +33,18 @@ using System.Net;
 using System.Web;
 using DotNetOpenId;
 using DotNetOpenId.Provider;
-using Nini.Config;
-using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Server.Handlers.Base;
 using OpenSim.Services.Interfaces;
+using Nini.Config;
+using OpenMetaverse;
 
 namespace OpenSim.Server.Handlers.Authentication
 {
     /// <summary>
-    ///     Temporary, in-memory store for OpenID associations
+    /// Temporary, in-memory store for OpenID associations
     /// </summary>
     public class ProviderMemoryStore : IAssociationStore<AssociationRelyingPartyType>
     {
@@ -99,20 +97,13 @@ namespace OpenSim.Server.Handlers.Authentication
         {
             AssociationItem item;
             bool success = false;
-
             lock (m_syncRoot)
-            {
                 success = m_store.TryGetValue(handle, out item);
-            }
 
             if (success)
-            {
                 return Association.Deserialize(item.Handle, item.Expires.ToUniversalTime(), item.PrivateData);
-            }
             else
-            {
                 return null;
-            }
         }
 
         public bool RemoveAssociation(AssociationRelyingPartyType distinguishingFactor, string handle)
@@ -122,7 +113,6 @@ namespace OpenSim.Server.Handlers.Authentication
                 for (int i = 0; i < m_sortedStore.Values.Count; i++)
                 {
                     AssociationItem item = m_sortedStore.Values[i];
-
                     if (item.Handle == handle)
                     {
                         m_sortedStore.RemoveAt(i);
@@ -161,9 +151,7 @@ namespace OpenSim.Server.Handlers.Authentication
     {
         #region HTML
 
-        /// <summary>
-        ///     Login form used to authenticate OpenID requests
-        /// </summary>
+        /// <summary>Login form used to authenticate OpenID requests</summary>
         const string LOGIN_PAGE =
 @"<html>
 <head><title>OpenSim OpenID Login</title></head>
@@ -178,9 +166,7 @@ namespace OpenSim.Server.Handlers.Authentication
 </body>
 </html>";
 
-        /// <summary>
-        ///     Page shown for a valid OpenID identity
-        /// </summary>
+        /// <summary>Page shown for a valid OpenID identity</summary>
         const string OPENID_PAGE =
 @"<html>
 <head>
@@ -191,16 +177,12 @@ namespace OpenSim.Server.Handlers.Authentication
 </html>
 ";
 
-        /// <summary>
-        ///     Page shown for an invalid OpenID identity
-        /// </summary>
+        /// <summary>Page shown for an invalid OpenID identity</summary>
         const string INVALID_OPENID_PAGE =
 @"<html><head><title>Identity not found</title></head>
 <body>Invalid OpenID identity</body></html>";
 
-        /// <summary>
-        ///     Page shown if the OpenID endpoint is requested directly
-        /// </summary>
+        /// <summary>Page shown if the OpenID endpoint is requested directly</summary>
         const string ENDPOINT_PAGE =
 @"<html><head><title>OpenID Endpoint</title></head><body>
 This is an OpenID server endpoint, not a human-readable resource.
@@ -216,7 +198,7 @@ For more information, see <a href='http://openid.net/'>http://openid.net/</a>.
         public override string ContentType { get { return "text/html"; } }
 
         /// <summary>
-        ///     Constructor
+        /// Constructor
         /// </summary>
         public OpenIdStreamHandler(
             string httpMethod, string path, IUserAccountService userService, IAuthenticationService authService)
@@ -227,8 +209,8 @@ For more information, see <a href='http://openid.net/'>http://openid.net/</a>.
         }
 
         /// <summary>
-        ///     Handles all GET and POST requests for OpenID identifier pages and endpoint
-        ///     server communication
+        /// Handles all GET and POST requests for OpenID identifier pages and endpoint
+        /// server communication
         /// </summary>
         protected override void ProcessRequest(
             string path, Stream request, Stream response, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
@@ -241,11 +223,8 @@ For more information, see <a href='http://openid.net/'>http://openid.net/</a>.
             try
             {
                 string forPost;
-                using (StreamReader sr = new StreamReader(httpRequest.InputStream))
-                {
+                using(StreamReader sr = new StreamReader(httpRequest.InputStream))
                     forPost = sr.ReadToEnd();
-                }
-
                 NameValueCollection postQuery = HttpUtility.ParseQueryString(forPost);
                 NameValueCollection getQuery = HttpUtility.ParseQueryString(httpRequest.Url.Query);
                 NameValueCollection openIdQuery = (postQuery.GetValues("openid.mode") != null ? postQuery : getQuery);
@@ -260,30 +239,22 @@ For more information, see <a href='http://openid.net/'>http://openid.net/</a>.
                         string[] passwordValues = postQuery.GetValues("pass");
 
                         UserAccount account;
-
                         if (TryGetAccount(new Uri(authRequest.ClaimedIdentifier.ToString()), out account))
                         {
                             // Check for form POST data
                             if (passwordValues != null && passwordValues.Length == 1)
                             {
                                 if (account != null &&
-                                    (m_authenticationService.Authenticate(account.PrincipalID, Util.Md5Hash(passwordValues[0]), 30) != string.Empty))
-                                {
+                                    (m_authenticationService.Authenticate(account.PrincipalID,Util.Md5Hash(passwordValues[0]), 30) != string.Empty))
                                     authRequest.IsAuthenticated = true;
-                                }
                                 else
-                                {
                                     authRequest.IsAuthenticated = false;
-                                }
                             }
                             else
                             {
                                 // Authentication was requested, send the client a login form
                                 using (StreamWriter writer = new StreamWriter(response))
-                                {
                                     writer.Write(String.Format(LOGIN_PAGE, account.FirstName, account.LastName));
-                                }
-
                                 return;
                             }
                         }
@@ -296,16 +267,11 @@ For more information, see <a href='http://openid.net/'>http://openid.net/</a>.
 
                     // Add OpenID headers to the response
                     foreach (string key in provider.Request.Response.Headers.Keys)
-                    {
                         httpResponse.AddHeader(key, provider.Request.Response.Headers[key]);
-                    }
 
                     string[] contentTypeValues = provider.Request.Response.Headers.GetValues("Content-Type");
-
                     if (contentTypeValues != null && contentTypeValues.Length == 1)
-                    {
                         httpResponse.ContentType = contentTypeValues[0];
-                    }
 
                     // Set the response code and document body based on the OpenID result
                     httpResponse.StatusCode = (int)provider.Request.Response.Code;
@@ -316,15 +282,12 @@ For more information, see <a href='http://openid.net/'>http://openid.net/</a>.
                 {
                     // Standard HTTP GET was made on the OpenID endpoint, send the client the default error page
                     using (StreamWriter writer = new StreamWriter(response))
-                    {
                         writer.Write(ENDPOINT_PAGE);
-                    }
                 }
                 else
                 {
                     // Try and lookup this avatar
                     UserAccount account;
-
                     if (TryGetAccount(httpRequest.Url, out account))
                     {
                         using (StreamWriter writer = new StreamWriter(response))
@@ -338,32 +301,25 @@ For more information, see <a href='http://openid.net/'>http://openid.net/</a>.
                     {
                         // Couldn't parse an avatar name, or couldn't find the avatar in the user server
                         using (StreamWriter writer = new StreamWriter(response))
-                        {
                             writer.Write(INVALID_OPENID_PAGE);
-                        }
                     }
                 }
             }
             catch (Exception ex)
             {
                 httpResponse.StatusCode = (int)HttpStatusCode.InternalServerError;
-
                 using (StreamWriter writer = new StreamWriter(response))
-                {
                     writer.Write(ex.Message);
-                }
             }
         }
 
         /// <summary>
-        ///     Parse a URL with a relative path of the form /users/First_Last and try to
-        ///     retrieve the profile matching that avatar name
+        /// Parse a URL with a relative path of the form /users/First_Last and try to
+        /// retrieve the profile matching that avatar name
         /// </summary>
         /// <param name="requestUrl">URL to parse for an avatar name</param>
         /// <param name="profile">Profile data for the avatar</param>
-        /// <returns>
-        ///     True if the parse and lookup were successful, otherwise false
-        /// </returns>
+        /// <returns>True if the parse and lookup were successful, otherwise false</returns>
         bool TryGetAccount(Uri requestUrl, out UserAccount account)
         {
             if (requestUrl.Segments.Length == 3 && requestUrl.Segments[1] == "users/")

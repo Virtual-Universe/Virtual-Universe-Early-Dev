@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -76,7 +76,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         /// <param name="terrain">Terrain heightmap</param>
         /// <param name="regionInfo">Region information including terrain texture parameters</param>
         /// <returns>A 256x256 square RGB texture ready for rendering</returns>
-        /// <remarks>Based on the algorithm described at http://opensimulator.org/wiki/Terrain_Splatting
+        /// <remarks>Based on the algorithm described at https://virtual-planets.org/wiki/Terrain_Splatting
         /// Note we create a 256x256 dimension texture even if the actual terrain is larger.
         /// </remarks>
 
@@ -452,7 +452,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 return 0;
 
             // Generate two frequencies of perlin noise based on our global position
-            // The magic values were taken from http://opensimulator.org/wiki/Terrain_Splatting
+            // The magic values were taken from https://virtual-planets.org/wiki/Terrain_Splatting
             float sX = X * 0.20319f;
             float sY = Y * 0.20319f;
 

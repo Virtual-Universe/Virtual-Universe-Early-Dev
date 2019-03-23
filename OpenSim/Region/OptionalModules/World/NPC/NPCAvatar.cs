@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -319,7 +319,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
 
         public event DeRezObject OnDeRezObject;
         public event RezRestoreToWorld OnRezRestoreToWorld;
-        public event Action<IClientAPI> OnRegionHandShakeReply;
+        public event Action<IClientAPI, uint> OnRegionHandShakeReply;
         public event GenericCall1 OnRequestWearables;
         public event Action<IClientAPI, bool> OnCompleteMovementToRegion;
         public event UpdateAgent OnPreAgentUpdate;
@@ -648,6 +648,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public virtual int NextAnimationSequenceNumber
         {
             get { return 1; }
+            set { }
         }
 
         public virtual void SendWearables(AvatarWearable[] wearables, int serial)
@@ -664,10 +665,6 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         }
 
         public virtual void Kick(string message)
-        {
-        }
-
-        public virtual void SendStartPingCheck(byte seq)
         {
         }
 
@@ -741,14 +738,11 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             return false;
         }
 
-        public virtual void SendLayerData(float[] map)
+        public virtual void SendLayerData()
         {
         }
 
-        public virtual void SendLayerData(int px, int py, float[] map)
-        {
-        }
-        public virtual void SendLayerData(int px, int py, float[] map, bool track)
+        public void SendLayerData(int[] map)
         {
         }
 
@@ -760,7 +754,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourExternalEndPoint)
+        public virtual void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborExternalEndPoint)
         {
         }
 
@@ -930,11 +924,11 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args)
+        public virtual void SendRegionHandshake()
         {
             if (OnRegionHandShakeReply != null)
             {
-                OnRegionHandShakeReply(this);
+                OnRegionHandShakeReply(this, 0);
             }
         }
 
@@ -1389,6 +1383,8 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
             return 0;
         }
+
+        public void CheckViewerCaps() { }
 
     }
 }

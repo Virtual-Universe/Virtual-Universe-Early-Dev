@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -68,7 +68,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
         public string Name { get { return "Attachments Module"; } }
         public Type ReplaceableInterface { get { return null; } }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             IConfig config = source.Configs["Attachments"];
             if (config != null)
@@ -953,13 +953,8 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
                 return;
             }
 
-            // Saving attachments for NPCs messes them up for the real owner!
-            INPCModule module = m_scene.RequestModuleInterface<INPCModule>();
-            if (module != null)
-            {
-                if (module.IsNPC(sp.UUID, m_scene))
-                    return;
-            }
+            if(sp.IsNPC)
+                return;
 
             if (grp.HasGroupChanged)
             {
@@ -1096,7 +1091,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
                 // will succeed, as that will not update if an attachment is selected.
                 so.IsSelected = false; // fudge....
 
-                so.ScheduleGroupForFullUpdate();
+                so.ScheduleGroupForFullAnimUpdate();
             }
 
             // In case it is later dropped again, don't let

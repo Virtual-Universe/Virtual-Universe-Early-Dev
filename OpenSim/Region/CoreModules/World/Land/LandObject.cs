@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -1145,9 +1145,7 @@ namespace OpenSim.Region.CoreModules.World.Land
         public bool[,] MergeLandBitmaps(bool[,] bitmap_base, bool[,] bitmap_add)
         {
             if (bitmap_base.GetLength(0) != bitmap_add.GetLength(0)
-                    || bitmap_base.GetLength(1) != bitmap_add.GetLength(1)
-                    || bitmap_add.Rank != 2
-                    || bitmap_base.Rank != 2)
+                    || bitmap_base.GetLength(1) != bitmap_add.GetLength(1))
             {
                 throw new Exception(
                     String.Format("{0} MergeLandBitmaps. merging maps not same size. baseSizeXY=<{1},{2}>, addSizeXY=<{3},{4}>",
@@ -1155,15 +1153,11 @@ namespace OpenSim.Region.CoreModules.World.Land
                 );
             }
 
-            int x, y;
-            for (y = 0; y < bitmap_base.GetLength(1); y++)
+            for (int x = 0; x < bitmap_add.GetLength(0); x++)
             {
-                for (x = 0; x < bitmap_add.GetLength(0); x++)
+                for (int y = 0; y < bitmap_base.GetLength(1); y++)
                 {
-                    if (bitmap_add[x, y])
-                    {
-                        bitmap_base[x, y] = true;
-                    }
+                    bitmap_base[x, y] |= bitmap_add[x, y];
                 }
             }
             return bitmap_base;
@@ -1357,9 +1351,9 @@ namespace OpenSim.Region.CoreModules.World.Land
             int maxX = 0;
             int maxY = 0;
 
-            for (int y = 0; y < baseY; y++)
+            for (int x = 0; x < baseX; x++)
             {
-                for (int x = 0; x < baseX; x++)
+                for (int y = 0; y < baseY; y++)
                 {
                     if (bitmap_new[x, y]) bitmap_base[x, y] = false;
                     if (bitmap_base[x, y])

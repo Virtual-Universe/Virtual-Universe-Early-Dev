@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Contributors
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -165,8 +165,8 @@ namespace PrimMesher
                                 f2 = new Face(p1, p4, p2);
                             }
 
-                        this.faces.Add(f1);
-                        this.faces.Add(f2);
+                        faces.Add(f1);
+                        faces.Add(f2);
                     }
                 }
             }
@@ -203,18 +203,15 @@ namespace PrimMesher
                 return;
             String fileName = name + "_" + title + ".raw";
             String completePath = System.IO.Path.Combine(path, fileName);
-            StreamWriter sw = new StreamWriter(completePath);
-
-            for (int i = 0; i < this.faces.Count; i++)
+            using(StreamWriter sw = new StreamWriter(completePath))
             {
-                string s = this.coords[this.faces[i].v1].ToString();
-                s += " " + this.coords[this.faces[i].v2].ToString();
-                s += " " + this.coords[this.faces[i].v3].ToString();
-
-                sw.WriteLine(s);
+                for (int i = 0; i < faces.Count; i++)
+                {
+                    sw.Write(coords[faces[i].v1].ToString());
+                    sw.Write(coords[faces[i].v2].ToString());
+                    sw.WriteLine(coords[faces[i].v3].ToString());
+                }
             }
-
-            sw.Close();
         }
     }
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -49,24 +49,24 @@ namespace OpenSim.Data.MySQL
 
         public string Version { get { return "1.0.0.0"; } }
 
-        public void Initialise()
+        public void Initialize()
         {
             m_log.Info("[MySQLInventoryData]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitialisedException (Name);
+            throw new PluginNotInitializedException (Name);
         }
 
         /// <summary>
-        /// <para>Initialises Inventory interface</para>
+        /// <para>Initializes Inventory interface</para>
         /// <para>
         /// <list type="bullet">
-        /// <item>Loads and initialises the MySQL storage plugin</item>
+        /// <item>Loads and initializes the MySQL storage plugin</item>
         /// <item>warns and uses the obsolete mysql_connection.ini if connect string is empty.</item>
         /// <item>Check for migration</item>
         /// </list>
         /// </para>
         /// </summary>
         /// <param name="connect">connect string</param>
-        public void Initialise(string connect)
+        public void Initialize(string connect)
         {
             m_connectionString = connect;
 

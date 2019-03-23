@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -117,15 +117,15 @@ namespace OpenSim.Region.PhysicsModule.ODE
         /// .../opensim/bin/libode-x86_64.so(_ZN6Opcode11OBBCollider8_CollideEPKNS_14AABBNoLeafNodeE+0xd7a) [0x7f6dd822628a]
         ///
         /// ODE provides an experimental option to cache in thread local storage but compiling ODE with this option
-        /// causes OpenSimulator to immediately crash with a native stack trace similar to
+        /// causes Virtual Universe to immediately crash with a native stack trace similar to
         ///
         /// mono() [0x489171]
         /// mono() [0x4d154f]
         /// /lib/x86_64-linux-gnu/libpthread.so.0(+0xfc60) [0x7f03c9849c60]
         /// .../opensim/bin/libode-x86_64.so(_Z12dCollideCCTLP6dxGeomS0_iP12dContactGeomi+0x92) [0x7f03b44bcf82]
         /// </remarks>
-        internal static Object UniversalColliderSyncObject = new Object();
-        internal static Object SimulationLock = new Object();
+        internal static object UniversalColliderSyncObject = new object();
+        internal static object SimulationLock = new object();
 
         /// <summary>
         /// Is stats collecting enabled for this ODE scene?
@@ -498,6 +498,8 @@ namespace OpenSim.Region.PhysicsModule.ODE
 
         public OdeScene(Scene pscene, IConfigSource psourceconfig, string pname, string pversion)
         {
+            SafeNativeMethods.AllocateODEDataForThread(~0U);
+
             m_config = psourceconfig;
             m_frameWorkScene = pscene;
 
@@ -507,12 +509,12 @@ namespace OpenSim.Region.PhysicsModule.ODE
 
             pscene.RegisterModuleInterface<PhysicsScene>(this);
             Vector3 extent = new Vector3(pscene.RegionInfo.RegionSizeX, pscene.RegionInfo.RegionSizeY, pscene.RegionInfo.RegionSizeZ);
-            Initialise(extent);
-            InitialiseFromConfig(m_config);
+            Initialize(extent);
+            InitializeFromConfig(m_config);
 
             // This may not be that good since terrain may not be avaiable at this point
-            base.Initialise(pscene.PhysicsRequestAsset,
-                (pscene.Heightmap != null ? pscene.Heightmap.GetFloatsSerialised() : new float[(int)(extent.X * extent.Y)]),
+            base.Initialize(pscene.PhysicsRequestAsset,
+                (pscene.Heightmap != null ? pscene.Heightmap.GetFloatsSerialized() : new float[(int)(extent.X * extent.Y)]),
                 (float)pscene.RegionInfo.RegionSettings.WaterHeight);
 
         }
@@ -531,7 +533,7 @@ namespace OpenSim.Region.PhysicsModule.ODE
         /// Sets many properties that ODE requires to be stable
         /// These settings need to be tweaked 'exactly' right or weird stuff happens.
         /// </summary>
-        private void Initialise(Vector3 regionExtent)
+        private void Initialize(Vector3 regionExtent)
         {
             WorldExtents.X = regionExtent.X;
             m_regionWidth = (uint)regionExtent.X;
@@ -550,7 +552,7 @@ namespace OpenSim.Region.PhysicsModule.ODE
         }
 
         // Initialize from configs
-        private void InitialiseFromConfig(IConfigSource config)
+        private void InitializeFromConfig(IConfigSource config)
         {
             InitializeExtraStats();
 
@@ -2956,7 +2958,7 @@ namespace OpenSim.Region.PhysicsModule.ODE
 
                 latertickcount = Util.EnvironmentTickCountSubtract(tickCountFrameRun);
 
-                // OpenSimulator above does 10 fps.  10 fps = means that the main thread loop and physics
+                // Virtual Universe above does 10 fps.  10 fps = means that the main thread loop and physics
                 // has a max of 100 ms to run theoretically.
                 // If the main loop stalls, it calls Simulate later which makes the tick count ms larger.
                 // If Physics stalls, it takes longer which makes the tick count ms larger.
@@ -3202,16 +3204,6 @@ namespace OpenSim.Region.PhysicsModule.ODE
                     }
                 }
             }
-        }
-
-        public override void GetResults()
-        {
-        }
-
-        public override bool IsThreaded
-        {
-            // for now we won't be multithreaded
-            get { return false; }
         }
 
         public override void SetTerrain(float[] heightMap)

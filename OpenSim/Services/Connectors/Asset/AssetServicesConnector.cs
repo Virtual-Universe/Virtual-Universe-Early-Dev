@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -87,10 +87,10 @@ namespace OpenSim.Services.Connectors
         public AssetServicesConnector(IConfigSource source)
             : base(source, "AssetService")
         {
-            Initialise(source);
+            Initialize(source);
         }
 
-        public virtual void Initialise(IConfigSource source)
+        public virtual void Initialize(IConfigSource source)
         {
             IConfig netconfig = source.Configs["Network"];
             if (netconfig != null)
@@ -136,11 +136,7 @@ namespace OpenSim.Services.Connectors
 
             for (int i = 0 ; i < 2 ; i++)
             {
-                m_fetchThreads[i] = WorkManager.StartThread(AssetRequestProcessor,
-                            String.Format("GetTextureWorker{0}", i),
-                            ThreadPriority.Normal,
-                            true,
-                            false);
+                m_fetchThreads[i] = WorkManager.StartThread(AssetRequestProcessor, String.Format("GetAssetsWorker{0}", i));
             }
         }
 
@@ -260,7 +256,7 @@ namespace OpenSim.Services.Connectors
                 // as m_maxAssetRequestConcurrency was being passed as the timeout, not a concurrency limiting option.
                 // Wasn't noticed before because timeout wasn't actually used.
                 // Not attempting concurrency setting for now as this omission was discovered in release candidate
-                // phase for OpenSimulator 0.8.  Need to revisit afterwards.
+                // phase for Virtual Universe 0.8.  Need to revisit afterwards.
 //                asset
 //                    = SynchronousRestObjectRequester.MakeRequest<int, AssetBase>(
 //                        "GET", uri, 0, m_maxAssetRequestConcurrency);

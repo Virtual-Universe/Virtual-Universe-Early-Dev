@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.AvatarService.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.AvatarService.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AvatarService/obj/Debug/OpenSim.Services.AvatarService.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AvatarService/obj/Debug/OpenSim.Services.AvatarService.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AvatarService/obj/Debug/OpenSim.Services.AvatarService.pdb

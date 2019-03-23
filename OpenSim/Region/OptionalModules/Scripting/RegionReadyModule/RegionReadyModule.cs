@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -68,7 +68,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.RegionReady
             get { return null; }
         }
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_config = config.Configs["RegionReady"];
             if (m_config != null)
@@ -228,7 +228,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.RegionReady
                 // m_log.InfoFormat("[RegionReady]: Logins enabled for {0}, Oar {1}",
                 //                 m_scene.RegionInfo.RegionName, m_oarFileLoading.ToString());
 
-                // Putting this out to console to make it eye-catching for people who are running OpenSimulator
+                // Putting this out to console to make it eye-catching for people who are running Virtual Universe
                 // without info log messages enabled.  Making this a warning is arguably misleading since it isn't a
                 // warning, and monitor scripts looking for warn/error/fatal messages will received false positives.
                 // Arguably, log4net needs a status log level (like Apache).
@@ -236,7 +236,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.RegionReady
             }
 
             m_scene.SceneGridService.InformNeighborsThatRegionisUp(
-                m_scene.RequestModuleInterface<INeighbourService>(), m_scene.RegionInfo);
+                m_scene.RequestModuleInterface<INeighborService>(), m_scene.RegionInfo);
 
             if (m_uri != string.Empty)
             {

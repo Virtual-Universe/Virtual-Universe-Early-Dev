@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -54,18 +54,18 @@ namespace OpenSim.Data.PGSQL
         #region IPlugin members
 
         [Obsolete("Cannot be default-initialized!")]
-        public void Initialise()
+        public void Initialize()
         {
             m_log.Info("[PGSQLInventoryData]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitialisedException(Name);
+            throw new PluginNotInitializedException(Name);
         }
 
         /// <summary>
-        /// Loads and initialises the PGSQL inventory storage interface
+        /// Loads and initializes the PGSQL inventory storage interface
         /// </summary>
         /// <param name="connectionString">connect string</param>
         /// <remarks>use PGSQL_connection.ini</remarks>
-        public void Initialise(string connectionString)
+        public void Initialize(string connectionString)
         {
             m_connectionString = connectionString;
             database = new PGSQLManager(connectionString);

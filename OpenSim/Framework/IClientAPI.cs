@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -390,7 +390,7 @@ namespace OpenSim.Framework
         IClientAPI remoteClient, UUID invoice, UUID senderID, bool scripted, bool collisionEvents, bool physics);
 
     public delegate void EstateTeleportOneUserHomeRequest(
-        IClientAPI remoteClient, UUID invoice, UUID senderID, UUID prey);
+        IClientAPI remoteClient, UUID invoice, UUID senderID, UUID prey, bool kill);
 
     public delegate void EstateTeleportAllUsersHomeRequest(IClientAPI remoteClient, UUID invoice, UUID senderID);
 
@@ -587,7 +587,6 @@ namespace OpenSim.Framework
     {
         private ISceneEntity m_entity;
         private PrimUpdateFlags m_flags;
-        private int m_updateTime;
 
         public ISceneEntity Entity
         {
@@ -599,39 +598,39 @@ namespace OpenSim.Framework
             get { return m_flags; }
         }
 
-        public int UpdateTime
+        public virtual void Update()
         {
-            get { return m_updateTime; }
+            // we are on the new one
+            if (m_flags.HasFlag(PrimUpdateFlags.CancelKill))
+            {
+                if (m_flags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                    m_flags = PrimUpdateFlags.UpdateProbe;
+                else
+                    m_flags = PrimUpdateFlags.FullUpdatewithAnim;
+            }
         }
 
         public virtual void Update(EntityUpdate oldupdate)
         {
             // we are on the new one
             PrimUpdateFlags updateFlags = oldupdate.Flags;
-            if(m_flags.HasFlag(PrimUpdateFlags.CancelKill))
-                m_flags = PrimUpdateFlags.FullUpdate;
-            else if(updateFlags.HasFlag(PrimUpdateFlags.Kill))
-                return;
-            else // kill case will just merge in
+            if (updateFlags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                updateFlags &= ~PrimUpdateFlags.UpdateProbe;
+            if (m_flags.HasFlag(PrimUpdateFlags.CancelKill))
+            {
+                if(m_flags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                    m_flags = PrimUpdateFlags.UpdateProbe;
+                else
+                    m_flags = PrimUpdateFlags.FullUpdatewithAnim;
+            }
+            else
                 m_flags |= updateFlags;
-
-            // Use the older of the updates as the updateTime
-            if (Util.EnvironmentTickCountCompare(UpdateTime, oldupdate.UpdateTime) > 0)
-                m_updateTime = oldupdate.UpdateTime;
         }
 
         public EntityUpdate(ISceneEntity entity, PrimUpdateFlags flags)
         {
             m_entity = entity;
             m_flags = flags;
-            m_updateTime = Util.EnvironmentTickCount();
-        }
-
-        public EntityUpdate(ISceneEntity entity, PrimUpdateFlags flags, Int32 updateTime)
-        {
-            m_entity = entity;
-            m_flags = flags;
-            m_updateTime = updateTime;
         }
     }
 
@@ -682,10 +681,17 @@ namespace OpenSim.Framework
         Particles = 1 << 19,
         ExtraData = 1 << 20,
         Sound = 1 << 21,
-        Joint = 1 << 22,
-        FullUpdate =    0x0fffffff,
-        SendInTransit = 0x20000000, 
-        CancelKill =    0x4fffffff, // 1 << 30 
+
+        TerseUpdate = Position | Rotation | Velocity | Acceleration | AngularVelocity,
+        FullUpdate =    0x00ffffff,
+
+        Animations = 1 << 24,
+
+        FullUpdatewithAnim = FullUpdate | Animations,
+
+        UpdateProbe   = 0x10000000, // 1 << 28
+        SendInTransit = 0x20000000, // 1 << 29
+        CancelKill =    0x40000000, // 1 << 30 
         Kill =          0x80000000 // 1 << 31
     }
 
@@ -736,9 +742,6 @@ namespace OpenSim.Framework
 
         List<uint> SelectedObjects { get; }
 
-        // [Obsolete("LLClientView Specific - Replace with ???")]
-        int NextAnimationSequenceNumber { get; }
-
         /// <summary>
         /// Returns the full name of the agent/avatar represented by this client
         /// </summary>
@@ -764,6 +767,8 @@ namespace OpenSim.Framework
         bool IsLoggingOut { get; set; }
 
         bool SendLogoutPacketWhenClosing { set; }
+
+        int NextAnimationSequenceNumber {get; set;}
 
         // [Obsolete("LLClientView Specific - Circuits are unique to LLClientView")]
         uint CircuitCode { get; }
@@ -811,7 +816,7 @@ namespace OpenSim.Framework
         event TeleportCancel OnTeleportCancel;
         event DeRezObject OnDeRezObject;
         event RezRestoreToWorld OnRezRestoreToWorld;
-        event Action<IClientAPI> OnRegionHandShakeReply;
+        event Action<IClientAPI, uint> OnRegionHandShakeReply;
         event GenericCall1 OnRequestWearables;
         event Action<IClientAPI, bool> OnCompleteMovementToRegion;
 
@@ -1103,8 +1108,6 @@ namespace OpenSim.Framework
 
         void SendCachedTextureResponse(ISceneEntity avatar, int serial, List<CachedTextureResponseArg> cachedTextures);
 
-        void SendStartPingCheck(byte seq);
-
         /// <summary>
         /// Tell the client that an object has been deleted
         /// </summary>
@@ -1114,7 +1117,7 @@ namespace OpenSim.Framework
 //        void SendPartFullUpdate(ISceneEntity ent, uint? parentID);
 
         void SendAnimations(UUID[] animID, int[] seqs, UUID sourceAgentId, UUID[] objectIDs);
-        void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args);
+        void SendRegionHandshake();
 
         /// <summary>
         /// Send chat to the viewer.
@@ -1138,8 +1141,8 @@ namespace OpenSim.Framework
 
         bool CanSendLayerData();
 
-        void SendLayerData(float[] map);
-        void SendLayerData(int px, int py, float[] map);
+        void SendLayerData();
+        void SendLayerData(int[] map);
 
         void SendWindData(int version, Vector2[] windSpeeds);
         void SendCloudData(int version, float[] cloudCover);
@@ -1153,7 +1156,7 @@ namespace OpenSim.Framework
         /// </remarks>
         void MoveAgentIntoRegion(RegionInfo regInfo, Vector3 pos, Vector3 look);
 
-        void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourExternalEndPoint);
+        void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborExternalEndPoint);
 
         /// <summary>
         /// Return circuit information for this client.
@@ -1508,5 +1511,6 @@ namespace OpenSim.Framework
         void SendAgentTerseUpdate(ISceneEntity presence);
 
         void SendPlacesReply(UUID queryID, UUID transactionID, PlacesReplyData[] data);
+        void CheckViewerCaps();
     }
 }

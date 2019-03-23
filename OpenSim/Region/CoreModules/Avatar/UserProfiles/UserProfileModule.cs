@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -143,7 +143,7 @@ namespace OpenSim.Region.CoreModules.Avatar.UserProfiles
         /// <param name='source'>
         /// Source.
         /// </param>
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             Config = source;
             ReplaceableInterface = typeof(IProfileModule);
@@ -1348,7 +1348,7 @@ namespace OpenSim.Region.CoreModules.Avatar.UserProfiles
 
             if (avatarID == m_MrOpenSimID)
             {
-                remoteClient.SendAvatarProperties(avatarID, "Creator of OpenSimulator shared assets library", m_MrOpenSimBorn.ToString(),
+                remoteClient.SendAvatarProperties(avatarID, "Creator of Virtual Universe shared assets library", m_MrOpenSimBorn.ToString(),
                       Utils.StringToBytes("System agent"), "MrOpenSim has no life", 0x10,
                       UUID.Zero, UUID.Zero, "", UUID.Zero);
                 remoteClient.SendAvatarInterestsReply(avatarID, 0, "",

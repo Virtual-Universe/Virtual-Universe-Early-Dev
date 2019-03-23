@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -73,13 +73,13 @@ namespace OpenSim.Data.SQLite
 
         /// <summary>
         /// <list type="bullet">
-        /// <item>Initialises AssetData interface</item>
-        /// <item>Loads and initialises a new SQLite connection and maintains it.</item>
+        /// <item>Initializes AssetData interface</item>
+        /// <item>Loads and initializes a new SQLite connection and maintains it.</item>
         /// <item>use default URI if connect string is empty.</item>
         /// </list>
         /// </summary>
         /// <param name="dbconnect">connect string</param>
-        override public void Initialise(string dbconnect)
+        override public void Initialize(string dbconnect)
         {
             if (Util.IsWindows())
                 Util.LoadArchSpecificWindowsDll("sqlite3.dll");
@@ -356,11 +356,11 @@ namespace OpenSim.Data.SQLite
         }
 
         /// <summary>
-        /// Initialise the AssetData interface using default URI
+        /// Initialize the AssetData interface using default URI
         /// </summary>
-        override public void Initialise()
+        override public void Initialize()
         {
-            Initialise("URI=file:Asset.db,version=3");
+            Initialize("URI=file:Asset.db,version=3");
         }
 
         /// <summary>

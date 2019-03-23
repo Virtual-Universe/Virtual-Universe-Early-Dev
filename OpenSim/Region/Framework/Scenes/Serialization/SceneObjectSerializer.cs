@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -63,7 +63,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             String fixedData = ExternalRepresentationUtils.SanitizeXml(xmlData);
             using (XmlTextReader wrappedReader = new XmlTextReader(fixedData, XmlNodeType.Element, null))
             {
-                using (XmlReader reader = XmlReader.Create(wrappedReader, new XmlReaderSettings() { IgnoreWhitespace = true, ConformanceLevel = ConformanceLevel.Fragment}))
+                using (XmlReader reader = XmlReader.Create(wrappedReader, new XmlReaderSettings() { IgnoreWhitespace = true, ConformanceLevel = ConformanceLevel.Fragment }))
                 {
                     try
                     {
@@ -71,8 +71,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                     }
                     catch (Exception e)
                     {
-                        m_log.Error("[SERIALIZER]: Deserialization of xml failed ", e);
-                        Util.LogFailedXML("[SERIALIZER]:", fixedData);
+                        m_log.Error("[Serializer]: Deserialization of xml failed ", e);
                         return null;
                     }
                 }
@@ -86,9 +85,6 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         /// <returns>The scene object deserialized.  Null on failure.</returns>
         public static SceneObjectGroup FromOriginalXmlFormat(XmlReader reader)
         {
-            //m_log.DebugFormat("[SOG]: Starting deserialization of SOG");
-            //int time = System.Environment.TickCount;
-
             int linkNum;
 
             reader.ReadToFollowing("RootPart");
@@ -110,14 +106,14 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                     }
                 }
                 while (reader.ReadToNextSibling("Part"));
-            reader.ReadEndElement();
+                reader.ReadEndElement();
             }
 
             if (reader.Name == "KeyframeMotion" && reader.NodeType == XmlNodeType.Element)
             {
 
                 string innerkeytxt = reader.ReadElementContentAsString();
-                sceneObject.RootPart.KeyframeMotion = 
+                sceneObject.RootPart.KeyframeMotion =
                     KeyframeMotion.FromData(sceneObject, Convert.FromBase64String(innerkeytxt));
             }
             else
@@ -198,9 +194,6 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         public static void ToOriginalXmlFormat(
             SceneObjectGroup sceneObject, XmlTextWriter writer, bool doScriptStates, bool noRootElement)
         {
-//            m_log.DebugFormat("[SERIALIZER]: Starting serialization of {0}", sceneObject.Name);
-//            int time = System.Environment.TickCount;
-
             if (!noRootElement)
                 writer.WriteStartElement(String.Empty, "SceneObjectGroup", String.Empty);
 
@@ -235,11 +228,8 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             if (doScriptStates)
                 sceneObject.SaveScriptedState(writer);
 
-
             if (!noRootElement)
                 writer.WriteEndElement(); // SceneObjectGroup
-
-//            m_log.DebugFormat("[SERIALIZER]: Finished serialization of SOG {0}, {1}ms", sceneObject.Name, System.Environment.TickCount - time);
         }
 
         protected static void ToXmlFormat(SceneObjectPart part, XmlTextWriter writer)
@@ -249,9 +239,6 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
 
         public static SceneObjectGroup FromXml2Format(string xmlData)
         {
-            //m_log.DebugFormat("[SOG]: Starting deserialization of SOG");
-            //int time = System.Environment.TickCount;
-
             try
             {
                 XmlDocument doc = new XmlDocument();
@@ -261,15 +248,14 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
 
                 if (parts.Count == 0)
                 {
-                    m_log.Error("[SERIALIZER]: Deserialization of xml failed: No SceneObjectPart nodes");
-                    Util.LogFailedXML("[SERIALIZER]:", xmlData);
+                    m_log.Error("[Serializer]: Deserialization of xml failed: No SceneObjectPart nodes");
                     return null;
                 }
 
                 SceneObjectGroup sceneObject;
-                using(StringReader sr = new StringReader(parts[0].OuterXml))
+                using (StringReader sr = new StringReader(parts[0].OuterXml))
                 {
-                    using(XmlTextReader reader = new XmlTextReader(sr))
+                    using (XmlTextReader reader = new XmlTextReader(sr))
                         sceneObject = new SceneObjectGroup(SceneObjectPart.FromXml(reader));
                 }
 
@@ -277,9 +263,9 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 SceneObjectPart part;
                 for (int i = 1; i < parts.Count; i++)
                 {
-                    using(StringReader sr = new StringReader(parts[i].OuterXml))
+                    using (StringReader sr = new StringReader(parts[i].OuterXml))
                     {
-                        using(XmlTextReader reader = new XmlTextReader(sr))
+                        using (XmlTextReader reader = new XmlTextReader(sr))
                         {
                             part = SceneObjectPart.FromXml(reader);
                         }
@@ -305,13 +291,11 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 // Script state may, or may not, exist. Not having any, is NOT
                 // ever a problem.
                 sceneObject.LoadScriptState(doc);
-//                sceneObject.AggregatePerms();
                 return sceneObject;
             }
             catch (Exception e)
             {
-                m_log.Error("[SERIALIZER]: Deserialization of xml failed ", e);
-                Util.LogFailedXML("[SERIALIZER]:", xmlData);
+                m_log.Error("[Serializer]: Deserialization of xml failed ", e);
                 return null;
             }
         }
@@ -327,7 +311,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             {
                 using (XmlTextWriter writer = new XmlTextWriter(sw))
                 {
-                    SOGToXml2(writer, sceneObject, new Dictionary<string,object>());
+                    SOGToXml2(writer, sceneObject, new Dictionary<string, object>());
                 }
 
                 return sw.ToString();
@@ -356,11 +340,9 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             string xmlData = ExternalRepresentationUtils.SanitizeXml(Utils.BytesToString(data));
             if (CoalescedSceneObjectsSerializer.TryFromXml(xmlData, out coa))
             {
-                // m_log.DebugFormat("[SERIALIZER]: Loaded coalescence {0} has {1} objects", assetId, coa.Count);
-
                 if (coa.Objects.Count == 0)
                 {
-                    m_log.WarnFormat("[SERIALIZER]: Aborting load of coalesced object from asset {0} as it has zero loaded components", assetId);
+                    m_log.WarnFormat("[Serializer]: Aborting load of coalesced object from asset {0} as it has zero loaded components", assetId);
                     return null;
                 }
 
@@ -376,12 +358,13 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 }
                 else
                 {
-                    m_log.WarnFormat("[SERIALIZER]: Aborting load of object from asset {0} as deserialization failed", assetId);
+                    m_log.WarnFormat("[Serializer]: Aborting load of object from asset {0} as deserialization failed", assetId);
                     return null;
                 }
             }
 
             bool modified = false;
+
             foreach (SceneObjectGroup sog in sceneObjects)
             {
                 if (modifier(sog))
@@ -499,6 +482,8 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             m_SOPXmlProcessors.Add("SoundRadius", ProcessSoundRadius);
             m_SOPXmlProcessors.Add("SoundQueueing", ProcessSoundQueueing);
 
+            m_SOPXmlProcessors.Add("SOPAnims", ProcessSOPAnims);
+
             #endregion
 
             #region TaskInventoryXmlProcessors initialization
@@ -558,6 +543,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             m_ShapeXmlProcessors.Add("HollowShape", ProcessShpHollowShape);
             m_ShapeXmlProcessors.Add("SculptTexture", ProcessShpSculptTexture);
             m_ShapeXmlProcessors.Add("SculptType", ProcessShpSculptType);
+
             // Ignore "SculptData"; this element is deprecated
             m_ShapeXmlProcessors.Add("FlexiSoftness", ProcessShpFlexiSoftness);
             m_ShapeXmlProcessors.Add("FlexiTension", ProcessShpFlexiTension);
@@ -800,7 +786,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             {
                 obj.VehicleParams = null;
                 m_log.DebugFormat(
-                    "[SceneObjectSerializer]: Parsing Vehicle for object part {0} {1} encountered errors.  Please see earlier log entries.",
+                    "[Scene Object Serializer]: Parsing Vehicle for object part {0} {1} encountered errors.  Please see earlier log entries.",
                     obj.Name, obj.UUID);
             }
             else
@@ -817,13 +803,34 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             {
                 obj.PhysicsInertia = null;
                 m_log.DebugFormat(
-                    "[SceneObjectSerializer]: Parsing PhysicsInertiaData for object part {0} {1} encountered errors.  Please see earlier log entries.",
+                    "[Scene Object Serializer]: Parsing PhysicsInertiaData for object part {0} {1} encountered errors.  Please see earlier log entries.",
                     obj.Name, obj.UUID);
             }
             else
             {
                 obj.PhysicsInertia = pdata;
             }
+        }
+
+        private static void ProcessSOPAnims(SceneObjectPart obj, XmlReader reader)
+        {
+            obj.Animations = null;
+            try
+            {
+                string datastr;
+                datastr = reader.ReadElementContentAsString();
+                if (string.IsNullOrEmpty(datastr))
+                    return;
+
+                byte[] pdata = Convert.FromBase64String(datastr);
+                obj.DeSerializeAnimations(pdata);
+                return;
+            }
+            catch { }
+
+            m_log.DebugFormat(
+                    "[Scene Object Serializer]: Parsing ProcessSOPAnims for object part {0} {1} encountered errors",
+                    obj.Name, obj.UUID);
         }
 
         private static void ProcessShape(SceneObjectPart obj, XmlReader reader)
@@ -834,7 +841,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             if (errorNodeNames != null)
             {
                 m_log.DebugFormat(
-                    "[SceneObjectSerializer]: Parsing PrimitiveBaseShape for object part {0} {1} encountered errors in properties {2}.",
+                    "[Scene Object Serializer]: Parsing PrimitiveBaseShape for object part {0} {1} encountered errors in properties {2}.",
                     obj.Name, obj.UUID, string.Join(", ", errorNodeNames.ToArray()));
             }
         }
@@ -967,7 +974,12 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
 
         private static void ProcessDynAttrs(SceneObjectPart obj, XmlReader reader)
         {
-            obj.DynAttrs.ReadXml(reader);
+            DAMap waste = new DAMap();
+            waste.ReadXml(reader);
+            if (waste.CountNamespaces > 0)
+                obj.DynAttrs = waste;
+            else
+                obj.DynAttrs = null;
         }
 
         private static void ProcessTextureAnimation(SceneObjectPart obj, XmlReader reader)
@@ -1014,6 +1026,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         {
             obj.Force = Util.ReadVector(reader, "Force");
         }
+
         private static void ProcessTorque(SceneObjectPart obj, XmlReader reader)
         {
             obj.Torque = Util.ReadVector(reader, "Torque");
@@ -1406,7 +1419,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 }
                 catch
                 {
-                    m_log.ErrorFormat("[SERIALIZER] Failed parsing halcyon MOAP information");
+                    m_log.ErrorFormat("[Serializer]: Failed parsing halcyon MOAP information");
                 }
             }
         }
@@ -1415,13 +1428,13 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
 
         ////////// Write /////////
 
-        public static void SOGToXml2(XmlTextWriter writer, SceneObjectGroup sog, Dictionary<string, object>options)
+        public static void SOGToXml2(XmlTextWriter writer, SceneObjectGroup sog, Dictionary<string, object> options)
         {
             writer.WriteStartElement(String.Empty, "SceneObjectGroup", String.Empty);
             SOPToXml2(writer, sog.RootPart, options);
             writer.WriteStartElement(String.Empty, "OtherParts", String.Empty);
 
-            sog.ForEachPart(delegate(SceneObjectPart sop)
+            sog.ForEachPart(delegate (SceneObjectPart sop)
             {
                 if (sop.UUID != sog.RootPart.UUID)
                     SOPToXml2(writer, sop, options);
@@ -1437,7 +1450,6 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 writer.WriteBase64(data, 0, data.Length);
                 writer.WriteEndElement();
             }
-
 
             writer.WriteEndElement();
         }
@@ -1537,7 +1549,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 writer.WriteElementString("MediaUrl", sop.MediaUrl.ToString());
             WriteVector(writer, "AttachedPos", sop.AttachedPos);
 
-            if (sop.DynAttrs.CountNamespaces > 0)
+            if (sop.DynAttrs != null && sop.DynAttrs.CountNamespaces > 0)
             {
                 writer.WriteStartElement("DynAttrs");
                 sop.DynAttrs.WriteXml(writer);
@@ -1565,7 +1577,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             if (sop.PhysicsInertia != null)
                 sop.PhysicsInertia.ToXml2(writer);
 
-            if(sop.RotationAxisLocks != 0)
+            if (sop.RotationAxisLocks != 0)
                 writer.WriteElementString("RotationAxisLocks", sop.RotationAxisLocks.ToString().ToLower());
             writer.WriteElementString("PhysicsShapeType", sop.PhysicsShapeType.ToString().ToLower());
             if (sop.Density != 1000.0f)
@@ -1579,14 +1591,19 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             WriteVector(writer, "CameraEyeOffset", sop.GetCameraEyeOffset());
             WriteVector(writer, "CameraAtOffset", sop.GetCameraAtOffset());
 
- //           if (sop.Sound != UUID.Zero)  force it till sop crossing does clear it on child prim
-            {
-                WriteUUID(writer, "SoundID", sop.Sound, options);
-                writer.WriteElementString("SoundGain", sop.SoundGain.ToString(Culture.FormatProvider));
-                writer.WriteElementString("SoundFlags", sop.SoundFlags.ToString().ToLower());
-                writer.WriteElementString("SoundRadius", sop.SoundRadius.ToString(Culture.FormatProvider));
-            }
+            WriteUUID(writer, "SoundID", sop.Sound, options);
+            writer.WriteElementString("SoundGain", sop.SoundGain.ToString(Culture.FormatProvider));
+            writer.WriteElementString("SoundFlags", sop.SoundFlags.ToString().ToLower());
+            writer.WriteElementString("SoundRadius", sop.SoundRadius.ToString(Culture.FormatProvider));
+
             writer.WriteElementString("SoundQueueing", sop.SoundQueueing.ToString().ToLower());
+
+            if (sop.Animations != null)
+            {
+                Byte[] data = sop.SerializeAnimations();
+                if (data != null && data.Length > 0)
+                    writer.WriteElementString("SOPAnims", Convert.ToBase64String(data));
+            }
 
             writer.WriteEndElement();
         }
@@ -1630,7 +1647,6 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 d = Utils.EmptyBytes;
             writer.WriteBase64(d, 0, d.Length);
             writer.WriteEndElement(); // name
-
         }
 
         static void WriteFlags(XmlTextWriter writer, string name, string flagsStr, Dictionary<string, object> options)
@@ -1796,7 +1812,8 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 obj,
                 m_SOPXmlProcessors,
                 reader,
-                (o, nodeName, e) => {
+                (o, nodeName, e) =>
+                {
                     m_log.Debug(string.Format("[SceneObjectSerializer]: Error while parsing element {0} in object {1} {2} ",
                         nodeName, ((SceneObjectPart)o).Name, ((SceneObjectPart)o).UUID), e);
                 });
@@ -1807,7 +1824,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
             reader.ReadEndElement(); // SceneObjectPart
 
             obj.AggregateInnerPerms();
-            // m_log.DebugFormat("[SceneObjectSerializer]: parsed SOP {0} {1}", obj.Name, obj.UUID);
+
             return obj;
         }
 
@@ -1830,7 +1847,6 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
 
                 reader.ReadEndElement(); // TaskInventoryItem
                 tinv.Add(item.ItemID, item);
-
             }
 
             if (reader.NodeType == XmlNodeType.EndElement)
@@ -1865,12 +1881,13 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                 shape,
                 m_ShapeXmlProcessors,
                 reader,
-                (o, nodeName, e) => {
-                    m_log.Debug(string.Format("[SceneObjectSerializer]: Error while parsing element {0} in Shape property of object {1} {2} ",
+                (o, nodeName, e) =>
+                {
+                    m_log.Debug(string.Format("[Scene Object Serializer]: Error while parsing element {0} in Shape property of object {1} {2} ",
                         nodeName, obj.Name, obj.UUID), e);
 
                     if (internalErrorNodeNames == null)
-                            internalErrorNodeNames = new List<string>();
+                        internalErrorNodeNames = new List<string>();
                     internalErrorNodeNames.Add(nodeName);
                 });
 

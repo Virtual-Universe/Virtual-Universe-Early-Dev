@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ClientStack.LindenCaps.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ClientStack.LindenCaps.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/Caps/obj/Debug/OpenSim.Region.ClientStack.LindenCaps.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/Caps/obj/Debug/OpenSim.Region.ClientStack.LindenCaps.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/Caps/obj/Debug/OpenSim.Region.ClientStack.LindenCaps.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/Caps/obj/Debug/OpenSim.Region.ClientStack.LindenCaps.pdb

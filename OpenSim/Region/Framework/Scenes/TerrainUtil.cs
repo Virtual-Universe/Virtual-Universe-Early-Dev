@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -62,17 +62,13 @@ namespace OpenSim.Region.Framework.Scenes
             double h10 = map[(int) x + stepSize, (int) y];
             double h01 = map[(int) x, (int) y + stepSize];
             double h11 = map[(int) x + stepSize, (int) y + stepSize];
-            double h1 = h00;
-            double h2 = h10;
-            double h3 = h01;
-            double h4 = h11;
-            double a00 = h1;
-            double a10 = h2 - h1;
-            double a01 = h3 - h1;
-            double a11 = h1 - h2 - h3 + h4;
+            double a00 = h00;
+            double a10 = h10 - h00;
+            double a01 = h01 - h00;
+            double a11 = h11 - h10 - h01 + h00;
             double partialx = x - (int) x;
-            double partialz = y - (int) y;
-            double hi = a00 + (a10 * partialx) + (a01 * partialz) + (a11 * partialx * partialz);
+            double partialy = y - (int) y;
+            double hi = a00 + (a10 * partialx) + (a01 * partialy) + (a11 * partialx * partialy);
             return hi;
         }
 

@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Performance.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Performance.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Performance/obj/Debug/OpenSim.Tests.Performance.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Performance/obj/Debug/OpenSim.Tests.Performance.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Performance/obj/Debug/OpenSim.Tests.Performance.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Performance/obj/Debug/OpenSim.Tests.Performance.pdb

@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Common.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Common.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Common/obj/Debug/OpenSim.Tests.Common.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Common/obj/Debug/OpenSim.Tests.Common.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Common/obj/Debug/OpenSim.Tests.Common.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Common/obj/Debug/OpenSim.Tests.Common.pdb

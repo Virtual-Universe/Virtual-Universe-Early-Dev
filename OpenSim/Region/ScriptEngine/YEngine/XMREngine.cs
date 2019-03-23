@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -183,15 +183,15 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             }
         }
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             TraceCalls("[YEngine]: Initialize entry");
             m_ConfigSource = config;
 
             ////foreach (IConfig icfg in config.Configs) {
-            ////    m_log.Debug("[YEngine]: Initialise: configs[" + icfg.Name + "]");
+            ////    m_log.Debug("[YEngine]: Initialize: configs[" + icfg.Name + "]");
             ////    foreach (string key in icfg.GetKeys ()) {
-            ////        m_log.Debug("[YEngine]: Initialise:     " + key + "=" + icfg.GetExpanded (key));
+            ////        m_log.Debug("[YEngine]: Initialize:     " + key + "=" + icfg.GetExpanded (key));
             ////    }
             ////}
 
@@ -930,12 +930,15 @@ namespace OpenSim.Region.ScriptEngine.Yengine
 
         public void SetMinEventDelay(UUID itemID, double delay)
         {
+            XMRInstance instance = GetInstance(itemID);
+            if (instance != null)
+                instance.MinEventDelay = delay;
         }
 
         public int GetStartParameter(UUID itemID)
         {
             XMRInstance instance = GetInstance(itemID);
-            if(instance == null)
+            if (instance == null)
                 return 0;
             return instance.StartParam;
         }
@@ -1467,9 +1470,7 @@ namespace OpenSim.Region.ScriptEngine.Yengine
                 }
                 else
                 {
-                    eq.Enqueue(EventQueueHelper.ScriptRunningReplyEvent(objectID,
-                            itemID, instance.Running, true),
-                            controllingClient.AgentId);
+                    eq.ScriptRunningEvent(objectID, itemID, instance.Running, controllingClient.AgentId);
                 }
             }
         }

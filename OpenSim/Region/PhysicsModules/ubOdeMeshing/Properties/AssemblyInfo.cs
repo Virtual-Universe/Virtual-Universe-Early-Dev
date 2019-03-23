@@ -9,9 +9,9 @@ using Mono.Addins;
 [assembly: AssemblyTitle("OpenSim.Region.PhysicsModule.ubODEMeshing")]
 [assembly: AssemblyDescription("Mesher for ubODE")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://opensimulator.org")]
+[assembly: AssemblyCompany("https://virtual-planets.org")]
 [assembly: AssemblyProduct("OpenSim")]
-[assembly: AssemblyCopyright("OpenSimulator developers")]
+[assembly: AssemblyCopyright("Virtual Universe developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

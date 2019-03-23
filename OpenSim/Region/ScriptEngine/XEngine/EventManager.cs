@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -215,12 +215,25 @@ namespace OpenSim.Region.ScriptEngine.XEngine
                     det));
         }
 
-        public void changed(uint localID, uint change)
+        public void changed(uint localID, uint change, object parameter)
         {
             // Add to queue for all scripts in localID, Object pass change.
-            myScriptEngine.PostObjectEvent(localID, new EventParams(
-                    "changed",new object[] { new LSL_Types.LSLInteger(change) },
+            if(parameter == null)
+            {
+                myScriptEngine.PostObjectEvent(localID, new EventParams(
+                    "changed", new object[] { new LSL_Types.LSLInteger(change) },
                     new DetectParams[0]));
+                return;
+            }
+            if (parameter is UUID)
+            {
+                DetectParams det = new DetectParams();
+                det.Key = (UUID)parameter;
+                myScriptEngine.PostObjectEvent(localID, new EventParams(
+                    "changed", new object[] { new LSL_Types.LSLInteger(change) },
+                    new DetectParams[] { det }));
+                return;
+            }
         }
 
         // state_entry: not processed here
@@ -245,7 +258,6 @@ namespace OpenSim.Region.ScriptEngine.XEngine
                 DetectParams d = new DetectParams();
                 d.Key =detobj.keyUUID;
                 d.Populate(myScriptEngine.World, detobj);
-                d.LinkNum = detobj.linkNumber; // do it here since currently linknum is collided part
                 det.Add(d);
             }
 

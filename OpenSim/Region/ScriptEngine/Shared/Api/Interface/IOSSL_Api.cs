@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -379,15 +379,16 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
 
         int osGetSimulatorMemory();
         int osGetSimulatorMemoryKB();
-        void osKickAvatar(string FirstName,string SurName,string alert);
+        void osKickAvatar(string FirstName, string SurName, string alert);
+        void osKickAvatar(LSL_Key agentId, string alert);
         void osSetSpeed(string UUID, LSL_Float SpeedModifier);
         void osSetOwnerSpeed(LSL_Float SpeedModifier);
-        LSL_Float osGetHealth(string avatar);
-        void osCauseHealing(string avatar, double healing);
-        void osSetHealth(string avatar, double health);
-        void osSetHealRate(string avatar, double health);
-        LSL_Float osGetHealRate(string avatar);
-        void osCauseDamage(string avatar, double damage);
+        LSL_Float osGetHealth(key agentId);
+        void osCauseHealing(key agentId, LSL_Float healing);
+        void osSetHealth(key agentId, LSL_Float health);
+        void osSetHealRate(key agentId, LSL_Float health);
+        LSL_Float osGetHealRate(key agentId);
+        void osCauseDamage(key avatar, LSL_Float damage);
         void osForceOtherSit(string avatar);
         void osForceOtherSit(string avatar, string target);
         LSL_List osGetPrimitiveParams(LSL_Key prim, LSL_List rules);
@@ -399,8 +400,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         LSL_List osGetNPCList();
 
         LSL_String osUnixTimeToTimestamp(LSL_Integer time);
-
-        LSL_String osGetInventoryDesc(string item);
 
         LSL_Integer osInviteToGroup(LSL_Key agentId);
         LSL_Integer osEjectFromGroup(LSL_Key agentId);
@@ -546,5 +545,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         LSL_Integer osApproxEquals(vector va, vector vb, LSL_Float margin);
         LSL_Integer osApproxEquals(rotation ra, rotation rb);
         LSL_Integer osApproxEquals(rotation ra, rotation rb, LSL_Float margin);
+        LSL_Key osGetInventoryLastOwner(LSL_String itemNameOrId);
+        LSL_String osGetInventoryName(LSL_Key itemId);
+        LSL_String osGetInventoryDesc(LSL_String itemNameOrId);
+        LSL_Key osGetLastChangedEventKey();
     }
 }

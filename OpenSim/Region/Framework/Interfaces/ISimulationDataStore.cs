@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -35,11 +35,11 @@ namespace OpenSim.Region.Framework.Interfaces
     public interface ISimulationDataStore
     {
         /// <summary>
-        /// Initialises the data storage engine
+        /// Initializes the data storage engine
         /// </summary>
         /// <param name="filename">The file to save the database to (may not be applicable).  Alternatively,
         /// a connection string for the database</param>
-        void Initialise(string filename);
+        void Initialize(string filename);
 
         /// <summary>
         /// Dispose the database

@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.ApplicationPlugins.RegionModulesController.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.ApplicationPlugins.RegionModulesController.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/ApplicationPlugins/RegionModulesController/obj/Debug/OpenSim.ApplicationPlugins.RegionModulesController.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/ApplicationPlugins/RegionModulesController/obj/Debug/OpenSim.ApplicationPlugins.RegionModulesController.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/ApplicationPlugins/RegionModulesController/obj/Debug/OpenSim.ApplicationPlugins.RegionModulesController.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/ApplicationPlugins/RegionModulesController/obj/Debug/OpenSim.ApplicationPlugins.RegionModulesController.pdb

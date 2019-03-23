@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Clients.AssetClient.exe
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Clients.AssetClient.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Clients/Assets/obj/Debug/OpenSim.Tests.Clients.AssetClient.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Clients/Assets/obj/Debug/OpenSim.Tests.Clients.AssetClient.exe
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Clients/Assets/obj/Debug/OpenSim.Tests.Clients.AssetClient.pdb

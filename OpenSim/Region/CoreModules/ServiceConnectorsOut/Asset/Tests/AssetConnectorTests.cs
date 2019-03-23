@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -58,7 +58,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset.Tests
             config.Configs["AssetService"].Set("StorageProvider", "OpenSim.Tests.Common.dll");
 
             LocalAssetServicesConnector lasc = new LocalAssetServicesConnector();
-            lasc.Initialise(config);
+            lasc.Initialize(config);
 
             AssetBase a1 = AssetHelpers.CreateNotecardAsset();
             lasc.Store(a1);
@@ -90,7 +90,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset.Tests
             config.Configs["AssetService"].Set("StorageProvider", "OpenSim.Tests.Common.dll");
 
             LocalAssetServicesConnector lasc = new LocalAssetServicesConnector();
-            lasc.Initialise(config);
+            lasc.Initialize(config);
 
             // If it is remote, it should be stored
             AssetBase a2 = AssetHelpers.CreateNotecardAsset();
@@ -127,7 +127,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset.Tests
             config.Configs["AssetService"].Set("StorageProvider", "OpenSim.Tests.Common.dll");
 
             LocalAssetServicesConnector lasc = new LocalAssetServicesConnector();
-            lasc.Initialise(config);
+            lasc.Initialize(config);
 
             AssetBase a1 = AssetHelpers.CreateNotecardAsset();
             a1.Local = true;
@@ -155,7 +155,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Asset.Tests
             config.Configs["AssetService"].Set("StorageProvider", "OpenSim.Tests.Common.dll");
 
             LocalAssetServicesConnector lasc = new LocalAssetServicesConnector();
-            lasc.Initialise(config);
+            lasc.Initialize(config);
 
             // If it is local, it should not be stored
             AssetBase a1 = AssetHelpers.CreateNotecardAsset();

@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ScriptEngine.XEngine.Api.Runtime.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ScriptEngine.XEngine.Api.Runtime.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/XEngine/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.XEngine.Api.Runtime.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/XEngine/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.XEngine.Api.Runtime.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/XEngine/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.XEngine.Api.Runtime.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/XEngine/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.XEngine.Api.Runtime.pdb

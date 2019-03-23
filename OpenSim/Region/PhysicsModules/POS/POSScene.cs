@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -64,7 +64,7 @@ namespace OpenSim.Region.PhysicsModule.POS
             get { return null; }
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             // TODO: Move this out of Startup
             IConfig config = source.Configs["Startup"];
@@ -91,8 +91,8 @@ namespace OpenSim.Region.PhysicsModule.POS
             EngineName = Name + " " + Version;
 
             scene.RegisterModuleInterface<PhysicsScene>(this);
-            base.Initialise(scene.PhysicsRequestAsset,
-                (scene.Heightmap != null ? scene.Heightmap.GetFloatsSerialised() : new float[Constants.RegionSize * Constants.RegionSize]),
+            base.Initialize(scene.PhysicsRequestAsset,
+                (scene.Heightmap != null ? scene.Heightmap.GetFloatsSerialized() : new float[Constants.RegionSize * Constants.RegionSize]),
                 (float)scene.RegionInfo.RegionSettings.WaterHeight);
 
         }
@@ -295,16 +295,6 @@ namespace OpenSim.Region.PhysicsModule.POS
                 }
             }
             return 1.0f;
-        }
-
-        public override void GetResults()
-        {
-        }
-
-        public override bool IsThreaded
-        {
-            // for now we won't be multithreaded
-            get { return (false); }
         }
 
         public override void SetTerrain(float[] heightMap)

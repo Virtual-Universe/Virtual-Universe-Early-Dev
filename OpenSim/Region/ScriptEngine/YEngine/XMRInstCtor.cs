@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -527,6 +527,11 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             XmlElement doGblInitN = (XmlElement)scriptStateN.SelectSingleNode("DoGblInit");
             doGblInit = bool.Parse(doGblInitN.InnerText);
 
+            double minEventDelay = 0.0;
+            XmlElement minEventDelayN = (XmlElement)scriptStateN.SelectSingleNode("mEvtDly");
+            if(minEventDelayN != null)
+                minEventDelay = Double.Parse(minEventDelayN.InnerText);
+
             // get values used by stuff like llDetectedGrab, etc.
             DetectParams[] detParams = RestoreDetectParams(scriptStateN.SelectSingleNode("DetectArray"));
 
@@ -576,6 +581,8 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             AsyncCommandManager.CreateFromData(m_Engine,
                     m_LocalID, m_ItemID, m_Part.UUID,
                     pluginData);
+
+            MinEventDelay = minEventDelay;
         }
 
         private void processXstate(XmlDocument doc)
@@ -919,6 +926,8 @@ namespace OpenSim.Region.ScriptEngine.Yengine
 
             AsyncCommandManager.CreateFromData(m_Engine,
                      m_LocalID, m_ItemID, m_Part.UUID, pluginData);
+
+            MinEventDelay = minEventDelay;
         }
 
         private static void getvarNames(Dictionary<int, string> s, Dictionary<string, int> d)

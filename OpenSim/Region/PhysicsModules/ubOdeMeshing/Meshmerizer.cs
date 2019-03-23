@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -56,6 +56,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         // Setting baseDir to a path will enable the dumping of raw files
         // raw files can be imported by blender so a visual inspection of the results can be done
 
+        const float floatPI = (float)Math.PI;
         private static string cacheControlFilename = "cntr";
         private bool m_Enabled = false;
 
@@ -87,7 +88,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             get { return null; }
         }
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig start_config = config.Configs["Startup"];
 
@@ -931,11 +932,11 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             primMesh.topShearY = pathShearY;
             primMesh.pathCutBegin = pathBegin;
             primMesh.pathCutEnd = pathEnd;
-
+            
             if (primShape.PathCurve == (byte)Extrusion.Straight || primShape.PathCurve == (byte) Extrusion.Flexible)
             {
-                primMesh.twistBegin = (primShape.PathTwistBegin * 18) / 10;
-                primMesh.twistEnd = (primShape.PathTwist * 18) / 10;
+                primMesh.twistBegin = (float)(primShape.PathTwistBegin * (floatPI * 0.01f));
+                primMesh.twistEnd = (float)(primShape.PathTwist * (floatPI * 0.01f));
                 primMesh.taperX = pathScaleX;
                 primMesh.taperY = pathScaleY;
 
@@ -944,7 +945,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 #endif
                 try
                 {
-                    primMesh.ExtrudeLinear();
+                    primMesh.Extrude(PathType.Linear); ;
                 }
                 catch (Exception ex)
                 {
@@ -959,8 +960,8 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 primMesh.radius = 0.01f * primShape.PathRadiusOffset;
                 primMesh.revolutions = 1.0f + 0.015f * primShape.PathRevolutions;
                 primMesh.skew = 0.01f * primShape.PathSkew;
-                primMesh.twistBegin = (primShape.PathTwistBegin * 36) / 10;
-                primMesh.twistEnd = (primShape.PathTwist * 36) / 10;
+                primMesh.twistBegin = (float)(primShape.PathTwistBegin * (floatPI * 0.02f));
+                primMesh.twistEnd = (float)(primShape.PathTwistBegin * (floatPI * 0.02f));
                 primMesh.taperX = primShape.PathTaperX * 0.01f;
                 primMesh.taperY = primShape.PathTaperY * 0.01f;
 
@@ -977,7 +978,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 #endif
                 try
                 {
-                    primMesh.ExtrudeCircular();
+                    primMesh.Extrude(PathType.Circular);
                 }
                 catch (Exception ex)
                 {

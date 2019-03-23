@@ -1,31 +1,30 @@
-/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Virtual Universe Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 
 using System;
 using System.Text;
@@ -41,10 +40,10 @@ using OpenSim.Framework;
 namespace OpenSim.Server.Base
 {
     /// <summary>
-    ///     Command manager -
-    ///     Wrapper for OpenSim.Framework.PluginManager to allow
-    ///     us to add commands to the console to perform operations
-    ///     on our repos and plugins
+    /// Command manager -
+    /// Wrapper for OpenSim.Framework.PluginManager to allow
+    /// us to add commands to the console to perform operations
+    /// on our repos and plugins
     /// </summary>
     public class CommandManager
     {
@@ -75,27 +74,27 @@ namespace OpenSim.Server.Base
             // list installed plugins
             MainConsole.Instance.Commands.AddCommand("Plugin", true,
                                                      "plugin list installed",
-                                                     "plugin list installed", "List install plugins",
+                                                     "plugin list installed","List install plugins",
                                                      HandleConsoleListInstalledPlugin);
 
             // list plugins available from registered repositories
             MainConsole.Instance.Commands.AddCommand("Plugin", true,
                                                      "plugin list available",
-                                                     "plugin list available", "List available plugins",
+                                                     "plugin list available","List available plugins",
                                                      HandleConsoleListAvailablePlugin);
             // List available updates
             MainConsole.Instance.Commands.AddCommand("Plugin", true,
-                                                     "plugin updates", "plugin updates", "List available updates",
+                                                     "plugin updates", "plugin updates","List available updates",
                                                      HandleConsoleListUpdates);
 
             // Update plugin
             MainConsole.Instance.Commands.AddCommand("Plugin", true,
-                                                     "plugin update", "plugin update \"plugin index\"", "Update the plugin",
+                                                     "plugin update", "plugin update \"plugin index\"","Update the plugin",
                                                      HandleConsoleUpdatePlugin);
 
             // Add repository
             MainConsole.Instance.Commands.AddCommand("Repository", true,
-                                                     "repo add", "repo add \"url\"", "Add repository",
+                                                     "repo add", "repo add \"url\"","Add repository",
                                                      HandleConsoleAddRepo);
 
             // Refresh repo
@@ -130,7 +129,7 @@ namespace OpenSim.Server.Base
 
             // *
             MainConsole.Instance.Commands.AddCommand("Plugin", true,
-                                                     "plugin info", "plugin info \"plugin index\"", "Show detailed information for plugin",
+                                                     "plugin info", "plugin info \"plugin index\"","Show detailed information for plugin",
                                                      HandleConsoleShowAddinInfo);
 
             // Plugin disable
@@ -147,21 +146,18 @@ namespace OpenSim.Server.Base
         }
 
         #region console handlers
-
+        // Handle our console commands
+        //
+        // Install plugin from registered repository
         /// <summary>
-        ///     Handle our console commands
-        ///     Install plugin from registered repository
-        /// </summary>
-        /// 
-        /// <summary>
-        ///     Handles the console install plugin command. Attempts to install the selected plugin
-        ///     and
+        /// Handles the console install plugin command. Attempts to install the selected plugin
+        /// and
         /// </summary>
         /// <param name='module'>
-        ///     Module.
+        /// Module.
         /// </param>
         /// <param name='cmd'>
-        ///     Cmd.
+        /// Cmd.
         /// </param>
         private void HandleConsoleInstallPlugin(string module, string[] cmd)
         {
@@ -170,7 +166,6 @@ namespace OpenSim.Server.Base
             if (cmd.Length == 3)
             {
                 int ndx = Convert.ToInt16(cmd[2]);
-
                 if (PluginManager.InstallPlugin(ndx, out result) == true)
                 {
                     ArrayList s = new ArrayList();
@@ -179,7 +174,6 @@ namespace OpenSim.Server.Base
 
                     var list = result.Keys.ToList();
                     list.Sort();
-
                     foreach (var k in list)
                     {
                         Dictionary<string, object> plugin = (Dictionary<string, object>)result[k];
@@ -191,7 +185,6 @@ namespace OpenSim.Server.Base
                     }
                 }
             }
-
             return;
         }
 
@@ -203,7 +196,6 @@ namespace OpenSim.Server.Base
                 int ndx = Convert.ToInt16(cmd[2]);
                 PluginManager.UnInstall(ndx);
             }
-
             return;
         }
 
@@ -219,7 +211,6 @@ namespace OpenSim.Server.Base
 
             var list = result.Keys.ToList();
             list.Sort();
-
             foreach (var k in list)
             {
                 Dictionary<string, object> plugin = (Dictionary<string, object>)result[k];
@@ -229,7 +220,6 @@ namespace OpenSim.Server.Base
                                                   enabled == true ? "[ ]" : "[X]",
                                                   plugin["name"], plugin["version"]);
             }
-
             return;
         }
 
@@ -241,7 +231,6 @@ namespace OpenSim.Server.Base
 
             var list = result.Keys.ToList();
             list.Sort();
-
             foreach (var k in list)
             {
                 // name, version, repository
@@ -252,7 +241,6 @@ namespace OpenSim.Server.Base
                                                   plugin["version"],
                                                   plugin["repository"]);
             }
-
             return;
         }
 
@@ -273,11 +261,10 @@ namespace OpenSim.Server.Base
         // Register repository
         private void HandleConsoleAddRepo(string module, string[] cmd)
         {
-            if (cmd.Length == 3)
+            if ( cmd.Length == 3)
             {
                 PluginManager.AddRepository(cmd[2]);
             }
-
             return;
         }
 
@@ -292,10 +279,7 @@ namespace OpenSim.Server.Base
         private void HandleConsoleRemoveRepo(string module, string[] cmd)
         {
             if (cmd.Length == 3)
-            {
                 PluginManager.RemoveRepository(cmd);
-            }
-
             return;
         }
 
@@ -321,7 +305,6 @@ namespace OpenSim.Server.Base
 
             var list = result.Keys.ToList();
             list.Sort();
-
             foreach (var k in list)
             {
                 Dictionary<string, object> repo = (Dictionary<string, object>)result[k];
@@ -340,6 +323,7 @@ namespace OpenSim.Server.Base
         {
             if (cmd.Length >= 3)
             {
+
                 Dictionary<string, object> result = new Dictionary<string, object>();
 
                 int ndx = Convert.ToInt16(cmd[2]);
@@ -370,7 +354,6 @@ namespace OpenSim.Server.Base
             PluginManager.EnablePlugin(cmd);
             return;
         }
-
         #endregion
     }
 }

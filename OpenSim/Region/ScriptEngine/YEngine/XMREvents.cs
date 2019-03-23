@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -182,13 +182,26 @@ namespace OpenSim.Region.ScriptEngine.Yengine
                     new DetectParams[] { det }));
         }
 
-        public void changed(uint localID, uint change)
+        public void changed(uint localID, uint change, object parameter)
         {
             int ch = (int)change;
             // Add to queue for all scripts in localID, Object pass change.
-            this.PostObjectEvent(localID, new EventParams(
+            if(parameter == null)
+            {
+                PostObjectEvent(localID, new EventParams(
                     "changed", new object[] { ch },
                     zeroDetectParams));
+                return;
+            }
+            if ( parameter is UUID)
+            {
+                DetectParams det = new DetectParams();
+                det.Key = (UUID)parameter;
+                PostObjectEvent(localID, new EventParams(
+                    "changed", new object[] { ch },
+                    new DetectParams[] { det }));
+                return;
+            }
         }
 
         // state_entry: not processed here
@@ -231,13 +244,7 @@ namespace OpenSim.Region.ScriptEngine.Yengine
                     det[i++] = d;
 
                     d.Key = detobj.keyUUID;
-                    d.Populate(this.World);
-
-                    /* not done by XEngine...
-                    d.Position = detobj.posVector;
-                    d.Rotation = detobj.rotQuat;
-                    d.Velocity = detobj.velVector;
-                    ... */
+                    d.Populate(World, detobj);
                 }
 
                 this.PostObjectEvent(localID, new EventParams(

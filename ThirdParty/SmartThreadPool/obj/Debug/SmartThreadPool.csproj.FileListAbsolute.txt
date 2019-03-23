@@ -1,0 +1,5 @@
+/home/dev/Desktop/OpenSim-Dev/bin/SmartThreadPool.dll
+/home/dev/Desktop/OpenSim-Dev/bin/SmartThreadPool.pdb
+/home/dev/Desktop/OpenSim-Dev/ThirdParty/SmartThreadPool/obj/Debug/SmartThreadPool.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/ThirdParty/SmartThreadPool/obj/Debug/SmartThreadPool.dll
+/home/dev/Desktop/OpenSim-Dev/ThirdParty/SmartThreadPool/obj/Debug/SmartThreadPool.pdb

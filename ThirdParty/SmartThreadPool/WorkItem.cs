@@ -755,12 +755,12 @@ namespace Amib.Threading.Internal
                         {
                             // **************************
                             // Stock SmartThreadPool 2.2.3 sets these to true and relies on the thread to check the
-                            // WorkItem cancellation status.  However, OpenSimulator uses a different mechanism to notify
+                            // WorkItem cancellation status.  However, Virtual Universe uses a different mechanism to notify
                             // scripts of co-operative termination and the abort code also relies on this method
                             // returning false in order to implement a small wait.
                             //
                             // Therefore, as was the case previously with STP, we will not signal successful cancellation
-                            // here.  It's possible that OpenSimulator code could be changed in the future to remove
+                            // here.  It's possible that Virtual Universe code could be changed in the future to remove
                             // the need for this change.
                             // **************************
                             success = false;

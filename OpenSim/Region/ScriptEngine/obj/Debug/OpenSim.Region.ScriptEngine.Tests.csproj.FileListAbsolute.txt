@@ -1,0 +1,6 @@
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ScriptEngine.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ScriptEngine.Tests.pdb
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/obj/Debug/OpenSim.Region.ScriptEngine.Tests.csprojAssemblyReference.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/obj/Debug/OpenSim.Region.ScriptEngine.Tests.csproj.CoreCompileInputs.cache
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/obj/Debug/OpenSim.Region.ScriptEngine.Tests.dll
+/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/obj/Debug/OpenSim.Region.ScriptEngine.Tests.pdb

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -40,19 +40,19 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
     public class OlsenSphere : ITerrainPaintableEffect
     {
         private const double nConst = 1024.0;
-        private const NeighbourSystem type = NeighbourSystem.Moore;
+        private const NeighborSystem type = NeighborSystem.Moore;
 
         #region Supporting Functions
 
-        private static int[] Neighbours(NeighbourSystem neighbourType, int index)
+        private static int[] Neighbors(NeighborSystem neighborType, int index)
         {
             int[] coord = new int[2];
 
             index++;
 
-            switch (neighbourType)
+            switch (neighborType)
             {
-                case NeighbourSystem.Moore:
+                case NeighborSystem.Moore:
                     switch (index)
                     {
                         case 1:
@@ -105,7 +105,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                     }
                     break;
 
-                case NeighbourSystem.VonNeumann:
+                case NeighborSystem.VonNeumann:
                     switch (index)
                     {
                         case 1:
@@ -142,7 +142,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
             return coord;
         }
 
-        private enum NeighbourSystem
+        private enum NeighborSystem
         {
             Moore,
             VonNeumann
@@ -181,7 +181,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                         {
                             if (j != NEIGHBOUR_ME)
                             {
-                                int[] coords = Neighbours(type, j);
+                                int[] coords = Neighbors(type, j);
 
                                 coords[0] += x;
                                 coords[1] += y;
@@ -208,7 +208,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                         // Apply results
                         if (0 < max && max <= T)
                         {
-                            int[] maxCoords = Neighbours(type, loc);
+                            int[] maxCoords = Neighbors(type, loc);
                             double heightDelta = 0.5 * max * z * duration;
                             map[x, y] -= heightDelta;
                             map[x + maxCoords[0], y + maxCoords[1]] += heightDelta;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -91,7 +91,7 @@ namespace OpenSim.Data.SQLite
 
         public SQLiteSimulationData(string connectionString)
         {
-            Initialise(connectionString);
+            Initialize(connectionString);
         }
 
         // Temporary attribute while this is experimental
@@ -104,12 +104,12 @@ namespace OpenSim.Data.SQLite
 
         /// <summary>
         /// <list type="bullet">
-        /// <item>Initialises RegionData Interface</item>
-        /// <item>Loads and initialises a new SQLite connection and maintains it.</item>
+        /// <item>Initializes RegionData Interface</item>
+        /// <item>Loads and initializes a new SQLite connection and maintains it.</item>
         /// </list>
         /// </summary>
         /// <param name="connectionString">the connection string</param>
-        public void Initialise(string connectionString)
+        public void Initialize(string connectionString)
         {
             try
             {
@@ -823,7 +823,7 @@ namespace OpenSim.Data.SQLite
         // Legacy entry point for when terrain was always a 256x256 hieghtmap
         public void StoreTerrain(double[,] ter, UUID regionID)
         {
-            StoreTerrain(new HeightmapTerrainData(ter), regionID);
+            StoreTerrain(new TerrainData(ter), regionID);
         }
 
         /// <summary>
@@ -835,8 +835,7 @@ namespace OpenSim.Data.SQLite
         {
             lock (ds)
             {
-                using (
-                    SqliteCommand cmd = new SqliteCommand("delete from terrain where RegionUUID=:RegionUUID", m_conn))
+                using (SqliteCommand cmd = new SqliteCommand("delete from terrain where RegionUUID=:RegionUUID", m_conn))
                 {
                     cmd.Parameters.Add(new SqliteParameter(":RegionUUID", regionID.ToString()));
                     cmd.ExecuteNonQuery();
@@ -1129,7 +1128,7 @@ namespace OpenSim.Data.SQLite
                 catch (SqliteException SqlEx)
                 {
                     throw new Exception(
-                        "There was a SQL error or connection string configuration error when saving the region settings.  This could be a bug, it could also happen if ConnectionString is defined in the [DatabaseService] section of StandaloneCommon.ini in the config_include folder.  This could also happen if the config_include folder doesn't exist or if the OpenSim.ini [Architecture] section isn't set.  If this is your first time running OpenSimulator, please restart the simulator and bug a developer to fix this!",
+                        "There was a SQL error or connection string configuration error when saving the region settings.  This could be a bug, it could also happen if ConnectionString is defined in the [DatabaseService] section of StandaloneCommon.ini in the config_include folder.  This could also happen if the config_include folder doesn't exist or if the OpenSim.ini [Architecture] section isn't set.  If this is your first time running Virtual Universe, please restart the simulator and bug a developer to fix this!",
                         SqlEx);
                 }
                 ds.AcceptChanges();
@@ -1743,7 +1742,10 @@ namespace OpenSim.Data.SQLite
 
             prim.Sound = new UUID(row["LoopedSound"].ToString());
             prim.SoundGain = Convert.ToSingle(row["LoopedSoundGain"]);
-            prim.SoundFlags = 1; // If it's persisted at all, it's looped
+            if (prim.Sound != UUID.Zero)
+                prim.SoundFlags = 1; // If it's persisted at all, it's looped
+            else
+                prim.SoundFlags = 0;
 
             if (!row.IsNull("TextureAnimation"))
                 prim.TextureAnimation = Convert.FromBase64String(row["TextureAnimation"].ToString());
@@ -1809,7 +1811,7 @@ namespace OpenSim.Data.SQLite
             }
             else
             {
-                prim.DynAttrs = new DAMap();
+                prim.DynAttrs = null;
             }
 
             prim.PhysicsShapeType = Convert.ToByte(row["PhysicsShapeType"]);
@@ -2247,7 +2249,7 @@ namespace OpenSim.Data.SQLite
             row["AttachedPosY"] = prim.AttachedPos.Y;
             row["AttachedPosZ"] = prim.AttachedPos.Z;
 
-            if (prim.DynAttrs.CountNamespaces > 0)
+            if (prim.DynAttrs!= null && prim.DynAttrs.CountNamespaces > 0)
                 row["DynAttrs"] = prim.DynAttrs.ToXml();
             else
                 row["DynAttrs"] = null;

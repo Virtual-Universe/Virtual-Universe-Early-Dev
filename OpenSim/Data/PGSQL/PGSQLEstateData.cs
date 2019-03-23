@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -57,7 +57,7 @@ namespace OpenSim.Data.PGSQL
 
         public PGSQLEstateStore(string connectionString)
         {
-            Initialise(connectionString);
+            Initialize(connectionString);
         }
 
         protected virtual Assembly Assembly
@@ -66,10 +66,10 @@ namespace OpenSim.Data.PGSQL
         }
 
         /// <summary>
-        /// Initialises the estatedata class.
+        /// Initializes the estatedata class.
         /// </summary>
         /// <param name="connectionString">connectionString.</param>
-        public void Initialise(string connectionString)
+        public void Initialize(string connectionString)
         {
             if (!string.IsNullOrEmpty(connectionString))
             {

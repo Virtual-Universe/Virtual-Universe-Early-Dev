@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -422,9 +422,9 @@ namespace OpenSim.Region.ScriptEngine.Yengine
                 object[] saveEHArgs = this.ehArgs;
                 ScriptEventCode saveEventCode = this.eventCode;
 
-                this.m_DetectParams = evt.DetectParams;
-                this.ehArgs = evt.Params;
-                this.eventCode = evc;
+                m_DetectParams = evt.DetectParams;
+                ehArgs = evt.Params;
+                eventCode = evc;
 
                 try
                 {
@@ -432,9 +432,9 @@ namespace OpenSim.Region.ScriptEngine.Yengine
                 }
                 finally
                 {
-                    this.m_DetectParams = saveDetParams;
-                    this.ehArgs = saveEHArgs;
-                    this.eventCode = saveEventCode;
+                    m_DetectParams = saveDetParams;
+                    ehArgs = saveEHArgs;
+                    eventCode = saveEventCode;
                 }
 
                  // Keep waiting until we find a returnable event or timeout.

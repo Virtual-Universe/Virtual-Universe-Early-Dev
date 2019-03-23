@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -189,8 +189,10 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             // Process all the pending adds
             OutgoingPacket pendingAdd;
             while (m_pendingAdds.TryDequeue(out pendingAdd))
+            {
                 if (pendingAdd != null)
                     m_packets[pendingAdd.SequenceNumber] = pendingAdd;
+            }
 
             // Process all the pending removes, including updating statistics and round-trip times
             PendingAck pendingAcknowledgement;
@@ -204,12 +206,15 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                     {
                         m_packets.Remove(pendingAcknowledgement.SequenceNumber);
 
+                        // Update stats
+                        Interlocked.Add(ref ackedPacket.Client.UnackedBytes, -ackedPacket.Buffer.DataLength);
+
+                        ackedPacket.Client.FreeUDPBuffer(ackedPacket.Buffer);
+                        ackedPacket.Buffer = null;
+
                         // As with other network applications, assume that an acknowledged packet is an
                         // indication that the network can handle a little more load, speed up the transmission
                         ackedPacket.Client.FlowThrottle.AcknowledgePackets(1);
-
-                        // Update stats
-                        Interlocked.Add(ref ackedPacket.Client.UnackedBytes, -ackedPacket.Buffer.DataLength);
 
                         if (!pendingAcknowledgement.FromResend)
                         {
@@ -244,6 +249,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
                         // Update stats
                         Interlocked.Add(ref removedPacket.Client.UnackedBytes, -removedPacket.Buffer.DataLength);
+
+                        removedPacket.Client.FreeUDPBuffer(removedPacket.Buffer);
+                        removedPacket.Buffer = null;
                     }
                 }
             }

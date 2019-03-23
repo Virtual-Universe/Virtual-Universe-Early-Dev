@@ -1,5 +1,5 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
+﻿/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -72,8 +72,8 @@ namespace Robust.Tests
             msg = m_Connector.RegisterRegion(UUID.Zero, r3);
             Assert.AreEqual(msg, string.Empty, "Region 3 failed to re-register");
 
-            List<GridRegion> regions = m_Connector.GetNeighbours(UUID.Zero, r1.RegionID);
-            Assert.AreNotEqual(regions, null, "GetNeighbours of region 1 failed");
+            List<GridRegion> regions = m_Connector.GetNeighbors(UUID.Zero, r1.RegionID);
+            Assert.AreNotEqual(regions, null, "GetNeighbors of region 1 failed");
             Assert.AreEqual(regions.Count, 1, "Region 1 should have 1 neighbor");
             Assert.AreEqual(regions[0].RegionName, "Test Region 2", "Region 1 has the wrong neighbor");
 

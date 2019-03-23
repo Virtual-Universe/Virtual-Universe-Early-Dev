@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://opensimulator.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -208,11 +208,11 @@ namespace OpenSim.Region.CoreModules.World.Terrain
         #region INonSharedRegionModule Members
 
         /// <summary>
-        /// Creates and initialises a terrain module for a region
+        /// Creates and initializes a terrain module for a region
         /// </summary>
         /// <param name="scene">Region initialising</param>
         /// <param name="config">Config for the region</param>
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig terrainConfig = config.Configs["Terrain"];
             if (terrainConfig != null)
@@ -592,7 +592,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             else
             {
                 // The traditional way is to call into the protocol stack to send them all.
-                pClient.SendLayerData(new float[10]);
+                pClient.SendLayerData();
             }
         }
 
@@ -885,7 +885,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             if (m_tainted)
             {
                 m_tainted = false;
-                m_scene.PhysicsScene.SetTerrain(m_channel.GetFloatsSerialised());
+                m_scene.PhysicsScene.SetTerrain(m_channel.GetFloatsSerialized());
                 m_scene.SaveTerrain();
 
                 // Clients who look at the map will never see changes after they looked at the map, so i've commented this out.
@@ -1037,7 +1037,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
         /// <summary>
         /// Sends a copy of the current terrain to the scenes clients
         /// </summary>
-        /// <param name="serialised">A copy of the terrain as a 1D float array of size w*h</param>
+        /// <param name="serialized">A copy of the terrain as a 1D float array of size w*h</param>
         /// <param name="x">The patch corner to send</param>
         /// <param name="y">The patch corner to send</param>
         private void SendToClients(TerrainData terrData, int x, int y)
@@ -1066,13 +1066,11 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 // Legacy update sending where the update is sent out as soon as noticed
                 // We know the actual terrain data that is passed is ignored so this passes a dummy heightmap.
                 //float[] heightMap = terrData.GetFloatsSerialized();
-                float[] heightMap = new float[10];
+                int[] map = new int[]{ x / Constants.TerrainPatchSize, y / Constants.TerrainPatchSize };
                 m_scene.ForEachClient(
                     delegate (IClientAPI controller)
                     {
-                        controller.SendLayerData(x / Constants.TerrainPatchSize,
-                                                 y / Constants.TerrainPatchSize,
-                                                 heightMap);
+                        controller.SendLayerData(map);
                     }
                 );
             }
@@ -1131,14 +1129,14 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                                 }
                                 */
 
-                                float[] patchPieces = new float[toSend.Count * 2];
+                                int[] patchPieces = new int[toSend.Count * 2];
                                 int pieceIndex = 0;
                                 foreach (PatchesToSend pts in toSend)
                                 {
                                     patchPieces[pieceIndex++] = pts.PatchX;
                                     patchPieces[pieceIndex++] = pts.PatchY;
                                 }
-                                pups.Presence.ControllingClient.SendLayerData(-toSend.Count, 0, patchPieces);
+                                pups.Presence.ControllingClient.SendLayerData(patchPieces);
                             }
                             if (pups.sendAll && toSend.Count < 1024)
                                 SendAllModifiedPatchs(pups);
@@ -1206,16 +1204,14 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             npatchs = patchs.Count;
             if (npatchs > 0)
             {
-                int[] xPieces = new int[npatchs];
-                int[] yPieces = new int[npatchs];
-                float[] patchPieces = new float[npatchs * 2];
+                int[] patchPieces = new int[npatchs * 2];
                 int pieceIndex = 0;
                 foreach (PatchesToSend pts in patchs)
                 {
                     patchPieces[pieceIndex++] = pts.PatchX;
                     patchPieces[pieceIndex++] = pts.PatchY;
                 }
-                pups.Presence.ControllingClient.SendLayerData(-npatchs, 0, patchPieces);
+                pups.Presence.ControllingClient.SendLayerData(patchPieces);
             }
         }
 
@@ -1457,8 +1453,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
         {
             //m_log.Debug("Terrain packet unacked, resending patch: " + patchX + " , " + patchY);
             // SendLayerData does not use the heightmap parameter. This kludge is so as to not change IClientAPI.
-            float[] heightMap = new float[10];
-            client.SendLayerData(patchX, patchY, heightMap);
+            client.SendLayerData(new int[]{patchX, patchY});
         }
 
         private void StoreUndoState()
