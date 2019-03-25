@@ -61,8 +61,6 @@ namespace OpenSim
 
         // These are the names of the plugin-points extended by this
         // class during system startup.
-        //
-
         private const string PLUGIN_ASSET_CACHE = "/OpenSim/AssetCache";
         private const string PLUGIN_ASSET_SERVER_CLIENT = "/OpenSim/AssetClient";
 
@@ -115,9 +113,9 @@ namespace OpenSim
 
         private bool m_securePermissionsLoading = true;
 
-        /// <value>
+        /// <summary>
         /// The config information passed into the Virtual Universe region server.
-        /// </value>
+        /// </summary>
         public OpenSimConfigSource ConfigSource { get; private set; }
 
         protected EnvConfigSource m_EnvConfigSource = new EnvConfigSource();
@@ -161,6 +159,7 @@ namespace OpenSim
         protected virtual void ReadExtraConfigSettings()
         {
             IConfig networkConfig = Config.Configs["Network"];
+
             if (networkConfig != null)
             {
                 proxyUrl = networkConfig.GetString("proxy_url", "");
@@ -168,6 +167,7 @@ namespace OpenSim
             }
 
             IConfig startupConfig = Config.Configs["Startup"];
+
             if (startupConfig != null)
             {
                 Util.LogOverloads = startupConfig.GetBoolean("LogOverloads", true);
@@ -204,8 +204,11 @@ namespace OpenSim
         {
             List<string> topics = base.GetHelpTopics();
             Scene s = SceneManager.CurrentOrFirstScene;
+
             if (s != null && s.GetCommanders() != null)
+            {
                 topics.AddRange(s.GetCommanders().Keys);
+            }
 
             return topics;
         }
@@ -217,18 +220,22 @@ namespace OpenSim
         protected override void StartupSpecific()
         {
             IConfig startupConfig = Config.Configs["Startup"];
+
             if (startupConfig != null)
             {
                 // refuse to run MegaRegions
-                if(startupConfig.GetBoolean("CombineContiguousRegions", false))
+                if (startupConfig.GetBoolean("CombineContiguousRegions", false))
                 {
                     m_log.Fatal("CombineContiguousRegions (MegaRegions) option is no longer suported. Use a older version to save region contents as OAR, then import into a fresh install of this new version");
                     throw new Exception("CombineContiguousRegions not suported");
                 }
 
                 string pidFile = startupConfig.GetString("PIDFile", String.Empty);
+
                 if (pidFile != String.Empty)
+                {
                     CreatePIDFile(pidFile);
+                }
 
                 userStatsURI = startupConfig.GetString("Stats_URI", String.Empty);
 
@@ -237,7 +244,7 @@ namespace OpenSim
                 string permissionModules = Util.GetConfigVarFromSections<string>(Config, "permissionmodules",
                     new string[] { "Startup", "Permissions" }, "DefaultPermissionsModule");
 
-                m_permsModules =  new List<string>(permissionModules.Split(',').Select(m => m.Trim()));
+                m_permsModules = new List<string>(permissionModules.Split(',').Select(m => m.Trim()));
 
                 managedStatsURI = startupConfig.GetString("ManagedStatsRemoteFetchURI", String.Empty);
                 managedStatsPassword = startupConfig.GetString("ManagedStatsRemoteFetchPassword", String.Empty);
@@ -245,47 +252,68 @@ namespace OpenSim
 
             // Load the simulation data service
             IConfig simDataConfig = Config.Configs["SimulationDataStore"];
+
             if (simDataConfig == null)
+            {
                 throw new Exception("Configuration file is missing the [SimulationDataStore] section.  Have you copied OpenSim.ini.example to OpenSim.ini to reference config-include/ files?");
+            }
 
             string module = simDataConfig.GetString("LocalServiceModule", String.Empty);
+
             if (String.IsNullOrEmpty(module))
+            {
                 throw new Exception("Configuration file is missing the LocalServiceModule parameter in the [SimulationDataStore] section.");
+            }
 
             m_simulationDataService = ServerUtils.LoadPlugin<ISimulationDataService>(module, new object[] { Config });
+
             if (m_simulationDataService == null)
+            {
                 throw new Exception(
                     string.Format(
                         "Could not load an ISimulationDataService implementation from {0}, as configured in the LocalServiceModule parameter of the [SimulationDataStore] config section.",
                         module));
+            }
 
             // Load the estate data service
-            module = Util.GetConfigVarFromSections<string>(Config, "LocalServiceModule", new string[]{"EstateDataStore", "EstateService"}, String.Empty);
+            module = Util.GetConfigVarFromSections<string>(Config, "LocalServiceModule", new string[] { "EstateDataStore", "EstateService" }, String.Empty);
+
             if (String.IsNullOrEmpty(module))
+            {
                 throw new Exception("Configuration file is missing the LocalServiceModule parameter in the [EstateDataStore] or [EstateService] section");
+            }
 
             if (LoadEstateDataService)
             {
                 m_estateDataService = ServerUtils.LoadPlugin<IEstateDataService>(module, new object[] { Config });
+
                 if (m_estateDataService == null)
+                {
                     throw new Exception(
                         string.Format(
                             "Could not load an IEstateDataService implementation from {0}, as configured in the LocalServiceModule parameter of the [EstateDataStore] config section.",
                             module));
+                }
             }
 
             base.StartupSpecific();
 
             if (EnableInitialPluginLoad)
+            {
                 LoadPlugins();
+            }
 
             // We still want to post initalize any plugins even if loading has been disabled since a test may have
             // inserted them manually.
             foreach (IApplicationPlugin plugin in m_plugins)
+            {
                 plugin.PostInitialize();
+            }
 
             if (m_console != null)
+            {
                 AddPluginCommands(m_console);
+            }
         }
 
         protected virtual void AddPluginCommands(ICommandConsole console)
@@ -302,6 +330,7 @@ namespace OpenSim
                                               "help " + capitalizedTopic,
                                               "Get help on plugin command '" + topic + "'",
                                               HandleCommanderHelp);
+
                 console.Commands.AddCommand(capitalizedTopic, false, "help " + capitalizedTopic,
                                               "help " + capitalizedTopic,
                                               "Get help on plugin command '" + topic + "'",
@@ -314,11 +343,15 @@ namespace OpenSim
                 if (s != null && s.GetCommanders() != null)
                 {
                     if (s.GetCommanders().ContainsKey(topic))
+                    {
                         commander = s.GetCommanders()[topic];
+                    }
                 }
 
                 if (commander == null)
+                {
                     continue;
+                }
 
                 foreach (string command in commander.Commands.Keys)
                 {
@@ -339,21 +372,24 @@ namespace OpenSim
         {
             // Only safe for the interactive console, since it won't
             // let us come here unless both scene and commander exist
-            //
             ICommander moduleCommander = SceneManager.CurrentOrFirstScene.GetCommander(cmd[1].ToLower());
+
             if (moduleCommander != null)
+            {
                 m_console.Output(moduleCommander.Help);
+            }
         }
 
         protected override void Initialize()
         {
             // Called from base.StartUp()
-
             IConfig startupConfig = Config.Configs["Startup"];
-            if (startupConfig == null || startupConfig.GetBoolean("JobEngineEnabled", true))
-                WorkManager.JobEngine.Start();
 
-           
+            if (startupConfig == null || startupConfig.GetBoolean("JobEngineEnabled", true))
+            {
+                WorkManager.JobEngine.Start();
+            }
+
             if(m_networkServersInfo.HttpUsesSSL)
             {
                 m_httpServerSSL = true;
@@ -408,27 +444,22 @@ namespace OpenSim
         {
             int port = regionInfo.InternalEndPoint.Port;
 
-            // set initial RegionID to originRegionID in RegionInfo. (it needs for loding prims)
-            // Commented this out because otherwise regions can't register with
-            // the grid as there is already another region with the same UUID
-            // at those coordinates. This is required for the load balancer to work.
-            // --Mike, 2009.02.25
-            //regionInfo.originRegionID = regionInfo.RegionID;
-
             // set initial ServerURI
             regionInfo.HttpPort = m_httpServerPort;
-            if(m_httpServerSSL)
-            {
-                if(!m_httpServer.CheckSSLCertHost(regionInfo.ExternalHostName))
-                    throw new Exception("main http cert CN doesn't match region External IP");
 
-                regionInfo.ServerURI = "https://" + regionInfo.ExternalHostName +
-                         ":" + regionInfo.HttpPort.ToString() + "/";
+            if (m_httpServerSSL)
+            {
+                if (!m_httpServer.CheckSSLCertHost(regionInfo.ExternalHostName))
+                {
+                    throw new Exception("main http cert CN doesn't match region External IP");
+                }
+
+                regionInfo.ServerURI = "https://" + regionInfo.ExternalHostName + ":" + regionInfo.HttpPort.ToString() + "/";
             }
             else
-                regionInfo.ServerURI = "http://" + regionInfo.ExternalHostName +
-                         ":" + regionInfo.HttpPort.ToString() + "/";
-
+            {
+                regionInfo.ServerURI = "http://" + regionInfo.ExternalHostName + ":" + regionInfo.HttpPort.ToString() + "/";
+            }
 
             regionInfo.osSecret = m_osSecret;
 
@@ -442,16 +473,20 @@ namespace OpenSim
 
             Scene scene = SetupScene(regionInfo, proxyOffset, Config);
 
-            m_log.Info("[MODULES]: Loading Region's modules (old style)");
+            m_log.Info("[Modules]: Loading Region's modules (old style)");
 
             // Use this in the future, the line above will be deprecated soon
-            m_log.Info("[REGIONMODULES]: Loading Region's modules (new style)");
+            m_log.Info("[Region Modules]: Loading Region's modules (new style)");
             IRegionModulesController controller;
+
             if (ApplicationRegistry.TryGet(out controller))
             {
                 controller.AddRegionToModules(scene);
             }
-            else m_log.Error("[REGIONMODULES]: The new RegionModulesController is missing...");
+            else
+            {
+                m_log.Error("[Region Modules]: The new RegionModulesController is missing...");
+            }
 
             if (m_securePermissionsLoading)
             {
@@ -459,16 +494,17 @@ namespace OpenSim
                 {
                     if (!scene.RegionModules.ContainsKey(s))
                     {
-                        m_log.Fatal("[MODULES]: Required module " + s + " not found.");
+                        m_log.Fatal("[Modules]: Required module " + s + " not found.");
                         Environment.Exit(0);
                     }
                 }
 
-                m_log.InfoFormat("[SCENE]: Secure permissions loading enabled, modules loaded: {0}", String.Join(" ", m_permsModules.ToArray()));
+                m_log.InfoFormat("[Scene]: Secure permissions loading enabled, modules loaded: {0}", String.Join(" ", m_permsModules.ToArray()));
             }
 
             scene.SetModuleInterfaces();
-// First Step of bootreport sequence
+
+            // First Step of bootreport sequence
             if (scene.SnmpService != null)
             {
                 scene.SnmpService.ColdStart(1,scene);
@@ -481,7 +517,9 @@ namespace OpenSim
             }
 
             while (regionInfo.EstateSettings.EstateOwner == UUID.Zero && MainConsole.Instance != null)
+            {
                 SetUpEstateOwner(scene);
+            }
 
             scene.loadAllLandObjectsFromStorage(regionInfo.originRegionID);
 
@@ -503,13 +541,14 @@ namespace OpenSim
             catch (Exception e)
             {
                 m_log.ErrorFormat(
-                    "[STARTUP]: Registration of region with grid failed, aborting startup due to {0} {1}",
+                    "[Virtual Universe Start Up]: Registration of region with grid failed, aborting startup due to {0} {1}",
                     e.Message, e.StackTrace);
 
                 if (scene.SnmpService != null)
                 {
                     scene.SnmpService.Critical("Grid registration failed. Startup aborted.", scene);
                 }
+
                 // Carrying on now causes a lot of confusion down the
                 // line - we need to get the user's attention
                 Environment.Exit(1);
@@ -531,19 +570,11 @@ namespace OpenSim
 
             SceneManager.Add(scene);
 
-            //if (m_autoCreateClientStack)
-            //{
-            //    foreach (IClientNetworkServer clientserver in clientServers)
-            //    {
-            //        m_clientServers.Add(clientserver);
-            //        clientserver.Start();
-            //    }
-            //}
-
             if (scene.SnmpService != null)
             {
                 scene.SnmpService.BootInfo("Initializing region modules", scene);
             }
+
             scene.EventManager.OnShutdown += delegate() { ShutdownRegion(scene); };
 
             mscene = scene;
@@ -553,8 +584,6 @@ namespace OpenSim
                 scene.SnmpService.BootInfo("The region is operational", scene);
                 scene.SnmpService.LinkUp(scene);
             }
-
-            //return clientServers;
         }
 
         /// <summary>
@@ -577,8 +606,7 @@ namespace OpenSim
 
             if (Config.Configs[ESTATE_SECTION_NAME] != null)
             {
-                string defaultEstateOwnerName
-                    = Config.Configs[ESTATE_SECTION_NAME].GetString("DefaultEstateOwnerName", "").Trim();
+                string defaultEstateOwnerName = Config.Configs[ESTATE_SECTION_NAME].GetString("DefaultEstateOwnerName", "").Trim();
                 string[] ownerNames = defaultEstateOwnerName.Split(' ');
 
                 if (ownerNames.Length >= 2)
@@ -596,52 +624,46 @@ namespace OpenSim
             MainConsole.Instance.OutputFormat("Estate {0} has no owner set.", regionInfo.EstateSettings.EstateName);
             List<char> excluded = new List<char>(new char[1]{' '});
 
-
             if (estateOwnerFirstName == null || estateOwnerLastName == null)
             {
                 estateOwnerFirstName = MainConsole.Instance.CmdPrompt("Estate owner first name", "Test", excluded);
                 estateOwnerLastName = MainConsole.Instance.CmdPrompt("Estate owner last name", "User", excluded);
             }
 
-            UserAccount account
-                = scene.UserAccountService.GetUserAccount(regionInfo.ScopeID, estateOwnerFirstName, estateOwnerLastName);
+            UserAccount account = scene.UserAccountService.GetUserAccount(regionInfo.ScopeID, estateOwnerFirstName, estateOwnerLastName);
 
             if (account == null)
             {
-
-                // XXX: The LocalUserAccountServicesConnector is currently registering its inner service rather than
-                // itself!
-//                    if (scene.UserAccountService is LocalUserAccountServicesConnector)
-//                    {
-//                        IUserAccountService innerUas
-//                            = ((LocalUserAccountServicesConnector)scene.UserAccountService).UserAccountService;
-//
-//                        m_log.DebugFormat("B {0}", innerUas.GetType());
-//
-//                        if (innerUas is UserAccountService)
-//                        {
-
                 if (scene.UserAccountService is UserAccountService)
                 {
                     if (estateOwnerPassword == null)
+                    {
                         estateOwnerPassword = MainConsole.Instance.PasswdPrompt("Password");
+                    }
 
                     if (estateOwnerEMail == null)
+                    {
                         estateOwnerEMail = MainConsole.Instance.CmdPrompt("Email");
+                    }
 
                     if (rawEstateOwnerUuid == null)
+                    {
                         rawEstateOwnerUuid = MainConsole.Instance.CmdPrompt("User ID", UUID.Random().ToString());
+                    }
 
                     UUID estateOwnerUuid = UUID.Zero;
+
                     if (!UUID.TryParse(rawEstateOwnerUuid, out estateOwnerUuid))
                     {
-                        m_log.ErrorFormat("[OPENSIM]: ID {0} is not a valid UUID", rawEstateOwnerUuid);
+                        m_log.ErrorFormat("[Virtual Universe]: ID {0} is not a valid UUID", rawEstateOwnerUuid);
                         return;
                     }
 
                     // If we've been given a zero uuid then this signals that we should use a random user id
                     if (estateOwnerUuid == UUID.Zero)
+                    {
                         estateOwnerUuid = UUID.Random();
+                    }
 
                     account
                         = ((UserAccountService)scene.UserAccountService).CreateUser(
@@ -657,7 +679,7 @@ namespace OpenSim
             if (account == null)
             {
                 m_log.ErrorFormat(
-                    "[OPENSIM]: Unable to store account. If this simulator is connected to a grid, you must create the estate owner account first at the grid level.");
+                    "[Virtual Universe]: Unable to store account. If this simulator is connected to a grid, you must create the estate owner account first at the grid level.");
             }
             else
             {
@@ -668,13 +690,16 @@ namespace OpenSim
 
         private void ShutdownRegion(Scene scene)
         {
-            m_log.DebugFormat("[SHUTDOWN]: Shutting down region {0}", scene.RegionInfo.RegionName);
+            m_log.DebugFormat("[Virtual Universe Shut Down]: Shutting down region {0}", scene.RegionInfo.RegionName);
+
             if (scene.SnmpService != null)
             {
                 scene.SnmpService.BootInfo("The region is shutting down", scene);
                 scene.SnmpService.LinkDown(scene);
             }
+
             IRegionModulesController controller;
+
             if (ApplicationRegistry.TryGet<IRegionModulesController>(out controller))
             {
                 controller.RemoveRegionFromModules(scene);
@@ -685,31 +710,33 @@ namespace OpenSim
         {
             // only need to check this if we are not at the
             // root level
-            if ((SceneManager.CurrentScene != null) &&
-                (SceneManager.CurrentScene.RegionInfo.RegionID == scene.RegionInfo.RegionID))
+            if ((SceneManager.CurrentScene != null) && (SceneManager.CurrentScene.RegionInfo.RegionID == scene.RegionInfo.RegionID))
             {
                 SceneManager.TrySetCurrentScene("..");
             }
 
             scene.DeleteAllSceneObjects();
             SceneManager.CloseScene(scene);
-            //ShutdownClientServer(scene.RegionInfo);
 
             if (!cleanup)
+            {
                 return;
+            }
 
             if (!String.IsNullOrEmpty(scene.RegionInfo.RegionFile))
             {
                 if (scene.RegionInfo.RegionFile.ToLower().EndsWith(".xml"))
                 {
                     File.Delete(scene.RegionInfo.RegionFile);
-                    m_log.InfoFormat("[OPENSIM]: deleting region file \"{0}\"", scene.RegionInfo.RegionFile);
+                    m_log.InfoFormat("[Virtual Universe]: deleting region file \"{0}\"", scene.RegionInfo.RegionFile);
                 }
+
                 if (scene.RegionInfo.RegionFile.ToLower().EndsWith(".ini"))
                 {
                     try
                     {
                         IniConfigSource source = new IniConfigSource(scene.RegionInfo.RegionFile);
+
                         if (source.Configs[scene.RegionInfo.RegionName] != null)
                         {
                             source.Configs.Remove(scene.RegionInfo.RegionName);
@@ -734,8 +761,11 @@ namespace OpenSim
         public void RemoveRegion(string name, bool cleanUp)
         {
             Scene target;
+
             if (SceneManager.TryGetScene(name, out target))
+            {
                 RemoveRegion(target, cleanUp);
+            }
         }
 
         /// <summary>
@@ -747,14 +777,12 @@ namespace OpenSim
         {
             // only need to check this if we are not at the
             // root level
-            if ((SceneManager.CurrentScene != null) &&
-                (SceneManager.CurrentScene.RegionInfo.RegionID == scene.RegionInfo.RegionID))
+            if ((SceneManager.CurrentScene != null) && (SceneManager.CurrentScene.RegionInfo.RegionID == scene.RegionInfo.RegionID))
             {
                 SceneManager.TrySetCurrentScene("..");
             }
 
             SceneManager.CloseScene(scene);
-            //ShutdownClientServer(scene.RegionInfo);
         }
 
         /// <summary>
@@ -765,8 +793,11 @@ namespace OpenSim
         public void CloseRegion(string name)
         {
             Scene target;
+
             if (SceneManager.TryGetScene(name, out target))
+            {
                 CloseRegion(target);
+            }
         }
 
         /// <summary>
@@ -790,8 +821,6 @@ namespace OpenSim
         /// <returns></returns>
         protected Scene SetupScene(RegionInfo regionInfo, int proxyOffset, IConfigSource configSource)
         {
-            //List<IClientNetworkServer> clientNetworkServers = null;
-
             AgentCircuitManager circuitManager = new AgentCircuitManager();
             Scene scene = CreateScene(regionInfo, m_simulationDataService, m_estateDataService, circuitManager);
 
@@ -812,10 +841,9 @@ namespace OpenSim
         protected virtual void HandleRestartRegion(RegionInfo whichRegion)
         {
             m_log.InfoFormat(
-                "[OPENSIM]: Got restart signal from SceneManager for region {0} ({1},{2})",
+                "[Virtual Universe]: Got restart signal from SceneManager for region {0} ({1},{2})",
                 whichRegion.RegionName, whichRegion.RegionLocX, whichRegion.RegionLocY);
 
-            //ShutdownClientServer(whichRegion);
             IScene scene;
             CreateRegion(whichRegion, true, out scene);
             scene.Start();
@@ -833,8 +861,7 @@ namespace OpenSim
         {
             public SimStatusHandler() : base("GET", "/simstatus", "SimStatus", "Simulator Status") {}
 
-            protected override byte[] ProcessRequest(string path, Stream request,
-                                 IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+            protected override byte[] ProcessRequest(string path, Stream request, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
             {
                 return Util.UTF8.GetBytes("OK");
             }
@@ -853,14 +880,12 @@ namespace OpenSim
         {
             OpenSimBase m_opensim;
 
-            public XSimStatusHandler(OpenSimBase sim)
-                : base("GET", "/" + Util.SHA1Hash(sim.osSecret), "XSimStatus", "Simulator XStatus")
+            public XSimStatusHandler(OpenSimBase sim) : base("GET", "/" + Util.SHA1Hash(sim.osSecret), "XSimStatus", "Simulator XStatus")
             {
                 m_opensim = sim;
             }
 
-            protected override byte[] ProcessRequest(string path, Stream request,
-                                 IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+            protected override byte[] ProcessRequest(string path, Stream request, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
             {
                 return Util.UTF8.GetBytes(m_opensim.StatReport(httpRequest));
             }
@@ -881,14 +906,12 @@ namespace OpenSim
         {
             OpenSimBase m_opensim;
 
-            public UXSimStatusHandler(OpenSimBase sim)
-                : base("GET", "/" + sim.userStatsURI, "UXSimStatus", "Simulator UXStatus")
+            public UXSimStatusHandler(OpenSimBase sim) : base("GET", "/" + sim.userStatsURI, "UXSimStatus", "Simulator UXStatus")
             {
                 m_opensim = sim;
             }
 
-            protected override byte[] ProcessRequest(string path, Stream request,
-                                 IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+            protected override byte[] ProcessRequest(string path, Stream request, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
             {
                 return Util.UTF8.GetBytes(m_opensim.StatReport(httpRequest));
             }
@@ -931,21 +954,23 @@ namespace OpenSim
                 Util.XmlRpcCommand(proxyUrl, "Stop");
             }
 
-            m_log.Info("[SHUTDOWN]: Closing all threads");
-            m_log.Info("[SHUTDOWN]: Killing listener thread");
-            m_log.Info("[SHUTDOWN]: Killing clients");
-            m_log.Info("[SHUTDOWN]: Closing console and terminating");
+            m_log.Info("[Virtual Universe Shut Down]: Closing all threads");
+            m_log.Info("[Virtual Universe Shut Down]: Killing listener thread");
+            m_log.Info("[Virtual Universe Shut Down]: Killing clients");
+            m_log.Info("[Virtual Universe Shut Down]: Closing console and terminating");
 
             try
             {
                 SceneManager.Close();
 
                 foreach (IApplicationPlugin plugin in m_plugins)
+                {
                     plugin.Dispose();
+                }
             }
             catch (Exception e)
             {
-                m_log.Error("[SHUTDOWN]: Ignoring failure during shutdown - ", e);
+                m_log.Error("[Virtual Universe Shut Down]: Ignoring failure during shutdown - ", e);
             }
 
             base.ShutdownSpecific();
@@ -996,10 +1021,15 @@ namespace OpenSim
             regInfo.EstateSettings = EstateDataService.LoadEstateSettings(regInfo.RegionID, true);
 
             string newName;
+
             if (!string.IsNullOrEmpty(estateName))
+            {
                 newName = estateName;
+            }
             else
+            {
                 newName = MainConsole.Instance.CmdPrompt("New estate name", regInfo.EstateSettings.EstateName);
+            }
 
             if (estatesByName.ContainsKey(newName))
             {
@@ -1026,18 +1056,24 @@ namespace OpenSim
         public bool PopulateRegionEstateInfo(RegionInfo regInfo)
         {
             if (EstateDataService != null)
+            {
                 regInfo.EstateSettings = EstateDataService.LoadEstateSettings(regInfo.RegionID, false);
+            }
 
             if (regInfo.EstateSettings.EstateID != 0)
-                return false;	// estate info in the database did not change
+            {
+                return false;   // estate info in the database did not change
+            }
 
-            m_log.WarnFormat("[ESTATE] Region {0} is not part of an estate.", regInfo.RegionName);
+            m_log.WarnFormat("[Estate]: Region {0} is not part of an estate.", regInfo.RegionName);
 
             List<EstateSettings> estates = EstateDataService.LoadEstateSettingsAll();
             Dictionary<string, EstateSettings> estatesByName = new Dictionary<string, EstateSettings>();
 
             foreach (EstateSettings estate in estates)
+            {
                 estatesByName[estate.EstateName] = estate;
+            }
 
             string defaultEstateName = null;
 
@@ -1055,19 +1091,26 @@ namespace OpenSim
                         defaultEstate = estatesByName[defaultEstateName];
 
                         if (EstateDataService.LinkRegion(regInfo.RegionID, (int)defaultEstate.EstateID))
+                        {
                             defaultEstateJoined = true;
+                        }
                     }
                     else
                     {
                         if (CreateEstate(regInfo, estatesByName, defaultEstateName))
+                        {
                             defaultEstateJoined = true;
+                        }
                     }
 
                     if (defaultEstateJoined)
+                    {
                         return true; // need to update the database
+                    }
                     else
-                        m_log.ErrorFormat(
-                            "[OPENSIM BASE]: Joining default estate {0} failed", defaultEstateName);
+                    {
+                        m_log.ErrorFormat("[Virtual Universe Base]: Joining default estate {0} failed", defaultEstateName);
+                    }
                 }
             }
 
@@ -1076,12 +1119,16 @@ namespace OpenSim
             {
                 if (estates.Count == 0)
                 {
-                    m_log.Info("[ESTATE]: No existing estates found.  You must create a new one.");
+                    m_log.Info("[Estate]: No existing estates found.  You must create a new one.");
 
                     if (CreateEstate(regInfo, estatesByName, null))
+                    {
                         break;
+                    }
                     else
+                    {
                         continue;
+                    }
                 }
                 else
                 {
@@ -1095,9 +1142,13 @@ namespace OpenSim
                     if (response == "no")
                     {
                         if (CreateEstate(regInfo, estatesByName, null))
+                        {
                             break;
+                        }
                         else
+                        {
                             continue;
+                        }
                     }
                     else
                     {
@@ -1110,6 +1161,7 @@ namespace OpenSim
                                 estateNames[0]);
 
                         List<int> estateIDs = EstateDataService.GetEstates(response);
+
                         if (estateIDs.Count < 1)
                         {
                             MainConsole.Instance.Output("The name you have entered matches no known estate.  Please try again.");
@@ -1121,7 +1173,9 @@ namespace OpenSim
                         regInfo.EstateSettings = EstateDataService.LoadEstateSettings(estateID);
 
                         if (EstateDataService.LinkRegion(regInfo.RegionID, estateID))
+                        {
                             break;
+                        }
 
                         MainConsole.Instance.Output("Joining the estate failed. Please try again.");
                     }
