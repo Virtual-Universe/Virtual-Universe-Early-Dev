@@ -38,9 +38,9 @@ namespace OpenSim.Framework
     /// </remarks>
     public interface ISceneAgent : ISceneEntity
     {
-        /// <value>
+        /// <summary>
         /// The client controlling this presence
-        /// </value>
+        /// </summary>
         IClientAPI ControllingClient { get; }
 
         /// <summary>
@@ -59,25 +59,18 @@ namespace OpenSim.Framework
         bool IsNPC { get;}
 
         bool Invulnerable { get; set; }
+        
         /// <summary>
         /// Avatar appearance data.
         /// </summary>
         /// <remarks>
-        // Because appearance setting is in a module, we actually need
-        // to give it access to our appearance directly, otherwise we
-        // get a synchronization issue.
+        /// Because appearance setting is in a module, we actually need
+        /// to give it access to our appearance directly, otherwise we
+        /// get a synchronization issue.
         /// </remarks>
         AvatarAppearance Appearance { get; set; }
 
         /// <summary>
-        /// Send initial scene data to the client controlling this agent
-        /// </summary>
-        /// <remarks>
-        /// This includes scene object data and the appearance data of other avatars.
-        /// </remarks>
-        void SendInitialDataToMe();
-
-         /// <summary>
         /// Direction in which the scene presence is looking.
         /// </summary>
         /// <remarks>Will be Vector3.Zero for a child agent.</remarks>

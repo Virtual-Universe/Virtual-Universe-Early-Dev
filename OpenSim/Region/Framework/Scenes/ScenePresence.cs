@@ -995,7 +995,7 @@ namespace OpenSim.Region.Framework.Scenes
         private bool m_inTransit;
 
         /// <summary>
-        /// This signals whether the presence is in transit between neighboring regions.
+        /// This signals whether the presence is in transit between neighbouring regions.
         /// </summary>
         /// <remarks>
         /// It is not set when the presence is teleporting or logging in/out directly to a region.
@@ -1214,7 +1214,7 @@ namespace OpenSim.Region.Framework.Scenes
             ControllingClient.OnUpdateThrottles += RaiseUpdateThrottles;
             ControllingClient.OnRegionHandShakeReply += RegionHandShakeReply;
 
-            //            ControllingClient.OnAgentFOV += HandleAgentFOV;
+            // ControllingClient.OnAgentFOV += HandleAgentFOV;
 
             // ControllingClient.OnChildAgentStatus += new StatusChange(this.ChildStatusChange);
             // ControllingClient.OnStopMovement += new GenericCall2(this.StopMovement);
@@ -1262,9 +1262,9 @@ namespace OpenSim.Region.Framework.Scenes
         /// Turns a child agent into a root agent.
         /// </summary>
         /// <remarks>
-        /// Child agents are logged into neighboring sims largely to observe changes.  Root agents exist when the
+        /// Child agents are logged into neighbouring sims largely to observe changes.  Root agents exist when the
         /// avatar is actual in the sim.  They can perform all actions.
-        /// This change is made whenever an avatar enters a region, whether by crossing over from a neighboring sim,
+        /// This change is made whenever an avatar enters a region, whether by crossing over from a neighbouring sim,
         /// teleporting in or on initial login.
         ///
         /// This method is on the critical path for transferring an avatar from one region to another.  Delay here
@@ -1493,7 +1493,7 @@ namespace OpenSim.Region.Framework.Scenes
             //m_log.DebugFormat("[MakeRootAgent] position and physical: {0}ms", Util.EnvironmentTickCountSubtract(ts));
             m_scene.SwapRootAgentCount(false);
 
-            // If we don't reset the movement flag here, an avatar that crosses to a neighboring sim and returns will
+            // If we don't reset the movement flag here, an avatar that crosses to a neighbouring sim and returns will
             // stall on the border crossing since the existing child agent will still have the last movement
             // recorded, which stops the input from being processed.
             MovementFlag = 0;
@@ -1858,7 +1858,7 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        // neighboring regions we have enabled a child agent in
+        // neighbouring regions we have enabled a child agent in
         // holds the seed cap for the child agent in that region
         private Dictionary<ulong, string> m_knownChildRegions = new Dictionary<ulong, string>();
 
@@ -1870,7 +1870,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         private Dictionary<ulong, spRegionSizeInfo> m_knownChildRegionsSizeInfo = new Dictionary<ulong, spRegionSizeInfo>();
 
-        public void AddNeighborRegion(GridRegion region, string capsPath)
+        public void AddNeighbourRegion(GridRegion region, string capsPath)
         {
             lock (m_knownChildRegions)
             {
@@ -1884,7 +1884,7 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public void AddNeighborRegionSizeInfo(GridRegion region)
+        public void AddNeighbourRegionSizeInfo(GridRegion region)
         {
             lock (m_knownChildRegions)
             {
@@ -1903,7 +1903,7 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public void SetNeighborRegionSizeInfo(List<GridRegion> regionsList)
+        public void SetNeighbourRegionSizeInfo(List<GridRegion> regionsList)
         {
             lock (m_knownChildRegions)
             {
@@ -1920,7 +1920,7 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public void RemoveNeighborRegion(ulong regionHandle)
+        public void RemoveNeighbourRegion(ulong regionHandle)
         {
             lock (m_knownChildRegions)
             {
@@ -1933,25 +1933,25 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public bool knowsNeighborRegion(ulong regionHandle)
+        public bool knowsNeighbourRegion(ulong regionHandle)
         {
             lock (m_knownChildRegions)
                 return m_knownChildRegions.ContainsKey(regionHandle);
         }
 
-        public void DropOldNeighbors(List<ulong> oldRegions)
+        public void DropOldNeighbours(List<ulong> oldRegions)
         {
             foreach (ulong handle in oldRegions)
             {
-                RemoveNeighborRegion(handle);
+                RemoveNeighbourRegion(handle);
                 Scene.CapsModule.DropChildSeed(UUID, handle);
             }
         }
 
-        public void DropThisRootRegionFromNeighbors()
+        public void DropThisRootRegionFromNeighbours()
         {
             ulong handle = m_scene.RegionInfo.RegionHandle;
-            RemoveNeighborRegion(handle);
+            RemoveNeighbourRegion(handle);
             Scene.CapsModule.DropChildSeed(UUID, handle);
         }
 
@@ -2077,8 +2077,8 @@ namespace OpenSim.Region.Framework.Scenes
         /// </summary>
         /// <param name="client"></param>
         /// <param name="openChildAgents">
-        /// If true, send notification to neighbor regions to expect
-        /// a child agent from the client.  These neighbors can be some distance away, depending right now on the
+        /// If true, send notification to neighbour regions to expect
+        /// a child agent from the client.  These neighbours can be some distance away, depending right now on the
         /// configuration of DefaultDrawDistance in the [Startup] section of config
         /// </param>
         public void CompleteMovement(IClientAPI client, bool openChildAgents)
@@ -2350,7 +2350,7 @@ namespace OpenSim.Region.Framework.Scenes
                     //m_log.DebugFormat("[CompleteMovement] attachments: {0}ms", Util.EnvironmentTickCountSubtract(ts));
                     if (openChildAgents)
                     {
-                        // Create child agents in neighboring regions
+                        // Create child agents in neighbouring regions
                         IEntityTransferModule m_agentTransfer = m_scene.RequestModuleInterface<IEntityTransferModule>();
                         if (m_agentTransfer != null)
                         {
@@ -3602,7 +3602,7 @@ namespace OpenSim.Region.Framework.Scenes
                         m = m1 + m2;
 
                         // This constant is emperically determined to be what is used in SL.
-                        // See also https://virtual-planets.org/mantis/view.php?id=7096
+                        // See also http://opensimulator.org/mantis/view.php?id=7096
                         double offset = 0.05;
 
                         // Normally m will be ~ 1, but if someone passed a handcrafted quaternion
@@ -4022,11 +4022,17 @@ namespace OpenSim.Region.Framework.Scenes
             ControllingClient.SendCoarseLocationUpdate(avatarUUIDs, coarseLocations);
         }
 
-
         public void RegionHandShakeReply (IClientAPI client, uint flags)
         {
             if(IsNPC)
                 return;
+
+            lock (m_completeMovementLock)
+            {
+                if (SentInitialData)
+                    return;
+                SentInitialData = true;
+            }
 
             bool selfappearance = (flags & 4) != 0;
             bool cacheCulling = (flags & 1) != 0;
@@ -4035,16 +4041,6 @@ namespace OpenSim.Region.Framework.Scenes
                 cacheEmpty = (flags & 2) != 0;
             else
                 cacheEmpty = true;
-
-//            if (m_teleportFlags > 0) // only doing for child for now
-//                return;
-
-            lock (m_completeMovementLock)
-            {
-                if (SentInitialData)
-                    return;
-                SentInitialData = true;
-            }
 
             Util.FireAndForget(delegate
             {
@@ -4106,65 +4102,6 @@ namespace OpenSim.Region.Framework.Scenes
 
             });
 
-        }
-
-        public void SendInitialDataToMe()
-        {
-            // Send all scene object to the new client
-            lock (m_completeMovementLock)
-            {
-                if (SentInitialData)
-                    return;
-                SentInitialData = true;
-            }
-
-            Util.FireAndForget(delegate
-            {
-                // we created a new ScenePresence (a new child agent) in a fresh region.
-                // Request info about all the (root) agents in this region
-                // Note: This won't send data *to* other clients in that region (children don't send)
-                if (m_teleportFlags <= 0)
-                {
-                    Scene.SendLayerData(ControllingClient);
-
-                    ILandChannel landch = m_scene.LandChannel;
-                    if (landch != null)
-                    {
-                        landch.sendClientInitialLandInfo(ControllingClient, true);
-                    }
-                }
-
-                // recheck to reduce timing issues
-                ControllingClient.CheckViewerCaps();
-
-                SendOtherAgentsAvatarFullToMe();
-
-                if(m_scene.ObjectsCullingByDistance)
-                {
-                    m_reprioritizationBusy = true;
-                    m_reprioritizationLastPosition = AbsolutePosition;
-                    m_reprioritizationLastDrawDistance = DrawDistance;
-
-                    ControllingClient.ReprioritizeUpdates();
-                    m_reprioritizationLastTime = Util.EnvironmentTickCount();
-                    m_reprioritizationBusy = false;
-                    return;
-                }
-
-                EntityBase[] entities = Scene.Entities.GetEntities();
-                foreach (EntityBase e in entities)
-                {
-                    if (e != null && e is SceneObjectGroup && !((SceneObjectGroup)e).IsAttachment)
-                        ((SceneObjectGroup)e).SendFullAnimUpdateToClient(ControllingClient);
-                }
-
-                m_reprioritizationLastPosition = AbsolutePosition;
-                m_reprioritizationLastDrawDistance = DrawDistance;
-                m_reprioritizationLastTime = Util.EnvironmentTickCount() + 15000; // delay it
-
-                m_reprioritizationBusy = false;
-
-            });
         }
 
         /// <summary>
@@ -4701,7 +4638,7 @@ namespace OpenSim.Region.Framework.Scenes
 
             foreach (ulong handle in byebyeRegions)
             {
-                RemoveNeighborRegion(handle);
+                RemoveNeighbourRegion(handle);
                 Scene.CapsModule.DropChildSeed(UUID, handle);
             }
         }
@@ -4715,7 +4652,7 @@ namespace OpenSim.Region.Framework.Scenes
                 if (handle != Scene.RegionInfo.RegionHandle)
                 {
                     byebyeRegions.Add(handle);
-                    RemoveNeighborRegion(handle);
+                    RemoveNeighbourRegion(handle);
                     Scene.CapsModule.DropChildSeed(UUID, handle);
                 }
             }

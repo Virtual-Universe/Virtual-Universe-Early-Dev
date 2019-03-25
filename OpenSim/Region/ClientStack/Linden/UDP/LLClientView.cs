@@ -1854,24 +1854,24 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         }
 
         /// <summary>
-        /// Tell the client that the given neighbor region is ready to receive a child agent.
+        /// Tell the client that the given neighbour region is ready to receive a child agent.
         /// </summary>
-        public virtual void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborEndPoint)
+        public virtual void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourEndPoint)
         {
-            IPAddress neighborIP = neighborEndPoint.Address;
-            ushort neighborPort = (ushort)neighborEndPoint.Port;
+            IPAddress neighbourIP = neighbourEndPoint.Address;
+            ushort neighbourPort = (ushort)neighbourEndPoint.Port;
 
             EnableSimulatorPacket enablesimpacket = (EnableSimulatorPacket)PacketPool.Instance.GetPacket(PacketType.EnableSimulator);
             // TODO: don't create new blocks if recycling an old packet
             enablesimpacket.SimulatorInfo = new EnableSimulatorPacket.SimulatorInfoBlock();
-            enablesimpacket.SimulatorInfo.Handle = neighborHandle;
+            enablesimpacket.SimulatorInfo.Handle = neighbourHandle;
 
-            byte[] byteIP = neighborIP.GetAddressBytes();
+            byte[] byteIP = neighbourIP.GetAddressBytes();
             enablesimpacket.SimulatorInfo.IP = (uint)byteIP[3] << 24;
             enablesimpacket.SimulatorInfo.IP += (uint)byteIP[2] << 16;
             enablesimpacket.SimulatorInfo.IP += (uint)byteIP[1] << 8;
             enablesimpacket.SimulatorInfo.IP += (uint)byteIP[0];
-            enablesimpacket.SimulatorInfo.Port = neighborPort;
+            enablesimpacket.SimulatorInfo.Port = neighbourPort;
 
             enablesimpacket.Header.Reliable = true; // ESP's should be reliable.
 
@@ -5544,17 +5544,30 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
             if(GroupsNeedFullUpdate.Count > 0)
             {
-                bool viewerCache = m_supportViewerCache && (m_viewerHandShakeFlags & 1) != 0;// && mysp.IsChildAgent;
-                foreach (SceneObjectGroup grp in GroupsNeedFullUpdate)
+                bool sendProbes = m_supportViewerCache && (m_viewerHandShakeFlags & 1) != 0 && (m_viewerHandShakeFlags & 2) == 0;
+
+                if(sendProbes)
                 {
+                    foreach (SceneObjectGroup grp in GroupsNeedFullUpdate)
+                    {
+                        PrimUpdateFlags flags = PrimUpdateFlags.CancelKill;
+                        if (grp.IsViewerCachable)
+                            flags |= PrimUpdateFlags.UpdateProbe;
+                        foreach (SceneObjectPart p in grp.Parts)
+                            SendEntityUpdate(p, flags);
+                    }
+                }
+                else
+                {
+                    m_viewerHandShakeFlags &= ~2U; // nexttime send probes
                     PrimUpdateFlags flags = PrimUpdateFlags.CancelKill;
-                    if (viewerCache && grp.IsViewerCachable)
-                        flags |= PrimUpdateFlags.UpdateProbe;
-                    foreach (SceneObjectPart p in grp.Parts)
-                        SendEntityUpdate(p, flags);
+                    foreach (SceneObjectGroup grp in GroupsNeedFullUpdate)
+                    {
+                        foreach (SceneObjectPart p in grp.Parts)
+                            SendEntityUpdate(p, flags);
+                    }
                 }
             }
-
             CheckGroupsInViewBusy = false;
         }
 
