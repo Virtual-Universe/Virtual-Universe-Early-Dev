@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Servers.HttpServer.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Servers.HttpServer.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Servers/HttpServer/obj/Debug/OpenSim.Framework.Servers.HttpServer.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Servers/HttpServer/obj/Debug/OpenSim.Framework.Servers.HttpServer.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Servers/HttpServer/obj/Debug/OpenSim.Framework.Servers.HttpServer.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Servers/HttpServer/obj/Debug/OpenSim.Framework.Servers.HttpServer.pdb

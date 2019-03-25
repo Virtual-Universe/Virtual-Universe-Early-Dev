@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.AuthenticationService.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.AuthenticationService.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AuthenticationService/obj/Debug/OpenSim.Services.AuthenticationService.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AuthenticationService/obj/Debug/OpenSim.Services.AuthenticationService.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AuthenticationService/obj/Debug/OpenSim.Services.AuthenticationService.pdb

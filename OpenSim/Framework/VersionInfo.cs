@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -32,7 +32,7 @@ namespace OpenSim
         public const string VersionNumber = "2.0.1.1";
         public const string AssemblyVersionNumber = "2.0.1.1";
 
-        public const Flavour VERSION_FLAVOUR = Flavour.Release;
+        public const Flavour VERSION_FLAVOUR = Flavour.Dev;
 
         public enum Flavour
         {
@@ -53,7 +53,7 @@ namespace OpenSim
 
         public static string GetVersionString(string versionNumber, Flavour flavour)
         {
-            string versionString = "GalaxyGrid " + versionNumber + " Vulcan " + flavour;
+            string versionString = "Universe " + versionNumber + " Vulcan " + flavour;
             return versionString.PadRight(VERSIONINFO_VERSION_LENGTH);
         }
 

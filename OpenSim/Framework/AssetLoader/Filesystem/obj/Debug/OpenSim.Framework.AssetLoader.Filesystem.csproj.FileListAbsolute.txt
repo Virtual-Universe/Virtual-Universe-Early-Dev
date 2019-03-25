@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.AssetLoader.Filesystem.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.AssetLoader.Filesystem.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/AssetLoader/Filesystem/obj/Debug/OpenSim.Framework.AssetLoader.Filesystem.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/AssetLoader/Filesystem/obj/Debug/OpenSim.Framework.AssetLoader.Filesystem.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/AssetLoader/Filesystem/obj/Debug/OpenSim.Framework.AssetLoader.Filesystem.pdb

@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.GridService.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.GridService.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/GridService/obj/Debug/OpenSim.Services.GridService.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/GridService/obj/Debug/OpenSim.Services.GridService.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/GridService/obj/Debug/OpenSim.Services.GridService.pdb

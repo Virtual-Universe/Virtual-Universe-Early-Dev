@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -124,13 +124,14 @@ namespace OpenSim
             if (Util.FireAndForgetMethod == FireAndForgetMethod.SmartThreadPool)
                 Util.InitThreadPool(stpMinThreads, stpMaxThreads);
 
-            m_log.Info("[Virtual Universe Main]: Using async_call_method " + Util.FireAndForgetMethod);
+            m_log.Info("[OPENSIM MAIN]: Using async_call_method " + Util.FireAndForgetMethod);
 
-            m_log.InfoFormat("[Virtual Universe Main] Running GC in {0} mode", GCSettings.IsServerGC ? "server":"workstation");
+            m_log.InfoFormat("[OPENSIM MAIN] Running GC in {0} mode", GCSettings.IsServerGC ? "server":"workstation");
         }
 
 #if (_MONO)
         private static Mono.Unix.UnixSignal[] signals;
+
 
         private Thread signal_thread = new Thread (delegate ()
         {
@@ -151,7 +152,7 @@ namespace OpenSim
         protected override void StartupSpecific()
         {
             m_log.Info("====================================================================");
-            m_log.Info("====================== Starting Virtual Universe ======================");
+            m_log.Info("========================= STARTING OPENSIM =========================");
             m_log.Info("====================================================================");
 
 #if (_MONO)
@@ -175,6 +176,11 @@ namespace OpenSim
                 }
             }
 #endif
+            //m_log.InfoFormat("[OPENSIM MAIN]: GC Is Server GC: {0}", GCSettings.IsServerGC.ToString());
+            // http://msdn.microsoft.com/en-us/library/bb384202.aspx
+            //GCSettings.LatencyMode = GCLatencyMode.Batch;
+            //m_log.InfoFormat("[OPENSIM MAIN]: GC Latency Mode: {0}", GCSettings.LatencyMode.ToString());
+
             if (m_gui) // Driven by external GUI
             {
                 m_console = new CommandConsole("Region");
@@ -215,7 +221,7 @@ namespace OpenSim
                 string urlBase = String.Format("/{0}/", managedStatsURI);
                 StatsManager.StatsPassword = managedStatsPassword;
                 MainServer.Instance.AddHTTPHandler(urlBase, StatsManager.HandleStatsRequest);
-                m_log.InfoFormat("[Virtual Universe]: Enabling remote managed stats fetch. URL = {0}", urlBase);
+                m_log.InfoFormat("[OPENSIM] Enabling remote managed stats fetch. URL = {0}", urlBase);
             }
 
             if (m_console is RemoteConsole)
@@ -245,7 +251,7 @@ namespace OpenSim
             //Run Startup Commands
             if (String.IsNullOrEmpty(m_startupCommandsFile))
             {
-                m_log.Info("[Start Up]: No startup command script specified. Moving on...");
+                m_log.Info("[STARTUP]: No startup command script specified. Moving on...");
             }
             else
             {
@@ -337,8 +343,10 @@ namespace OpenSim
                                           LoadOar); ;
 
             m_console.Commands.AddCommand("Archiving", false, "save oar",
+                                          //"save oar [-v|--version=<N>] [-p|--profile=<url>] [<OAR path>]",
                                           "save oar [-h|--home=<url>] [--noassets] [--publish] [--perm=<permissions>] [--all] [<OAR path>]",
                                           "Save a region's data to an OAR archive.",
+//                                          "-v|--version=<N> generates scene objects as per older versions of the serialization (e.g. -v=0)" + Environment.NewLine
                                           "-h|--home=<url> adds the url of the profile service to the saved user information.\n"
                                           + "--noassets stops assets being saved to the OAR.\n"
                                           + "--publish saves an OAR stripped of owner and last owner information.\n"
@@ -382,7 +390,7 @@ namespace OpenSim
                                           "show users [full]",
                                           "Show user data for users currently on the region",
                                           "Without the 'full' option, only users actually on the region are shown."
-                                            + "  With the 'full' option child agents of users in neighboring regions are also shown.",
+                                            + "  With the 'full' option child agents of users in neighbouring regions are also shown.",
                                           HandleShow);
 
             m_console.Commands.AddCommand("Comms", false, "show connections",
@@ -504,7 +512,7 @@ namespace OpenSim
         {
             int now = Environment.TickCount & Int32.MaxValue;
             m_log.ErrorFormat(
-                "[Watch Dog]: Timeout detected for thread \"{0}\". ThreadState={1}. Last tick was {2}ms ago.  {3}",
+                "[WATCHDOG]: Timeout detected for thread \"{0}\". ThreadState={1}. Last tick was {2}ms ago.  {3}",
                 twi.Thread.Name,
                 twi.Thread.ThreadState,
                 now - twi.LastTick,
@@ -865,12 +873,14 @@ namespace OpenSim
             string regionName = (SceneManager.CurrentScene == null ? "root" : SceneManager.CurrentScene.RegionInfo.RegionName);
             MainConsole.Instance.Output(String.Format("Currently selected region is {0}", regionName));
 
+//            m_log.DebugFormat("Original prompt is {0}", m_consolePrompt);
             string prompt = m_consolePrompt;
 
             // Replace "\R" with the region name
             // Replace "\\" with "\"
             prompt = m_consolePromptRegex.Replace(prompt, m =>
             {
+//                m_log.DebugFormat("Matched {0}", m.Groups[2].Value);
                 if (m.Groups[2].Value == "R")
                     return m.Groups[1].Value + regionName;
                 else
@@ -947,7 +957,8 @@ namespace OpenSim
                                 presence.UUID,
                                 presence.IsChildAgent ? "Child" : "Root",
                                 regionName,
-                                presence.AbsolutePosition.ToString()));
+                                presence.AbsolutePosition.ToString())
+                        );
                     }
 
                     MainConsole.Instance.Output(String.Empty);
@@ -1182,7 +1193,6 @@ namespace OpenSim
                 }
             }
         }
-
         /// <summary>
         /// Serialize region data to XML2Format
         /// </summary>

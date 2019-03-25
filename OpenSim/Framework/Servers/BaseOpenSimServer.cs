@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -47,7 +47,7 @@ using OpenSim.Framework.Console;
 using OpenSim.Framework.Monitoring;
 using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
-using Timer = System.Timers.Timer;
+using Timer=System.Timers.Timer;
 using Nini.Config;
 
 namespace OpenSim.Framework.Servers
@@ -100,7 +100,7 @@ namespace OpenSim.Framework.Servers
         {
             if (m_NoVerifyCertChain)
                 sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors;
-
+ 
             if (m_NoVerifyCertHostname)
                 sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateNameMismatch;
 
@@ -108,8 +108,7 @@ namespace OpenSim.Framework.Servers
                 return true;
 
             return false;
-        }
-
+        }             
         /// <summary>
         /// Must be overriden by child classes for their own server specific startup behaviour.
         /// </summary>
@@ -128,7 +127,6 @@ namespace OpenSim.Framework.Servers
             int logShowStatsSeconds = startupConfig.GetInt("LogShowStatsSeconds", m_periodDiagnosticTimerMS / 1000);
             m_periodDiagnosticTimerMS = logShowStatsSeconds * 1000;
             m_periodicDiagnosticsTimer.Elapsed += new ElapsedEventHandler(LogDiagnostics);
-
             if (m_periodDiagnosticTimerMS != 0)
             {
                 m_periodicDiagnosticsTimer.Interval = m_periodDiagnosticTimerMS;
@@ -140,7 +138,7 @@ namespace OpenSim.Framework.Servers
         {
             Watchdog.Enabled = false;
             base.ShutdownSpecific();
-
+            
             MainServer.Stop();
 
             Thread.Sleep(500);
@@ -149,9 +147,9 @@ namespace OpenSim.Framework.Servers
 
             RemovePIDFile();
 
-            m_log.Info("[Shut Down]: Shutdown processing on main thread complete.  Exiting...");
+            m_log.Info("[SHUTDOWN]: Shutdown processing on main thread complete.  Exiting...");
 
-            if (!SuppressExit)
+           if (!SuppressExit)
                 Environment.Exit(0);
         }
 
@@ -184,24 +182,31 @@ namespace OpenSim.Framework.Servers
         /// </summary>
         public virtual void Startup()
         {
-            m_log.Info("[Start Up]: Beginning startup processing");
+            m_log.Info("[STARTUP]: Beginning startup processing");
 
-            m_log.Info("[Start Up]: version: " + m_version + Environment.NewLine);
+            m_log.Info("[STARTUP]: version: " + m_version + Environment.NewLine);
+            // clr version potentially is more confusing than helpful, since it doesn't tell us if we're running under Mono/MS .NET and
+            // the clr version number doesn't match the project version number under Mono.
+            //m_log.Info("[STARTUP]: Virtual machine runtime version: " + Environment.Version + Environment.NewLine);
             m_log.InfoFormat(
-                "[Start Up]: Operating system version: {0}, .NET platform {1}, {2}-bit\n",
+                "[STARTUP]: Operating system version: {0}, .NET platform {1}, {2}-bit\n",
                 Environment.OSVersion, Environment.OSVersion.Platform, Util.Is64BitProcess() ? "64" : "32");
 
             try
             {
                 StartupSpecific();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 m_log.Fatal("Fatal error: " + e.ToString());
                 Environment.Exit(1);
             }
 
             TimeSpan timeTaken = DateTime.Now - m_startuptime;
+
+//            MainConsole.Instance.OutputFormat(
+//                "PLEASE WAIT FOR LOGINS TO BE ENABLED ON REGIONS ONCE SCRIPTS HAVE STARTED.  Non-script portion of startup took {0}m {1}s.",
+//                timeTaken.Minutes, timeTaken.Seconds);
         }
 
         public string osSecret
@@ -215,11 +220,11 @@ namespace OpenSim.Framework.Servers
             // If we catch a request for "callback", wrap the response in the value for jsonp
             if (httpRequest.Query.ContainsKey("callback"))
             {
-                return httpRequest.Query["callback"].ToString() + "(" + StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString(), m_version) + ");";
+                return httpRequest.Query["callback"].ToString() + "(" + StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString() , m_version) + ");";
             }
             else
             {
-                return StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString(), m_version);
+                return StatsManager.SimExtraStats.XReport((DateTime.Now - m_startuptime).ToString() , m_version);
             }
         }
     }

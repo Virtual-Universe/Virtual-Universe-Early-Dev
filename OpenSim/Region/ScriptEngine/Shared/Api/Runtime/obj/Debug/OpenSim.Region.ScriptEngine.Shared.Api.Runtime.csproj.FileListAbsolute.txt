@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ScriptEngine.Shared.Api.Runtime.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ScriptEngine.Shared.Api.Runtime.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/Shared/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.Shared.Api.Runtime.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/Shared/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.Shared.Api.Runtime.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/Shared/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.Shared.Api.Runtime.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ScriptEngine/Shared/Api/Runtime/obj/Debug/OpenSim.Region.ScriptEngine.Shared.Api.Runtime.pdb

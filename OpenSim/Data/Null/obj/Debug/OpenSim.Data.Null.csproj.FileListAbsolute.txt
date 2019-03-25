@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.Null.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.Null.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/Null/obj/Debug/OpenSim.Data.Null.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/Null/obj/Debug/OpenSim.Data.Null.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/Null/obj/Debug/OpenSim.Data.Null.pdb

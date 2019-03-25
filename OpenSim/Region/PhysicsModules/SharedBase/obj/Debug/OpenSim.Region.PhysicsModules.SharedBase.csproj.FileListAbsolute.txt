@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModules.SharedBase.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModules.SharedBase.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/SharedBase/obj/Debug/OpenSim.Region.PhysicsModules.SharedBase.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/SharedBase/obj/Debug/OpenSim.Region.PhysicsModules.SharedBase.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/SharedBase/obj/Debug/OpenSim.Region.PhysicsModules.SharedBase.pdb

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -38,7 +38,7 @@ using Mono.Addins;
 [assembly : AssemblyConfiguration("")]
 [assembly : AssemblyCompany("https://virtual-planets.org")]
 [assembly : AssemblyProduct("OpenSim")]
-[assembly : AssemblyCopyright("Copyright © Virtual Universe.org Developers 2007-2009")]
+[assembly : AssemblyCopyright("Copyright � Virtual Universe.org Developers 2007-2009")]
 [assembly : AssemblyTrademark("")]
 [assembly : AssemblyCulture("")]
 

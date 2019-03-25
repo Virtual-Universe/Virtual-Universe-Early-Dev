@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -39,6 +39,7 @@ namespace OpenSim.Capabilities.Handlers
 {
     public class UploadBakedTextureHandler
     {
+
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private Caps m_HostCapsObj;
@@ -91,7 +92,7 @@ namespace OpenSim.Capabilities.Handlers
             }
             catch (Exception e)
             {
-                m_log.ErrorFormat("[Upload Baked Texture Handler]: {0}{1}", e.Message, e.StackTrace);
+                m_log.ErrorFormat("[UPLOAD BAKED TEXTURE HANDLER]: {0}{1}", e.Message, e.StackTrace);
             }
 
             return null;
@@ -104,7 +105,7 @@ namespace OpenSim.Capabilities.Handlers
         /// <param name="data"></param>
         private void BakedTextureUploaded(UUID assetID, byte[] data)
         {
-            m_log.DebugFormat("[Upload Baked Texture Handler]: Received baked texture {0}", assetID.ToString());
+            m_log.DebugFormat("[UPLOAD BAKED TEXTURE HANDLER]: Received baked texture {0}", assetID.ToString());
 
             AssetBase asset;
             asset = new AssetBase(assetID, "Baked Texture", (sbyte)AssetType.Texture, m_HostCapsObj.AgentID.ToString());
@@ -117,6 +118,8 @@ namespace OpenSim.Capabilities.Handlers
 
     class BakedTextureUploader
     {
+//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         public event Action<UUID, byte[]> OnUpLoad;
 
         private string uploaderPath = String.Empty;
@@ -130,6 +133,7 @@ namespace OpenSim.Capabilities.Handlers
             uploaderPath = path;
             httpListener = httpServer;
             AgentId = uUID;
+            //                m_log.InfoFormat("[CAPS] baked texture upload starting for {0}",newAssetID);
         }
 
         /// <summary>
@@ -158,6 +162,8 @@ namespace OpenSim.Capabilities.Handlers
             res = LLSDHelpers.SerializeLLSDReply(uploadComplete);
 
             httpListener.RemoveStreamHandler("POST", uploaderPath);
+
+//            m_log.DebugFormat("[BAKED TEXTURE UPLOADER]: baked texture upload completed for {0}", newAssetID);
 
             return res;
         }

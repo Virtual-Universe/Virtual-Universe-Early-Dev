@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -30,8 +30,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Xml;
-using log4net;
 using OpenMetaverse;
+using log4net;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.PhysicsModules.SharedBase;
@@ -68,6 +68,8 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                     {
                         obj.ResetIDs();
                     }
+                    //if we want this to be a import method then we need new uuids for the object to avoid any clashes
+                    //obj.RegenerateFullIDs();
 
                     scene.AddNewSceneObject(obj, true);
                     obj.InvalidateDeepEffectivePerms();
@@ -107,6 +109,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         // Called by archives (save oar)
         public static string SaveGroupToXml2(SceneObjectGroup grp, Dictionary<string, object> options)
         {
+            //return SceneObjectSerializer.ToXml2Format(grp);
             using (MemoryStream mem = new MemoryStream())
             {
                 using (XmlTextWriter writer = new XmlTextWriter(mem, System.Text.Encoding.UTF8))
@@ -134,7 +137,7 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
         public static void SaveNamedPrimsToXml2(Scene scene, string primName, string fileName)
         {
             m_log.InfoFormat(
-                "[Serializer]: Saving prims with name {0} in xml2 format for region {1} to {2}",
+                "[SERIALISER]: Saving prims with name {0} in xml2 format for region {1} to {2}",
                 primName, scene.RegionInfo.RegionName, fileName);
 
             EntityBase[] entityList = scene.GetEntities();
@@ -205,7 +208,10 @@ namespace OpenSim.Region.Framework.Scenes.Serialization
                             continue;
                     }
 
+                    //stream.WriteLine(SceneObjectSerializer.ToXml2Format(g));
                     SceneObjectSerializer.SOGToXml2(writer, (SceneObjectGroup)ent, new Dictionary<string,object>());
+//                    stream.WriteLine();
+
                     primCount++;
                 }
             }

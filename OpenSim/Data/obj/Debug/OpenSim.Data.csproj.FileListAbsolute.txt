@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/obj/Debug/OpenSim.Data.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/obj/Debug/OpenSim.Data.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/obj/Debug/OpenSim.Data.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/obj/Debug/OpenSim.Data.pdb

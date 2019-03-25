@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -1245,8 +1245,8 @@ namespace OpenSim.Framework
         public static RegionInfo Create(UUID regionID, string regionName, uint regX, uint regY, string externalHostName, uint httpPort, uint simPort, uint remotingPort, string serverURI)
         {
             RegionInfo regionInfo;
-            IPEndPoint neighborInternalEndPoint = new IPEndPoint(Util.GetHostFromDNS(externalHostName), (int)simPort);
-            regionInfo = new RegionInfo(regX, regY, neighborInternalEndPoint, externalHostName);
+            IPEndPoint neighbourInternalEndPoint = new IPEndPoint(Util.GetHostFromDNS(externalHostName), (int)simPort);
+            regionInfo = new RegionInfo(regX, regY, neighbourInternalEndPoint, externalHostName);
             regionInfo.RemotingPort = remotingPort;
             regionInfo.RemotingAddress = externalHostName;
             regionInfo.HttpPort = httpPort;

@@ -751,7 +751,7 @@ namespace OpenSim.Region.Framework.Scenes
                     else
                         cflags = 3;
                 }
-                if(!av.knowsNeighborRegion(destHandle))
+                if(!av.knowsNeighbourRegion(destHandle))
                     cflags |= 8;
 
                 // 1 is crossing
@@ -763,7 +763,7 @@ namespace OpenSim.Region.Framework.Scenes
                 avinfo.ParentID = av.ParentID;
                 avsToCross.Add(avinfo);
 
-                if(!av.knowsNeighborRegion(destHandle))
+                if(!av.knowsNeighbourRegion(destHandle))
                 {
                    cflags |= 8;
                     avsToCrossFar.Add(av);
@@ -806,7 +806,7 @@ namespace OpenSim.Region.Framework.Scenes
                     {
                         if(sittingAvatars.Contains(oav))
                             return;
-                        if(oav.knowsNeighborRegion(destHandle))
+                        if(oav.knowsNeighbourRegion(destHandle))
                             return;
                         oav.ControllingClient.SendEntityUpdate(root, PrimUpdateFlags.Kill);
                         foreach (ScenePresence sav in sittingAvatars)
@@ -875,7 +875,7 @@ namespace OpenSim.Region.Framework.Scenes
                             {
                                 if(sittingAvatars.Contains(oav))
                                     return;
-                                if(oav.knowsNeighborRegion(destHandle))
+                                if(oav.knowsNeighbourRegion(destHandle))
                                     av.SendAvatarDataToAgent(oav);
                                 else
                                 {
@@ -900,7 +900,7 @@ namespace OpenSim.Region.Framework.Scenes
                             av.Scene.CloseAgent(av.UUID, false);
                         }
                         else
-                            av.RemoveNeighborRegion(destHandle);
+                            av.RemoveNeighbourRegion(destHandle);
                     }
                 }
                 avsToCrossFar.Clear();

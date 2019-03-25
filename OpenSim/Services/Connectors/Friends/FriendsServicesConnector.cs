@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -128,7 +128,7 @@ namespace OpenSim.Services.Connectors.Friends
 
                         List<FriendInfo> finfos = new List<FriendInfo>();
                         Dictionary<string, object>.ValueCollection finfosList = replyData.Values;
-                        //m_log.DebugFormat("[FRIENDS SERVICE CONNECTOR]: get neighbors returned {0} elements", rinfosList.Count);
+                        //m_log.DebugFormat("[FRIENDS SERVICE CONNECTOR]: get neighbours returned {0} elements", rinfosList.Count);
                         foreach (object f in finfosList)
                         {
                             if (f is Dictionary<string, object>)

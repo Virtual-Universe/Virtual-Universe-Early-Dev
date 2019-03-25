@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -38,9 +38,9 @@ namespace OpenSim.Framework
     /// </remarks>
     public interface ISceneAgent : ISceneEntity
     {
-        /// <summary>
+        /// <value>
         /// The client controlling this presence
-        /// </summary>
+        /// </value>
         IClientAPI ControllingClient { get; }
 
         /// <summary>
@@ -50,8 +50,8 @@ namespace OpenSim.Framework
 
         /// <summary>
         /// If true, then the agent has no avatar in the scene.
-        /// The agent exists to relay data from a region that neighbors the current position of the user's avatar.
-        /// Occasionally data is relayed, such as which a user clicks an item in a neighboring region.
+        /// The agent exists to relay data from a region that neighbours the current position of the user's avatar.
+        /// Occasionally data is relayed, such as which a user clicks an item in a neighbouring region.
         /// </summary>
         bool IsChildAgent { get; }
 
@@ -59,14 +59,13 @@ namespace OpenSim.Framework
         bool IsNPC { get;}
 
         bool Invulnerable { get; set; }
-        
         /// <summary>
         /// Avatar appearance data.
         /// </summary>
         /// <remarks>
-        /// Because appearance setting is in a module, we actually need
-        /// to give it access to our appearance directly, otherwise we
-        /// get a synchronization issue.
+        // Because appearance setting is in a module, we actually need
+        // to give it access to our appearance directly, otherwise we
+        // get a synchronization issue.
         /// </remarks>
         AvatarAppearance Appearance { get; set; }
 

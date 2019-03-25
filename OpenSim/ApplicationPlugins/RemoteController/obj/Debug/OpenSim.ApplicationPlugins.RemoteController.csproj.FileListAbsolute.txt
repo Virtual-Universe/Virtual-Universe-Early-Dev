@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.ApplicationPlugins.RemoteController.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.ApplicationPlugins.RemoteController.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/ApplicationPlugins/RemoteController/obj/Debug/OpenSim.ApplicationPlugins.RemoteController.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/ApplicationPlugins/RemoteController/obj/Debug/OpenSim.ApplicationPlugins.RemoteController.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/ApplicationPlugins/RemoteController/obj/Debug/OpenSim.ApplicationPlugins.RemoteController.pdb

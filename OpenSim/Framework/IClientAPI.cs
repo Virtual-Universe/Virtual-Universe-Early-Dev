@@ -1156,7 +1156,7 @@ namespace OpenSim.Framework
         /// </remarks>
         void MoveAgentIntoRegion(RegionInfo regInfo, Vector3 pos, Vector3 look);
 
-        void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborExternalEndPoint);
+        void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourExternalEndPoint);
 
         /// <summary>
         /// Return circuit information for this client.

@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.AuthorizationService.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.AuthorizationService.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AuthorizationService/obj/Debug/OpenSim.Services.AuthorizationService.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AuthorizationService/obj/Debug/OpenSim.Services.AuthorizationService.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AuthorizationService/obj/Debug/OpenSim.Services.AuthorizationService.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/AuthorizationService/obj/Debug/OpenSim.Services.AuthorizationService.pdb

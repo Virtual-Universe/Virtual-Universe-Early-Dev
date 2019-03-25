@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -807,7 +807,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments.Tests
 
 
         [Test]
-        public void TestSameSimulatorNeighboringRegionsTeleportV1()
+        public void TestSameSimulatorNeighbouringRegionsTeleportV1()
         {
             TestHelpers.InMethod();
 //            TestHelpers.EnableLogging();
@@ -852,7 +852,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments.Tests
             AgentCircuitData acd = SceneHelpers.GenerateAgentData(ua1.PrincipalID);
             TestClient tc = new TestClient(acd, sceneA);
             List<TestClient> destinationTestClients = new List<TestClient>();
-            EntityTransferHelpers.SetupInformClientOfNeighborTriggersNeighborClientCreate(tc, destinationTestClients);
+            EntityTransferHelpers.SetupInformClientOfNeighbourTriggersNeighbourClientCreate(tc, destinationTestClients);
 
             ScenePresence beforeTeleportSp = SceneHelpers.AddScenePresence(sceneA, tc, acd);
             beforeTeleportSp.AbsolutePosition = new Vector3(30, 31, 32);
@@ -916,7 +916,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments.Tests
 
 
         [Test]
-        public void TestSameSimulatorNeighboringRegionsTeleportV2()
+        public void TestSameSimulatorNeighbouringRegionsTeleportV2()
         {
             TestHelpers.InMethod();
 //            TestHelpers.EnableLogging();
@@ -953,7 +953,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments.Tests
             AgentCircuitData acd = SceneHelpers.GenerateAgentData(ua1.PrincipalID);
             TestClient tc = new TestClient(acd, sceneA);
             List<TestClient> destinationTestClients = new List<TestClient>();
-            EntityTransferHelpers.SetupInformClientOfNeighborTriggersNeighborClientCreate(tc, destinationTestClients);
+            EntityTransferHelpers.SetupInformClientOfNeighbourTriggersNeighbourClientCreate(tc, destinationTestClients);
 
             ScenePresence beforeTeleportSp = SceneHelpers.AddScenePresence(sceneA, tc, acd);
             beforeTeleportSp.AbsolutePosition = new Vector3(30, 31, 32);

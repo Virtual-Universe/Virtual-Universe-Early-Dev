@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -187,9 +187,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
             return false;
         }
 
-        public List<GridRegion> GetNeighbors(UUID scopeID, UUID regionID)
+        public List<GridRegion> GetNeighbours(UUID scopeID, UUID regionID)
         {
-            return m_RemoteGridService.GetNeighbors(scopeID, regionID);
+            return m_RemoteGridService.GetNeighbours(scopeID, regionID);
         }
 
         public GridRegion GetRegionByUUID(UUID scopeID, UUID regionID)

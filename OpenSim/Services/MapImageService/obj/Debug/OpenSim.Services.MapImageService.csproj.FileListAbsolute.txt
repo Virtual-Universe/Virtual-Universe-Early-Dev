@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.MapImageService.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.MapImageService.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/MapImageService/obj/Debug/OpenSim.Services.MapImageService.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/MapImageService/obj/Debug/OpenSim.Services.MapImageService.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/MapImageService/obj/Debug/OpenSim.Services.MapImageService.pdb

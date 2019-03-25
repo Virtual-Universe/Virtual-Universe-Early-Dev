@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ClientStack.LindenUDP.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.ClientStack.LindenUDP.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/UDP/obj/Debug/OpenSim.Region.ClientStack.LindenUDP.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/UDP/obj/Debug/OpenSim.Region.ClientStack.LindenUDP.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/UDP/obj/Debug/OpenSim.Region.ClientStack.LindenUDP.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/ClientStack/Linden/UDP/obj/Debug/OpenSim.Region.ClientStack.LindenUDP.pdb

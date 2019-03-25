@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -36,19 +36,19 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
     public class WeatherSphere : ITerrainPaintableEffect
     {
         private const double talus = 0.2;
-        private const NeighborSystem type = NeighborSystem.Moore;
+        private const NeighbourSystem type = NeighbourSystem.Moore;
 
         #region Supporting Functions
 
-        private static int[] Neighbors(NeighborSystem neighborType, int index)
+        private static int[] Neighbours(NeighbourSystem neighbourType, int index)
         {
             int[] coord = new int[2];
 
             index++;
 
-            switch (neighborType)
+            switch (neighbourType)
             {
-                case NeighborSystem.Moore:
+                case NeighbourSystem.Moore:
                     switch (index)
                     {
                         case 1:
@@ -101,7 +101,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                     }
                     break;
 
-                case NeighborSystem.VonNeumann:
+                case NeighbourSystem.VonNeumann:
                     switch (index)
                     {
                         case 1:
@@ -138,7 +138,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
             return coord;
         }
 
-        private enum NeighborSystem
+        private enum NeighbourSystem
         {
             Moore,
             VonNeumann
@@ -173,7 +173,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                         {
                             if (j != NEIGHBOUR_ME)
                             {
-                                int[] coords = Neighbors(type, j);
+                                int[] coords = Neighbours(type, j);
 
                                 coords[0] += x;
                                 coords[1] += y;

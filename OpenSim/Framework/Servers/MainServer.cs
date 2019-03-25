@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -39,6 +39,8 @@ namespace OpenSim.Framework.Servers
 {
     public class MainServer
     {
+//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private static BaseHttpServer instance = null;
         private static BaseHttpServer unsecureinstance = null;
         private static Dictionary<uint, BaseHttpServer> m_Servers = new Dictionary<uint, BaseHttpServer>();
@@ -254,7 +256,11 @@ namespace OpenSim.Framework.Servers
                     handlers.AppendFormat("* JSONRPC:\n");
                     foreach (String s in httpServer.GetJsonRpcHandlerKeys())
                         handlers.AppendFormat("\t{0}\n", s);
-                        
+
+//                    handlers.AppendFormat("* Agent:\n");
+//                    foreach (String s in httpServer.GetAgentHandlerKeys())
+//                        handlers.AppendFormat("\t{0}\n", s);
+
                     handlers.AppendFormat("* LLSD:\n");
                     foreach (String s in httpServer.GetLLSDHandlerKeys())
                         handlers.AppendFormat("\t{0}\n", s);

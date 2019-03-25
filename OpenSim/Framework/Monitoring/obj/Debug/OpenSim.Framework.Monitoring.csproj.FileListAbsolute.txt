@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Monitoring.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Monitoring.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Monitoring/obj/Debug/OpenSim.Framework.Monitoring.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Monitoring/obj/Debug/OpenSim.Framework.Monitoring.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Monitoring/obj/Debug/OpenSim.Framework.Monitoring.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Monitoring/obj/Debug/OpenSim.Framework.Monitoring.pdb

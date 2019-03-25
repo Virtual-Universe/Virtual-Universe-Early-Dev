@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.Interfaces.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.Interfaces.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Interfaces/obj/Debug/OpenSim.Services.Interfaces.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Interfaces/obj/Debug/OpenSim.Services.Interfaces.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Interfaces/obj/Debug/OpenSim.Services.Interfaces.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Interfaces/obj/Debug/OpenSim.Services.Interfaces.pdb

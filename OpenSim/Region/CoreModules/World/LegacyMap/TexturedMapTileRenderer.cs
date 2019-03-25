@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -276,7 +276,7 @@ namespace OpenSim.Region.CoreModules.World.LegacyMap
         }
 
         // the heigthfield might have some jumps in values. Rendered land is smooth, though,
-        // as a slope is rendered at that place. So average 4 neighbor values to emulate that.
+        // as a slope is rendered at that place. So average 4 neighbour values to emulate that.
         private float getHeight(ITerrainChannel hm, int x, int y) {
             if (x < (hm.Width - 1) && y < (hm.Height - 1))
                 return (float)(hm[x, y] * .444 + (hm[x + 1, y] + hm[x, y + 1]) * .222 + hm[x + 1, y +1] * .112);

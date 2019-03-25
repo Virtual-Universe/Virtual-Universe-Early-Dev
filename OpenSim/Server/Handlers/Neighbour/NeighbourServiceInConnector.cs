@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -30,34 +30,39 @@ using System.Collections.Generic;
 using System.Reflection;
 using log4net;
 using Nini.Config;
+using OpenSim.Server.Base;
+using OpenSim.Services.Interfaces;
 using OpenSim.Framework;
 using OpenSim.Framework.Servers.HttpServer;
-using OpenSim.Server.Base;
 using OpenSim.Server.Handlers.Base;
-using OpenSim.Services.Interfaces;
 
-namespace OpenSim.Server.Handlers.Neighbor
+namespace OpenSim.Server.Handlers.Neighbour
 {
-    public class NeighborServiceInConnector : ServiceConnector
+    public class NeighbourServiceInConnector : ServiceConnector
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private INeighborService m_NeighborService;
+        private INeighbourService m_NeighbourService;
         private IAuthenticationService m_AuthenticationService = null;
 
-        public NeighborServiceInConnector(IConfigSource source, IHttpServer server, INeighborService nService, IScene scene) :
+        public NeighbourServiceInConnector(IConfigSource source, IHttpServer server, INeighbourService nService, IScene scene) :
                 base(source, server, String.Empty)
         {
 
-            m_NeighborService = nService;
-            if (m_NeighborService == null)
+            m_NeighbourService = nService;
+            if (m_NeighbourService == null)
             {
-                m_log.Error("[Neighbor In Connector]: neighbor service was not provided");
+                m_log.Error("[NEIGHBOUR IN CONNECTOR]: neighbour service was not provided");
                 return;
             }
 
-            server.AddStreamHandler(new NeighborPostHandler(m_NeighborService, m_AuthenticationService));
-            server.AddStreamHandler(new NeighborGetHandler(m_NeighborService, m_AuthenticationService));
+            //bool authentication = neighbourConfig.GetBoolean("RequireAuthentication", false);
+            //if (authentication)
+            //    m_AuthenticationService = scene.RequestModuleInterface<IAuthenticationService>();
+
+
+            server.AddStreamHandler(new NeighbourPostHandler(m_NeighbourService, m_AuthenticationService));
+            server.AddStreamHandler(new NeighbourGetHandler(m_NeighbourService, m_AuthenticationService));
         }
     }
 }

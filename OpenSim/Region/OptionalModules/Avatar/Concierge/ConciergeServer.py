@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 # 
 # Copyright (c) Contributors, https://virtual-planets.org/

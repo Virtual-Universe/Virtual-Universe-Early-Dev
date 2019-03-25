@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -96,7 +96,7 @@ namespace OpenSim.Region.OptionalModules.UDP.Linden
                 "Show queue data for each client",
                 "Without the 'full' option, only root agents are shown.\n"
                     + "With the 'full' option child agents are also shown.\n\n"
-                    + "Type          - Rt is a root (avatar) client whilst cd is a child (neighbor interacting) client.\n"
+                    + "Type          - Rt is a root (avatar) client whilst cd is a child (neighbour interacting) client.\n"
                     + "Since Last In - Time in milliseconds since last packet received.\n"
                     + "Pkts In       - Number of packets processed from the client.\n"
                     + "Pkts Out      - Number of packets sent to the client.\n"

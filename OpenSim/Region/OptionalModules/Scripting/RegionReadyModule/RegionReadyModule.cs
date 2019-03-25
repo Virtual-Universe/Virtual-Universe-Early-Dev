@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -236,7 +236,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.RegionReady
             }
 
             m_scene.SceneGridService.InformNeighborsThatRegionisUp(
-                m_scene.RequestModuleInterface<INeighborService>(), m_scene.RegionInfo);
+                m_scene.RequestModuleInterface<INeighbourService>(), m_scene.RegionInfo);
 
             if (m_uri != string.Empty)
             {

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -165,7 +165,7 @@ namespace OpenSim.Services.Connectors.SimianGrid
             return success;
         }
 
-        public List<GridRegion> GetNeighbors(UUID scopeID, UUID regionID)
+        public List<GridRegion> GetNeighbours(UUID scopeID, UUID regionID)
         {
             GridRegion region = GetRegionByUUID(scopeID, regionID);
 

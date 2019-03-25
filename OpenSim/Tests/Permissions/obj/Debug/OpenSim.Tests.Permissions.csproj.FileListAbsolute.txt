@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Permissions.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tests.Permissions.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Permissions/obj/Debug/OpenSim.Tests.Permissions.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Permissions/obj/Debug/OpenSim.Tests.Permissions.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Permissions/obj/Debug/OpenSim.Tests.Permissions.pdb

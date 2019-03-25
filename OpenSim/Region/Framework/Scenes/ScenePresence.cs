@@ -3602,7 +3602,7 @@ namespace OpenSim.Region.Framework.Scenes
                         m = m1 + m2;
 
                         // This constant is emperically determined to be what is used in SL.
-                        // See also http://opensimulator.org/mantis/view.php?id=7096
+                        // See also https://virtual-planets.org/mantis/view.php?id=7096
                         double offset = 0.05;
 
                         // Normally m will be ~ 1, but if someone passed a handcrafted quaternion

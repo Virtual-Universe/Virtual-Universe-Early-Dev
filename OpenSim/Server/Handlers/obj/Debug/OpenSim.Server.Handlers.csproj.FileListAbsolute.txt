@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Server.Handlers.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Server.Handlers.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Server/Handlers/obj/Debug/OpenSim.Server.Handlers.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Server/Handlers/obj/Debug/OpenSim.Server.Handlers.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Server/Handlers/obj/Debug/OpenSim.Server.Handlers.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Server/Handlers/obj/Debug/OpenSim.Server.Handlers.pdb

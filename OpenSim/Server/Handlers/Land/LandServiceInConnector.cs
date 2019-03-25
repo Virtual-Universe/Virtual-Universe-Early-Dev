@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -55,7 +55,7 @@ namespace OpenSim.Server.Handlers.Land
                 return;
             }
 
-            //bool authentication = neighborConfig.GetBoolean("RequireAuthentication", false);
+            //bool authentication = neighbourConfig.GetBoolean("RequireAuthentication", false);
             //if (authentication)
             //    m_AuthenticationService = scene.RequestModuleInterface<IAuthenticationService>();
 

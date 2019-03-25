@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.SimulationService.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.SimulationService.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/SimulationService/obj/Debug/OpenSim.Services.SimulationService.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/SimulationService/obj/Debug/OpenSim.Services.SimulationService.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/SimulationService/obj/Debug/OpenSim.Services.SimulationService.pdb

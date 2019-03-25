@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/Robust.Tests.dll
-/home/dev/Desktop/OpenSim-Dev/bin/Robust.Tests.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Robust/obj/Debug/Robust.Tests.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Robust/obj/Debug/Robust.Tests.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Robust/obj/Debug/Robust.Tests.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tests/Robust/obj/Debug/Robust.Tests.pdb

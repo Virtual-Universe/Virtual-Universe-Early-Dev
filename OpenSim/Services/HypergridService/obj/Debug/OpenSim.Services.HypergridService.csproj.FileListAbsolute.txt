@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.HypergridService.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.HypergridService.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/HypergridService/obj/Debug/OpenSim.Services.HypergridService.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/HypergridService/obj/Debug/OpenSim.Services.HypergridService.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/HypergridService/obj/Debug/OpenSim.Services.HypergridService.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/HypergridService/obj/Debug/OpenSim.Services.HypergridService.pdb

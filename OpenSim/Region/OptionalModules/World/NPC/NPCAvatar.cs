@@ -754,7 +754,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborExternalEndPoint)
+        public virtual void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourExternalEndPoint)
         {
         }
 

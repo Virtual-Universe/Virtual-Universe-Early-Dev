@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.InventoryService.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.InventoryService.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/InventoryService/obj/Debug/OpenSim.Services.InventoryService.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/InventoryService/obj/Debug/OpenSim.Services.InventoryService.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/InventoryService/obj/Debug/OpenSim.Services.InventoryService.pdb

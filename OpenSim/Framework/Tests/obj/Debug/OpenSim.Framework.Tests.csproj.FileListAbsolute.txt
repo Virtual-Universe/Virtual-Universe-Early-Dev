@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Tests.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Tests.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Tests/obj/Debug/OpenSim.Framework.Tests.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Tests/obj/Debug/OpenSim.Framework.Tests.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Tests/obj/Debug/OpenSim.Framework.Tests.pdb

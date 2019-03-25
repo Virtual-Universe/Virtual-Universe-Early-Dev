@@ -1,5 +1,5 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
+/*
+ * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
+ *     * Neither the name of the OpenSimulator Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("OpenSim32")]
 [assembly: AssemblyDescription("OpenSim 32Bit Launcher")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("https://virtual-planets.org")]
+[assembly: AssemblyCompany("http://opensimulator.org")]
 [assembly: AssemblyProduct("OpenSim 32BitLauncher")]
 [assembly: AssemblyCopyright("Copyright (c) 2008")]
 [assembly: AssemblyTrademark("")]

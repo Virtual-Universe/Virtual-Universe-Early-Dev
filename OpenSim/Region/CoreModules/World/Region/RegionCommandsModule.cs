@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -109,9 +109,9 @@ namespace OpenSim.Region.CoreModules.World.Objects.Commands
                 + "  This is not persisted over restart - to set it every time you must add a MaxAgents entry to your regions file.",
                 HandleRegionSet);
 
-            m_console.Commands.AddCommand("Regions", false, "show neighbors",
-                "show neighbors",
-                "Shows the local region neighbors", HandleShowNeighborsCommand);
+            m_console.Commands.AddCommand("Regions", false, "show neighbours",
+                "show neighbours",
+                "Shows the local region neighbours", HandleShowNeighboursCommand);
 
             m_console.Commands.AddCommand("Regions", false, "show regionsinview",
                 "show regionsinview",
@@ -320,7 +320,7 @@ namespace OpenSim.Region.CoreModules.World.Objects.Commands
             MainConsole.Instance.Output(sb.ToString());
         }
 
-        public void HandleShowNeighborsCommand(string module, string[] cmdparams)
+        public void HandleShowNeighboursCommand(string module, string[] cmdparams)
         {
             if(m_scene == null)
                 return;
@@ -331,8 +331,8 @@ namespace OpenSim.Region.CoreModules.World.Objects.Commands
             System.Text.StringBuilder caps = new System.Text.StringBuilder();
 
             RegionInfo sr = m_scene.RegionInfo;
-            caps.AppendFormat("*** Neighbors of {0} ({1}) ***\n", sr.RegionName, sr.RegionID);
-            List<GridRegion> regions = m_scene.GridService.GetNeighbors(sr.ScopeID, sr.RegionID);
+            caps.AppendFormat("*** Neighbours of {0} ({1}) ***\n", sr.RegionName, sr.RegionID);
+            List<GridRegion> regions = m_scene.GridService.GetNeighbours(sr.ScopeID, sr.RegionID);
                 foreach (GridRegion r in regions)
                     caps.AppendFormat("    {0} @ {1}-{2}\n", r.RegionName, Util.WorldToRegionLoc((uint)r.RegionLocX), Util.WorldToRegionLoc((uint)r.RegionLocY));
 

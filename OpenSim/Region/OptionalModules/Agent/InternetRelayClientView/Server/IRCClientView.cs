@@ -1031,7 +1031,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
         }
 
-        public void InformClientOfNeighbor(ulong neighborHandle, IPEndPoint neighborExternalEndPoint)
+        public void InformClientOfNeighbour(ulong neighbourHandle, IPEndPoint neighbourExternalEndPoint)
         {
 
         }

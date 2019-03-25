@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -25,8 +25,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Mono.Addins;
 using OpenSim.Framework;
+using Mono.Addins;
 
 namespace OpenSim
 {
@@ -47,6 +47,7 @@ namespace OpenSim
         /// </summary>
         void PostInitialize();
     }
+
 
     public class ApplicationPluginInitializer : PluginInitializerBase
     {

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -83,7 +83,7 @@ namespace OpenSim.Framework.Servers
         {
             if (File.Exists(path))
                 m_log.ErrorFormat(
-                    "[Server Base]: Previous pid file {0} still exists on startup.  Possibly previously unclean shutdown.",
+                    "[SERVER BASE]: Previous pid file {0} still exists on startup.  Possibly previously unclean shutdown.",
                     path);
 
             try
@@ -98,11 +98,11 @@ namespace OpenSim.Framework.Servers
 
                 m_pidFile = path;
 
-                m_log.InfoFormat("[Server Base]: Created pid file {0}", m_pidFile);
+                m_log.InfoFormat("[SERVER BASE]: Created pid file {0}", m_pidFile);
             }
             catch (Exception e)
             {
-                m_log.Warn(string.Format("[Server Base]: Could not create PID file at {0} ", path), e);
+                m_log.Warn(string.Format("[SERVER BASE]: Could not create PID file at {0} ", path), e);
             }
         }
 
@@ -116,7 +116,7 @@ namespace OpenSim.Framework.Servers
                 }
                 catch (Exception e)
                 {
-                    m_log.Error(string.Format("[Server Base]: Error whilst removing {0} ", m_pidFile), e);
+                    m_log.Error(string.Format("[SERVER BASE]: Error whilst removing {0} ", m_pidFile), e);
                 }
 
                 m_pidFile = String.Empty;
@@ -131,12 +131,15 @@ namespace OpenSim.Framework.Servers
         {
             // FIXME: This should be done down in ServerBase but we need to sort out and refactor the log4net
             // XmlConfigurator calls first accross servers.
-            m_log.InfoFormat("[Server Base]: Starting in {0}", m_startupDirectory);
+            m_log.InfoFormat("[SERVER BASE]: Starting in {0}", m_startupDirectory);
 
-            m_log.InfoFormat("[Server Base]: Virtual Universe version: {0}", m_version);
+            m_log.InfoFormat("[SERVER BASE]: Virtual Universe version: {0}", m_version);
 
+            // clr version potentially is more confusing than helpful, since it doesn't tell us if we're running under Mono/MS .NET and
+            // the clr version number doesn't match the project version number under Mono.
+            //m_log.Info("[STARTUP]: Virtual machine runtime version: " + Environment.Version + Environment.NewLine);
             m_log.InfoFormat(
-                "[Server Base]: Operating system version: {0}, .NET platform {1}, {2}-bit",
+                "[SERVER BASE]: Operating system version: {0}, .NET platform {1}, {2}-bit",
                 Environment.OSVersion, Environment.OSVersion.Platform, Util.Is64BitProcess() ? "64" : "32");
         }
 
@@ -186,7 +189,7 @@ namespace OpenSim.Framework.Servers
                     m_logFileAppender.ActivateOptions();
                 }
 
-                m_log.InfoFormat("[Server Base]: Logging started to file {0}", m_logFileAppender.File);
+                m_log.InfoFormat("[SERVER BASE]: Logging started to file {0}", m_logFileAppender.File);
             }
 
             if (m_statsLogFileAppender != null && startupConfig != null)
@@ -198,7 +201,7 @@ namespace OpenSim.Framework.Servers
                     m_statsLogFileAppender.ActivateOptions();
                 }
 
-                m_log.InfoFormat("[Server Base]: Stats Logging started to file {0}", m_statsLogFileAppender.File);
+                m_log.InfoFormat("[SERVER BASE]: Stats Logging started to file {0}", m_statsLogFileAppender.File);
             }
         }
 
@@ -272,13 +275,13 @@ namespace OpenSim.Framework.Servers
                 "Show thread status.  Synonym for \"show threads\"",
                 (string module, string[] args) => Notice(GetThreadsReport()));
 
-            m_console.Commands.AddCommand(
+            m_console.Commands.AddCommand (
                 "Debug", false, "debug threadpool set",
                 "debug threadpool set worker|iocp min|max <n>",
                 "Set threadpool parameters.  For debug purposes.",
                 HandleDebugThreadpoolSet);
 
-            m_console.Commands.AddCommand(
+            m_console.Commands.AddCommand (
                 "Debug", false, "debug threadpool status",
                 "debug threadpool status",
                 "Show current debug threadpool parameters.",
@@ -294,6 +297,12 @@ namespace OpenSim.Framework.Servers
                     + "  2 = full stack trace; don't log common threads\n"
                     + "  3 = full stack trace, including common threads\n",
                 HandleDebugThreadpoolLevel);
+
+//            m_console.Commands.AddCommand(
+//                "Debug", false, "show threadpool calls active",
+//                "show threadpool calls active",
+//                "Show details about threadpool calls that are still active (currently waiting or in progress)",
+//                HandleShowThreadpoolCallsActive);
 
             m_console.Commands.AddCommand(
                 "Debug", false, "show threadpool calls complete",
@@ -323,6 +332,8 @@ namespace OpenSim.Framework.Servers
 
         public void RegisterCommonComponents(IConfigSource configSource)
         {
+//            IConfig networkConfig = configSource.Configs["Network"];
+
             m_serverStatsCollector = new ServerStatsCollector();
             m_serverStatsCollector.Initialize(configSource);
             m_serverStatsCollector.Start();
@@ -589,7 +600,7 @@ namespace OpenSim.Framework.Servers
                             IConfig config = Config.Configs[cmdparams[1]];
                             if (config == null)
                             {
-                                Notice("Section \"{0}\" does not exist.", cmdparams[1]);
+                                Notice("Section \"{0}\" does not exist.",cmdparams[1]);
                                 break;
                             }
                             else
@@ -698,7 +709,7 @@ namespace OpenSim.Framework.Servers
 
             if (File.Exists(fileName))
             {
-                m_log.Info("[Server Base]: Running " + fileName);
+                m_log.Info("[SERVER BASE]: Running " + fileName);
 
                 using (StreamReader readFile = File.OpenText(fileName))
                 {
@@ -711,7 +722,7 @@ namespace OpenSim.Framework.Servers
                             || currentCommand.StartsWith("//")
                             || currentCommand.StartsWith("#")))
                         {
-                            m_log.Info("[Server Base]: Running '" + currentCommand + "'");
+                            m_log.Info("[SERVER BASE]: Running '" + currentCommand + "'");
                             m_console.RunCommand(currentCommand);
                         }
                     }
@@ -771,19 +782,27 @@ namespace OpenSim.Framework.Servers
             }
             else if (File.Exists(gitRefPointerPath))
             {
+//                m_log.DebugFormat("[SERVER BASE]: Found {0}", gitRefPointerPath);
+
                 string rawPointer = "";
 
                 using (StreamReader pointerFile = File.OpenText(gitRefPointerPath))
                     rawPointer = pointerFile.ReadLine();
 
+//                m_log.DebugFormat("[SERVER BASE]: rawPointer [{0}]", rawPointer);
+
                 Match m = Regex.Match(rawPointer, "^ref: (.+)$");
 
                 if (m.Success)
                 {
+//                    m_log.DebugFormat("[SERVER BASE]: Matched [{0}]", m.Groups[1].Value);
+
                     string gitRef = m.Groups[1].Value;
                     string gitRefPath = gitDir + gitRef;
                     if (File.Exists(gitRefPath))
                     {
+//                        m_log.DebugFormat("[SERVER BASE]: Found gitRefPath [{0}]", gitRefPath);
+
                         using (StreamReader refFile = File.OpenText(gitRefPath))
                         {
                             string gitHash = refFile.ReadLine();
@@ -812,7 +831,7 @@ namespace OpenSim.Framework.Servers
                         // using the dir svn revision at the top of entries file
                         strcmp = String.Compare(inputLine, "dir");
                         if (strcmp == 0)
-                        {
+                       {
                             buildVersion = EntriesFile.ReadLine();
                             break;
                         }
@@ -937,7 +956,7 @@ namespace OpenSim.Framework.Servers
                     waitingCallbacks = stpi.WaitingCallbacks;
                 }
             }
-
+ 
             if (threadPoolUsed != null)
             {
                 sb.Append("\nThreadpool (excluding script engine pools)\n");
@@ -1013,6 +1032,6 @@ namespace OpenSim.Framework.Servers
         /// <summary>
         /// Should be overriden and referenced by descendents if they need to perform extra shutdown processing
         /// </summary>
-        protected virtual void ShutdownSpecific() { }
+        protected virtual void ShutdownSpecific() {}
     }
 }

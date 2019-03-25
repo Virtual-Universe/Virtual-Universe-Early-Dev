@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -223,7 +223,7 @@ public struct HACDParams
     public float volumeWeight;				// 0.0
     public float concavity;				    // 100
     public float addExtraDistPoints;		// false
-    public float addNeighborsDistPoints;	// false
+    public float addNeighboursDistPoints;	// false
     public float addFacesPoints;			// false
     public float shouldAdjustCollisionMargin;	// false
     // VHACD

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -145,7 +145,7 @@ namespace OpenSim.Region.Framework.Scenes.Tests
             AgentCircuitData acd = SceneHelpers.GenerateAgentData(uaB);
             TestClient clientB = new TestClient(acd, sceneB);
             List<TestClient> childClientsB = new List<TestClient>();
-            EntityTransferHelpers.SetupInformClientOfNeighborTriggersNeighborClientCreate(clientB, childClientsB);
+            EntityTransferHelpers.SetupInformClientOfNeighbourTriggersNeighbourClientCreate(clientB, childClientsB);
 
             SceneHelpers.AddScenePresence(sceneB, clientB, acd);
 

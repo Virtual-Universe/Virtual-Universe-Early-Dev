@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -400,7 +400,7 @@ namespace OpenSim.Services.GridService
             return m_Database.Delete(regionID);
         }
 
-        public List<GridRegion> GetNeighbors(UUID scopeID, UUID regionID)
+        public List<GridRegion> GetNeighbours(UUID scopeID, UUID regionID)
         {
             List<GridRegion> rinfos = new List<GridRegion>();
             RegionData region = m_Database.Get(regionID, scopeID);
@@ -416,7 +416,7 @@ namespace OpenSim.Services.GridService
                     if (rdata.RegionID != regionID)
                     {
                         int flags = Convert.ToInt32(rdata.Data["flags"]);
-                        if ((flags & (int)Framework.RegionFlags.Hyperlink) == 0) // no hyperlinks as neighbors
+                        if ((flags & (int)Framework.RegionFlags.Hyperlink) == 0) // no hyperlinks as neighbours
                             rinfos.Add(RegionData2RegionInfo(rdata));
                     }
                 }
@@ -424,13 +424,13 @@ namespace OpenSim.Services.GridService
                 // string rNames = "";
                 // foreach (GridRegion gr in rinfos)
                 //     rNames += gr.RegionName + ",";
-                // m_log.DebugFormat("{0} region {1} has {2} neighbors ({3})",
+                // m_log.DebugFormat("{0} region {1} has {2} neighbours ({3})",
                 //             LogHeader, region.RegionName, rinfos.Count, rNames);
             }
             else
             {
                 m_log.WarnFormat(
-                    "[GRID SERVICE]: GetNeighbors() called for scope {0}, region {1} but no such region found",
+                    "[GRID SERVICE]: GetNeighbours() called for scope {0}, region {1} but no such region found",
                     scopeID, regionID);
             }
 

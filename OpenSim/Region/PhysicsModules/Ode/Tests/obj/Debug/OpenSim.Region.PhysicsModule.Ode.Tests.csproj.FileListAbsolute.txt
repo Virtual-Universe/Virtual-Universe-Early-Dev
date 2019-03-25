@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModule.Ode.Tests.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Region.PhysicsModule.Ode.Tests.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/Ode/Tests/obj/Debug/OpenSim.Region.PhysicsModule.Ode.Tests.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/Ode/Tests/obj/Debug/OpenSim.Region.PhysicsModule.Ode.Tests.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/Ode/Tests/obj/Debug/OpenSim.Region.PhysicsModule.Ode.Tests.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Region/PhysicsModules/Ode/Tests/obj/Debug/OpenSim.Region.PhysicsModule.Ode.Tests.pdb

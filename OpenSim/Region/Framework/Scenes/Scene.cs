@@ -302,7 +302,7 @@ namespace OpenSim.Region.Framework.Scenes
         protected Timer m_restartWaitTimer = new Timer();
         protected Timer m_timerWatchdog = new Timer();
         protected List<RegionInfo> m_regionRestartNotifyList = new List<RegionInfo>();
-        protected List<RegionInfo> m_neighbors = new List<RegionInfo>();
+        protected List<RegionInfo> m_neighbours = new List<RegionInfo>();
         protected string m_simulatorVersion = "Virtual Universe Server";
         protected AgentCircuitManager m_authenticateHandler;
         protected SceneCommunicationService m_sceneGridService;
@@ -1272,7 +1272,7 @@ namespace OpenSim.Region.Framework.Scenes
         }
 
         /// <summary>
-        /// Process the fact that a neighboring region has come up.
+        /// Process the fact that a neighbouring region has come up.
         /// </summary>
         /// <remarks>
         /// We only add it to the neighbor list if it's within 1 region from here.
@@ -1301,7 +1301,7 @@ namespace OpenSim.Region.Framework.Scenes
 
                             List<ulong> old = new List<ulong>();
                             old.Add(otherRegion.RegionHandle);
-                            agent.DropOldNeighbors(old);
+                            agent.DropOldNeighbours(old);
                             if (EntityTransferModule != null && agent.PresenceType != PresenceType.Npc)
                                 EntityTransferModule.EnableChildAgent(agent, otherRegion);
                         });
@@ -1339,11 +1339,11 @@ namespace OpenSim.Region.Framework.Scenes
 
         public void AddNeighborRegion(RegionInfo region)
         {
-            lock (m_neighbors)
+            lock (m_neighbours)
             {
                 if (!CheckNeighborRegion(region))
                 {
-                    m_neighbors.Add(region);
+                    m_neighbours.Add(region);
                 }
             }
         }
@@ -1351,9 +1351,9 @@ namespace OpenSim.Region.Framework.Scenes
         public bool CheckNeighborRegion(RegionInfo region)
         {
             bool found = false;
-            lock (m_neighbors)
+            lock (m_neighbours)
             {
-                foreach (RegionInfo reg in m_neighbors)
+                foreach (RegionInfo reg in m_neighbours)
                 {
                     if (reg.RegionHandle == region.RegionHandle)
                     {
@@ -1365,10 +1365,10 @@ namespace OpenSim.Region.Framework.Scenes
             return found;
         }
 
-        // Alias IncomingHelloNeighbor OtherRegionUp, for now
-        public GridRegion IncomingHelloNeighbor(RegionInfo neighbor)
+        // Alias IncomingHelloNeighbour OtherRegionUp, for now
+        public GridRegion IncomingHelloNeighbour(RegionInfo neighbour)
         {
-            OtherRegionUp(new GridRegion(neighbor));
+            OtherRegionUp(new GridRegion(neighbour));
             return new GridRegion(RegionInfo);
         }
 
@@ -1427,7 +1427,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         public int GetInaccurateNeighborCount()
         {
-            return m_neighbors.Count;
+            return m_neighbours.Count;
         }
 
         // This is the method that shuts down the scene.
@@ -1460,7 +1460,7 @@ namespace OpenSim.Region.Framework.Scenes
             // Kick all ROOT agents with the message, 'The simulator is going down'
             ForEachScenePresence(delegate(ScenePresence avatar)
             {
-                avatar.RemoveNeighborRegion(RegionInfo.RegionHandle);
+                avatar.RemoveNeighbourRegion(RegionInfo.RegionHandle);
 
                 if (!avatar.IsChildAgent)
                     avatar.ControllingClient.Kick("The simulator is going down.");
@@ -1764,7 +1764,7 @@ namespace OpenSim.Region.Framework.Scenes
                             }
 
                             m_sceneGridService.InformNeighborsThatRegionisUp(
-                                RequestModuleInterface<INeighborService>(), RegionInfo);
+                                RequestModuleInterface<INeighbourService>(), RegionInfo);
 
                             // Region ready should always be set
                             Ready = true;
@@ -3632,7 +3632,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// </remarks>
         /// <param name='agentID'>ID of agent to close</param>
         /// <param name='closeChildAgents'>
-        /// Close the neighbor child agents associated with this client.
+        /// Close the neighbour child agents associated with this client.
         /// </param>
         ///
 
@@ -3706,7 +3706,7 @@ namespace OpenSim.Region.Framework.Scenes
                         List<ulong> regions = avatar.KnownRegionHandles;
                         regions.Remove(RegionInfo.RegionHandle);
 
-                        // This ends up being done asynchronously so that a logout isn't held up where there are many present but unresponsive neighbors.
+                        // This ends up being done asynchronously so that a logout isn't held up where there are many present but unresponsive neighbours.
                         m_sceneGridService.SendCloseChildAgentConnections(agentID, acd.SessionID.ToString(), regions);
                     }
 
@@ -3786,7 +3786,7 @@ namespace OpenSim.Region.Framework.Scenes
                 {
                     for (int i = 0; i < regionslst.Count; i++)
                     {
-                        av.RemoveNeighborRegion(regionslst[i]);
+                        av.RemoveNeighbourRegion(regionslst[i]);
                     }
                 }
             }
@@ -4863,7 +4863,7 @@ Label_GroupsDone:
             }
             else
             {
-                m_log.DebugFormat("[SCENE]: Unable to cross agent to neighboring region, because there is no AgentTransferModule");
+                m_log.DebugFormat("[SCENE]: Unable to cross agent to neighbouring region, because there is no AgentTransferModule");
             }
 
             return false;

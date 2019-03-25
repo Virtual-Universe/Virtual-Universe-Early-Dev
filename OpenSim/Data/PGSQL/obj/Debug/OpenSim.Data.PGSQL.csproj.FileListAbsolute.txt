@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.PGSQL.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Data.PGSQL.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/PGSQL/obj/Debug/OpenSim.Data.PGSQL.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/PGSQL/obj/Debug/OpenSim.Data.PGSQL.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Data/PGSQL/obj/Debug/OpenSim.Data.PGSQL.pdb

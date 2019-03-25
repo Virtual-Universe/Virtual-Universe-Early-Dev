@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -38,20 +38,20 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
     {
         private const double rainHeight = 0.2;
         private const int rounds = 10;
-        private const NeighborSystem type = NeighborSystem.Moore;
+        private const NeighbourSystem type = NeighbourSystem.Moore;
         private const double waterSaturation = 0.30;
 
         #region Supporting Functions
 
-        private static int[] Neighbors(NeighborSystem neighborType, int index)
+        private static int[] Neighbours(NeighbourSystem neighbourType, int index)
         {
             int[] coord = new int[2];
 
             index++;
 
-            switch (neighborType)
+            switch (neighbourType)
             {
-                case NeighborSystem.Moore:
+                case NeighbourSystem.Moore:
                     switch (index)
                     {
                         case 1:
@@ -104,7 +104,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                     }
                     break;
 
-                case NeighborSystem.VonNeumann:
+                case NeighbourSystem.VonNeumann:
                     switch (index)
                     {
                         case 1:
@@ -141,7 +141,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
             return coord;
         }
 
-        private enum NeighborSystem
+        private enum NeighbourSystem
         {
             Moore,
             VonNeumann
@@ -198,9 +198,9 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                         if (water[x, y] <= 0)
                             continue;
 
-                        // Step 1. Calculate average of neighbors
+                        // Step 1. Calculate average of neighbours
 
-                        int neighbors = 0;
+                        int neighbours = 0;
                         double altitudeTotal = 0.0;
                         double altitudeMe = map[x, y] + water[x, y];
 
@@ -211,7 +211,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                         {
                             if (j != NEIGHBOUR_ME)
                             {
-                                int[] coords = Neighbors(type, j);
+                                int[] coords = Neighbours(type, j);
 
                                 coords[0] += x;
                                 coords[1] += y;
@@ -225,30 +225,30 @@ namespace OpenSim.Region.CoreModules.World.Terrain.PaintBrushes
                                 if (coords[1] < 0)
                                     continue;
 
-                                // Calculate total height of this neighbor
-                                double altitudeNeighbor = water[coords[0], coords[1]] + map[coords[0], coords[1]];
+                                // Calculate total height of this neighbour
+                                double altitudeNeighbour = water[coords[0], coords[1]] + map[coords[0], coords[1]];
 
                                 // If it's greater than me...
-                                if (altitudeNeighbor - altitudeMe < 0)
+                                if (altitudeNeighbour - altitudeMe < 0)
                                 {
                                     // Add it to our calculations
-                                    neighbors++;
-                                    altitudeTotal += altitudeNeighbor;
+                                    neighbours++;
+                                    altitudeTotal += altitudeNeighbour;
                                 }
                             }
                         }
 
-                        if (neighbors == 0)
+                        if (neighbours == 0)
                             continue;
 
-                        double altitudeAvg = altitudeTotal / neighbors;
+                        double altitudeAvg = altitudeTotal / neighbours;
 
-                        // Step 2. Allocate water to neighbors.
+                        // Step 2. Allocate water to neighbours.
                         for (int j = 0; j < NEIGHBOUR_MAX; j++)
                         {
                             if (j != NEIGHBOUR_ME)
                             {
-                                int[] coords = Neighbors(type, j);
+                                int[] coords = Neighbours(type, j);
 
                                 coords[0] += x;
                                 coords[1] += y;

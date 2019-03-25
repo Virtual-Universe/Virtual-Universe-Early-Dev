@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the VIrtual Universe Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -25,21 +25,27 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+
 using System;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using ComponentAce.Compression.Libs.zlib;
-using Nini.Config;
+
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+
 using OpenSim.Framework;
-using OpenSim.Framework.Capabilities;
 using OpenSim.Region.Framework;
 using OpenSim.Region.Framework.Scenes;
+using OpenSim.Framework.Capabilities;
+
+using ComponentAce.Compression.Libs.zlib;
+
 using OSDArray = OpenMetaverse.StructuredData.OSDArray;
 using OSDMap = OpenMetaverse.StructuredData.OSDMap;
+
+using Nini.Config;
 
 namespace OpenSim.Region.ClientStack.Linden
 {
@@ -54,6 +60,7 @@ namespace OpenSim.Region.ClientStack.Linden
         // upload fee defaults
         // fees are normalized to 1.0
         // this parameters scale them to basic cost ( so 1.0 translates to 10 )
+
         public float ModelMeshCostFactor = 0.0f; // scale total cost relative to basic (excluding textures)
         public float ModelTextureCostFactor = 1.0f; // scale textures fee to basic.
         public float ModelMinCostFactor = 0.0f; // 0.5f; // minimum total model free excluding textures
@@ -61,7 +68,6 @@ namespace OpenSim.Region.ClientStack.Linden
         // itens costs in normalized values
         // ie will be multiplied by basicCost and factors above
         public float primCreationCost = 0.002f;  // extra cost for each prim creation overhead
-        
         // weigthed size to normalized cost
         public float bytecost = 1e-5f;
 
@@ -74,7 +80,6 @@ namespace OpenSim.Region.ClientStack.Linden
         const float medSizeWth = 1f; // 2x
         const float lowSizeWth = 1.5f; // 2.5x
         const float lowestSizeWth = 2f; // 3x
-        
         // favor potencially physical optimized meshs versus automatic decomposition
         const float physMeshSizeWth = 6f; // counts  7x
         const float physHullSizeWth = 8f; // counts  9x
@@ -97,6 +102,7 @@ namespace OpenSim.Region.ClientStack.Linden
         public float PhysicalPrimScaleMax = 10f;
         public int ObjectLinkedPartsMax = 512;
 
+
         public ModelCost(Scene scene)
         {
             PrimScaleMin = scene.m_minNonphys;
@@ -110,8 +116,7 @@ namespace OpenSim.Region.ClientStack.Linden
             ModelMeshCostFactor = EconomyConfig.GetFloat("MeshModelUploadCostFactor", ModelMeshCostFactor);
             ModelTextureCostFactor = EconomyConfig.GetFloat("MeshModelUploadTextureCostFactor", ModelTextureCostFactor);
             ModelMinCostFactor = EconomyConfig.GetFloat("MeshModelMinCostFactor", ModelMinCostFactor);
-
-            // next 2 are normalized so final cost is afected by modelUploadFactor above and normal cost
+                    // next 2 are normalized so final cost is afected by modelUploadFactor above and normal cost
             primCreationCost = EconomyConfig.GetFloat("ModelPrimCreationCost", primCreationCost);
             bytecost = EconomyConfig.GetFloat("ModelMeshByteCost", bytecost);
         }
@@ -125,10 +130,8 @@ namespace OpenSim.Region.ClientStack.Linden
             public int lowLODSize;
             public int lowestLODSize;
             public int highLODsides;
-           
             // normalized fee based on compressed data sizes
             public float costFee;
-            
             // physics cost
             public float physicsCost;
         }
@@ -220,22 +223,20 @@ namespace OpenSim.Region.ClientStack.Linden
                             error = "model can only contain a avatar skeleton";
                             return false;
                         }
-
                         avatarSkeleton = true;
                     }
-
                     meshsCosts.Add(curCost);
                     meshsfee += curCost.costFee;
                     meshesSides[i] = curCost.highLODsides;
                 }
-
                 haveMeshs = true;
             }
 
             // instances (prims) cost
+
+
             int mesh;
             int skipedSmall = 0;
-
             for (int i = 0; i < numberInstances; i++)
             {
                 Hashtable inst = (Hashtable)resources.instance_list.Array[i];
@@ -273,6 +274,7 @@ namespace OpenSim.Region.ClientStack.Linden
                     }
 
                     // streamming cost
+
                     float sqdiam = scale.LengthSquared();
 
                     ameshCostParam curCost = meshsCosts[mesh];
@@ -291,7 +293,6 @@ namespace OpenSim.Region.ClientStack.Linden
 
                 // assume unscripted and static prim server cost
                 meshcostdata.simulation_cost += 0.5f;
-
                 // charge for prims creation
                 meshsfee += primCreationCost;
             }
@@ -305,35 +306,25 @@ namespace OpenSim.Region.ClientStack.Linden
                     return false;
                 }
                 else
-                {
-                    warning += skipedSmall.ToString() + " of the requested " + numberInstances.ToString() +
+                    warning += skipedSmall.ToString() + " of the requested " +numberInstances.ToString() +
                         " model prims will not upload because they are smaller than " + PrimScaleMin.ToString() +
                         "m minimum allowed size. Please check scalling ";
-                }
             }
 
             if (meshcostdata.physics_cost <= meshcostdata.model_streaming_cost)
-            {
                 meshcostdata.resource_cost = meshcostdata.model_streaming_cost;
-            }
             else
-            {
                 meshcostdata.resource_cost = meshcostdata.physics_cost;
-            }
 
             if (meshcostdata.resource_cost < meshcostdata.simulation_cost)
-            {
                 meshcostdata.resource_cost = meshcostdata.simulation_cost;
-            }
 
             // scale cost
             // at this point a cost of 1.0 whould mean basic cost
             meshsfee *= ModelMeshCostFactor;
 
             if (meshsfee < ModelMinCostFactor)
-            {
                 meshsfee = ModelMinCostFactor;
-            }
 
             // actually scale it to basic cost
             meshsfee *= (float)basicCost;
@@ -344,6 +335,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
             // breakdown prices
             // don't seem to be in use so removed code for now
+
             return true;
         }
 
@@ -379,21 +371,15 @@ namespace OpenSim.Region.ClientStack.Linden
                 try
                 {
                     OSD osd = OSDParser.DeserializeLLSDBinary(ms);
-
                     if (osd is OSDMap)
-                    {
                         meshOsd = (OSDMap)osd;
-                    }
                     else
-                    {
                         return false;
-                    }
                 }
                 catch
                 {
                     return false;
                 }
-
                 start = (int)ms.Position;
             }
 
@@ -418,31 +404,21 @@ namespace OpenSim.Region.ClientStack.Linden
             if (map.ContainsKey("skeleton"))
             {
                 tmpmap = (OSDMap)map["skeleton"];
-
                 if (tmpmap.ContainsKey("offset") && tmpmap.ContainsKey("size"))
                 {
                     int sksize = tmpmap["size"].AsInteger();
-
-                    if (sksize > 0)
-                    {
+                    if(sksize > 0)
                         skeleton = true;
-                    }
                 }
             }
 
             if (map.ContainsKey("physics_convex"))
             {
                 tmpmap = (OSDMap)map["physics_convex"];
-
                 if (tmpmap.ContainsKey("offset"))
-                {
                     submesh_offset = tmpmap["offset"].AsInteger() + start;
-                }
-
                 if (tmpmap.ContainsKey("size"))
-                {
                     hulls_size = tmpmap["size"].AsInteger();
-                }
             }
 
             if (submesh_offset < 0 || hulls_size == 0)
@@ -465,17 +441,11 @@ namespace OpenSim.Region.ClientStack.Linden
             if (map.ContainsKey("high_lod"))
             {
                 tmpmap = (OSDMap)map["high_lod"];
-
                 // see at least if there is a offset for this one
                 if (tmpmap.ContainsKey("offset"))
-                {
                     submesh_offset = tmpmap["offset"].AsInteger() + start;
-                }
-
                 if (tmpmap.ContainsKey("size"))
-                {
                     highlod_size = tmpmap["size"].AsInteger();
-                }
 
                 if (submesh_offset >= 0 && highlod_size > 0)
                 {
@@ -498,49 +468,33 @@ namespace OpenSim.Region.ClientStack.Linden
             if (map.ContainsKey("medium_lod"))
             {
                 tmpmap = (OSDMap)map["medium_lod"];
-
                 if (tmpmap.ContainsKey("size"))
-                {
                     medlod_size = tmpmap["size"].AsInteger();
-                }
                 else
-                {
                     haveprev = false;
-                }
             }
 
             if (haveprev && map.ContainsKey("low_lod"))
             {
                 tmpmap = (OSDMap)map["low_lod"];
-
                 if (tmpmap.ContainsKey("size"))
-                {
                     lowlod_size = tmpmap["size"].AsInteger();
-                }
                 else
-                {
                     haveprev = false;
-                }
             }
 
             if (haveprev && map.ContainsKey("lowest_lod"))
             {
                 tmpmap = (OSDMap)map["lowest_lod"];
-
                 if (tmpmap.ContainsKey("size"))
-                {
                     lowestlod_size = tmpmap["size"].AsInteger();
-                }
             }
 
             if (map.ContainsKey("skin"))
             {
                 tmpmap = (OSDMap)map["skin"];
-
                 if (tmpmap.ContainsKey("size"))
-                {
                     skin_size = tmpmap["size"].AsInteger();
-                }
             }
 
             cost.highLODSize = highlod_size;
@@ -552,29 +506,18 @@ namespace OpenSim.Region.ClientStack.Linden
             submesh_offset = -1;
 
             tmpmap = null;
-
-            if (map.ContainsKey("physics_mesh"))
-            {
+            if(map.ContainsKey("physics_mesh"))
                 tmpmap = (OSDMap)map["physics_mesh"];
-            }
             else if (map.ContainsKey("physics_shape")) // old naming
-            {
                 tmpmap = (OSDMap)map["physics_shape"];
-            }
 
             int phys_nsides = 0;
-
-            if (tmpmap != null)
+            if(tmpmap != null)
             {
                 if (tmpmap.ContainsKey("offset"))
-                {
                     submesh_offset = tmpmap["offset"].AsInteger() + start;
-                }
-
                 if (tmpmap.ContainsKey("size"))
-                {
                     physmesh_size = tmpmap["size"].AsInteger();
-                }
 
                 if (submesh_offset >= 0 && physmesh_size > 0)
                 {
@@ -602,13 +545,9 @@ namespace OpenSim.Region.ClientStack.Linden
             // physics
             // favor potencial optimized meshs versus automatic decomposition
             if (physmesh_size != 0)
-            {
                 sfee += physMeshSizeWth * (physmesh_size + hulls_size / 4); // reduce cost of mandatory convex hull
-            }
             else
-            {
                 sfee += physHullSizeWth * hulls_size;
-            }
 
             // bytes to money
             sfee *= bytecost;
@@ -626,7 +565,6 @@ namespace OpenSim.Region.ClientStack.Linden
             OSD decodedMeshOsd = new OSD();
             byte[] meshBytes = new byte[size];
             System.Buffer.BlockCopy(data, offset, meshBytes, 0, size);
-
             try
             {
                 using (MemoryStream inMs = new MemoryStream(meshBytes))
@@ -637,12 +575,10 @@ namespace OpenSim.Region.ClientStack.Linden
                         {
                             byte[] readBuffer = new byte[4096];
                             int readLen = 0;
-
                             while ((readLen = inMs.Read(readBuffer, 0, readBuffer.Length)) > 0)
                             {
                                 zOut.Write(readBuffer, 0, readLen);
                             }
-
                             zOut.Flush();
                             outMs.Seek(0, SeekOrigin.Begin);
 
@@ -662,22 +598,16 @@ namespace OpenSim.Region.ClientStack.Linden
             byte[] dummy;
 
             decodedMeshOsdArray = (OSDArray)decodedMeshOsd;
-
             foreach (OSD subMeshOsd in decodedMeshOsdArray)
             {
                 if (subMeshOsd is OSDMap)
                 {
                     OSDMap subtmpmap = (OSDMap)subMeshOsd;
-
                     if (subtmpmap.ContainsKey("NoGeometry") && ((OSDBoolean)subtmpmap["NoGeometry"]))
-                    {
                         continue;
-                    }
 
                     if (!subtmpmap.ContainsKey("Position"))
-                    {
                         return false;
-                    }
 
                     if (subtmpmap.ContainsKey("TriangleList"))
                     {
@@ -685,10 +615,7 @@ namespace OpenSim.Region.ClientStack.Linden
                         ntriangles += dummy.Length / bytesPerCoord;
                     }
                     else
-                    {
                         return false;
-                    }
-
                     nsides++;
                 }
             }
@@ -705,7 +632,6 @@ namespace OpenSim.Region.ClientStack.Linden
             OSD decodedMeshOsd = new OSD();
             byte[] meshBytes = new byte[size];
             System.Buffer.BlockCopy(data, offset, meshBytes, 0, size);
-
             try
             {
                 using (MemoryStream inMs = new MemoryStream(meshBytes))
@@ -716,12 +642,10 @@ namespace OpenSim.Region.ClientStack.Linden
                         {
                             byte[] readBuffer = new byte[4096];
                             int readLen = 0;
-
                             while ((readLen = inMs.Read(readBuffer, 0, readBuffer.Length)) > 0)
                             {
                                 zOut.Write(readBuffer, 0, readLen);
                             }
-
                             zOut.Flush();
                             outMs.Seek(0, SeekOrigin.Begin);
 
@@ -737,11 +661,8 @@ namespace OpenSim.Region.ClientStack.Linden
             }
 
             OSDMap cmap = (OSDMap)decodedMeshOsd;
-
             if (cmap == null)
-            {
                 return false;
-            }
 
             byte[] dummy;
 
@@ -752,9 +673,22 @@ namespace OpenSim.Region.ClientStack.Linden
                 nvertices = dummy.Length / bytesPerCoord;
             }
             else
-            {
                 return false;
+
+/* upload is done with convex shape type
+            if (cmap.ContainsKey("HullList"))
+            {
+                dummy = cmap["HullList"].AsBinary();
+                nhulls += dummy.Length;
             }
+
+
+            if (cmap.ContainsKey("Positions"))
+            {
+                dummy = cmap["Positions"].AsBinary();
+                nvertices = dummy.Length / bytesPerCoord;
+            }
+ */
 
             return true;
         }
@@ -766,25 +700,15 @@ namespace OpenSim.Region.ClientStack.Linden
             float ma = 262144f;
 
             float mh = sqdiam * highLodFactor;
-
             if (mh > ma)
-            {
                 mh = ma;
-            }
-
             float mm = sqdiam * midLodFactor;
-
             if (mm > ma)
-            {
                 mm = ma;
-            }
 
             float ml = sqdiam * lowLodFactor;
-
             if (ml > ma)
-            {
                 ml = ma;
-            }
 
             float mlst = ma;
 
@@ -793,24 +717,13 @@ namespace OpenSim.Region.ClientStack.Linden
             mm -= mh;
 
             if (mlst < 1.0f)
-            {
                 mlst = 1.0f;
-            }
-
             if (ml < 1.0f)
-            {
                 ml = 1.0f;
-            }
-
             if (mm < 1.0f)
-            {
                 mm = 1.0f;
-            }
-
             if (mh < 1.0f)
-            {
                 mh = 1.0f;
-            }
 
             ma = mlst + ml + mm + mh;
 
@@ -823,40 +736,21 @@ namespace OpenSim.Region.ClientStack.Linden
 
             // use previus higher LOD size on missing ones
             if (m <= 0)
-            {
                 m = h;
-            }
-
             if (l <= 0)
-            {
                 l = m;
-            }
-
             if (lst <= 0)
-            {
                 lst = l;
-            }
 
             // force minumum sizes
             if (lst < 16)
-            {
                 lst = 16;
-            }
-
             if (l < 16)
-            {
                 l = 16;
-            }
-
             if (m < 16)
-            {
                 m = 16;
-            }
-
             if (h < 16)
-            {
                 h = 16;
-            }
 
             // compute cost weighted by relative effective areas
             float cost = (float)lst * mlst + (float)l * ml + (float)m * mm + (float)h * mh;

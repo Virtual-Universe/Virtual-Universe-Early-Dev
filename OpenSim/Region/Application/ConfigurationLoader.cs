@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -142,9 +142,9 @@ namespace OpenSim
             m_config.Source = new IniConfigSource();
             m_config.Source.Merge(DefaultConfig());
 
-            m_log.Info("[Configuration]: Reading configuration settings");
+            m_log.Info("[CONFIG]: Reading configuration settings");
 
-            for (int i = 0; i < sources.Count; i++)
+            for (int i = 0 ; i < sources.Count ; i++)
             {
                 if (ReadConfig(m_config, sources[i]))
                 {
@@ -159,7 +159,7 @@ namespace OpenSim
 
             if (Directory.Exists(iniDirPath))
             {
-                m_log.InfoFormat("[Configuration]: Searching folder {0} for config ini files", iniDirPath);
+                m_log.InfoFormat("[CONFIG]: Searching folder {0} for config ini files", iniDirPath);
                 List<string> overrideSources = new List<string>();
 
                 string[] fileEntries = Directory.GetFiles(iniDirName);
@@ -176,12 +176,13 @@ namespace OpenSim
                     }
                 }
 
+
                 if (overrideSources.Count > 0)
                 {
                     OpenSimConfigSource overrideConfig = new OpenSimConfigSource();
                     overrideConfig.Source = new IniConfigSource();
 
-                    for (int i = 0; i < overrideSources.Count; i++)
+                    for (int i = 0 ; i < overrideSources.Count ; i++)
                     {
                         if (ReadConfig(overrideConfig, overrideSources[i]))
                         {
@@ -195,18 +196,18 @@ namespace OpenSim
 
             if (sources.Count == 0)
             {
-                m_log.FatalFormat("[Configuration]: Could not load any configuration");
+                m_log.FatalFormat("[CONFIG]: Could not load any configuration");
                 Environment.Exit(1);
             }
             else if (!iniFileExists)
             {
-                m_log.FatalFormat("[Configuration]: Could not load any configuration");
-                m_log.FatalFormat("[Configuration]: Configuration exists, but there was an error loading it!");
+                m_log.FatalFormat("[CONFIG]: Could not load any configuration");
+                m_log.FatalFormat("[CONFIG]: Configuration exists, but there was an error loading it!");
                 Environment.Exit(1);
             }
 
             // Merge OpSys env vars
-            m_log.Info("[Configuration]: Loading environment variables for Config");
+            m_log.Info("[CONFIG]: Loading environment variables for Config");
             Util.MergeEnvironmentToConfig(m_config.Source);
 
             // Make sure command line options take precedence
@@ -260,7 +261,7 @@ namespace OpenSim
                             // If the include path contains no wildcards, then warn the user that it wasn't found.
                             if (wildcardIndex == -1 && paths.Length == 0)
                             {
-                                m_log.WarnFormat("[Configuration]: Could not find include file {0}", path);
+                                m_log.WarnFormat("[CONFIG]: Could not find include file {0}", path);
                             }
                             else
                             {
@@ -275,7 +276,6 @@ namespace OpenSim
                 }
             }
         }
-
         /// <summary>
         /// Check if we can convert the string to a URI
         /// </summary>
@@ -300,14 +300,14 @@ namespace OpenSim
 
             if (!IsUri(iniPath))
             {
-                m_log.InfoFormat("[Configuration]: Reading configuration file {0}", Path.GetFullPath(iniPath));
+                m_log.InfoFormat("[CONFIG]: Reading configuration file {0}", Path.GetFullPath(iniPath));
 
                 configSource.Source.Merge(new IniConfigSource(iniPath));
                 success = true;
             }
             else
             {
-                m_log.InfoFormat("[Configuration]: {0} is a http:// URI, fetching ...", iniPath);
+                m_log.InfoFormat("[CONFIG]: {0} is a http:// URI, fetching ...", iniPath);
 
                 // The ini file path is a http URI
                 // Try to read it
@@ -321,7 +321,7 @@ namespace OpenSim
                 }
                 catch (Exception e)
                 {
-                    m_log.FatalFormat("[Configuration]: Exception reading config from URI {0}\n" + e.ToString(), iniPath);
+                    m_log.FatalFormat("[CONFIG]: Exception reading config from URI {0}\n" + e.ToString(), iniPath);
                     Environment.Exit(1);
                 }
             }

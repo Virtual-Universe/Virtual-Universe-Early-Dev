@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.Base.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Services.Base.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Base/obj/Debug/OpenSim.Services.Base.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Base/obj/Debug/OpenSim.Services.Base.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Base/obj/Debug/OpenSim.Services.Base.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Services/Base/obj/Debug/OpenSim.Services.Base.pdb

@@ -1,5 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tools.Configger.exe
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tools.Configger.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/Configger/obj/Debug/OpenSim.Tools.Configger.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/Configger/obj/Debug/OpenSim.Tools.Configger.exe
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/Configger/obj/Debug/OpenSim.Tools.Configger.pdb

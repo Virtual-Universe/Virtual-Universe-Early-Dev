@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -32,8 +32,8 @@ using GridRegion = OpenSim.Services.Interfaces.GridRegion;
 
 namespace OpenSim.Services.Interfaces
 {
-    public interface INeighborService
+    public interface INeighbourService
     {
-        GridRegion HelloNeighbor(ulong regionHandle, RegionInfo otherRegion);
+        GridRegion HelloNeighbour(ulong regionHandle, RegionInfo otherRegion);
     }
 }

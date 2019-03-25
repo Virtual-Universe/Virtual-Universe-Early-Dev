@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Serialization.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Framework.Serialization.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Serialization/obj/Debug/OpenSim.Framework.Serialization.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Serialization/obj/Debug/OpenSim.Framework.Serialization.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Serialization/obj/Debug/OpenSim.Framework.Serialization.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Framework/Serialization/obj/Debug/OpenSim.Framework.Serialization.pdb

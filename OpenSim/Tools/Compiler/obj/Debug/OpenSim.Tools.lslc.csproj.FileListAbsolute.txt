@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tools.lslc.exe
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Tools.lslc.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/Compiler/obj/Debug/OpenSim.Tools.lslc.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/Compiler/obj/Debug/OpenSim.Tools.lslc.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/Compiler/obj/Debug/OpenSim.Tools.lslc.exe
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Tools/Compiler/obj/Debug/OpenSim.Tools.lslc.pdb

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -201,7 +201,7 @@ public static class BSParam
     public static float BHullVolumeWeight { get; private set; }				// 0.0
     public static float BHullConcavity { get; private set; }				    // 100
     public static bool BHullAddExtraDistPoints { get; private set; }		// false
-    public static bool BHullAddNeighborsDistPoints { get; private set; }	// false
+    public static bool BHullAddNeighboursDistPoints { get; private set; }	// false
     public static bool BHullAddFacesPoints { get; private set; }			// false
     public static bool BHullShouldAdjustCollisionMargin { get; private set; }	// false
     public static float WhichHACD { get; private set; }				    // zero if Bullet HACD, non-zero says VHACD
@@ -778,7 +778,7 @@ public static class BSParam
             10f ),
         new ParameterDefn<bool>("BHullAddExtraDistPoints", "Bullet impl: whether to add extra vertices for long distance vectors",
             true ),
-        new ParameterDefn<bool>("BHullAddNeighborsDistPoints", "Bullet impl: whether to add extra vertices between neighbor hulls",
+        new ParameterDefn<bool>("BHullAddNeighboursDistPoints", "Bullet impl: whether to add extra vertices between neighbor hulls",
             true ),
         new ParameterDefn<bool>("BHullAddFacesPoints", "Bullet impl: whether to add extra vertices to break up hull faces",
             true ),

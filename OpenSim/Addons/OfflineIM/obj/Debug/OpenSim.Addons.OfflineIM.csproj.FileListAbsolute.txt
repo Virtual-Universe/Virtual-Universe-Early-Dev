@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Addons.OfflineIM.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Addons.OfflineIM.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Addons/OfflineIM/obj/Debug/OpenSim.Addons.OfflineIM.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Addons/OfflineIM/obj/Debug/OpenSim.Addons.OfflineIM.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Addons/OfflineIM/obj/Debug/OpenSim.Addons.OfflineIM.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Addons/OfflineIM/obj/Debug/OpenSim.Addons.OfflineIM.pdb

@@ -1,6 +1,0 @@
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Capabilities.dll
-/home/dev/Desktop/OpenSim-Dev/bin/OpenSim.Capabilities.pdb
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/obj/Debug/OpenSim.Capabilities.csprojAssemblyReference.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/obj/Debug/OpenSim.Capabilities.csproj.CoreCompileInputs.cache
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/obj/Debug/OpenSim.Capabilities.dll
-/home/dev/Desktop/OpenSim-Dev/OpenSim/Capabilities/obj/Debug/OpenSim.Capabilities.pdb

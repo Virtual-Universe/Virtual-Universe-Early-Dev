@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -38,10 +38,12 @@ using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Services.Interfaces;
 
+// using OpenSim.Region.Framework.Interfaces;
+
 namespace OpenSim.Framework.Capabilities
 {
     /// <summary>
-    /// Probably not a particularly nice way of allow us to get the scene presence from the scene (chiefly so that
+    /// XXX Probably not a particularly nice way of allow us to get the scene presence from the scene (chiefly so that
     /// we can popup a message on the user's client if the inventory service has permanently failed).  But I didn't want
     /// to just pass the whole Scene into CAPS.
     /// </summary>
@@ -49,6 +51,8 @@ namespace OpenSim.Framework.Capabilities
 
     public class Caps
     {
+//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private string m_httpListenerHostName;
         private uint m_httpListenPort;
 
@@ -116,15 +120,15 @@ namespace OpenSim.Framework.Capabilities
         }
 
         [Flags]
-        public enum CapsFlags : uint
+        public enum CapsFlags:uint
         {
-            None = 0,
-            SentSeeds = 1,
+            None =          0,
+            SentSeeds =     1,
 
             ObjectAnim = 0x10
         }
 
-        public CapsFlags Flags { get; set; }
+        public CapsFlags Flags { get; set;}
 
         public Caps(IHttpServer httpServer, string httpListen, uint httpPort, string capsPath,
                     UUID agent, string regionName)
@@ -152,7 +156,7 @@ namespace OpenSim.Framework.Capabilities
         ~Caps()
         {
             Flags = CapsFlags.None;
-            if (m_capsActive != null)
+            if (m_capsActive!= null)
             {
                 m_capsActive.Dispose();
                 m_capsActive = null;
@@ -166,14 +170,33 @@ namespace OpenSim.Framework.Capabilities
         /// <param name="handler"></param>
         public void RegisterHandler(string capName, IRequestHandler handler)
         {
+            //m_log.DebugFormat("[CAPS]: Registering handler for \"{0}\": path {1}", capName, handler.Path);
             m_capsHandlers[capName] = handler;
         }
 
         public void RegisterPollHandler(string capName, PollServiceEventArgs pollServiceHandler)
         {
+//            m_log.DebugFormat(
+//                "[CAPS]: Registering handler with name {0}, url {1} for {2}",
+//                capName, pollServiceHandler.Url, m_agentID, m_regionName);
+
             m_pollServiceHandlers.Add(capName, pollServiceHandler);
 
             m_httpListener.AddPollServiceHTTPHandler(pollServiceHandler.Url, pollServiceHandler);
+
+//            uint port = (MainServer.Instance == null) ? 0 : MainServer.Instance.Port;
+//            string protocol = "http";
+//            string hostName = m_httpListenerHostName;
+//
+//            if (MainServer.Instance.UseSSL)
+//            {
+//                hostName = MainServer.Instance.SSLCommonName;
+//                port = MainServer.Instance.SSLPort;
+//                protocol = "https";
+//            }
+
+//            RegisterHandler(
+//                capName, String.Format("{0}://{1}:{2}{3}", protocol, hostName, port, pollServiceHandler.Url));
         }
 
         /// <summary>
@@ -225,23 +248,25 @@ namespace OpenSim.Framework.Capabilities
 
             lock (m_pollServiceHandlers)
             {
-                foreach (KeyValuePair<string, PollServiceEventArgs> kvp in m_pollServiceHandlers)
+                foreach (KeyValuePair <string, PollServiceEventArgs> kvp in m_pollServiceHandlers)
                 {
                     if (!requestedCaps.Contains(kvp.Key))
                         continue;
 
-                    string hostName = m_httpListenerHostName;
-                    uint port = (MainServer.Instance == null) ? 0 : MainServer.Instance.Port;
-                    string protocol = "http";
+                        string hostName = m_httpListenerHostName;
+                        uint port = (MainServer.Instance == null) ? 0 : MainServer.Instance.Port;
+                        string protocol = "http";
 
-                    if (MainServer.Instance.UseSSL)
-                    {
-                        hostName = MainServer.Instance.SSLCommonName;
-                        port = MainServer.Instance.SSLPort;
-                        protocol = "https";
-                    }
+                        if (MainServer.Instance.UseSSL)
+                        {
+                            hostName = MainServer.Instance.SSLCommonName;
+                            port = MainServer.Instance.SSLPort;
+                            protocol = "https";
+                        }
+    //
+    //            caps.RegisterHandler("FetchInventoryDescendents2", String.Format("{0}://{1}:{2}{3}", protocol, hostName, port, capUrl));
 
-                    caps[kvp.Key] = string.Format("{0}://{1}:{2}{3}", protocol, hostName, port, kvp.Value.Url);
+                        caps[kvp.Key] = string.Format("{0}://{1}:{2}{3}", protocol, hostName, port, kvp.Value.Url);
                 }
             }
 
