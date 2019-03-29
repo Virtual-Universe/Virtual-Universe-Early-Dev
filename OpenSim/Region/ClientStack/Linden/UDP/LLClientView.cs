@@ -35,7 +35,7 @@ using System.Threading;
 using log4net;
 using OpenMetaverse;
 using OpenMetaverse.Messages.Linden;
-using OpenMetaverse.Packets;
+using OpenMetaverse.Pakcets;
 using OpenMetaverse.StructuredData;
 using OpenSim.Framework;
 using OpenSim.Framework.Client;
@@ -8927,9 +8927,6 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             if(rsrpkt.AgentData.AgentID != m_agentId || rsrpkt.AgentData.SessionID != m_sessionId)
                 return false;
 
-            // regionHandSHake is a protocol message, but it is also seems to be the only way to update terrain textures
-            // in last case this should be ignored.
-            OnRegionHandShakeReply = null;
             if(m_supportViewerCache)
                 m_viewerHandShakeFlags = rsrpkt.RegionInfo.Flags;
             else
@@ -12699,7 +12696,18 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
         private bool HandleUseCircuitCode(IClientAPI sender, Packet Pack)
         {
+            /*
+            UseCircuitCodePacket uccp = (UseCircuitCodePacket)Pack;
+            if(uccp.CircuitCode.ID == m_agentId &&
+                uccp.CircuitCode.SessionID == m_sessionId &&
+                uccp.CircuitCode.Code == m_circuitCode &&
+                SceneAgent != null &&
+               !((ScenePresence)SceneAgent).IsDeleted
+            )
+                SendRegionHandshake(); // possible someone returning
+            */
             return true;
+
         }
 
         private bool HandleCreateNewOutfitAttachments(IClientAPI sender, Packet Pack)

@@ -35,17 +35,16 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using log4net;
+using Mono.Addins;
 using Nini.Config;
+using OpenMetaverse;
 using OpenMetaverse.Packets;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
 using OpenSim.Framework.Monitoring;
-using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Interfaces;
-using OpenMetaverse;
-using Mono.Addins;
+using OpenSim.Region.Framework.Scenes;
 using TokenBucket = OpenSim.Region.ClientStack.LindenUDP.TokenBucket;
-
 
 namespace OpenSim.Region.ClientStack.LindenUDP
 {
@@ -1725,7 +1724,8 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
                     if (client != null)
                     {
-                        client.SendRegionHandshake();
+                        if(aCircuit.teleportFlags <= 0)
+                            client.SendRegionHandshake();
                         client.CheckViewerCaps();
                     }
                 }
@@ -1773,7 +1773,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                     "[LLUDPSERVER]: Handling CompleteAgentMovement request from {0} in {1}", endPoint, Scene.Name);
 
                 // Determine which agent this packet came from
-                // We need to wait here because in when using the Virtual Universe V2 teleport protocol to travel to a destination
+                // We need to wait here because in when using the OpenSimulator V2 teleport protocol to travel to a destination
                 // simulator with no existing child presence, the viewer (at least LL 3.3.4) will send UseCircuitCode
                 // and then CompleteAgentMovement immediately without waiting for an ack.  As we are now handling these
                 // packets asynchronously, we need to account for this thread proceeding more quickly than the
@@ -1929,7 +1929,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             IClientAPI client = null;
 
             // We currently synchronize this code across the whole scene to avoid issues such as
-            // https://virtual-planets.org/mantis/view.php?id=5365  However, once locking per agent circuit can be done
+            // http://opensimulator.org/mantis/view.php?id=5365  However, once locking per agent circuit can be done
             // consistently, this lock could probably be removed.
             lock (this)
             {
