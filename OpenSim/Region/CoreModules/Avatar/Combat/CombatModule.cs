@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSim Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -27,34 +27,26 @@
 
 using System;
 using System.Collections.Generic;
+using Mono.Addins;
 using Nini.Config;
+using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
-using OpenMetaverse;
-
-using Mono.Addins;
 
 namespace OpenSim.Region.CoreModules.Avatar.Combat.CombatModule
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "CombatModule")]
     public class CombatModule : ISharedRegionModule
     {
-        //private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         /// <summary>
-        /// Region UUIDS indexed by AgentID
-        /// </summary>
-        //private Dictionary<UUID, UUID> m_rootAgents = new Dictionary<UUID, UUID>();
-
-        /// <summary>
-        /// Scenes by Region Handle
+        ///     Scenes by Region Handle
         /// </summary>
         private Dictionary<ulong, Scene> m_scenel = new Dictionary<ulong, Scene>();
 
         /// <summary>
-        /// Startup
+        ///     Startup
         /// </summary>
         /// <param name="scene"></param>
         /// <param name="config"></param>
@@ -82,7 +74,9 @@ namespace OpenSim.Region.CoreModules.Avatar.Combat.CombatModule
         public void RemoveRegion(Scene scene)
         {
             if (m_scenel.ContainsKey(scene.RegionInfo.RegionHandle))
+            {
                 m_scenel.Remove(scene.RegionInfo.RegionHandle);
+            }
 
             scene.EventManager.OnAvatarKilled -= KillAvatar;
         }
@@ -109,30 +103,33 @@ namespace OpenSim.Region.CoreModules.Avatar.Combat.CombatModule
             get { return null; }
         }
 
-
         private void KillAvatar(uint killerObjectLocalID, ScenePresence deadAvatar)
         {
             string deadAvatarMessage;
             ScenePresence killingAvatar = null;
-//            string killingAvatarMessage;
 
             // check to see if it is an NPC and just remove it
             INPCModule NPCmodule = deadAvatar.Scene.RequestModuleInterface<INPCModule>();
+
             if (NPCmodule != null && NPCmodule.DeleteNPC(deadAvatar.UUID, deadAvatar.Scene))
             {
                 return;
             }
 
             if (killerObjectLocalID == 0)
+            {
                 deadAvatarMessage = "You committed suicide!";
+            }
             else
             {
                 // Try to get the avatar responsible for the killing
                 killingAvatar = deadAvatar.Scene.GetScenePresence(killerObjectLocalID);
+
                 if (killingAvatar == null)
                 {
                     // Try to get the object which was responsible for the killing
                     SceneObjectPart part = deadAvatar.Scene.GetSceneObjectPart(killerObjectLocalID);
+
                     if (part == null)
                     {
                         // Cause of death: Unknown
@@ -142,35 +139,43 @@ namespace OpenSim.Region.CoreModules.Avatar.Combat.CombatModule
                     {
                         // Try to find the avatar wielding the killing object
                         killingAvatar = deadAvatar.Scene.GetScenePresence(part.OwnerID);
+
                         if (killingAvatar == null)
                         {
                             IUserManagement userManager = deadAvatar.Scene.RequestModuleInterface<IUserManagement>();
                             string userName = "Unkown User";
+
                             if (userManager != null)
+                            {
                                 userName = userManager.GetUserName(part.OwnerID);
+                            }
+
                             deadAvatarMessage = String.Format("You impaled yourself on {0} owned by {1}!", part.Name, userName);
                         }
                         else
                         {
-                            //                            killingAvatarMessage = String.Format("You fragged {0}!", deadAvatar.Name);
                             deadAvatarMessage = String.Format("You got killed by {0}!", killingAvatar.Name);
                         }
                     }
                 }
                 else
                 {
-//                    killingAvatarMessage = String.Format("You fragged {0}!", deadAvatar.Name);
                     deadAvatarMessage = String.Format("You got killed by {0}!", killingAvatar.Name);
                 }
             }
+
             try
             {
                 deadAvatar.ControllingClient.SendAgentAlertMessage(deadAvatarMessage, true);
+
                 if (killingAvatar != null)
+                {
                     killingAvatar.ControllingClient.SendAlertMessage("You fragged " + deadAvatar.Firstname + " " + deadAvatar.Lastname);
+                }
             }
             catch (InvalidOperationException)
-            { }
+            {
+            }
 
             deadAvatar.setHealthWithUpdate(100.0f);
             deadAvatar.Scene.TeleportClientHome(deadAvatar.UUID, deadAvatar.ControllingClient);
