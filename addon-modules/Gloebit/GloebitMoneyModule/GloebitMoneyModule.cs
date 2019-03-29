@@ -221,7 +221,7 @@ namespace Gloebit.GloebitMoneyModule
         /// Called on startup so the module can be configured.
         /// </summary>
         /// <param name="config">Configuration source.</param>
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_log.Info ("[GLOEBITMONEYMODULE] Initialising.");
             m_gConfig = config;
@@ -257,7 +257,7 @@ namespace Gloebit.GloebitMoneyModule
             }
             
 
-            m_log.InfoFormat("[GLOEBITMONEYMODULE] Initialised. Gloebit enabled: {0}, GLBEnvironment: {1}, GLBApiUrl: {2} GLBKeyAlias {3}, GLBKey: {4}, GLBSecret {5}",
+            m_log.InfoFormat("[GLOEBITMONEYMODULE] Initialized. Gloebit enabled: {0}, GLBEnvironment: {1}, GLBApiUrl: {2} GLBKeyAlias {3}, GLBKey: {4}, GLBSecret {5}",
                 m_enabled, m_environment, m_apiUrl, m_keyAlias, m_key, (m_secret == null ? "null" : "configured"));
 
             // TODO: I've added GLBEnv.Custom for testing.  Remove before we ship
@@ -652,7 +652,7 @@ namespace Gloebit.GloebitMoneyModule
         
         #region ISharedRegionModule Interface
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
             m_opensimVersion = OpenSim.VersionInfo.Version;
             m_opensimVersionNumber = OpenSim.VersionInfo.VersionNumber;
