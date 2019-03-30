@@ -2535,7 +2535,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 
                 //successYN
                 //    = m_sceneGridService.PrimCrossToNeighboringRegion(
-                //        newRegionHandle, grp.UUID, m_serialiser.SaveGroupToXml2(grp), primcrossingXMLmethod);
+                //        newRegionHandle, grp.UUID, m_serializer.SaveGroupToXml2(grp), primcrossingXMLmethod);
                 //if (successYN && (objectState != "") && m_allowScriptCrossings)
                 //{
                 //    successYN = m_sceneGridService.PrimCrossToNeighboringRegion(

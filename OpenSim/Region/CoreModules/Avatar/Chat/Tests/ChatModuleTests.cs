@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using log4net.Config;
 using Nini.Config;
 using NUnit.Framework;
@@ -41,7 +42,6 @@ using OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
 using OpenSim.Tests.Common;
-using System.Threading;
 
 namespace OpenSim.Region.CoreModules.Avatar.Chat.Tests
 {
@@ -142,8 +142,8 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat.Tests
 
             // We must update the scenes in order to make the root new root agents trigger position updates in their
             // children.
-            sceneWest.Update(1);
-            sceneEast.Update(1);
+            sceneWest.Update(3);
+            sceneEast.Update(3);
 
             // Check child positions are correct.
             Assert.AreEqual(
@@ -233,8 +233,8 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat.Tests
 
             // We must update the scenes in order to make the root new root agents trigger position updates in their
             // children.
-            sceneNorth.Update(1);
-            sceneSouth.Update(1);
+            sceneNorth.Update(3);
+            sceneSouth.Update(3);
 
             // Check child positions are correct.
             Assert.AreEqual(

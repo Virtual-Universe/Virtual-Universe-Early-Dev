@@ -288,7 +288,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         {
             if (m_hasUser && m_hasNick)
             {
-                SendServerCommand("001 " + m_nick + " :Welcome to Virtual Universe IRCd");
+                SendServerCommand("001 " + m_nick + " :Welcome to OpenSimulator IRCd");
                 SendServerCommand("002 " + m_nick + " :Running OpenSimVersion");
                 SendServerCommand("003 " + m_nick + " :This server was created over 9000 years ago");
                 SendServerCommand("004 " + m_nick + " :opensimirc r1 aoOirw abeiIklmnoOpqrstv");
@@ -305,7 +305,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
                 m_nick = m_username.Replace(" ", "");
 
                 IRC_SendReplyJoin();
-                IRC_SendChannelPrivmsg("System", "Welcome to Virtual Universe.");
+                IRC_SendChannelPrivmsg("System", "Welcome to OpenSimulator.");
                 IRC_SendChannelPrivmsg("System", "You are in a maze of twisty little passages, all alike.");
                 IRC_SendChannelPrivmsg("System", "It is pitch black. You are likely to be eaten by a grue.");
 
@@ -408,14 +408,14 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
         private void IRC_SendMOTD()
         {
-            SendServerCommand("375 :- Virtual Universe Message of the day -");
+            SendServerCommand("375 :- OpenSimulator Message of the day -");
             SendServerCommand("372 :- Hiya!");
             SendServerCommand("376 :End of /MOTD command");
         }
 
         private void IRC_SendReplyTopic()
         {
-            SendServerCommand("332 " + IrcRegionName + " :Virtual Universe IRC Server");
+            SendServerCommand("332 " + IrcRegionName + " :OpenSimulator IRC Server");
         }
 
         private void IRC_SendReplyUsers()
@@ -699,7 +699,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         public event TeleportCancel OnTeleportCancel;
         public event DeRezObject OnDeRezObject;
         public event RezRestoreToWorld OnRezRestoreToWorld;
-        public event Action<IClientAPI, uint> OnRegionHandShakeReply;
+        public event Action<IClientAPI> OnRegionHandShakeReply;
         public event GenericCall1 OnRequestWearables;
         public event Action<IClientAPI, bool> OnCompleteMovementToRegion;
         public event UpdateAgent OnPreAgentUpdate;
@@ -938,12 +938,12 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
             if (OnRegionHandShakeReply != null)
             {
-                OnRegionHandShakeReply(this, 0);
+                OnRegionHandShakeReply(this);
             }
 
             if (OnCompleteMovementToRegion != null)
             {
-                OnCompleteMovementToRegion(this, true);
+                OnCompleteMovementToRegion(this, false);
             }
         }
 
@@ -1773,7 +1773,10 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             return 0;
         }
 
-        public void CheckViewerCaps() { }
+        public uint GetViewerCaps()
+        {
+            return 0;
+        }
 
     }
 }
