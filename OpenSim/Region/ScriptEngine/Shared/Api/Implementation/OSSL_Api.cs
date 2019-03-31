@@ -33,15 +33,15 @@ using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using log4net;
+using Nini.Config;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using Nini.Config;
 using OpenSim;
 using OpenSim.Framework;
-
 using OpenSim.Framework.Console;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
@@ -51,11 +51,11 @@ using OpenSim.Region.ScriptEngine.Shared.Api.Plugins;
 using OpenSim.Region.ScriptEngine.Shared.ScriptBase;
 using OpenSim.Region.ScriptEngine.Interfaces;
 using OpenSim.Region.ScriptEngine.Shared.Api.Interfaces;
-using TPFlags = OpenSim.Framework.Constants.TeleportFlags;
+using OpenSim.Services.Connectors.Hypergrid;
 using OpenSim.Services.Interfaces;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
-using System.Text.RegularExpressions;
-
+using GridRegion = OpenSim.Services.Interfaces.GridRegion;
+using PermissionMask = OpenSim.Framework.PermissionMask;
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
 using LSL_Key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
@@ -63,55 +63,52 @@ using LSL_List = OpenSim.Region.ScriptEngine.Shared.LSL_Types.list;
 using LSL_Rotation = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Quaternion;
 using LSL_String = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
 using LSL_Vector = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Vector3;
-using PermissionMask = OpenSim.Framework.PermissionMask;
-using OpenSim.Services.Connectors.Hypergrid;
 
 namespace OpenSim.Region.ScriptEngine.Shared.Api
 {
-    //////////////////////////////////////////////////////////////
-    //
-    // Level description
-    //
-    // None     - Function is no threat at all. It doesn't constitute
-    //            an threat to either users or the system and has no
-    //            known side effects
-    //
-    // Nuisance - Abuse of this command can cause a nuisance to the
-    //            region operator, such as log message spew
-    //
-    // VeryLow  - Extreme levels ob abuse of this function can cause
-    //            impaired functioning of the region, or very gullible
-    //            users can be tricked into experiencing harmless effects
-    //
-    // Low      - Intentional abuse can cause crashes or malfunction
-    //            under certain circumstances, which can easily be rectified,
-    //            or certain users can be tricked into certain situations
-    //            in an avoidable manner.
-    //
-    // Moderate - Intentional abuse can cause denial of service and crashes
-    //            with potential of data or state loss, or trusting users
-    //            can be tricked into embarrassing or uncomfortable
-    //            situationsa.
-    //
-    // High     - Casual abuse can cause impaired functionality or temporary
-    //            denial of service conditions. Intentional abuse can easily
-    //            cause crashes with potential data loss, or can be used to
-    //            trick experienced and cautious users into unwanted situations,
-    //            or changes global data permanently and without undo ability
-    //            Malicious scripting can allow theft of content
-    //
-    // VeryHigh - Even normal use may, depending on the number of instances,
-    //            or frequency of use, result in severe service impairment
-    //            or crash with loss of data, or can be used to cause
-    //            unwanted or harmful effects on users without giving the
-    //            user a means to avoid it.
-    //
-    // Severe   - Even casual use is a danger to region stability, or function
-    //            allows console or OS command execution, or function allows
-    //            taking money without consent, or allows deletion or
-    //            modification of user data, or allows the compromise of
-    //            sensitive data by design.
-
+    /// <summary>
+    ///     Level description
+    ///
+    ///     None - Function is no threat at all. It doesn't constitute
+    ///            an threat to either users or the system and has no
+    ///            known side effects
+    ///
+    ///     Nuisance - Abuse of this command can cause a nuisance to the
+    ///                region operator, such as log message spew
+    ///
+    ///     VeryLow  - Extreme levels ob abuse of this function can cause
+    ///                impaired functioning of the region, or very gullible
+    ///                users can be tricked into experiencing harmless effects
+    ///
+    ///     Low      - Intentional abuse can cause crashes or malfunction
+    ///                under certain circumstances, which can easily be rectified,
+    ///                or certain users can be tricked into certain situations
+    ///                in an avoidable manner.
+    ///
+    ///     Moderate - Intentional abuse can cause denial of service and crashes
+    ///                with potential of data or state loss, or trusting users
+    ///                can be tricked into embarrassing or uncomfortable
+    ///                situationsa.
+    ///
+    ///     High     - Casual abuse can cause impaired functionality or temporary
+    ///                denial of service conditions. Intentional abuse can easily
+    ///                cause crashes with potential data loss, or can be used to
+    ///                trick experienced and cautious users into unwanted situations,
+    ///                or changes global data permanently and without undo ability
+    ///                Malicious scripting can allow theft of content
+    ///
+    ///     VeryHigh - Even normal use may, depending on the number of instances,
+    ///                or frequency of use, result in severe service impairment
+    ///                or crash with loss of data, or can be used to cause
+    ///                unwanted or harmful effects on users without giving the
+    ///                user a means to avoid it.
+    ///
+    ///     Severe   - Even casual use is a danger to region stability, or function
+    ///                allows console or OS command execution, or function allows
+    ///                taking money without consent, or allows deletion or
+    ///                modification of user data, or allows the compromise of
+    ///                sensitive data by design.
+    /// </summary>
     class FunctionPerms
     {
         public List<UUID> AllowedCreators;
@@ -3780,7 +3777,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
         public LSL_List osGetPrimitiveParams(LSL_Key prim, LSL_List rules)
         {
-            CheckThreatLevel(ThreatLevel.High, "osGetPrimitiveParams");
+            CheckThreatLevel();
 
             InitLSL();
             return m_LSL_Api.GetPrimitiveParamsEx(prim, rules);
@@ -3788,7 +3785,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
         public void osSetPrimitiveParams(LSL_Key prim, LSL_List rules)
         {
-            CheckThreatLevel(ThreatLevel.High, "osSetPrimitiveParams");
+            CheckThreatLevel();
 
             InitLSL();
             m_LSL_Api.SetPrimitiveParamsEx(prim, rules, "osSetPrimitiveParams");
