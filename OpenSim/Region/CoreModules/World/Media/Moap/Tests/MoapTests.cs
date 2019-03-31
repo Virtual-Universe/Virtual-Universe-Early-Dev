@@ -62,7 +62,6 @@ namespace OpenSim.Region.CoreModules.World.Media.Moap.Tests
         public void TestClearMediaUrl()
         {
             TestHelpers.InMethod();
-//            log4net.Config.XmlConfigurator.Configure();
 
             SceneObjectPart part = SceneHelpers.AddSceneObject(m_scene).RootPart;
             MediaEntry me = new MediaEntry();
