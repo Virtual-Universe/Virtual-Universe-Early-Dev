@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, https://virtual-planets.org/
+ * Copyright (c) Contributors, https://Secondgalaxy.com/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -1161,7 +1161,10 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                 return;
             }
 
-            m_entityTransferStateMachine.UpdateInTransit(sp.UUID, AgentTransferState.CleaningUp);
+            //shut this up for now
+            m_entityTransferStateMachine.ResetFromTransit(sp.UUID);
+
+            //m_entityTransferStateMachine.UpdateInTransit(sp.UUID, AgentTransferState.CleaningUp);
 
             sp.HasMovedAway(!(OutSideViewRange || logout));
 
@@ -1179,6 +1182,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                     sp.CloseChildAgents(childRegionsToClose);
             }
 
+
             // if far jump we do need to close anyways
             if (NeedsClosing(reg, OutSideViewRange))
             {
@@ -1188,12 +1192,15 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                     Thread.Sleep(250);
                     if(sp.IsDeleted)
                         return;
+                    if(!sp.IsInTransit)
+                        break;
                 } while (--count > 0);
+
 
                 if (!sp.IsDeleted)
                 {
                     m_log.DebugFormat(
-                        "[ENTITY TRANSFER MODULE]: Closing agent {0} in {1} after teleport timeout", sp.Name, Scene.Name);
+                        "[ENTITY TRANSFER MODULE]: Closing agent {0} in {1} after teleport {2}", sp.Name, Scene.Name, sp.IsInTransit?"timeout":"");
                     sp.Scene.CloseAgent(sp.UUID, false);
                 }
                 return;
@@ -1281,7 +1288,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 
             m_log.DebugFormat(
                 "[ENTITY TRANSFER MODULE]: Set release callback URL to {0} in {1}",
-                agent.CallbackURI, region.RegionName);
+                agent.NewCallbackURI, region.RegionName);
         }
 
         /// <summary>
@@ -2029,7 +2036,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 
             if (m_regionInfo != null)
             {
-                neighbours = GetNeighbors(sp, m_regionInfo.RegionLocX, m_regionInfo.RegionLocY);
+                neighbours = GetNeighbours(sp, m_regionInfo.RegionLocX, m_regionInfo.RegionLocY);
             }
             else
             {
@@ -2413,7 +2420,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
         /// <param name="pRegionLocX"></param>
         /// <param name="pRegionLocY"></param>
         /// <returns></returns>
-        protected List<GridRegion> GetNeighbors(ScenePresence avatar, uint pRegionLocX, uint pRegionLocY)
+        protected List<GridRegion> GetNeighbours(ScenePresence avatar, uint pRegionLocX, uint pRegionLocY)
         {
             Scene pScene = avatar.Scene;
             RegionInfo m_regionInfo = pScene.RegionInfo;
@@ -2421,7 +2428,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 
             uint dd = (uint)avatar.RegionViewDistance;
 
-            // until avatar movement updates client connections, we need to send at least this current region immediate neighbors
+            // until avatar movement updates client connections, we need to send at least this current region immediate neighbours
             uint ddX = Math.Max(dd, Constants.RegionSize);
             uint ddY = Math.Max(dd, Constants.RegionSize);
 
@@ -2458,8 +2465,8 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
             if(sp == null || sp.IsDeleted || !sp.IsInTransit)
                 return;
 
-            Scene.CloseAgent(sp.UUID, false);
-            m_entityTransferStateMachine.ResetFromTransit(id); // this needs cleanup
+            //Scene.CloseAgent(sp.UUID, false);
+            sp.IsInTransit = false;
             //m_entityTransferStateMachine.SetAgentArrivedAtDestination(id);
         }
 
@@ -2534,11 +2541,11 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                 //string objectState = grp.GetStateSnapshot();
 
                 //successYN
-                //    = m_sceneGridService.PrimCrossToNeighboringRegion(
+                //    = m_sceneGridService.PrimCrossToNeighbouringRegion(
                 //        newRegionHandle, grp.UUID, m_serializer.SaveGroupToXml2(grp), primcrossingXMLmethod);
                 //if (successYN && (objectState != "") && m_allowScriptCrossings)
                 //{
-                //    successYN = m_sceneGridService.PrimCrossToNeighboringRegion(
+                //    successYN = m_sceneGridService.PrimCrossToNeighbouringRegion(
                 //            newRegionHandle, grp.UUID, objectState, 100);
                 //}
 

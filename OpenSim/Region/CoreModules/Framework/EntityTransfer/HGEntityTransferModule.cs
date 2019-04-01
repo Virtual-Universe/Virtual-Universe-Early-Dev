@@ -28,7 +28,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using log4net;
+using Mono.Addins;
+using Nini.Config;
+using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Client;
 using OpenSim.Framework.Monitoring;
@@ -37,14 +40,7 @@ using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Connectors.Hypergrid;
 using OpenSim.Services.Interfaces;
 using OpenSim.Server.Base;
-
-using OpenMetaverse;
-using log4net;
-using Nini.Config;
-using Mono.Addins;
-
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
-
 
 namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 {
