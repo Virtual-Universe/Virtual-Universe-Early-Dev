@@ -26,10 +26,10 @@
  */
 
 using System;
-using System.IO;
-using System.IO.Compression;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
 using Nini.Config;
 using OpenMetaverse;
@@ -50,7 +50,6 @@ namespace OpenSim.Region.ClientStack.Linden
 
     public class ModelCost
     {
-
         // upload fee defaults
         // fees are normalized to 1.0
         // this parameters scale them to basic cost ( so 1.0 translates to 10 )
@@ -61,7 +60,7 @@ namespace OpenSim.Region.ClientStack.Linden
         // itens costs in normalized values
         // ie will be multiplied by basicCost and factors above
         public float primCreationCost = 0.002f;  // extra cost for each prim creation overhead
-        
+     
         // weigthed size to normalized cost
         public float bytecost = 1e-5f;
 
@@ -305,9 +304,11 @@ namespace OpenSim.Region.ClientStack.Linden
                     return false;
                 }
                 else
-                    warning += skipedSmall.ToString() + " of the requested " +numberInstances.ToString() +
+                {
+                    warning += skipedSmall.ToString() + " of the requested " + numberInstances.ToString() +
                         " model prims will not upload because they are smaller than " + PrimScaleMin.ToString() +
                         "m minimum allowed size. Please check scalling ";
+                }
             }
 
             if (meshcostdata.physics_cost <= meshcostdata.model_streaming_cost)
@@ -622,14 +623,12 @@ namespace OpenSim.Region.ClientStack.Linden
             nsides = 0;
 
             OSD decodedMeshOsd = new OSD();
-            byte[] meshBytes = new byte[size];
-            System.Buffer.BlockCopy(data, offset, meshBytes, 0, size);
 
             try
             {
-                using (MemoryStream inMs = new MemoryStream(meshBytes))
+                using (MemoryStream outMs = new MemoryStream())
                 {
-                    using (MemoryStream outMs = new MemoryStream())
+                    using (MemoryStream inMs = new MemoryStream(data, offset, size))
                     {
                         using (DeflateStream decompressionStream = new DeflateStream(inMs, CompressionMode.Decompress))
                         {
@@ -641,13 +640,11 @@ namespace OpenSim.Region.ClientStack.Linden
                             {
                                 outMs.Write(readBuffer, 0, readLen);
                             }
-
-                            outMs.Seek(0, SeekOrigin.Begin);
-
-                            byte[] decompressedBuf = outMs.GetBuffer();
-                            decodedMeshOsd = OSDParser.DeserializeLLSDBinary(decompressedBuf);
                         }
                     }
+
+                    outMs.Seek(0, SeekOrigin.Begin);
+                    decodedMeshOsd = OSDParser.DeserializeLLSDBinary(outMs);
                 }
             }
             catch
@@ -701,18 +698,16 @@ namespace OpenSim.Region.ClientStack.Linden
             nhulls = 1;
 
             OSD decodedMeshOsd = new OSD();
-            byte[] meshBytes = new byte[size];
-            System.Buffer.BlockCopy(data, offset, meshBytes, 0, size);
 
             try
             {
-                using (MemoryStream inMs = new MemoryStream(meshBytes))
+                using (MemoryStream outMs = new MemoryStream(4 * size))
                 {
-                    using (MemoryStream outMs = new MemoryStream())
+                    using (MemoryStream inMs = new MemoryStream(data, offset, size))
                     {
                         using (DeflateStream decompressionStream = new DeflateStream(inMs, CompressionMode.Decompress))
                         {
-                            byte[] readBuffer = new byte[2048];
+                            byte[] readBuffer = new byte[8192];
                             inMs.Read(readBuffer, 0, 2); // skip first 2 bytes in header
                             int readLen = 0;
 
@@ -720,13 +715,11 @@ namespace OpenSim.Region.ClientStack.Linden
                             {
                                 outMs.Write(readBuffer, 0, readLen);
                             }
-
-                            outMs.Seek(0, SeekOrigin.Begin);
-
-                            byte[] decompressedBuf = outMs.GetBuffer();
-                            decodedMeshOsd = OSDParser.DeserializeLLSDBinary(decompressedBuf);
                         }
                     }
+
+                    outMs.Seek(0, SeekOrigin.Begin);
+                    decodedMeshOsd = OSDParser.DeserializeLLSDBinary(outMs);
                 }
             }
             catch
