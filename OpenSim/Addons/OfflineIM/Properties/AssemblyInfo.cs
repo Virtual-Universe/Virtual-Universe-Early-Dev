@@ -11,7 +11,7 @@ using Mono.Addins;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://virtual-planets.org")]
 [assembly: AssemblyProduct("OpenSim.Addons.OfflineIM")]
-[assembly: AssemblyCopyright("Copyright (c) Virtual Universe.org Developers")]
+[assembly: AssemblyCopyright("Copyright (c) OpenSimulator.org Developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

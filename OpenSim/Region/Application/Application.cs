@@ -38,7 +38,7 @@ using OpenSim.Framework.Console;
 namespace OpenSim
 {
     /// <summary>
-    /// Starting class for the Virtual Universe Region
+    /// Starting class for the OpenSimulator Region
     /// </summary>
     public class Application
     {
@@ -53,12 +53,12 @@ namespace OpenSim
         public static string iniFilePath = "";
 
         /// <summary>
-        /// Save Crashes in the Data/Crashes folder.  Configurable with m_crashDir
+        /// Save Crashes in the bin/crashes folder.  Configurable with m_crashDir
         /// </summary>
         public static bool m_saveCrashDumps = false;
 
         /// <summary>
-        /// Directory to save crash reports to.  Relative to Data/Crashes
+        /// Directory to save crash reports to.  Relative to bin/
         /// </summary>
         public static string m_crashDir = Constants.DEFAULT_CRASH_DIR;
 
@@ -67,7 +67,7 @@ namespace OpenSim
         /// </summary>
         protected static OpenSimBase m_sim = null;
 
-        //could move our main function into OpenSimMain and kill this class
+        // could move our main function into OpenSimMain and kill this class
         public static void Main(string[] args)
         {
             // First line, hook the appdomain to the crash reporter
@@ -106,19 +106,21 @@ namespace OpenSim
             if (logConfigFile != String.Empty)
             {
                 XmlConfigurator.Configure(new System.IO.FileInfo(logConfigFile));
-                m_log.InfoFormat("[Virtual Universe Main]: configured log4net using \"{0}\" as configuration file", logConfigFile);
+                m_log.InfoFormat("[Virtual Universe]: configured log4net using \"{0}\" as configuration file", logConfigFile);
             }
             else
             {
                 XmlConfigurator.Configure();
-                m_log.Info("[Virtual Universe Main]: configured log4net using default OpenSim.exe.config");
+                m_log.Info("[Virtual Universe]: configured log4net using default OpenSim.exe.config");
             }
 
-            m_log.InfoFormat("[Virtual Universe Main]: System Locale is {0}", System.Threading.Thread.CurrentThread.CurrentCulture);
+            m_log.InfoFormat(
+                "[Virtual Universe]: System Locale is {0}", System.Threading.Thread.CurrentThread.CurrentCulture);
 
             string monoThreadsPerCpu = System.Environment.GetEnvironmentVariable("MONO_THREADS_PER_CPU");
 
-            m_log.InfoFormat("[Virtual Universe Main]: Environment variable MONO_THREADS_PER_CPU is {0}", monoThreadsPerCpu ?? "unset");
+            m_log.InfoFormat(
+                "[Virtual Universe]: Environment variable MONO_THREADS_PER_CPU is {0}", monoThreadsPerCpu ?? "unset");
 
             // Verify the Threadpool allocates or uses enough worker and IO completion threads
             // .NET 2.0, workerthreads default to 50 *  numcores
@@ -132,23 +134,28 @@ namespace OpenSim
             int iocpThreadsMin = 1000;
             int iocpThreadsMax = 2000; // may need further adjustment to match other CLR
 
-            int currentMinWorkerThreads, currentMinIocpThreads;
-            System.Threading.ThreadPool.GetMinThreads(out currentMinWorkerThreads, out currentMinIocpThreads);
-            m_log.InfoFormat("[Virtual Universe Main]: Runtime gave us {0} min worker threads and {1} min IOCP threads", currentMinWorkerThreads, currentMinIocpThreads);
+            {
+                int currentMinWorkerThreads, currentMinIocpThreads;
+                System.Threading.ThreadPool.GetMinThreads(out currentMinWorkerThreads, out currentMinIocpThreads);
+                m_log.InfoFormat(
+                    "[Virtual Universe]: Runtime gave us {0} min worker threads and {1} min IOCP threads",
+                    currentMinWorkerThreads, currentMinIocpThreads);
+            }
 
             int workerThreads, iocpThreads;
             System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
-            m_log.InfoFormat("[Virtual Universe Main]: Runtime gave us {0} max worker threads and {1} max IOCP threads", workerThreads, iocpThreads);
+            m_log.InfoFormat("[Virtual Universe]: Runtime gave us {0} max worker threads and {1} max IOCP threads", workerThreads, iocpThreads);
 
             if (workerThreads < workerThreadsMin)
             {
                 workerThreads = workerThreadsMin;
-                m_log.InfoFormat("[Virtual Universe Main]: Bumping up max worker threads to {0}",workerThreads);
+                m_log.InfoFormat("[Virtual Universe]: Bumping up max worker threads to {0}", workerThreads);
             }
+
             if (workerThreads > workerThreadsMax)
             {
                 workerThreads = workerThreadsMax;
-                m_log.InfoFormat("[Virtual Universe Main]: Limiting max worker threads to {0}",workerThreads);
+                m_log.InfoFormat("[Virtual Universe]: Limiting max worker threads to {0}", workerThreads);
             }
 
             // Increase the number of IOCP threads available.
@@ -156,41 +163,42 @@ namespace OpenSim
             if (iocpThreads < iocpThreadsMin)
             {
                 iocpThreads = iocpThreadsMin;
-                m_log.InfoFormat("[Virtual Universe Main]: Bumping up max IOCP threads to {0}",iocpThreads);
+                m_log.InfoFormat("[Virtual Universe]: Bumping up max IOCP threads to {0}", iocpThreads);
             }
 
             // Make sure we don't overallocate IOCP threads and thrash system resources
-            if ( iocpThreads > iocpThreadsMax )
+            if (iocpThreads > iocpThreadsMax)
             {
                 iocpThreads = iocpThreadsMax;
-                m_log.InfoFormat("[Virtual Universe Main]: Limiting max IOCP completion threads to {0}",iocpThreads);
+                m_log.InfoFormat("[Virtual Universe]: Limiting max IOCP completion threads to {0}", iocpThreads);
             }
 
             // set the resulting worker and IO completion thread counts back to ThreadPool
-            if ( System.Threading.ThreadPool.SetMaxThreads(workerThreads, iocpThreads) )
+            if (System.Threading.ThreadPool.SetMaxThreads(workerThreads, iocpThreads))
             {
                 m_log.InfoFormat(
-                    "[Virtual Universe Main]: Threadpool set to {0} max worker threads and {1} max IOCP threads",
+                    "[Virtual Universe]: Threadpool set to {0} max worker threads and {1} max IOCP threads",
                     workerThreads, iocpThreads);
             }
             else
             {
-                m_log.Warn("[Virtual Universe Main]: Threadpool reconfiguration failed, runtime defaults still in effect.");
+                m_log.Warn("[Virtual Universe]: Threadpool reconfiguration failed, runtime defaults still in effect.");
             }
 
-            // Check if the system is compatible with Virtual Universe.
+            // Check if the system is compatible with OpenSimulator.
             // Ensures that the minimum system requirements are met
             string supported = String.Empty;
+
             if (Util.IsEnvironmentSupported(ref supported))
             {
-                m_log.Info("[Virtual Universe Main]: Environment is supported by Virtual Universe.");
+                m_log.Info("[Virtual Universe]: Environment is supported by OpenSimulator.");
             }
             else
             {
-                m_log.Warn("[Virtual Universe Main]: Environment is not supported by Virtual Universe (" + supported + ")\n");
+                m_log.Warn("[Virtual Universe]: Environment is not supported by OpenSimulator (" + supported + ")\n");
             }
 
-            m_log.InfoFormat("[Virtual Universe Main]: Default culture changed to {0}",Culture.GetDefaultCurrentCulture().DisplayName);
+            m_log.InfoFormat("Default culture changed to {0}", Culture.GetDefaultCurrentCulture().DisplayName);
 
             // Configure nIni aliases and localles
 
@@ -267,6 +275,7 @@ namespace OpenSim
             }
 
             _IsHandlingException = true;
+
             // TODO: Add config option to allow users to turn off error reporting
             // TODO: Post error report (disabled for now)
 
@@ -276,7 +285,8 @@ namespace OpenSim
             msg += "\r\n";
 
             msg += "Exception: " + e.ExceptionObject.ToString() + "\r\n";
-            Exception ex = (Exception) e.ExceptionObject;
+            Exception ex = (Exception)e.ExceptionObject;
+
             if (ex.InnerException != null)
             {
                 msg += "InnerException: " + ex.InnerException.ToString() + "\r\n";
@@ -285,7 +295,7 @@ namespace OpenSim
             msg += "\r\n";
             msg += "Application is terminating: " + e.IsTerminating.ToString() + "\r\n";
 
-            m_log.ErrorFormat("[Application]: {0}", msg);
+            m_log.ErrorFormat("[Virtual Universe]: {0}", msg);
 
             if (m_saveCrashDumps)
             {
@@ -296,7 +306,9 @@ namespace OpenSim
                     {
                         Directory.CreateDirectory(m_crashDir);
                     }
+
                     string log = Util.GetUniqueFilename(ex.GetType() + ".txt");
+
                     using (StreamWriter m_crashLog = new StreamWriter(Path.Combine(m_crashDir, log)))
                     {
                         m_crashLog.WriteLine(msg);

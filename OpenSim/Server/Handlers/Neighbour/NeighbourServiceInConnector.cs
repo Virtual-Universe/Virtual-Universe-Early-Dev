@@ -53,7 +53,7 @@ namespace OpenSim.Server.Handlers.Neighbour
 
             if (m_NeighbourService == null)
             {
-                m_log.Error("[Neighbor In Connector]: neighbour service was not provided");
+                m_log.Error("[Neighbour In Connector]: neighbour service was not provided");
                 return;
             }
 

@@ -32,9 +32,9 @@ using log4net;
 using Mono.Addins;
 using Nini.Config;
 using OpenSim.Framework;
+using OpenSim.Services.Connectors;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
-using OpenSim.Services.Connectors;
 using OpenSim.Services.Interfaces;
 
 namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
@@ -68,7 +68,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
                 if (name == Name)
                 {
                     m_Enabled = true;
-                    m_log.Info("[Neighbor Connector]: Neighbour out connector enabled");
+                    m_log.Info("[Neighbour Connector]: Neighbour out connector enabled");
                 }
             }
         }
@@ -109,7 +109,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
             }
 
             m_GridService = scene.GridService;
-            m_log.InfoFormat("[Neighbor Connector]: Enabled out neighbours for region {0}", scene.RegionInfo.RegionName);
+            m_log.InfoFormat("[Neighbour Connector]: Enabled out neighbours for region {0}", scene.RegionInfo.RegionName);
         }
 
         #region INeighbourService

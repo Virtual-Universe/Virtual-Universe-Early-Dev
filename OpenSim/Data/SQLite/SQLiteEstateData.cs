@@ -124,7 +124,7 @@ namespace OpenSim.Data.SQLite
             }
             catch (SqliteException)
             {
-                m_log.Error("[SQLITE]: There was an issue loading the estate settings.  This can happen the first time running Virtual Universe with CSharpSqlite the first time.  Virtual Universe will probably crash, restart it and it should be good to go.");
+                m_log.Error("[SQLITE]: There was an issue loading the estate settings.  This can happen the first time running OpenSimulator with CSharpSqlite the first time.  OpenSimulator will probably crash, restart it and it should be good to go.");
             }
 
             if (r != null && r.Read())

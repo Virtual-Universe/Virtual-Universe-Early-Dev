@@ -30,7 +30,7 @@ using System;
 namespace OpenSim.Framework
 {
     /// <summary>
-    /// Region flags used internally by Virtual Universe to store installation specific information about regions.
+    /// Region flags used internally by OpenSimulator to store installation specific information about regions.
     /// </summary>
     /// <remarks>
     /// Don't confuse with OpenMetaverse.RegionFlags which are client facing flags (i.e. they go over the wire).

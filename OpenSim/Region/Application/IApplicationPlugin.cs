@@ -25,13 +25,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Mono.Addins;
 using OpenSim.Framework;
+using Mono.Addins;
 
 namespace OpenSim
 {
     /// <summary>
-    /// Virtual Universe Application Plugin framework interface
+    /// OpenSimulator Application Plugin framework interface
     /// </summary>
     [TypeExtensionPoint(NodeName="Plugin", NodeType = typeof(PluginExtensionNode), Path="/OpenSim/Startup")]
     public interface IApplicationPlugin : IPlugin

@@ -192,7 +192,7 @@ namespace OpenSim.Region.OptionalModules.Materials
                     "RenderMaterials", null);
             caps.RegisterHandler("RenderMaterials", renderMaterialsPostHandler);
 
-            // Virtual Universe CAPs infrastructure seems to be somewhat hostile towards any CAP that requires both GET
+            // OpenSimulator CAPs infrastructure seems to be somewhat hostile towards any CAP that requires both GET
             // and POST handlers, (at least at the time this was originally written), so we first set up a POST
             // handler normally and then add a GET handler via MainServer
 

@@ -43,7 +43,7 @@ using Mono.Addins;
 namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
 {
     /// <summary>
-    /// This module loads and saves Virtual Universe inventory archives
+    /// This module loads and saves OpenSimulator inventory archives
     /// </summary>
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "InventoryArchiverModule")]
     public class InventoryArchiverModule : ISharedRegionModule, IInventoryArchiverModule

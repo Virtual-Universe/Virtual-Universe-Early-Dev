@@ -33,15 +33,15 @@ using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using log4net;
-using Nini.Config;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using Nini.Config;
 using OpenSim;
 using OpenSim.Framework;
+
 using OpenSim.Framework.Console;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
@@ -51,10 +51,11 @@ using OpenSim.Region.ScriptEngine.Shared.Api.Plugins;
 using OpenSim.Region.ScriptEngine.Shared.ScriptBase;
 using OpenSim.Region.ScriptEngine.Interfaces;
 using OpenSim.Region.ScriptEngine.Shared.Api.Interfaces;
-using OpenSim.Services.Connectors.Hypergrid;
-using OpenSim.Services.Interfaces;
 using TPFlags = OpenSim.Framework.Constants.TeleportFlags;
+using OpenSim.Services.Interfaces;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
+using System.Text.RegularExpressions;
+
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
 using LSL_Key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
@@ -63,6 +64,7 @@ using LSL_Rotation = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Quaternion;
 using LSL_String = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
 using LSL_Vector = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Vector3;
 using PermissionMask = OpenSim.Framework.PermissionMask;
+using OpenSim.Services.Connectors.Hypergrid;
 
 namespace OpenSim.Region.ScriptEngine.Shared.Api
 {

@@ -33,7 +33,7 @@ using Nini.Config;
 namespace OpenSim
 {
     /// <summary>
-    /// Consoleless Virtual Universe region server
+    /// Consoleless OpenSimulator region server
     /// </summary>
     public class OpenSimBackground : OpenSim
     {
@@ -54,8 +54,7 @@ namespace OpenSim
 
             base.Startup();
 
-            m_log.InfoFormat("[Virtual Universe Main]: Startup complete, serving {0} region{1}",
-                             SceneManager.Scenes.Count, SceneManager.Scenes.Count > 1 ? "s" : "");
+            m_log.InfoFormat("[Virtual Universe]: Startup complete, serving {0} region{1}", SceneManager.Scenes.Count, SceneManager.Scenes.Count > 1 ? "s" : "");
 
             WorldHasComeToAnEnd.WaitOne();
             WorldHasComeToAnEnd.Close();
@@ -67,7 +66,7 @@ namespace OpenSim
         public override void Shutdown()
         {
             WorldHasComeToAnEnd.Set();
-            m_log.Info("[Virtual Universe Main]: World has come to an end");
+            m_log.Info("[Virtual Universe]: World has come to an end");
             base.Shutdown();
         }
     }

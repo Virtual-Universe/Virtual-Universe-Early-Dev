@@ -85,33 +85,28 @@ namespace OpenSim
             string masterFileName = startupConfig.GetString("inimaster", "OpenSimDefaults.ini");
 
             if (masterFileName == "none")
-            {
                 masterFileName = String.Empty;
-            }
 
             if (IsUri(masterFileName))
             {
                 if (!sources.Contains(masterFileName))
-                {
                     sources.Add(masterFileName);
-                }
             }
             else
             {
-                string masterFilePath = Path.GetFullPath(Path.Combine(Util.configDir(), masterFileName));
+                string masterFilePath = Path.GetFullPath(
+                        Path.Combine(Util.configDir(), masterFileName));
 
                 if (masterFileName != String.Empty)
                 {
                     if (File.Exists(masterFilePath))
                     {
                         if (!sources.Contains(masterFilePath))
-                        {
                             sources.Add(masterFilePath);
-                        }
                     }
                     else
                     {
-                        m_log.ErrorFormat("[Virtual Universe Configuration]: Master ini file {0} not found", Path.GetFullPath(masterFilePath));
+                        m_log.ErrorFormat("Master ini file {0} not found", Path.GetFullPath(masterFilePath));
                         Environment.Exit(1);
                     }
                 }
@@ -122,15 +117,13 @@ namespace OpenSim
             if (IsUri(iniFileName))
             {
                 if (!sources.Contains(iniFileName))
-                {
                     sources.Add(iniFileName);
-                }
-
                 Application.iniFilePath = iniFileName;
             }
             else
             {
-                Application.iniFilePath = Path.GetFullPath(Path.Combine(Util.configDir(), iniFileName));
+                Application.iniFilePath = Path.GetFullPath(
+                    Path.Combine(Util.configDir(), iniFileName));
 
                 if (!File.Exists(Application.iniFilePath))
                 {
@@ -141,9 +134,7 @@ namespace OpenSim
                 if (File.Exists(Application.iniFilePath))
                 {
                     if (!sources.Contains(Application.iniFilePath))
-                    {
                         sources.Add(Application.iniFilePath);
-                    }
                 }
             }
 
@@ -151,7 +142,7 @@ namespace OpenSim
             m_config.Source = new IniConfigSource();
             m_config.Source.Merge(DefaultConfig());
 
-            m_log.Info("[Virtual Universe Configuration]: Reading configuration settings");
+            m_log.Info("[CONFIG]: Reading configuration settings");
 
             for (int i = 0 ; i < sources.Count ; i++)
             {
@@ -168,11 +159,10 @@ namespace OpenSim
 
             if (Directory.Exists(iniDirPath))
             {
-                m_log.InfoFormat("[Virtual Universe Configuration]: Searching folder {0} for config ini files", iniDirPath);
+                m_log.InfoFormat("[CONFIG]: Searching folder {0} for config ini files", iniDirPath);
                 List<string> overrideSources = new List<string>();
 
                 string[] fileEntries = Directory.GetFiles(iniDirName);
-
                 foreach (string filePath in fileEntries)
                 {
                     if (Path.GetExtension(filePath).ToLower() == ".ini")
@@ -180,12 +170,12 @@ namespace OpenSim
                         if (!sources.Contains(Path.GetFullPath(filePath)))
                         {
                             overrideSources.Add(Path.GetFullPath(filePath));
-                            
                             // put it in sources too, to avoid circularity
                             sources.Add(Path.GetFullPath(filePath));
                         }
                     }
                 }
+
 
                 if (overrideSources.Count > 0)
                 {
@@ -200,25 +190,24 @@ namespace OpenSim
                             AddIncludes(overrideConfig, overrideSources);
                         }
                     }
-                    
                     m_config.Source.Merge(overrideConfig.Source);
                 }
             }
 
             if (sources.Count == 0)
             {
-                m_log.FatalFormat("[Virtual Universe Configuration]: Could not load any configuration");
+                m_log.FatalFormat("[CONFIG]: Could not load any configuration");
                 Environment.Exit(1);
             }
             else if (!iniFileExists)
             {
-                m_log.FatalFormat("[Virtual Universe Configuration]: Could not load any configuration");
-                m_log.FatalFormat("[Virtual Universe Configuration]: Configuration exists, but there was an error loading it!");
+                m_log.FatalFormat("[CONFIG]: Could not load any configuration");
+                m_log.FatalFormat("[CONFIG]: Configuration exists, but there was an error loading it!");
                 Environment.Exit(1);
             }
 
             // Merge OpSys env vars
-            m_log.Info("[Virtual Universe Configuration]: Loading environment variables for Config");
+            m_log.Info("[CONFIG]: Loading environment variables for Config");
             Util.MergeEnvironmentToConfig(m_config.Source);
 
             // Make sure command line options take precedence
@@ -248,29 +237,23 @@ namespace OpenSim
                     {
                         // read the config file to be included.
                         string file = config.GetString(k);
-
                         if (IsUri(file))
                         {
                             if (!sources.Contains(file))
-                            {
                                 sources.Add(file);
-                            }
                         }
                         else
                         {
                             string basepath = Path.GetFullPath(Util.configDir());
-                         
                             // Resolve relative paths with wildcards
                             string chunkWithoutWildcards = file;
                             string chunkWithWildcards = string.Empty;
                             int wildcardIndex = file.IndexOfAny(new char[] { '*', '?' });
-
                             if (wildcardIndex != -1)
                             {
                                 chunkWithoutWildcards = file.Substring(0, wildcardIndex);
                                 chunkWithWildcards = file.Substring(wildcardIndex);
                             }
-
                             string path = Path.Combine(basepath, chunkWithoutWildcards);
                             path = Path.GetFullPath(path) + chunkWithWildcards;
                             string[] paths = Util.Glob(path);
@@ -278,16 +261,14 @@ namespace OpenSim
                             // If the include path contains no wildcards, then warn the user that it wasn't found.
                             if (wildcardIndex == -1 && paths.Length == 0)
                             {
-                                m_log.WarnFormat("[Virtual Universe Configuration]: Could not find include file {0}", path);
+                                m_log.WarnFormat("[CONFIG]: Could not find include file {0}", path);
                             }
                             else
                             {
                                 foreach (string p in paths)
                                 {
                                     if (!sources.Contains(p))
-                                    {
                                         sources.Add(p);
-                                    }
                                 }
                             }
                         }
@@ -295,7 +276,6 @@ namespace OpenSim
                 }
             }
         }
-
         /// <summary>
         /// Check if we can convert the string to a URI
         /// </summary>
@@ -305,7 +285,8 @@ namespace OpenSim
         {
             Uri configUri;
 
-            return Uri.TryCreate(file, UriKind.Absolute, out configUri) && configUri.Scheme == Uri.UriSchemeHttp;
+            return Uri.TryCreate(file, UriKind.Absolute,
+                    out configUri) && configUri.Scheme == Uri.UriSchemeHttp;
         }
 
         /// <summary>
@@ -319,14 +300,14 @@ namespace OpenSim
 
             if (!IsUri(iniPath))
             {
-                m_log.InfoFormat("[Virtual Universe Configuration]: Reading configuration file {0}", Path.GetFullPath(iniPath));
+                m_log.InfoFormat("[CONFIG]: Reading configuration file {0}", Path.GetFullPath(iniPath));
 
                 configSource.Source.Merge(new IniConfigSource(iniPath));
                 success = true;
             }
             else
             {
-                m_log.InfoFormat("[Virtual Universe Configuration]: {0} is a http:// URI, fetching ...", iniPath);
+                m_log.InfoFormat("[CONFIG]: {0} is a http:// URI, fetching ...", iniPath);
 
                 // The ini file path is a http URI
                 // Try to read it
@@ -340,11 +321,10 @@ namespace OpenSim
                 }
                 catch (Exception e)
                 {
-                    m_log.FatalFormat("[Virtual Universe Configuration]: Exception reading config from URI {0}\n" + e.ToString(), iniPath);
+                    m_log.FatalFormat("[CONFIG]: Exception reading config from URI {0}\n" + e.ToString(), iniPath);
                     Environment.Exit(1);
                 }
             }
-
             return success;
         }
 
@@ -360,9 +340,7 @@ namespace OpenSim
                 IConfig config = defaultConfig.Configs["Startup"];
 
                 if (null == config)
-                {
                     config = defaultConfig.AddConfig("Startup");
-                }
 
                 config.Set("region_info_source", "filesystem");
 
@@ -380,9 +358,7 @@ namespace OpenSim
                 IConfig config = defaultConfig.Configs["Network"];
 
                 if (null == config)
-                {
                     config = defaultConfig.AddConfig("Network");
-                }
 
                 config.Set("http_listener_port", ConfigSettings.DefaultRegionHttpPort);
             }
@@ -396,7 +372,6 @@ namespace OpenSim
         protected virtual void ReadConfigSettings()
         {
             IConfig startupConfig = m_config.Source.Configs["Startup"];
-
             if (startupConfig != null)
             {
                 m_configSettings.PhysicsEngine = startupConfig.GetString("physics");

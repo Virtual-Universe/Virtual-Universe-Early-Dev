@@ -107,10 +107,10 @@ namespace OpenSim.Services.Interfaces
         List<GridRegion> GetHyperlinks(UUID scopeID);
 
         /// <summary>
-        /// Get internal Virtual Universe region flags.
+        /// Get internal OpenSimulator region flags.
         /// </summary>
         /// <remarks>
-        /// See Virtual Universe.Framework.RegionFlags.  These are not returned in the GridRegion structure -
+        /// See OpenSimulator.Framework.RegionFlags.  These are not returned in the GridRegion structure -
         /// they currently need to be requested separately.  Possibly this should change to avoid multiple service calls
         /// in some situations.
         /// </remarks>

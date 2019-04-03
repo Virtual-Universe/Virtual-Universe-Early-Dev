@@ -1348,7 +1348,7 @@ namespace OpenSim.Region.CoreModules.Avatar.UserProfiles
 
             if (avatarID == m_MrOpenSimID)
             {
-                remoteClient.SendAvatarProperties(avatarID, "Creator of Virtual Universe shared assets library", m_MrOpenSimBorn.ToString(),
+                remoteClient.SendAvatarProperties(avatarID, "Creator of OpenSimulator shared assets library", m_MrOpenSimBorn.ToString(),
                       Utils.StringToBytes("System agent"), "MrOpenSim has no life", 0x10,
                       UUID.Zero, UUID.Zero, "", UUID.Zero);
                 remoteClient.SendAvatarInterestsReply(avatarID, 0, "",

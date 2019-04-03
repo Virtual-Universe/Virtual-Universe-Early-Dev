@@ -269,7 +269,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         public virtual string GetSimulatorVersion()
         {
-            return "Virtual Universe Server";
+            return "OpenSimulator Server";
         }
 
         #endregion

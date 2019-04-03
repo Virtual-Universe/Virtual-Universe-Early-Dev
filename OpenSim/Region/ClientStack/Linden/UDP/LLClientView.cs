@@ -32,17 +32,21 @@ using System.Reflection;
 using System.Runtime;
 using System.Text;
 using System.Threading;
+
 using log4net;
 using OpenMetaverse;
-using OpenMetaverse.Messages.Linden;
 using OpenMetaverse.Packets;
+using OpenMetaverse.Messages.Linden;
 using OpenMetaverse.StructuredData;
+
 using OpenSim.Framework;
 using OpenSim.Framework.Client;
 using OpenSim.Framework.Monitoring;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
+
+
 using AssetLandmark = OpenSim.Framework.AssetLandmark;
 using Caps = OpenSim.Framework.Capabilities.Caps;
 using PermissionMask = OpenSim.Framework.PermissionMask;

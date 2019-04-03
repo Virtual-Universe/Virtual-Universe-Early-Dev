@@ -26,7 +26,6 @@
  */
 
 using System;
-using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -36,6 +35,7 @@ using System.Reflection;
 using System.Runtime;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Timers;
 using log4net;
 using NDesk.Options;
@@ -43,8 +43,8 @@ using Nini.Config;
 using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
-using OpenSim.Framework.Servers;
 using OpenSim.Framework.Monitoring;
+using OpenSim.Framework.Servers;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
@@ -126,22 +126,23 @@ namespace OpenSim
                     Util.FireAndForgetMethod = asyncCallMethod;
                 }
 
-                stpMinThreads = startupConfig.GetInt("MinPoolThreads", 2 );
+                stpMinThreads = startupConfig.GetInt("MinPoolThreads", 2);
                 stpMaxThreads = startupConfig.GetInt("MaxPoolThreads", 25);
                 m_consolePrompt = startupConfig.GetString("ConsolePrompt", @"Region (\R) ");
             }
 
             if (Util.FireAndForgetMethod == FireAndForgetMethod.SmartThreadPool)
+            {
                 Util.InitThreadPool(stpMinThreads, stpMaxThreads);
+            }
 
-            m_log.Info("[Virtual Universe Main]: Using async_call_method " + Util.FireAndForgetMethod);
+            m_log.Info("[Virtual Universe]: Using async_call_method " + Util.FireAndForgetMethod);
 
-            m_log.InfoFormat("[Virtual Universe Main] Running GC in {0} mode", GCSettings.IsServerGC ? "server":"workstation");
+            m_log.InfoFormat("[Virtual Universe]: Running GC in {0} mode", GCSettings.IsServerGC ? "server" : "workstation");
         }
 
 #if (_MONO)
         private static Mono.Unix.UnixSignal[] signals;
-
 
         private Thread signal_thread = new Thread (delegate ()
         {
@@ -150,7 +151,6 @@ namespace OpenSim
                 // Wait for a signal to be delivered
                 int index = Mono.Unix.UnixSignal.WaitAny (signals, -1);
 
-                //Mono.Unix.Native.Signum signal = signals [index].Signum;
                 MainConsole.Instance.RunCommand("shutdown");
             }
         });       
@@ -195,16 +195,16 @@ namespace OpenSim
             {
                 switch (m_consoleType)
                 {
-                case "basic":
-                    m_console = new CommandConsole("Region");
-                    break;
-                case "rest":
-                    m_console = new RemoteConsole("Region");
-                    ((RemoteConsole)m_console).ReadConfig(Config);
-                    break;
-                default:
-                    m_console = new LocalConsole("Region", Config.Configs["Startup"]);
-                    break;
+                    case "basic":
+                        m_console = new CommandConsole("Region");
+                        break;
+                    case "rest":
+                        m_console = new RemoteConsole("Region");
+                        ((RemoteConsole)m_console).ReadConfig(Config);
+                        break;
+                    default:
+                        m_console = new LocalConsole("Region", Config.Configs["Startup"]);
+                        break;
                 }
             }
 
@@ -261,10 +261,10 @@ namespace OpenSim
                 ChangeSelectedRegion("region", new string[] { "change", "region", "root" });
             }
 
-            // Run Startup Commands
+            //Run Startup Commands
             if (String.IsNullOrEmpty(m_startupCommandsFile))
             {
-                m_log.Info("[Virtual Universe Start Up]: No startup command script specified. Moving on...");
+                m_log.Info("[Virtual Universe Startup]: No startup command script specified. Moving on...");
             }
             else
             {
@@ -276,7 +276,7 @@ namespace OpenSim
             {
                 m_scriptTimer = new System.Timers.Timer();
                 m_scriptTimer.Enabled = true;
-                m_scriptTimer.Interval = m_timeInterval*1000;
+                m_scriptTimer.Interval = m_timeInterval * 1000;
                 m_scriptTimer.Elapsed += RunAutoTimerScript;
             }
         }
@@ -523,7 +523,7 @@ namespace OpenSim
         {
             int now = Environment.TickCount & Int32.MaxValue;
             m_log.ErrorFormat(
-                "[Virtual Universe Watch Dog]: Timeout detected for thread \"{0}\". ThreadState={1}. Last tick was {2}ms ago.  {3}",
+                "[Watch Dog]: Timeout detected for thread \"{0}\". ThreadState={1}. Last tick was {2}ms ago.  {3}",
                 twi.Thread.Name,
                 twi.Thread.ThreadState,
                 now - twi.LastTick,
@@ -659,9 +659,9 @@ namespace OpenSim
 
             Vector3 center = new Vector3(centerX, centerY, 0.0f);
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene)
+            SceneManager.ForEachSelectedScene(delegate (Scene scene)
             {
-                scene.ForEachSOG(delegate(SceneObjectGroup sog)
+                scene.ForEachSOG(delegate (SceneObjectGroup sog)
                 {
                     if (!sog.IsAttachment)
                     {
@@ -688,9 +688,9 @@ namespace OpenSim
 
             float minZ = float.MaxValue;
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene)
+            SceneManager.ForEachSelectedScene(delegate (Scene scene)
             {
-                scene.ForEachSOG(delegate(SceneObjectGroup sog)
+                scene.ForEachSOG(delegate (SceneObjectGroup sog)
                 {
                     if (!sog.IsAttachment)
                     {
@@ -702,9 +702,9 @@ namespace OpenSim
                 });
             });
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene)
+            SceneManager.ForEachSelectedScene(delegate (Scene scene)
             {
-                scene.ForEachSOG(delegate(SceneObjectGroup sog)
+                scene.ForEachSOG(delegate (SceneObjectGroup sog)
                 {
                     if (!sog.IsAttachment)
                     {
@@ -745,7 +745,7 @@ namespace OpenSim
 
             Vector3 offset = new Vector3(xOFfset, yOffset, zOffset);
 
-            SceneManager.ForEachSelectedScene(delegate(Scene scene)
+            SceneManager.ForEachSelectedScene(delegate (Scene scene)
             {
                 scene.ForEachSOG(delegate (SceneObjectGroup sog)
                 {
@@ -753,7 +753,7 @@ namespace OpenSim
                     {
                         sog.UpdateGroupPosition(sog.AbsolutePosition + offset);
                     }
-                }); 
+                });
             });
         }
 
@@ -809,7 +809,7 @@ namespace OpenSim
             if (SceneManager.TryGetScene(regInfo.RegionID, out existingScene))
             {
                 MainConsole.Instance.OutputFormat(
-                    "ERROR: Cannot create region {0} with ID {1}, this ID is already assigned to region {2}",
+                    "[Virtual Universe]: Cannot create region {0} with ID {1}, this ID is already assigned to region {2}",
                     regInfo.RegionName, regInfo.RegionID, existingScene.RegionInfo.RegionName);
 
                 return;
@@ -988,8 +988,7 @@ namespace OpenSim
 
                     MainConsole.Instance.Output(
                         String.Format("{0,-16} {1,-16} {2,-37} {3,-11} {4,-16} {5,-30}", "Firstname", "Lastname",
-                                      "Agent ID", "Root/Child", "Region", "Position")
-                    );
+                                      "Agent ID", "Root/Child", "Region", "Position"));
 
                     foreach (ScenePresence presence in agents)
                     {
@@ -1090,7 +1089,7 @@ namespace OpenSim
 
                 case "ratings":
                     SceneManager.ForEachScene(
-                    delegate(Scene scene)
+                    delegate (Scene scene)
                     {
                         string rating = "";
 
@@ -1251,7 +1250,7 @@ namespace OpenSim
                             loadOffset.Z = (float)Convert.ToDecimal(cmdparams[6], Culture.NumberFormatInfo);
                         }
 
-                        MainConsole.Instance.Output(String.Format("loadOffsets <X,Y,Z> = <{0},{1},{2}>",loadOffset.X,loadOffset.Y,loadOffset.Z));
+                        MainConsole.Instance.Output(String.Format("loadOffsets <X,Y,Z> = <{0},{1},{2}>", loadOffset.X, loadOffset.Y, loadOffset.Z));
                     }
                 }
 

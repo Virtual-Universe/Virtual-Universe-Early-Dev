@@ -155,11 +155,15 @@ namespace OpenSim.Region.Framework.Scenes.Tests
             sp1SceneA.AbsolutePosition = so1StartPos;
             sp1SceneA.HandleAgentRequestSit(sp1SceneA.ControllingClient, sp1SceneA.UUID, so1.UUID, Vector3.Zero);
 
+            sceneA.Update(4);
+            sceneB.Update(4);
             // Cross
             sceneA.SceneGraph.UpdatePrimGroupPosition(
                 so1.LocalId, new Vector3(so1StartPos.X, so1StartPos.Y - 20, so1StartPos.Z), sp1SceneA.ControllingClient);
 
             // crossing is async
+            sceneA.Update(4);
+            sceneB.Update(4);
             Thread.Sleep(500);
 
             SceneObjectGroup so1PostCross;
@@ -170,6 +174,9 @@ namespace OpenSim.Region.Framework.Scenes.Tests
             ScenePresence sp1SceneBPostCross = sceneB.GetScenePresence(userId);
             TestClient sceneBTc = ((TestClient)sp1SceneBPostCross.ControllingClient);
             sceneBTc.CompleteMovement();
+
+            sceneA.Update(4);
+            sceneB.Update(4);
 
             Assert.IsFalse(sp1SceneBPostCross.IsChildAgent, "sp1SceneAPostCross.IsChildAgent unexpectedly true");
             Assert.IsTrue(sp1SceneBPostCross.IsSatOnObject);
@@ -188,6 +195,8 @@ namespace OpenSim.Region.Framework.Scenes.Tests
             sceneB.SceneGraph.UpdatePrimGroupPosition(
                 so1PostCross.LocalId, new Vector3(so1PostCrossPos.X, so1PostCrossPos.Y + 20, so1PostCrossPos.Z), sp1SceneBPostCross.ControllingClient);
 
+            sceneA.Update(4);
+            sceneB.Update(4);
             // crossing is async
             Thread.Sleep(500);
 
@@ -249,7 +258,7 @@ namespace OpenSim.Region.Framework.Scenes.Tests
             SceneHelpers.SetupSceneModules(
                 sceneB, config, etmB, lmmB, new PrimLimitsModule(), new PrimCountModule());
 
-            // We must set up the parcel for this to work.  Normally this is taken care of by Virtual Universe startup
+            // We must set up the parcel for this to work.  Normally this is taken care of by OpenSimulator startup
             // code which is not yet easily invoked by tests.
             lmmA.EventManagerOnNoLandDataFromStorage();
             lmmB.EventManagerOnNoLandDataFromStorage();

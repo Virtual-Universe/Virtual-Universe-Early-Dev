@@ -279,7 +279,7 @@ namespace OpenSim.Region.CoreModules.World.Objects.Commands
             float totalPrims              = stats[6];
             float activePrims             = stats[7];
             float totalFrameTime          = stats[8];
-//            float netFrameTime            = stats.StatsBlock[9].StatValue; // Ignored - not used by Virtual Universe
+//            float netFrameTime            = stats.StatsBlock[9].StatValue; // Ignored - not used by OpenSimulator
             float physicsFrameTime        = stats[10];
             float otherFrameTime          = stats[12];
 //            float imageFrameTime          = stats.StatsBlock[11].StatValue; // Ignored

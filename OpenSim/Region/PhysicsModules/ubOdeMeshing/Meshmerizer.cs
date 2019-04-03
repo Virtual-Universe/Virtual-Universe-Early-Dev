@@ -24,25 +24,27 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+//#define SPAM
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.IO.Compression;
-using System.Reflection;
-using System.Threading;
-using log4net;
-using Mono.Addins;
-using Nini.Config;
-using OpenMetaverse;
-using OpenMetaverse.StructuredData;
 using OpenSim.Framework;
-using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
+using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.PhysicsModules.SharedBase;
 using OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet;
+using OpenMetaverse;
+using OpenMetaverse.StructuredData;
+using System.Drawing;
+using System.Threading;
+using System.IO.Compression;
 using PrimMesher;
+using log4net;
+using Nini.Config;
+using System.Reflection;
+using System.IO;
+
+using Mono.Addins;
 
 namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 {
@@ -53,6 +55,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 
         // Setting baseDir to a path will enable the dumping of raw files
         // raw files can be imported by blender so a visual inspection of the results can be done
+
         const float floatPI = (float)Math.PI;
         private static string cacheControlFilename = "cntr";
         private bool m_Enabled = false;
@@ -64,7 +67,8 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public string cachePath = "MeshCache";
         public TimeSpan CacheExpire;
 
-        private const string baseDir = null;
+//        const string baseDir = "rawFiles";
+        private const string baseDir = null; //"rawFiles";
 
         private bool useMeshiesPhysicsMesh = true;
         private bool doConvexPrims = true;
@@ -73,8 +77,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         private Dictionary<AMeshKey, Mesh> m_uniqueMeshes = new Dictionary<AMeshKey, Mesh>();
         private Dictionary<AMeshKey, Mesh> m_uniqueReleasedMeshes = new Dictionary<AMeshKey, Mesh>();
 
-        #region INonSharedRegionModule
-
+       #region INonSharedRegionModule
         public string Name
         {
             get { return "ubODEMeshmerizer"; }
@@ -90,18 +93,17 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             IConfig start_config = config.Configs["Startup"];
 
             string mesher = start_config.GetString("meshing", string.Empty);
-
             if (mesher == Name)
             {
                 float fcache = 48.0f;
+                //            float fcache = 0.02f;
 
                 IConfig mesh_config = config.Configs["Mesh"];
-
                 if (mesh_config != null)
                 {
                     useMeshiesPhysicsMesh = mesh_config.GetBoolean("UseMeshiesPhysicsMesh", useMeshiesPhysicsMesh);
-                    doConvexPrims = mesh_config.GetBoolean("ConvexPrims", doConvexPrims);
-                    doConvexSculpts = mesh_config.GetBoolean("ConvexSculpts", doConvexPrims);
+                    doConvexPrims = mesh_config.GetBoolean("ConvexPrims",doConvexPrims);
+                    doConvexSculpts = mesh_config.GetBoolean("ConvexSculpts",doConvexPrims);
                     doMeshFileCache = mesh_config.GetBoolean("MeshFileCache", doMeshFileCache);
                     cachePath = mesh_config.GetString("MeshFileCachePath", cachePath);
                     fcache = mesh_config.GetFloat("MeshFileCacheExpireHours", fcache);
@@ -112,23 +114,19 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 
                 CacheExpire = TimeSpan.FromHours(fcache);
 
-                if (String.IsNullOrEmpty(cachePath))
-                {
+                if(String.IsNullOrEmpty(cachePath))
                     doMeshFileCache = false;
-                }
 
-                if (doMeshFileCache)
+                if(doMeshFileCache)
                 {
-                    if (!checkCache())
+                    if(!checkCache())
                     {
                         doMeshFileCache = false;
                         doCacheExpire = false;
                     }
                 }
                 else
-                {
                     doCacheExpire = false;
-                }
             }
         }
 
@@ -139,9 +137,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public void AddRegion(Scene scene)
         {
             if (!m_Enabled)
-            {
                 return;
-            }
 
             scene.RegisterModuleInterface<IMesher>(this);
         }
@@ -149,9 +145,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public void RemoveRegion(Scene scene)
         {
             if (!m_Enabled)
-            {
                 return;
-            }
 
             scene.UnregisterModuleInterface<IMesher>(this);
         }
@@ -159,9 +153,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public void RegionLoaded(Scene scene)
         {
             if (!m_Enabled)
-            {
                 return;
-            }
         }
 
         #endregion
@@ -174,7 +166,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         }
 
         /// <summary>
-        ///     Add a submesh to an existing list of coords and faces.
+        /// Add a submesh to an existing list of coords and faces.
         /// </summary>
         /// <param name="subMeshData"></param>
         /// <param name="size">Size of entire object</param>
@@ -182,17 +174,16 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         /// <param name="faces"></param>
         private void AddSubMesh(OSDMap subMeshData, List<Coord> coords, List<Face> faces)
         {
+            // Console.WriteLine("subMeshMap for {0} - {1}", primName, Util.GetFormattedXml((OSD)subMeshMap));
+
             // As per http://wiki.secondlife.com/wiki/Mesh/Mesh_Asset_Format, some Mesh Level
             // of Detail Blocks (maps) contain just a NoGeometry key to signal there is no
             // geometry for this submesh.
             if (subMeshData.ContainsKey("NoGeometry") && ((OSDBoolean)subMeshData["NoGeometry"]))
-            {
                 return;
-            }
 
             OpenMetaverse.Vector3 posMax;
             OpenMetaverse.Vector3 posMin;
-
             if (subMeshData.ContainsKey("PositionDomain"))
             {
                 posMax = ((OSDMap)subMeshData["PositionDomain"])["Max"].AsVector3();
@@ -207,7 +198,6 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             ushort faceIndexOffset = (ushort)coords.Count;
 
             byte[] posBytes = subMeshData["Position"].AsBinary();
-
             for (int i = 0; i < posBytes.Length; i += 6)
             {
                 ushort uX = Utils.BytesToUInt16(posBytes, i);
@@ -223,7 +213,6 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             }
 
             byte[] triangleBytes = subMeshData["TriangleList"].AsBinary();
-
             for (int i = 0; i < triangleBytes.Length; i += 6)
             {
                 ushort v1 = (ushort)(Utils.BytesToUInt16(triangleBytes, i) + faceIndexOffset);
@@ -235,8 +224,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         }
 
         /// <summary>
-        ///     Create a physics mesh from data that comes with the prim.  
-        ///     The actual data used depends on the prim type.
+        /// Create a physics mesh from data that comes with the prim.  The actual data used depends on the prim type.
         /// </summary>
         /// <param name="primName"></param>
         /// <param name="primShape"></param>
@@ -245,6 +233,10 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         /// <returns></returns>
         private Mesh CreateMeshFromPrimMesher(string primName, PrimitiveBaseShape primShape, float lod, bool convex)
         {
+//            m_log.DebugFormat(
+//                "[MESH]: Creating physics proxy for {0}, shape {1}",
+//                primName, (OpenMetaverse.SculptType)primShape.SculptType);
+
             List<Coord> coords;
             List<Face> faces;
             bool needsConvexProcessing = convex;
@@ -254,22 +246,16 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 if (((SculptType)primShape.SculptType) == SculptType.Mesh)
                 {
                     if (!useMeshiesPhysicsMesh)
-                    {
                         return null;
-                    }
-
                     try
                     {
                         if (!GenerateCoordsAndFacesFromPrimMeshData(primName, primShape, out coords, out faces, convex))
-                        {
                             return null;
-                        }
-
                         needsConvexProcessing = false;
                     }
                     catch
                     {
-                        m_log.ErrorFormat("[Mesh]: fail to process mesh asset for prim {0}", primName);
+                        m_log.ErrorFormat("[MESH]: fail to process mesh asset for prim {0}", primName);
                         return null;
                     }
                 }
@@ -278,15 +264,12 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     try
                     {
                         if (!GenerateCoordsAndFacesFromPrimSculptData(primName, primShape, lod, out coords, out faces))
-                        {
                             return null;
-                        }
-
                         needsConvexProcessing &= doConvexSculpts;
                     }
                     catch
                     {
-                        m_log.ErrorFormat("[Mesh]: fail to process sculpt map for prim {0}", primName);
+                        m_log.ErrorFormat("[MESH]: fail to process sculpt map for prim {0}", primName);
                         return null;
                     }
                 }
@@ -296,15 +279,12 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 try
                 {
                     if (!GenerateCoordsAndFacesFromPrimShapeData(primName, primShape, lod, convex, out coords, out faces))
-                    {
                         return null;
-                    }
-
-                    needsConvexProcessing &= doConvexPrims;
+                     needsConvexProcessing &= doConvexPrims;
                 }
                 catch
                 {
-                    m_log.ErrorFormat("[Mesh]: fail to process shape parameters for prim {0}", primName);
+                    m_log.ErrorFormat("[MESH]: fail to process shape parameters for prim {0}", primName);
                     return null;
                 }
             }
@@ -312,18 +292,17 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             int numCoords = coords.Count;
             int numFaces = faces.Count;
 
-            if (numCoords < 3 || (!needsConvexProcessing && numFaces < 1))
+            if(numCoords < 3 || (!needsConvexProcessing && numFaces < 1))
             {
-                m_log.ErrorFormat("[Mesh]: invalid degenerated mesh for prim {0} ignored", primName);
+                m_log.ErrorFormat("[MESH]: invalid degenerated mesh for prim {0} ignored", primName);
                 return null;
             }
 
-            if (needsConvexProcessing)
+            if(needsConvexProcessing)
             {
                 List<Coord> convexcoords;
                 List<Face> convexfaces;
-
-                if (CreateBoundingHull(coords, out convexcoords, out convexfaces) && convexcoords != null && convexfaces != null)
+                if(CreateBoundingHull(coords, out convexcoords, out convexfaces) && convexcoords != null && convexfaces != null)
                 {
                     coords.Clear();
                     coords = convexcoords;
@@ -334,13 +313,10 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     numFaces = faces.Count;
                 }
                 else
-                {
-                    m_log.ErrorFormat("[ubMesh]: failed to create convex for {0} using normal mesh", primName);
-                }
+                     m_log.ErrorFormat("[ubMESH]: failed to create convex for {0} using normal mesh", primName);
             }
 
             Mesh mesh = new Mesh(true);
-
             // Add the corresponding triangles to the mesh
             for (int i = 0; i < numFaces; i++)
             {
@@ -353,9 +329,9 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             coords.Clear();
             faces.Clear();
 
-            if (mesh.numberVertices() < 3 || mesh.numberTriangles() < 1)
+            if(mesh.numberVertices() < 3 || mesh.numberTriangles() < 1)
             {
-                m_log.ErrorFormat("[Mesh]: invalid degenerated mesh for prim {0} ignored", primName);
+                m_log.ErrorFormat("[MESH]: invalid degenerated mesh for prim {0} ignored", primName);
                 return null;
             }
 
@@ -365,8 +341,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         }
 
         /// <summary>
-        ///     Generate the co-ords and faces necessary to 
-        ///     construct a mesh from the mesh data the accompanies a prim.
+        /// Generate the co-ords and faces necessary to construct a mesh from the mesh data the accompanies a prim.
         /// </summary>
         /// <param name="primName"></param>
         /// <param name="primShape"></param>
@@ -377,6 +352,9 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         private bool GenerateCoordsAndFacesFromPrimMeshData(
             string primName, PrimitiveBaseShape primShape, out List<Coord> coords, out List<Face> faces, bool convex)
         {
+//            m_log.DebugFormat("[MESH]: experimental mesh proxy generation for {0}", primName);
+
+
             // for ubOde we have a diferent mesh use priority
             // priority is to use full mesh then decomposition
             // SL does the oposite
@@ -388,30 +366,27 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 
             if (primShape.SculptData == null || primShape.SculptData.Length <= 0)
             {
+//                m_log.InfoFormat("[MESH]: asset data for {0} is zero length", primName);
                 return false;
             }
 
             long start = 0;
-
             using (MemoryStream data = new MemoryStream(primShape.SculptData))
             {
                 try
                 {
                     OSD osd = OSDParser.DeserializeLLSDBinary(data);
-
                     if (osd is OSDMap)
-                    {
                         meshOsd = (OSDMap)osd;
-                    }
                     else
                     {
-                        m_log.WarnFormat("[Mesh]: unable to cast mesh asset to OSDMap prim: {0}", primName);
+                        m_log.WarnFormat("[Mesh}: unable to cast mesh asset to OSDMap prim: {0}",primName);
                         return false;
                     }
                 }
                 catch (Exception e)
                 {
-                    m_log.Error("[Mesh]: Exception deserializing mesh asset header:" + e.ToString());
+                    m_log.Error("[MESH]: Exception deserializing mesh asset header:" + e.ToString());
                     return false;
                 }
 
@@ -426,27 +401,20 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 if (!convex)
                 {
                     if (map.ContainsKey("physics_shape"))
-                    {
                         physicsParms = (OSDMap)map["physics_shape"]; // old asset format
-                    }
                     else if (map.ContainsKey("physics_mesh"))
-                    {
                         physicsParms = (OSDMap)map["physics_mesh"]; // new asset format
-                    }
 
                     if (physicsParms != null)
-                    {
                         usemesh = true;
-                    }
                 }
 
-                if (!usemesh && (map.ContainsKey("physics_convex")))
-                {
-                    physicsParms = (OSDMap)map["physics_convex"];
-                }
+                if(!usemesh && (map.ContainsKey("physics_convex")))
+                        physicsParms = (OSDMap)map["physics_convex"];
 
                 if (physicsParms == null)
                 {
+                    //m_log.WarnFormat("[MESH]: unknown mesh type for prim {0}",primName);
                     return false;
                 }
 
@@ -454,12 +422,9 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 int physSize = physicsParms["size"].AsInteger();
 
                 if (physOffset < 0 || physSize == 0)
-                {
                     return false; // no mesh data in asset
-                }
 
                 OSD decodedMeshOsd = new OSD();
-
                 try
                 {
                     using (MemoryStream outMs = new MemoryStream(4 * physSize))
@@ -473,19 +438,16 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                                 int readLen = 0;
 
                                 while ((readLen = decompressionStream.Read(readBuffer, 0, readBuffer.Length)) > 0)
-                                {
                                     outMs.Write(readBuffer, 0, readLen);
-                                }
                             }
                         }
-
                         outMs.Seek(0, SeekOrigin.Begin);
                         decodedMeshOsd = OSDParser.DeserializeLLSDBinary(outMs);
                     }
                 }
                 catch (Exception e)
                 {
-                    m_log.Error("[Mesh]: exception decoding physical mesh prim " + primName + " : " + e.ToString());
+                    m_log.Error("[MESH]: exception decoding physical mesh prim " + primName +" : " + e.ToString());
                     return false;
                 }
 
@@ -496,25 +458,21 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     // physics_shape is an array of OSDMaps, one for each submesh
                     if (decodedMeshOsd is OSDArray)
                     {
-                        decodedMeshOsdArray = (OSDArray)decodedMeshOsd;
+//                      Console.WriteLine("decodedMeshOsd for {0} - {1}", primName, Util.GetFormattedXml(decodedMeshOsd));
 
+                        decodedMeshOsdArray = (OSDArray)decodedMeshOsd;
                         foreach (OSD subMeshOsd in decodedMeshOsdArray)
                         {
                             if (subMeshOsd is OSDMap)
-                            {
                                 AddSubMesh(subMeshOsd as OSDMap, coords, faces);
-                            }
                         }
                     }
                 }
                 else
                 {
                     OSDMap cmap = (OSDMap)decodedMeshOsd;
-
                     if (cmap == null)
-                    {
                         return false;
-                    }
 
                     byte[] data;
 
@@ -535,27 +493,19 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     int nindexs;
 
                     if (cmap.ContainsKey("Max"))
-                    {
                         range = cmap["Max"].AsVector3();
-                    }
                     else
-                    {
                         range = new Vector3(0.5f, 0.5f, 0.5f);
-                    }
 
                     if (cmap.ContainsKey("Min"))
-                    {
                         min = cmap["Min"].AsVector3();
-                    }
                     else
-                    {
                         min = new Vector3(-0.5f, -0.5f, -0.5f);
-                    }
 
                     range = range - min;
                     range *= invMaxU16;
 
-                    if (!convex)
+                    if(!convex)
                     {
                         // if mesh data not present and not convex then we need convex decomposition data
                         if (cmap.ContainsKey("HullList") && cmap.ContainsKey("Positions"))
@@ -563,16 +513,11 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                             List<int> hsizes = new List<int>();
                             int totalpoints = 0;
                             data = cmap["HullList"].AsBinary();
-
                             for (i = 0; i < data.Length; i++)
                             {
                                 t1 = data[i];
-
                                 if (t1 == 0)
-                                {
                                     t1 = 256;
-                                }
-
                                 totalpoints += t1;
                                 hsizes.Add(t1);
                             }
@@ -585,7 +530,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                             {
                                 foreach (int hullsize in hsizes)
                                 {
-                                    for (i = 0; i < hullsize; i++)
+                                    for (i = 0; i < hullsize; i++ )
                                     {
                                         t1 = data[ptr++];
                                         t1 += data[ptr++] << 8;
@@ -600,13 +545,13 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                                         vs.Add(f3);
                                     }
 
-                                    if (hullsize < 3)
+                                    if(hullsize <3)
                                     {
                                         vs.Clear();
                                         continue;
                                     }
 
-                                    if (hullsize < 5)
+                                    if (hullsize <5)
                                     {
                                         foreach (float3 point in vs)
                                         {
@@ -615,7 +560,6 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                                             c.Z = point.z;
                                             coords.Add(c);
                                         }
-
                                         f = new Face(vertsoffset, vertsoffset + 1, vertsoffset + 2);
                                         faces.Add(f);
 
@@ -629,14 +573,12 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                                             f = new Face(vertsoffset + 3, vertsoffset + 2, vertsoffset + 1);
                                             faces.Add(f);
                                         }
-
                                         vertsoffset += vs.Count;
                                         vs.Clear();
                                         continue;
                                     }
 
                                     List<int> indices;
-
                                     if (!HullUtils.ComputeHull(vs, out indices))
                                     {
                                         vs.Clear();
@@ -663,49 +605,37 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                                     for (i = 0; i < nindexs; i += 3)
                                     {
                                         t1 = indices[i];
-
                                         if (t1 > nverts)
-                                        {
                                             break;
-                                        }
-
                                         t2 = indices[i + 1];
-
                                         if (t2 > nverts)
-                                        {
                                             break;
-                                        }
-
                                         t3 = indices[i + 2];
-
                                         if (t3 > nverts)
-                                        {
                                             break;
-                                        }
-
                                         f = new Face(vertsoffset + t1, vertsoffset + t2, vertsoffset + t3);
                                         faces.Add(f);
                                     }
-
                                     vertsoffset += nverts;
                                     vs.Clear();
                                 }
                             }
-
                             if (coords.Count > 0 && faces.Count > 0)
-                            {
                                 return true;
-                            }
+                        }
+                        else
+                        {
+                            // if neither mesh or decomposition present, warn and use convex
+                            //m_log.WarnFormat("[MESH]: Data for PRIM shape type ( mesh or decomposition) not found for prim {0}",primName);
                         }
                     }
-
                     vs.Clear();
 
                     if (cmap.ContainsKey("BoundingVerts"))
                     {
                         data = cmap["BoundingVerts"].AsBinary();
 
-                        for (i = 0; i < data.Length;)
+                        for (i = 0; i < data.Length; )
                         {
                             t1 = data[i++];
                             t1 += data[i++] << 8;
@@ -747,27 +677,21 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                                 faces.Add(f);
                                 f = new Face(0, 3, 1);
                                 faces.Add(f);
-                                f = new Face(3, 2, 1);
+                                f = new Face( 3, 2, 1);
                                 faces.Add(f);
                             }
-
                             vs.Clear();
                             return true;
                         }
 
                         List<int> indices;
-
                         if (!HullUtils.ComputeHull(vs, out indices))
-                        {
                             return false;
-                        }
 
                         nindexs = indices.Count;
 
                         if (nindexs % 3 != 0)
-                        {
                             return false;
-                        }
 
                         for (i = 0; i < nverts; i++)
                         {
@@ -776,45 +700,26 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                             c.Z = vs[i].z;
                             coords.Add(c);
                         }
-
                         for (i = 0; i < nindexs; i += 3)
                         {
                             t1 = indices[i];
-
                             if (t1 > nverts)
-                            {
                                 break;
-                            }
-
                             t2 = indices[i + 1];
-
                             if (t2 > nverts)
-                            {
                                 break;
-                            }
-
                             t3 = indices[i + 2];
-
                             if (t3 > nverts)
-                            {
                                 break;
-                            }
-
                             f = new Face(t1, t2, t3);
                             faces.Add(f);
                         }
-
                         vs.Clear();
-
                         if (coords.Count > 0 && faces.Count > 0)
-                        {
                             return true;
-                        }
                     }
                     else
-                    {
                         return false;
-                    }
                 }
             }
 
@@ -822,8 +727,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         }
 
         /// <summary>
-        ///     Generate the co-ords and faces necessary to construct 
-        ///     a mesh from the sculpt data the accompanies a prim.
+        /// Generate the co-ords and faces necessary to construct a mesh from the sculpt data the accompanies a prim.
         /// </summary>
         /// <param name="primName"></param>
         /// <param name="primShape"></param>
@@ -840,47 +744,43 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             PrimMesher.SculptMesh sculptMesh;
             Image idata = null;
 
-            if (primShape.SculptData == null || primShape.SculptData.Length == 0)
-            {
-                return false;
-            }
+                if (primShape.SculptData == null || primShape.SculptData.Length == 0)
+                    return false;
 
-            try
-            {
-                OpenMetaverse.Imaging.ManagedImage unusedData;
-                OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(primShape.SculptData, out unusedData, out idata);
-
-                unusedData = null;
-
-                if (idata == null)
+                try
                 {
-                    // In some cases it seems that the decode can return a null bitmap without throwing
-                    // an exception
-                    m_log.WarnFormat("[Physics]: OpenJPEG decoded sculpt data for {0} to a null bitmap.  Ignoring.", primName);
+                    OpenMetaverse.Imaging.ManagedImage unusedData;
+                    OpenMetaverse.Imaging.OpenJPEG.DecodeToImage(primShape.SculptData, out unusedData, out idata);
+
+                    unusedData = null;
+
+                    if (idata == null)
+                    {
+                        // In some cases it seems that the decode can return a null bitmap without throwing
+                        // an exception
+                        m_log.WarnFormat("[PHYSICS]: OpenJPEG decoded sculpt data for {0} to a null bitmap.  Ignoring.", primName);
+                        return false;
+                    }
+                }
+                catch (DllNotFoundException)
+                {
+                    m_log.Error("[PHYSICS]: OpenJpeg is not installed correctly on this system. Physics Proxy generation failed.  Often times this is because of an old version of GLIBC.  You must have version 2.4 or above!");
                     return false;
                 }
-            }
-            catch (DllNotFoundException)
-            {
-                m_log.Error("[Physics]: OpenJpeg is not installed correctly on this system. Physics Proxy generation failed.  Often times this is because of an old version of GLIBC.  You must have version 2.4 or above!");
-                return false;
-            }
-            catch (IndexOutOfRangeException)
-            {
-                m_log.Error("[Physics]: OpenJpeg was unable to decode this. Physics Proxy generation failed");
-                return false;
-            }
-            catch (Exception ex)
-            {
-                m_log.Error("[Physics]: Unable to generate a Sculpty physics proxy. Sculpty texture decode failed: " + ex.Message);
-                return false;
-            }
+                catch (IndexOutOfRangeException)
+                {
+                    m_log.Error("[PHYSICS]: OpenJpeg was unable to decode this. Physics Proxy generation failed");
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    m_log.Error("[PHYSICS]: Unable to generate a Sculpty physics proxy. Sculpty texture decode failed: " + ex.Message);
+                    return false;
+                }
 
             PrimMesher.SculptMesh.SculptType sculptType;
-
             // remove mirror and invert bits
             OpenMetaverse.SculptType pbsSculptType = ((OpenMetaverse.SculptType)(primShape.SculptType & 0x3f));
-
             switch (pbsSculptType)
             {
                 case OpenMetaverse.SculptType.Cylinder:
@@ -907,6 +807,8 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 
             idata.Dispose();
 
+//            sculptMesh.DumpRaw(baseDir, primName, "primMesh");
+
             coords = sculptMesh.coords;
             faces = sculptMesh.faces;
 
@@ -914,8 +816,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         }
 
         /// <summary>
-        ///     Generate the co-ords and faces necessary to construct 
-        ///     a mesh from the shape data the accompanies a prim.
+        /// Generate the co-ords and faces necessary to construct a mesh from the shape data the accompanies a prim.
         /// </summary>
         /// <param name="primName"></param>
         /// <param name="primShape"></param>
@@ -942,34 +843,21 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             float profileEnd = 1.0f - (float)primShape.ProfileEnd * 2.0e-5f;
 
             if (profileBegin < 0.0f)
-            {
                 profileBegin = 0.0f;
-            }
 
             if (profileEnd < 0.02f)
-            {
                 profileEnd = 0.02f;
-            }
             else if (profileEnd > 1.0f)
-            {
                 profileEnd = 1.0f;
-            }
 
             if (profileBegin >= profileEnd)
-            {
                 profileBegin = profileEnd - 0.02f;
-            }
 
             float profileHollow = (float)primShape.ProfileHollow * 2.0e-5f;
-
-            if (convex)
-            {
+            if(convex)
                 profileHollow = 0.0f;
-            }
             else if (profileHollow > 0.95f)
-            {
                 profileHollow = 0.95f;
-            }
 
             int sides = 4;
             LevelOfDetail iLOD = (LevelOfDetail)lod;
@@ -978,50 +866,27 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             if (profshape == (byte)ProfileShape.EquilateralTriangle
                 || profshape == (byte)ProfileShape.IsometricTriangle
                 || profshape == (byte)ProfileShape.RightTriangle)
-            {
                 sides = 3;
-            }
             else if (profshape == (byte)ProfileShape.Circle)
             {
                 switch (iLOD)
                 {
-                    case LevelOfDetail.High:
-                        sides = 24;
-                        break;
-                    case LevelOfDetail.Medium:
-                        sides = 12;
-                        break;
-                    case LevelOfDetail.Low:
-                        sides = 6;
-                        break;
-                    case LevelOfDetail.VeryLow:
-                        sides = 3;
-                        break;
-                    default:
-                        sides = 24;
-                        break;
+                    case LevelOfDetail.High:    sides = 24;     break;
+                    case LevelOfDetail.Medium:  sides = 12;     break;
+                    case LevelOfDetail.Low:     sides = 6;      break;
+                    case LevelOfDetail.VeryLow: sides = 3;      break;
+                    default:                    sides = 24;     break;
                 }
             }
             else if (profshape == (byte)ProfileShape.HalfCircle)
-            {
-                // half circle, prim is a sphere
+            { // half circle, prim is a sphere
                 switch (iLOD)
                 {
-                    case LevelOfDetail.High:
-                        sides = 24;
-                        break;
-                    case LevelOfDetail.Medium:
-                        sides = 12;
-                        break;
-                    case LevelOfDetail.Low:
-                        sides = 6;
-                        break;
-                    case LevelOfDetail.VeryLow:
-                        sides = 3;
-                        break;
-                    default:
-                        sides = 24;
-                        break;
+                    case LevelOfDetail.High:    sides = 24;     break;
+                    case LevelOfDetail.Medium:  sides = 12;     break;
+                    case LevelOfDetail.Low:     sides = 6;      break;
+                    case LevelOfDetail.VeryLow: sides = 3;      break;
+                    default:                    sides = 24;     break;
                 }
 
                 profileBegin = 0.5f * profileBegin + 0.5f;
@@ -1029,60 +894,39 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             }
 
             int hollowSides = sides;
-
             if (primShape.HollowShape == HollowShape.Circle)
             {
                 switch (iLOD)
                 {
-                    case LevelOfDetail.High:
-                        hollowSides = 24;
-                        break;
-                    case LevelOfDetail.Medium:
-                        hollowSides = 12;
-                        break;
-                    case LevelOfDetail.Low:
-                        hollowSides = 6;
-                        break;
-                    case LevelOfDetail.VeryLow:
-                        hollowSides = 3;
-                        break;
-                    default:
-                        hollowSides = 24;
-                        break;
+                    case LevelOfDetail.High:    hollowSides = 24;     break;
+                    case LevelOfDetail.Medium:  hollowSides = 12;     break;
+                    case LevelOfDetail.Low:     hollowSides = 6;      break;
+                    case LevelOfDetail.VeryLow: hollowSides = 3;      break;
+                    default:                    hollowSides = 24;     break;
                 }
             }
             else if (primShape.HollowShape == HollowShape.Square)
-            {
                 hollowSides = 4;
-            }
             else if (primShape.HollowShape == HollowShape.Triangle)
             {
                 if (profshape == (byte)ProfileShape.HalfCircle)
-                {
                     hollowSides = 6;
-                }
                 else
-                {
                     hollowSides = 3;
-                }
             }
 
             primMesh = new PrimMesh(sides, profileBegin, profileEnd, profileHollow, hollowSides);
 
             if (primMesh.errorMessage != null)
-            {
                 if (primMesh.errorMessage.Length > 0)
-                {
-                    m_log.Error("[Error]: " + primMesh.errorMessage);
-                }
-            }
+                    m_log.Error("[ERROR] " + primMesh.errorMessage);
 
             primMesh.topShearX = pathShearX;
             primMesh.topShearY = pathShearY;
             primMesh.pathCutBegin = pathBegin;
             primMesh.pathCutEnd = pathEnd;
-
-            if (primShape.PathCurve == (byte)Extrusion.Straight || primShape.PathCurve == (byte)Extrusion.Flexible)
+            
+            if (primShape.PathCurve == (byte)Extrusion.Straight || primShape.PathCurve == (byte) Extrusion.Flexible)
             {
                 primMesh.twistBegin = (float)(primShape.PathTwistBegin * (floatPI * 0.01f));
                 primMesh.twistEnd = (float)(primShape.PathTwist * (floatPI * 0.01f));
@@ -1114,16 +958,12 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 primMesh.taperX = primShape.PathTaperX * 0.01f;
                 primMesh.taperY = primShape.PathTaperY * 0.01f;
 
-                if (profshape == (byte)ProfileShape.HalfCircle)
+                if(profshape == (byte)ProfileShape.HalfCircle)
                 {
-                    if (primMesh.holeSizeY < 0.01f)
-                    {
+                    if(primMesh.holeSizeY < 0.01f)
                         primMesh.holeSizeY = 0.01f;
-                    }
-                    else if (primMesh.holeSizeY > 1.0f)
-                    {
+                    else if(primMesh.holeSizeY > 1.0f)
                         primMesh.holeSizeY = 1.0f;
-                    }
                 }
 
 #if SPAM
@@ -1139,6 +979,8 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     return false;
                 }
             }
+
+//            primMesh.DumpRaw(baseDir, primName, "primMesh");
 
             coords = primMesh.coords;
             faces = primMesh.faces;
@@ -1200,28 +1042,19 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             else
             {
                 someBytes = size.GetBytes();
-
                 for (int i = 0; i < someBytes.Length; i++)
-                {
                     hash = mdjb2(hash, someBytes[i]);
-                }
-
                 hash = hash << 8;
             }
 
             if (convex)
-            {
                 hash |= 4;
-            }
 
             if (primShape.SculptEntry)
             {
                 hash |= 1;
-
                 if (primShape.SculptType == (byte)SculptType.Mesh)
-                {
                     hash |= 2;
-                }
             }
 
             key.hashC = hash;
@@ -1242,12 +1075,12 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 
         public IMesh CreateMesh(String primName, PrimitiveBaseShape primShape, Vector3 size, float lod)
         {
-            return CreateMesh(primName, primShape, size, lod, false, false, false);
+            return CreateMesh(primName, primShape, size, lod, false,false,false);
         }
 
         public IMesh CreateMesh(String primName, PrimitiveBaseShape primShape, Vector3 size, float lod, bool isPhysical)
         {
-            return CreateMesh(primName, primShape, size, lod, false, false, false);
+            return CreateMesh(primName, primShape, size, lod, false,false,false);
         }
 
         public IMesh CreateMesh(String primName, PrimitiveBaseShape primShape, Vector3 size, float lod, bool isPhysical, bool shouldCache, bool convex, bool forOde)
@@ -1259,23 +1092,11 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         {
             Mesh mesh = null;
 
-            if (size.X < 0.01f)
-            {
-                size.X = 0.01f;
-            }
-
-            if (size.Y < 0.01f)
-            {
-                size.Y = 0.01f;
-            }
-
-            if (size.Z < 0.01f)
-            {
-                size.Z = 0.01f;
-            }
+            if (size.X < 0.01f) size.X = 0.01f;
+            if (size.Y < 0.01f) size.Y = 0.01f;
+            if (size.Z < 0.01f) size.Z = 0.01f;
 
             AMeshKey key = GetMeshUniqueKey(primShape, size, (byte)lod, convex);
-
             lock (m_uniqueMeshes)
             {
                 m_uniqueMeshes.TryGetValue(key, out mesh);
@@ -1290,25 +1111,19 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 lock (m_uniqueReleasedMeshes)
                 {
                     m_uniqueReleasedMeshes.TryGetValue(key, out mesh);
-
                     if (mesh != null)
                     {
                         m_uniqueReleasedMeshes.Remove(key);
-
                         try
                         {
                             m_uniqueMeshes.Add(key, mesh);
                         }
-                        catch
-                        {
-                        }
-
+                        catch { }
                         mesh.RefCount = 1;
                         return mesh;
                     }
                 }
             }
-
             return null;
         }
 
@@ -1317,28 +1132,18 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public IMesh CreateMesh(String primName, PrimitiveBaseShape primShape, Vector3 size, float lod, bool isPhysical, bool convex, bool forOde)
         {
 #if SPAM
-            m_log.DebugFormat("[Mesh]: Creating mesh for {0}", primName);
+            m_log.DebugFormat("[MESH]: Creating mesh for {0}", primName);
 #endif
 
             Mesh mesh = null;
 
-            if (size.X < 0.01f)
-            {
-                size.X = 0.01f;
-            }
-
-            if (size.Y < 0.01f)
-            {
-                size.Y = 0.01f;
-            }
-
-            if (size.Z < 0.01f)
-            {
-                size.Z = 0.01f;
-            }
+            if (size.X < 0.01f) size.X = 0.01f;
+            if (size.Y < 0.01f) size.Y = 0.01f;
+            if (size.Z < 0.01f) size.Z = 0.01f;
 
             // try to find a identical mesh on meshs in use
-            AMeshKey key = GetMeshUniqueKey(primShape, size, (byte)lod, convex);
+
+            AMeshKey key = GetMeshUniqueKey(primShape,size,(byte)lod, convex);
 
             lock (m_uniqueMeshes)
             {
@@ -1354,19 +1159,14 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 lock (m_uniqueReleasedMeshes)
                 {
                     m_uniqueReleasedMeshes.TryGetValue(key, out mesh);
-
                     if (mesh != null)
                     {
                         m_uniqueReleasedMeshes.Remove(key);
-
                         try
                         {
                             m_uniqueMeshes.Add(key, mesh);
                         }
-                        catch
-                        {
-                        }
-
+                        catch { }
                         mesh.RefCount = 1;
                         return mesh;
                     }
@@ -1379,7 +1179,6 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             lock (m_uniqueReleasedMeshes)
             {
                 m_uniqueReleasedMeshes.TryGetValue(unitKey, out UnitMesh);
-
                 if (UnitMesh != null)
                 {
                     UnitMesh.RefCount = 1;
@@ -1387,18 +1186,14 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             }
 
             if (UnitMesh == null && primShape.SculptEntry && doMeshFileCache)
-            {
                 UnitMesh = GetFromFileCache(unitKey);
-            }
 
             if (UnitMesh == null)
             {
                 UnitMesh = CreateMeshFromPrimMesher(primName, primShape, lod, convex);
 
                 if (UnitMesh == null)
-                {
                     return null;
-                }
 
                 UnitMesh.DumpRaw(baseDir, unitKey.ToString(), "Z");
 
@@ -1408,17 +1203,13 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     UnitMesh.PrepForOde();
                 }
                 else
-                {
                     UnitMesh.TrimExcess();
-                }
 
                 UnitMesh.Key = unitKey;
                 UnitMesh.RefCount = 1;
 
                 if (doMeshFileCache && primShape.SculptEntry)
-                {
                     StoreToFileCache(unitKey, UnitMesh);
-                }
 
                 lock (m_uniqueReleasedMeshes)
                 {
@@ -1426,25 +1217,20 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     {
                         m_uniqueReleasedMeshes.Add(unitKey, UnitMesh);
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
 
             mesh = UnitMesh.Scale(size);
             mesh.Key = key;
             mesh.RefCount = 1;
-
             lock (m_uniqueMeshes)
             {
                 try
                 {
                     m_uniqueMeshes.Add(key, mesh);
                 }
-                catch
-                {
-                }
+                catch { }
             }
 
             return mesh;
@@ -1453,9 +1239,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public void ReleaseMesh(IMesh imesh)
         {
             if (imesh == null)
-            {
                 return;
-            }
 
             Mesh mesh = (Mesh)imesh;
 
@@ -1472,16 +1256,13 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
 
                 mesh.RefCount = 0;
                 m_uniqueMeshes.Remove(mesh.Key);
-
                 lock (m_uniqueReleasedMeshes)
                 {
                     try
                     {
                         m_uniqueReleasedMeshes.Add(mesh.Key, mesh);
                     }
-                    catch
-                    {
-                    }
+                    catch { }
                 }
             }
         }
@@ -1489,9 +1270,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public void ExpireReleaseMeshs()
         {
             if (m_uniqueReleasedMeshes.Count == 0)
-            {
                 return;
-            }
 
             List<Mesh> meshstodelete = new List<Mesh>();
             int refcntr;
@@ -1502,15 +1281,10 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 {
                     refcntr = m.RefCount;
                     refcntr--;
-
                     if (refcntr > -6)
-                    {
                         m.RefCount = refcntr;
-                    }
                     else
-                    {
                         meshstodelete.Add(m);
-                    }
                 }
 
                 foreach (Mesh m in meshstodelete)
@@ -1533,7 +1307,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public string FullFileName(AMeshKey key)
         {
             string id = key.ToString();
-            string init = id.Substring(0, 1);
+            string init = id.Substring(0,1);
             id = System.IO.Path.Combine(init, id);
             id = System.IO.Path.Combine(cachePath, id);
             return id;
@@ -1551,32 +1325,32 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 {
                     try
                     {
-                        using (FileStream stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+                        using(FileStream stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
-                            mesh = Mesh.FromStream(stream, key);
+//                            BinaryFormatter bformatter = new BinaryFormatter();
+                            mesh = Mesh.FromStream(stream,key);
                         }
+
                     }
                     catch (Exception e)
                     {
                         ok = false;
                         m_log.ErrorFormat(
-                            "[Mesh Cache]: Failed to get file {0}.  Exception {1} {2}", filename, e.Message, e.StackTrace);
+                            "[MESH CACHE]: Failed to get file {0}.  Exception {1} {2}",
+                            filename, e.Message, e.StackTrace);
                     }
 
                     try
                     {
                         if (mesh == null || !ok)
-                        {
                             File.Delete(filename);
-                        }
                         else
-                        {
                             File.SetLastAccessTimeUtc(filename, DateTime.UtcNow);
-                        }
                     }
                     catch
                     {
                     }
+
                 }
             }
 
@@ -1596,7 +1370,6 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             lock (diskLock)
             {
                 Stream stream = null;
-
                 try
                 {
                     if (!Directory.Exists(dir))
@@ -1610,15 +1383,14 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 catch (IOException e)
                 {
                     m_log.ErrorFormat(
-                        "[Mesh Cache]: Failed to write file {0}.  Exception {1} {2}.", filename, e.Message, e.StackTrace);
+                        "[MESH CACHE]: Failed to write file {0}.  Exception {1} {2}.",
+                        filename, e.Message, e.StackTrace);
                     ok = false;
                 }
                 finally
                 {
-                    if (stream != null)
-                    {
+                    if(stream != null)
                         stream.Dispose();
-                    }
                 }
 
                 if (!ok && File.Exists(filename))
@@ -1629,8 +1401,8 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     }
                     catch (IOException)
                     {
-                        m_log.ErrorFormat(
-                       "[Mesh Cache]: Failed to delete file {0}", filename);
+                         m_log.ErrorFormat(
+                        "[MESH CACHE]: Failed to delete file {0}",filename);
                     }
                 }
             }
@@ -1639,9 +1411,7 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
         public void ExpireFileCache()
         {
             if (!doCacheExpire)
-            {
                 return;
-            }
 
             string controlfile = System.IO.Path.Combine(cachePath, cacheControlFilename);
 
@@ -1671,47 +1441,35 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                                             ndeleted++;
                                         }
                                     }
-                                    catch
-                                    {
-                                    }
-
+                                    catch { }
                                     totalfiles++;
                                 }
                             }
-                            catch
-                            {
-                            }
-
+                            catch { }
                             ndirs++;
                         }
 
                         if (ndeleted == 0)
-                        {
-                            m_log.InfoFormat("[Mesh Cache]: {0} Files in {1} cache folders, no expires", totalfiles, ndirs);
-                        }
+                            m_log.InfoFormat("[MESH CACHE]: {0} Files in {1} cache folders, no expires",
+                                totalfiles,ndirs);
                         else
-                        {
-                            m_log.InfoFormat("[Mesh Cache]: {0} Files in {1} cache folders, expired {2} files accessed before {3}",
-                                totalfiles, ndirs, ndeleted, OlderTime.ToString());
-                        }
+                            m_log.InfoFormat("[MESH CACHE]: {0} Files in {1} cache folders, expired {2} files accessed before {3}",
+                                totalfiles,ndirs, ndeleted, OlderTime.ToString());
                     }
                     else
                     {
-                        m_log.Info("[Mesh Cache]: Expire delayed to next startup");
-                        FileStream fs = File.Create(controlfile, 4096, FileOptions.WriteThrough);
+                        m_log.Info("[MESH CACHE]: Expire delayed to next startup");
+                        FileStream fs = File.Create(controlfile,4096,FileOptions.WriteThrough);
                         fs.Close();
                     }
                 }
-                catch
-                {
-                }
+                catch { }
             }
         }
 
         public bool checkCache()
         {
             string controlfile = System.IO.Path.Combine(cachePath, cacheControlFilename);
-
             lock (diskLock)
             {
                 try
@@ -1731,71 +1489,54 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                     doCacheExpire = false;
                     return false;
                 }
-                finally
-                {
-                }
+                finally {}
 
                 if (File.Exists(controlfile))
-                {
                     return true;
-                }
 
                 try
                 {
                     Directory.Delete(cachePath, true);
-
-                    while (Directory.Exists(cachePath))
-                    {
+                    while(Directory.Exists(cachePath))
                         Thread.Sleep(100);
-                    }
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
-                    m_log.Error("[Mesh Cache]: failed to delete old version of the cache: " + e.Message);
+                    m_log.Error("[MESH CACHE]: failed to delete old version of the cache: " + e.Message);
                     doMeshFileCache = false;
                     doCacheExpire = false;
                     return false;
-                }
-                finally
-                {
-                }
-
+                } 
+                finally {}
                 try
                 {
                     Directory.CreateDirectory(cachePath);
-
-                    while (!Directory.Exists(cachePath))
-                    {
+                    while(!Directory.Exists(cachePath))
                         Thread.Sleep(100);
-                    }
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
-                    m_log.Error("[Mesh Cache]: failed to create new cache folder: " + e.Message);
+                    m_log.Error("[MESH CACHE]: failed to create new cache folder: " + e.Message);
                     doMeshFileCache = false;
                     doCacheExpire = false;
                     return false;
-                }
-                finally
-                {
-                }
+                } 
+                finally {}
 
                 try
                 {
                     FileStream fs = File.Create(controlfile, 4096, FileOptions.WriteThrough);
                     fs.Close();
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
-                    m_log.Error("[Mesh Cache]: failed to create new control file: " + e.Message);
+                    m_log.Error("[MESH CACHE]: failed to create new control file: " + e.Message);
                     doMeshFileCache = false;
                     doCacheExpire = false;
                     return false;
-                }
-                finally
-                {
-                }
-
+                } 
+                finally {}
+            
                 return true;
             }
         }
@@ -1813,8 +1554,8 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             List<float3> vs = new List<float3>(nInputVerts);
             float3 f3;
 
-            // useless copy
-            for (i = 0; i < nInputVerts; i++)
+            //useless copy
+            for(i = 0 ; i < nInputVerts; i++)
             {
                 f3 = new float3(inputVertices[i].X, inputVertices[i].Y, inputVertices[i].Z);
                 vs.Add(f3);
@@ -1827,30 +1568,20 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             try
             {
                 HullError ret = HullUtils.CreateConvexHull(desc, ref result);
-
                 if (ret != HullError.QE_OK)
-                {
                     return false;
-                }
-
                 int nverts = result.OutputVertices.Count;
                 int nindx = result.Indices.Count;
-
-                if (nverts < 3 || nindx < 3)
-                {
+                if(nverts < 3 || nindx< 3)
                     return false;
-                }
-
-                if (nindx % 3 != 0)
-                {
+                if(nindx % 3 != 0)
                     return false;
-                }
 
                 convexcoords = new List<Coord>(nverts);
                 Coord c;
                 vs = result.OutputVertices;
 
-                for (i = 0; i < nverts; i++)
+                for(i = 0 ; i < nverts; i++)
                 {
                     c = new Coord(vs[i].x, vs[i].y, vs[i].z);
                     convexcoords.Add(c);
@@ -1860,29 +1591,18 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
                 List<int> indxs = result.Indices;
                 int k, l, m;
                 Face f;
-
-                for (i = 0; i < nindx;)
+                for(i = 0 ; i < nindx;)
                 {
                     k = indxs[i++];
                     l = indxs[i++];
                     m = indxs[i++];
-
-                    if (k > nInputVerts)
-                    {
+                    if(k > nInputVerts)
                         continue;
-                    }
-
-                    if (l > nInputVerts)
-                    {
+                    if(l > nInputVerts)
                         continue;
-                    }
-
-                    if (m > nInputVerts)
-                    {
+                    if(m > nInputVerts)
                         continue;
-                    }
-
-                    f = new Face(k, l, m);
+                    f = new Face(k,l,m);
                     newfaces.Add(f);
                 }
             }
@@ -1890,7 +1610,6 @@ namespace OpenSim.Region.PhysicsModule.ubODEMeshing
             {
                 return false;
             }
-
             return true;
         }
     }

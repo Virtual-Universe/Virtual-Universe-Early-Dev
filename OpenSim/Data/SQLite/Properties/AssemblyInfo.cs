@@ -37,7 +37,7 @@ using System.Runtime.InteropServices;
 [assembly : AssemblyConfiguration("")]
 [assembly : AssemblyCompany("https://virtual-planets.org")]
 [assembly : AssemblyProduct("OpenSim.Data.SQLite")]
-[assembly : AssemblyCopyright("Copyright (c) Virtual Universe.org Developers 2007-2009")]
+[assembly : AssemblyCopyright("Copyright (c) OpenSimulator.org Developers 2007-2009")]
 [assembly : AssemblyTrademark("")]
 [assembly : AssemblyCulture("")]
 

@@ -11,7 +11,7 @@ using Mono.Addins;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://virtual-planets.org")]
 [assembly: AssemblyProduct("OpenSim")]
-[assembly: AssemblyCopyright("Copyright Virtual Universe developers ©  2012")]
+[assembly: AssemblyCopyright("Copyright OpenSimulator developers ©  2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, https://Secondgalaxy.com/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,10 +30,6 @@ using System.Collections.Generic;
 using System.Net;
 using System.Reflection;
 using System.Threading;
-using log4net;
-using Mono.Addins;
-using Nini.Config;
-using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Capabilities;
 using OpenSim.Framework.Client;
@@ -42,7 +38,13 @@ using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.PhysicsModules.SharedBase;
 using OpenSim.Services.Interfaces;
+
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
+
+using OpenMetaverse;
+using log4net;
+using Nini.Config;
+using Mono.Addins;
 
 namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 {
@@ -2036,7 +2038,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 
             if (m_regionInfo != null)
             {
-                neighbours = GetNeighbours(sp, m_regionInfo.RegionLocX, m_regionInfo.RegionLocY);
+                neighbours = GetNeighbors(sp, m_regionInfo.RegionLocX, m_regionInfo.RegionLocY);
             }
             else
             {
@@ -2420,7 +2422,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
         /// <param name="pRegionLocX"></param>
         /// <param name="pRegionLocY"></param>
         /// <returns></returns>
-        protected List<GridRegion> GetNeighbours(ScenePresence avatar, uint pRegionLocX, uint pRegionLocY)
+        protected List<GridRegion> GetNeighbors(ScenePresence avatar, uint pRegionLocX, uint pRegionLocY)
         {
             Scene pScene = avatar.Scene;
             RegionInfo m_regionInfo = pScene.RegionInfo;
@@ -2428,7 +2430,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 
             uint dd = (uint)avatar.RegionViewDistance;
 
-            // until avatar movement updates client connections, we need to send at least this current region immediate neighbours
+            // until avatar movement updates client connections, we need to send at least this current region immediate neighbors
             uint ddX = Math.Max(dd, Constants.RegionSize);
             uint ddY = Math.Max(dd, Constants.RegionSize);
 
@@ -2541,11 +2543,11 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                 //string objectState = grp.GetStateSnapshot();
 
                 //successYN
-                //    = m_sceneGridService.PrimCrossToNeighbouringRegion(
+                //    = m_sceneGridService.PrimCrossToNeighboringRegion(
                 //        newRegionHandle, grp.UUID, m_serializer.SaveGroupToXml2(grp), primcrossingXMLmethod);
                 //if (successYN && (objectState != "") && m_allowScriptCrossings)
                 //{
-                //    successYN = m_sceneGridService.PrimCrossToNeighbouringRegion(
+                //    successYN = m_sceneGridService.PrimCrossToNeighboringRegion(
                 //            newRegionHandle, grp.UUID, objectState, 100);
                 //}
 

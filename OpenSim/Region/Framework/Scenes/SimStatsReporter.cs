@@ -72,7 +72,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// These are the IDs of stats sent in the StatsPacket to the viewer.
         /// </summary>
         /// <remarks>
-        /// Some of these are not relevant to Virtual Universe since it is architected differently to other simulators
+        /// Some of these are not relevant to OpenSimulator since it is architected differently to other simulators
         /// (e.g. script instructions aren't executed as part of the frame loop so 'script time' is tricky).
         /// </remarks>
         public enum Stats : uint

@@ -28,15 +28,15 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Reflection;
-using System.Xml;
-using log4net;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.CoreModules.World.Estate;
+using log4net;
+using System.Reflection;
+using System.Xml;
 
 namespace OpenSim.Region.OptionalModules.World.NPC
 {

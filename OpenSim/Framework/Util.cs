@@ -729,7 +729,7 @@ namespace OpenSim.Framework
 
         public static bool LoadArchSpecificWindowsDll(string libraryName, string path)
         {
-            // We do this so that Virtual Universe on Windows loads the correct native library depending on whether
+            // We do this so that OpenSimulator on Windows loads the correct native library depending on whether
             // it's running as a 32-bit process or a 64-bit one.  By invoking LoadLibary here, later DLLImports
             // will find it already loaded later on.
             //

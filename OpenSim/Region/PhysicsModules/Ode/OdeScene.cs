@@ -117,7 +117,7 @@ namespace OpenSim.Region.PhysicsModule.ODE
         /// .../opensim/bin/libode-x86_64.so(_ZN6Opcode11OBBCollider8_CollideEPKNS_14AABBNoLeafNodeE+0xd7a) [0x7f6dd822628a]
         ///
         /// ODE provides an experimental option to cache in thread local storage but compiling ODE with this option
-        /// causes Virtual Universe to immediately crash with a native stack trace similar to
+        /// causes OpenSimulator to immediately crash with a native stack trace similar to
         ///
         /// mono() [0x489171]
         /// mono() [0x4d154f]
@@ -2958,7 +2958,7 @@ namespace OpenSim.Region.PhysicsModule.ODE
 
                 latertickcount = Util.EnvironmentTickCountSubtract(tickCountFrameRun);
 
-                // Virtual Universe above does 10 fps.  10 fps = means that the main thread loop and physics
+                // OpenSimulator above does 10 fps.  10 fps = means that the main thread loop and physics
                 // has a max of 100 ms to run theoretically.
                 // If the main loop stalls, it calls Simulate later which makes the tick count ms larger.
                 // If Physics stalls, it takes longer which makes the tick count ms larger.

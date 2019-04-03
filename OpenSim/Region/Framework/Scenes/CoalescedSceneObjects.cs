@@ -51,7 +51,9 @@ namespace OpenSim.Region.Framework.Scenes
             get
             {
                 lock (m_memberObjects)
+                {
                     return m_memberObjects.Count;
+                }
             }
         }
 
@@ -68,7 +70,9 @@ namespace OpenSim.Region.Framework.Scenes
             get
             {
                 lock (m_memberObjects)
+                {
                     return new List<SceneObjectGroup>(m_memberObjects);
+                }
             }
         }
 
@@ -80,9 +84,13 @@ namespace OpenSim.Region.Framework.Scenes
             get
             {
                 if (!HasObjects)
+                {
                     return null;
+                }
                 else
+                {
                     return Objects[0].Scene;
+                }
             }
         }
 
@@ -100,7 +108,9 @@ namespace OpenSim.Region.Framework.Scenes
         public CoalescedSceneObjects(UUID creatorId, params SceneObjectGroup[] objs) : this(creatorId)
         {
             foreach (SceneObjectGroup obj in objs)
+            {
                 Add(obj);
+            }
         }
 
         /// <summary>
@@ -111,7 +121,9 @@ namespace OpenSim.Region.Framework.Scenes
         public void Add(SceneObjectGroup obj)
         {
             lock (m_memberObjects)
+            {
                 m_memberObjects.Add(obj);
+            }
         }
 
         /// <summary>
@@ -122,7 +134,9 @@ namespace OpenSim.Region.Framework.Scenes
         public bool Remove(SceneObjectGroup obj)
         {
             lock (m_memberObjects)
+            {
                 return m_memberObjects.Remove(obj);
+            }
         }
 
         /// <summary>

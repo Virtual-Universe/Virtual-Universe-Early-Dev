@@ -256,7 +256,7 @@ namespace OpenSim.Services.Connectors
                 // as m_maxAssetRequestConcurrency was being passed as the timeout, not a concurrency limiting option.
                 // Wasn't noticed before because timeout wasn't actually used.
                 // Not attempting concurrency setting for now as this omission was discovered in release candidate
-                // phase for Virtual Universe 0.8.  Need to revisit afterwards.
+                // phase for OpenSimulator 0.8.  Need to revisit afterwards.
 //                asset
 //                    = SynchronousRestObjectRequester.MakeRequest<int, AssetBase>(
 //                        "GET", uri, 0, m_maxAssetRequestConcurrency);

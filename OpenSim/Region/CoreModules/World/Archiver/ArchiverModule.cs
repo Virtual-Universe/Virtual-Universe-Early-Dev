@@ -44,7 +44,7 @@ using OpenMetaverse;
 namespace OpenSim.Region.CoreModules.World.Archiver
 {
     /// <summary>
-    /// This module loads and saves Virtual Universe region archives
+    /// This module loads and saves OpenSimulator region archives
     /// </summary>
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "ArchiverModule")]
     public class ArchiverModule : INonSharedRegionModule, IRegionArchiverModule

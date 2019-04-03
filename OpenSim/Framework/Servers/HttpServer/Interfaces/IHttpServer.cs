@@ -30,7 +30,7 @@ using Nwc.XmlRpc;
 namespace OpenSim.Framework.Servers.HttpServer
 {
     /// <summary>
-    /// Interface to Virtual Universe's built in HTTP server.  Use this to register handlers (http, llsd, xmlrpc, etc.)
+    /// Interface to OpenSimulator's built in HTTP server.  Use this to register handlers (http, llsd, xmlrpc, etc.)
     /// for given URLs.
     /// </summary>
     public interface IHttpServer

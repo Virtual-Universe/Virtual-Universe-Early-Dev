@@ -101,7 +101,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Groups
                     if (m_SceneList.Count == 0)
                     {
                         osGroup.GroupID = opensimulatorGroupID;
-                        osGroup.GroupName = "Virtual Universe Testing";
+                        osGroup.GroupName = "OpenSimulator Testing";
                         osGroup.GroupPowers =
                                 (uint)(GroupPowers.AllowLandmark |
                                        GroupPowers.AllowSetHome);

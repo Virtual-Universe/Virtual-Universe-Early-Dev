@@ -35,16 +35,17 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using log4net;
-using Mono.Addins;
 using Nini.Config;
-using OpenMetaverse;
 using OpenMetaverse.Packets;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
 using OpenSim.Framework.Monitoring;
-using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
+using OpenSim.Region.Framework.Interfaces;
+using OpenMetaverse;
+using Mono.Addins;
 using TokenBucket = OpenSim.Region.ClientStack.LindenUDP.TokenBucket;
+
 
 namespace OpenSim.Region.ClientStack.LindenUDP
 {
@@ -1817,7 +1818,7 @@ namespace OpenSim.Region.ClientStack.LindenUDP
             IClientAPI client = null;
 
             // We currently synchronize this code across the whole scene to avoid issues such as
-            // http://opensimulator.org/mantis/view.php?id=5365  However, once locking per agent circuit can be done
+            // https://virtual-planets.org/mantis/view.php?id=5365  However, once locking per agent circuit can be done
             // consistently, this lock could probably be removed.
             lock (this)
             {

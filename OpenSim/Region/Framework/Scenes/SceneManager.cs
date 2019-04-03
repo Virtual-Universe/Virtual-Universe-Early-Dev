@@ -223,7 +223,7 @@ namespace OpenSim.Region.Framework.Scenes
         }
 
         /// <summary>
-        /// Save the prims in the current scene to an xml file in Virtual Universe's original 'xml' format
+        /// Save the prims in the current scene to an xml file in OpenSimulator's original 'xml' format
         /// </summary>
         /// <param name="filename"></param>
         public void SaveCurrentSceneToXml(string filename)
@@ -234,7 +234,7 @@ namespace OpenSim.Region.Framework.Scenes
         }
 
         /// <summary>
-        /// Load an xml file of prims in Virtual Universe's original 'xml' file format to the current scene
+        /// Load an xml file of prims in OpenSimulator's original 'xml' file format to the current scene
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="generateNewIDs"></param>
@@ -247,7 +247,7 @@ namespace OpenSim.Region.Framework.Scenes
         }
 
         /// <summary>
-        /// Save the prims in the current scene to an xml file in Virtual Universe's current 'xml2' format
+        /// Save the prims in the current scene to an xml file in OpenSimulator's current 'xml2' format
         /// </summary>
         /// <param name="filename"></param>
         public void SaveCurrentSceneToXml2(string filename)
@@ -265,7 +265,7 @@ namespace OpenSim.Region.Framework.Scenes
         }
 
         /// <summary>
-        /// Load an xml file of prims in Virtual Universe's current 'xml2' file format to the current scene
+        /// Load an xml file of prims in OpenSimulator's current 'xml2' file format to the current scene
         /// </summary>
         public void LoadCurrentSceneFromXml2(string filename)
         {
@@ -275,7 +275,7 @@ namespace OpenSim.Region.Framework.Scenes
         }
 
         /// <summary>
-        /// Save the current scene to an Virtual Universe archive.  This archive will eventually include the prim's assets
+        /// Save the current scene to an OpenSimulator archive.  This archive will eventually include the prim's assets
         /// as well as the details of the prims themselves.
         /// </summary>
         /// <param name="cmdparams"></param>

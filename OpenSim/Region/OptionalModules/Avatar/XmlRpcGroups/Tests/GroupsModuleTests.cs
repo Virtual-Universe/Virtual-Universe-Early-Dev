@@ -196,7 +196,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups.Tests
             List<GroupNoticeData> notices = mgsc.GetGroupNotices(UUID.Zero, groupID);
             Assert.AreEqual(1, notices.Count);
 
-            // Virtual Universe (possibly also SL) transport the notice ID as the session ID!
+            // OpenSimulator (possibly also SL) transport the notice ID as the session ID!
             Assert.AreEqual(notices[0].NoticeID.Guid, spReceivedMessages[0].imSessionID);
 
             Assert.That(sp2ReceivedMessages.Count, Is.EqualTo(0));

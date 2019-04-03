@@ -818,7 +818,7 @@ public sealed class BSCharacter : BSPhysObject
         RawPosition = entprop.Position;
         RawOrientation = entprop.Rotation;
 
-        // Smooth velocity. Virtual Universe is VERY sensitive to changes in velocity of the avatar
+        // Smooth velocity. OpenSimulator is VERY sensitive to changes in velocity of the avatar
         //    and will send agent updates to the clients if velocity changes by more than
         //    0.001m/s. Bullet introduces a lot of jitter in the velocity which causes many
         //    extra updates.

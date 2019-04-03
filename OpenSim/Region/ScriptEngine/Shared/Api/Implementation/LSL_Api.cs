@@ -3884,21 +3884,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
 
             if (m_item.PermsGranter != m_host.OwnerID)
-            {
                 return;
-            }
 
             SceneObjectGroup grp = m_host.ParentGroup;
-
             if (grp == null || grp.IsDeleted || grp.IsAttachment)
-            {
                 return;
-            }
 
             if ((m_item.PermsMask & ScriptBaseClass.PERMISSION_ATTACH) != 0)
-            {
                 AttachToAvatar(attachmentPoint);
-            }
         }
 
         public void llAttachToAvatarTemp(LSL_Integer attachmentPoint)

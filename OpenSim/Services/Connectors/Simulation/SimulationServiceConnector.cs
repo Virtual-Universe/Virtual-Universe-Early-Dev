@@ -359,7 +359,7 @@ namespace OpenSim.Services.Connectors.Simulation
 
                 if (!success || ctx.InboundVersion == 0f || ctx.OutboundVersion == 0f)
                 {
-                    // If we don't check this then Virtual Universe 0.7.3.1 and some period before will never see the
+                    // If we don't check this then OpenSimulator 0.7.3.1 and some period before will never see the
                     // actual failure message
                     if (!result.ContainsKey("_Result"))
                     {

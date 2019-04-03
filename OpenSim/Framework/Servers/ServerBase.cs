@@ -124,7 +124,7 @@ namespace OpenSim.Framework.Servers
         }
 
         /// <summary>
-        /// Log information about the circumstances in which we're running (Virtual Universe version number, CLR details,
+        /// Log information about the circumstances in which we're running (OpenSimulator version number, CLR details,
         /// etc.).
         /// </summary>
         public void LogEnvironmentInformation()
@@ -133,7 +133,7 @@ namespace OpenSim.Framework.Servers
             // XmlConfigurator calls first accross servers.
             m_log.InfoFormat("[SERVER BASE]: Starting in {0}", m_startupDirectory);
 
-            m_log.InfoFormat("[SERVER BASE]: Virtual Universe version: {0}", m_version);
+            m_log.InfoFormat("[SERVER BASE]: OpenSimulator version: {0}", m_version);
 
             // clr version potentially is more confusing than helpful, since it doesn't tell us if we're running under Mono/MS .NET and
             // the clr version number doesn't match the project version number under Mono.
