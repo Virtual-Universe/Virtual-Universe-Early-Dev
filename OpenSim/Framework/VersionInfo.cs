@@ -62,7 +62,6 @@ namespace OpenSim
         /// <summary>
         /// This rules versioning regarding teleports, and compatibility between simulators in that regard.
         /// </summary>
-        ///
         /// <remarks>
         /// The protocol version that we will use for outgoing transfers
         /// Valid values are

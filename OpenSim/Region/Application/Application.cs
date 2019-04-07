@@ -67,11 +67,12 @@ namespace OpenSim
         /// </summary>
         protected static OpenSimBase m_sim = null;
 
-        // could move our main function into OpenSimMain and kill this class
+        //could move our main function into OpenSimMain and kill this class
         public static void Main(string[] args)
         {
             // First line, hook the appdomain to the crash reporter
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            AppDomain.CurrentDomain.UnhandledException +=
+                new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             Culture.SetCurrentCulture();
             Culture.SetDefaultCurrentCulture();
@@ -106,7 +107,8 @@ namespace OpenSim
             if (logConfigFile != String.Empty)
             {
                 XmlConfigurator.Configure(new System.IO.FileInfo(logConfigFile));
-                m_log.InfoFormat("[Virtual Universe]: configured log4net using \"{0}\" as configuration file", logConfigFile);
+                m_log.InfoFormat("[Virtual Universe]: configured log4net using \"{0}\" as configuration file",
+                                 logConfigFile);
             }
             else
             {
@@ -134,13 +136,11 @@ namespace OpenSim
             int iocpThreadsMin = 1000;
             int iocpThreadsMax = 2000; // may need further adjustment to match other CLR
 
-            {
-                int currentMinWorkerThreads, currentMinIocpThreads;
-                System.Threading.ThreadPool.GetMinThreads(out currentMinWorkerThreads, out currentMinIocpThreads);
-                m_log.InfoFormat(
-                    "[Virtual Universe]: Runtime gave us {0} min worker threads and {1} min IOCP threads",
-                    currentMinWorkerThreads, currentMinIocpThreads);
-            }
+            int currentMinWorkerThreads, currentMinIocpThreads;
+            System.Threading.ThreadPool.GetMinThreads(out currentMinWorkerThreads, out currentMinIocpThreads);
+            m_log.InfoFormat(
+                "[Virtual Universe]: Runtime gave us {0} min worker threads and {1} min IOCP threads",
+                currentMinWorkerThreads, currentMinIocpThreads);
 
             int workerThreads, iocpThreads;
             System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
@@ -198,7 +198,7 @@ namespace OpenSim
                 m_log.Warn("[Virtual Universe]: Environment is not supported by OpenSimulator (" + supported + ")\n");
             }
 
-            m_log.InfoFormat("Default culture changed to {0}", Culture.GetDefaultCurrentCulture().DisplayName);
+            m_log.InfoFormat("[Virtual Universe]: Default culture changed to {0}", Culture.GetDefaultCurrentCulture().DisplayName);
 
             // Configure nIni aliases and localles
 
@@ -275,7 +275,6 @@ namespace OpenSim
             }
 
             _IsHandlingException = true;
-
             // TODO: Add config option to allow users to turn off error reporting
             // TODO: Post error report (disabled for now)
 
@@ -295,7 +294,7 @@ namespace OpenSim
             msg += "\r\n";
             msg += "Application is terminating: " + e.IsTerminating.ToString() + "\r\n";
 
-            m_log.ErrorFormat("[Virtual Universe]: {0}", msg);
+            m_log.ErrorFormat("[Application]: {0}", msg);
 
             if (m_saveCrashDumps)
             {
@@ -306,9 +305,7 @@ namespace OpenSim
                     {
                         Directory.CreateDirectory(m_crashDir);
                     }
-
                     string log = Util.GetUniqueFilename(ex.GetType() + ".txt");
-
                     using (StreamWriter m_crashLog = new StreamWriter(Path.Combine(m_crashDir, log)))
                     {
                         m_crashLog.WriteLine(msg);

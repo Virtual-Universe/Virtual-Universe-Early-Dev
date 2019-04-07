@@ -54,7 +54,8 @@ namespace OpenSim
 
             base.Startup();
 
-            m_log.InfoFormat("[Virtual Universe]: Startup complete, serving {0} region{1}", SceneManager.Scenes.Count, SceneManager.Scenes.Count > 1 ? "s" : "");
+            m_log.InfoFormat("[Virtual Universe]: Startup complete, serving {0} region{1}",
+                             SceneManager.Scenes.Count, SceneManager.Scenes.Count > 1 ? "s" : "");
 
             WorldHasComeToAnEnd.WaitOne();
             WorldHasComeToAnEnd.Close();

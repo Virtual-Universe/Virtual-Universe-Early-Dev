@@ -143,7 +143,7 @@ namespace OpenSim.Region.CoreModules.Framework
                     if (capsObjectPath == oldCaps.CapsObjectPath)
                     {
 //                        m_log.WarnFormat(
-//                           "[CAPS]: Reusing caps for agent {0} in region {1}.  Old caps path {2}, new caps path {3}. ",
+//                           "[Caps]: Reusing caps for agent {0} in region {1}.  Old caps path {2}, new caps path {3}. ",
 //                            agentId, m_scene.RegionInfo.RegionName, oldCaps.CapsObjectPath, capsObjectPath);
                         return;
                     }
@@ -161,7 +161,7 @@ namespace OpenSim.Region.CoreModules.Framework
                 }
 
 //                m_log.DebugFormat(
-//                    "[CAPS]: Adding capabilities for agent {0} in {1} with path {2}",
+//                    "[Caps]: Adding capabilities for agent {0} in {1} with path {2}",
 //                    agentId, m_scene.RegionInfo.RegionName, capsObjectPath);
 
                 caps = new Caps(MainServer.Instance, m_scene.RegionInfo.ExternalHostName,
@@ -180,7 +180,7 @@ namespace OpenSim.Region.CoreModules.Framework
 
         public void RemoveCaps(UUID agentId, uint circuitCode)
         {
-            m_log.DebugFormat("[CAPS]: Remove caps for agent {0} in region {1}", agentId, m_scene.RegionInfo.RegionName);
+            m_log.DebugFormat("[Caps]: Remove caps for agent {0} in region {1}", agentId, m_scene.RegionInfo.RegionName);
             lock (m_childrenSeeds)
             {
                 if (m_childrenSeeds.ContainsKey(agentId))
@@ -210,7 +210,7 @@ namespace OpenSim.Region.CoreModules.Framework
                         }
                     }
                     m_log.WarnFormat(
-                        "[CAPS]: Received request to remove CAPS handler for root agent {0} in {1}, but no such CAPS handler found!",
+                        "[Caps]: Received request to remove CAPS handler for root agent {0} in {1}, but no such CAPS handler found!",
                         agentId, m_scene.RegionInfo.RegionName);
                 }
             }
