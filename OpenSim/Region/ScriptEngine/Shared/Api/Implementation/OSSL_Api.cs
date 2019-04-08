@@ -55,7 +55,7 @@ using OpenSim.Services.Connectors.Hypergrid;
 using OpenSim.Services.Interfaces;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
 using PermissionMask = OpenSim.Framework.PermissionMask;
-using TPFLags = OpenSim.Framework.Constants.TeleportFlags;
+using TPFlags = OpenSim.Framework.Constants.TeleportFlags;
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
 using LSL_Key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
