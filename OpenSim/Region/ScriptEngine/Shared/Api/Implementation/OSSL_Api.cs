@@ -29,19 +29,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
-using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Xml;
 using log4net;
+using Nini.Config;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using Nini.Config;
 using OpenSim;
 using OpenSim.Framework;
-
 using OpenSim.Framework.Console;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
@@ -51,11 +51,11 @@ using OpenSim.Region.ScriptEngine.Shared.Api.Plugins;
 using OpenSim.Region.ScriptEngine.Shared.ScriptBase;
 using OpenSim.Region.ScriptEngine.Interfaces;
 using OpenSim.Region.ScriptEngine.Shared.Api.Interfaces;
-using TPFlags = OpenSim.Framework.Constants.TeleportFlags;
+using OpenSim.Services.Connectors.Hypergrid;
 using OpenSim.Services.Interfaces;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
-using System.Text.RegularExpressions;
-
+using PermissionMask = OpenSim.Framework.PermissionMask;
+using TPFLags = OpenSim.Framework.Constants.TeleportFlags;
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
 using LSL_Key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
@@ -63,8 +63,6 @@ using LSL_List = OpenSim.Region.ScriptEngine.Shared.LSL_Types.list;
 using LSL_Rotation = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Quaternion;
 using LSL_String = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
 using LSL_Vector = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Vector3;
-using PermissionMask = OpenSim.Framework.PermissionMask;
-using OpenSim.Services.Connectors.Hypergrid;
 
 namespace OpenSim.Region.ScriptEngine.Shared.Api
 {
@@ -145,6 +143,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected IUrlModule m_UrlModule = null;
         protected ISoundModule m_SoundModule = null;
         internal IConfig m_osslconfig;
+        internal TimeZoneInfo PSTTimeZone = null;
 
         public void Initialize(
             IScriptEngine scriptEngine, SceneObjectPart host, TaskInventoryItem item)
@@ -201,7 +200,27 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             default:
                 break;
             }
-         }
+
+            try
+            {
+                PSTTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+            }
+            catch
+            {
+                PSTTimeZone = null;
+            }
+            if(PSTTimeZone == null)
+            {
+                try
+                {
+                    PSTTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Los_Angeles");
+                }
+                catch
+                {
+                    PSTTimeZone = null;
+                }
+            }
+        }
 
         public override Object InitializeLifetimeService()
         {
@@ -5440,6 +5459,17 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             if (detectedParams == null)
                 return String.Empty;
             return detectedParams.Key.ToString();
+        }
+
+        // returns PST or PDT wall clock
+        public LSL_Float osGetPSTWallclock()
+        {
+            m_host.AddScriptLPS(1);
+            if(PSTTimeZone == null)
+                return DateTime.Now.TimeOfDay.TotalSeconds;
+
+            DateTime time = TimeZoneInfo.ConvertTime(DateTime.UtcNow, PSTTimeZone);
+            return time.TimeOfDay.TotalSeconds;
         }
     }
 }

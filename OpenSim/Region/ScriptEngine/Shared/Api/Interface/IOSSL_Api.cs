@@ -28,7 +28,6 @@
 using System;
 using System.Collections;
 using OpenSim.Region.ScriptEngine.Interfaces;
-
 using key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
 using rotation = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Quaternion;
 using vector = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Vector3;
@@ -37,7 +36,6 @@ using LSL_String = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
-
 
 namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
 {
@@ -549,5 +547,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         LSL_String osGetInventoryName(LSL_Key itemId);
         LSL_String osGetInventoryDesc(LSL_String itemNameOrId);
         LSL_Key osGetLastChangedEventKey();
+        LSL_Float osGetPSTWallclock();
     }
 }
