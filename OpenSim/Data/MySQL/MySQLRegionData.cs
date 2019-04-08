@@ -30,19 +30,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
+using log4net;
 using MySql.Data.MySqlClient;
 using OpenMetaverse;
-using OpenSim.Framework;
 using OpenSim.Data;
+using OpenSim.Framework;
 using RegionFlags = OpenSim.Framework.RegionFlags;
 
 namespace OpenSim.Data.MySQL
 {
     public class MySqlRegionData : MySqlFramework, IRegionData
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         private string m_Realm;
         private List<string> m_ColumnNames;
-        //private string m_connectionString;
 
         protected virtual Assembly Assembly
         {
@@ -67,8 +69,11 @@ namespace OpenSim.Data.MySQL
         public List<RegionData> Get(string regionName, UUID scopeID)
         {
             string command = "select * from `"+m_Realm+"` where regionName like ?regionName";
+
             if (scopeID != UUID.Zero)
+            {
                 command += " and ScopeID = ?scopeID";
+            }
 
             command += " order by regionName";
 
@@ -83,10 +88,16 @@ namespace OpenSim.Data.MySQL
 
         public RegionData Get(int posX, int posY, UUID scopeID)
         {
-/* fixed size regions
-            string command = "select * from `"+m_Realm+"` where locX = ?posX and locY = ?posY";
+            // extend database search for maximum region size area
+            string command = "select * from `" + m_Realm + "` where " +
+                    "?posX>=locX and ?posX<locX+sizeX and ?posY>=locY and ?posY<locY+sizeY";
+
             if (scopeID != UUID.Zero)
+            {
                 command += " and ScopeID = ?scopeID";
+            }
+
+            List<RegionData> ret;
 
             using (MySqlCommand cmd = new MySqlCommand(command))
             {
@@ -94,58 +105,35 @@ namespace OpenSim.Data.MySQL
                 cmd.Parameters.AddWithValue("?posY", posY.ToString());
                 cmd.Parameters.AddWithValue("?scopeID", scopeID.ToString());
 
-                List<RegionData> ret = RunCommand(cmd);
-                if (ret.Count == 0)
-                    return null;
-
-                return ret[0];
-            }
-*/
-            // extend database search for maximum region size area
-            string command = "select * from `" + m_Realm + "` where locX between ?startX and ?endX and locY between ?startY and ?endY";
-            if (scopeID != UUID.Zero)
-                command += " and ScopeID = ?scopeID";
-
-            int startX = posX - (int)Constants.MaximumRegionSize;
-            int startY = posY - (int)Constants.MaximumRegionSize;
-            int endX = posX;
-            int endY = posY;
-
-            List<RegionData> ret;
-            using (MySqlCommand cmd = new MySqlCommand(command))
-            {
-                cmd.Parameters.AddWithValue("?startX", startX.ToString());
-                cmd.Parameters.AddWithValue("?startY", startY.ToString());
-                cmd.Parameters.AddWithValue("?endX", endX.ToString());
-                cmd.Parameters.AddWithValue("?endY", endY.ToString());
-                cmd.Parameters.AddWithValue("?scopeID", scopeID.ToString());
-
                 ret = RunCommand(cmd);
             }
 
             if (ret.Count == 0)
-                return null;
-
-            // find the first that contains pos
-            RegionData rg = null;
-            foreach (RegionData r in ret)
             {
-                if (posX >= r.posX && posX < r.posX + r.sizeX
-                    && posY >= r.posY && posY < r.posY + r.sizeY)
+                return null;
+            }
+
+            if (ret.Count > 1)
+            {
+                m_log.Error("[MySQL Region Data]: more than one region at " + posX + "," + posY);
+
+                foreach (RegionData r in ret)
                 {
-                    rg = r;
-                    break;
+                    m_log.Error("[MySQL Region Data]: - " + r.RegionID + " " + r.RegionName);
                 }
             }
 
-            return rg;
+            return ret[0];
         }
 
         public RegionData Get(UUID regionID, UUID scopeID)
         {
             string command = "select * from `"+m_Realm+"` where uuid = ?regionID";
+
             if (scopeID != UUID.Zero)
+            {
                 command += " and ScopeID = ?scopeID";
+            }
 
             using (MySqlCommand cmd = new MySqlCommand(command))
             {
@@ -153,8 +141,11 @@ namespace OpenSim.Data.MySQL
                 cmd.Parameters.AddWithValue("?scopeID", scopeID.ToString());
 
                 List<RegionData> ret = RunCommand(cmd);
+
                 if (ret.Count == 0)
+                {
                     return null;
+                }
 
                 return ret[0];
             }
@@ -162,30 +153,18 @@ namespace OpenSim.Data.MySQL
 
         public List<RegionData> Get(int startX, int startY, int endX, int endY, UUID scopeID)
         {
-/* fix size regions
-            string command = "select * from `"+m_Realm+"` where locX between ?startX and ?endX and locY between ?startY and ?endY";
-            if (scopeID != UUID.Zero)
-                command += " and ScopeID = ?scopeID";
-
-            using (MySqlCommand cmd = new MySqlCommand(command))
-            {
-                cmd.Parameters.AddWithValue("?startX", startX.ToString());
-                cmd.Parameters.AddWithValue("?startY", startY.ToString());
-                cmd.Parameters.AddWithValue("?endX", endX.ToString());
-                cmd.Parameters.AddWithValue("?endY", endY.ToString());
-                cmd.Parameters.AddWithValue("?scopeID", scopeID.ToString());
-
-                return RunCommand(cmd);
-            }
- */
             string command = "select * from `" + m_Realm + "` where locX between ?startX and ?endX and locY between ?startY and ?endY";
+
             if (scopeID != UUID.Zero)
+            {
                 command += " and ScopeID = ?scopeID";
+            }
 
             int qstartX = startX - (int)Constants.MaximumRegionSize;
             int qstartY = startY - (int)Constants.MaximumRegionSize;
 
             List<RegionData> dbret;
+
             using (MySqlCommand cmd = new MySqlCommand(command))
             {
                 cmd.Parameters.AddWithValue("?startX", qstartX.ToString());
@@ -200,14 +179,19 @@ namespace OpenSim.Data.MySQL
             List<RegionData> ret = new List<RegionData>();
 
             if (dbret.Count == 0)
+            {
                 return ret;
+            }
 
             foreach (RegionData r in dbret)
             {
                 if (r.posX + r.sizeX > startX && r.posX <= endX
                     && r.posY + r.sizeY > startY && r.posY <= endY)
+                {
                     ret.Add(r);
+                }
             }
+
             return ret;
         }
 
@@ -241,26 +225,46 @@ namespace OpenSim.Data.MySQL
                         foreach (string s in m_ColumnNames)
                         {
                             if (s == "uuid")
+                            {
                                 continue;
+                            }
+
                             if (s == "ScopeID")
+                            {
                                 continue;
+                            }
+
                             if (s == "regionName")
+                            {
                                 continue;
+                            }
+
                             if (s == "locX")
+                            {
                                 continue;
+                            }
+
                             if (s == "locY")
+                            {
                                 continue;
+                            }
 
                             object value = result[s];
+
                             if (value is DBNull)
+                            {
                                 ret.Data[s] = null;
+                            }
                             else
+                            {
                                 ret.Data[s] = result[s].ToString();
+                            }
                         }
 
                         retList.Add(ret);
                     }
                 }
+
                 cmd.Connection = null;
                 dbcon.Close();
             }
@@ -271,15 +275,20 @@ namespace OpenSim.Data.MySQL
         private void CheckColumnNames(IDataReader result)
         {
             if (m_ColumnNames != null)
+            {
                 return;
+            }
 
             List<string> columnNames = new List<string>();
 
             DataTable schemaTable = result.GetSchemaTable();
+
             foreach (DataRow row in schemaTable.Rows)
             {
                 if (row["ColumnName"] != null)
+                {
                     columnNames.Add(row["ColumnName"].ToString());
+                }
             }
 
             m_ColumnNames = columnNames;
@@ -288,32 +297,61 @@ namespace OpenSim.Data.MySQL
         public bool Store(RegionData data)
         {
             if (data.Data.ContainsKey("uuid"))
+            {
                 data.Data.Remove("uuid");
+            }
+
             if (data.Data.ContainsKey("ScopeID"))
+            {
                 data.Data.Remove("ScopeID");
+            }
+
             if (data.Data.ContainsKey("regionName"))
+            {
                 data.Data.Remove("regionName");
+            }
+
             if (data.Data.ContainsKey("posX"))
+            {
                 data.Data.Remove("posX");
+            }
+
             if (data.Data.ContainsKey("posY"))
+            {
                 data.Data.Remove("posY");
+            }
+
             if (data.Data.ContainsKey("sizeX"))
+            {
                 data.Data.Remove("sizeX");
+            }
+
             if (data.Data.ContainsKey("sizeY"))
+            {
                 data.Data.Remove("sizeY");
+            }
+
             if (data.Data.ContainsKey("locX"))
+            {
                 data.Data.Remove("locX");
+            }
+
             if (data.Data.ContainsKey("locY"))
+            {
                 data.Data.Remove("locY");
+            }
 
             if (data.RegionName.Length > 128)
+            {
                 data.RegionName = data.RegionName.Substring(0, 128);
+            }
 
             string[] fields = new List<string>(data.Data.Keys).ToArray();
 
             using (MySqlCommand cmd = new MySqlCommand())
             {
                 string update = "update `" + m_Realm + "` set locX=?posX, locY=?posY, sizeX=?sizeX, sizeY=?sizeY";
+
                 foreach (string field in fields)
                 {
                     update += ", ";
@@ -325,7 +363,9 @@ namespace OpenSim.Data.MySQL
                 update += " where uuid = ?regionID";
 
                 if (data.ScopeID != UUID.Zero)
+                {
                     update += " and ScopeID = ?scopeID";
+                }
 
                 cmd.CommandText = update;
                 cmd.Parameters.AddWithValue("?regionID", data.RegionID.ToString());
@@ -362,7 +402,9 @@ namespace OpenSim.Data.MySQL
                 cmd.Parameters.AddWithValue("?UUID", regionID.ToString());
 
                 if (ExecuteNonQuery(cmd) > 0)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -375,7 +417,9 @@ namespace OpenSim.Data.MySQL
                 cmd.Parameters.AddWithValue("?UUID", regionID.ToString());
 
                 if (ExecuteNonQuery(cmd) > 0)
+                {
                     return true;
+                }
             }
 
             return false;
@@ -407,8 +451,11 @@ namespace OpenSim.Data.MySQL
         private List<RegionData> Get(int regionFlags, UUID scopeID)
         {
             string command = "select * from `" + m_Realm + "` where (flags & " + regionFlags.ToString() + ") <> 0";
+
             if (scopeID != UUID.Zero)
+            {
                 command += " and ScopeID = ?scopeID";
+            }
 
             using (MySqlCommand cmd = new MySqlCommand(command))
             {
