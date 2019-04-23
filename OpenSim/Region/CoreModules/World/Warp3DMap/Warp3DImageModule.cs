@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, http://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
@@ -32,25 +34,20 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Reflection;
 using System.Runtime;
-
 using CSJ2K;
+using Mono.Addins;
 using Nini.Config;
 using log4net;
-using Warp3D;
-using Mono.Addins;
-
-using OpenSim.Framework;
-using OpenSim.Region.Framework.Interfaces;
-using OpenSim.Region.Framework.Scenes;
-using OpenSim.Region.PhysicsModules.SharedBase;
-using OpenSim.Services.Interfaces;
-
 using OpenMetaverse;
 using OpenMetaverse.Assets;
 using OpenMetaverse.Imaging;
 using OpenMetaverse.Rendering;
 using OpenMetaverse.StructuredData;
-
+using OpenSim.Framework;
+using OpenSim.Region.Framework.Interfaces;
+using OpenSim.Region.Framework.Scenes;
+using OpenSim.Region.PhysicsModules.SharedBase;
+using OpenSim.Services.Interfaces;
 using WarpRenderer = Warp3D.Warp3D;
 
 namespace OpenSim.Region.CoreModules.World.Warp3DMap
@@ -59,8 +56,6 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
     public class Warp3DImageModule : IMapImageGenerator, INonSharedRegionModule
     {
         private static readonly Color4 WATER_COLOR = new Color4(29, 72, 96, 216);
-//        private static readonly Color4 WATER_COLOR = new Color4(29, 72, 96, 128);
-
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 #pragma warning disable 414
@@ -88,7 +83,6 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
         private bool m_Enabled = false;
 
-//        private Bitmap lastImage = null;
         private DateTime lastImageTime = DateTime.MinValue;
 
         #region Region Module interface
@@ -101,51 +95,66 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
             if (Util.GetConfigVarFromSections<string>(
                 m_config, "MapImageModule", configSections, "MapImageModule") != "Warp3DImageModule")
+            {
                 return;
+            }
 
             m_Enabled = true;
 
-            m_drawPrimVolume =
-                Util.GetConfigVarFromSections<bool>(m_config, "DrawPrimOnMapTile", configSections, m_drawPrimVolume);
-            m_textureTerrain =
-                Util.GetConfigVarFromSections<bool>(m_config, "TextureOnMapTile", configSections, m_textureTerrain);
-            m_textureAverageTerrain =
-                Util.GetConfigVarFromSections<bool>(m_config, "AverageTextureColorOnMapTile", configSections, m_textureAverageTerrain);
+            m_drawPrimVolume = Util.GetConfigVarFromSections<bool>(m_config, "DrawPrimOnMapTile", configSections, m_drawPrimVolume);
+            m_textureTerrain = Util.GetConfigVarFromSections<bool>(m_config, "TextureOnMapTile", configSections, m_textureTerrain);
+            m_textureAverageTerrain = Util.GetConfigVarFromSections<bool>(m_config, "AverageTextureColorOnMapTile", configSections, m_textureAverageTerrain);
+
             if (m_textureAverageTerrain)
+            {
                 m_textureTerrain = true;
-            m_texturePrims =
-                Util.GetConfigVarFromSections<bool>(m_config, "TexturePrims", configSections, m_texturePrims);
-            m_texturePrimSize =
-                Util.GetConfigVarFromSections<float>(m_config, "TexturePrimSize", configSections, m_texturePrimSize);
-            m_renderMeshes =
-                Util.GetConfigVarFromSections<bool>(m_config, "RenderMeshes", configSections, m_renderMeshes);
+            }
+
+            m_texturePrims = Util.GetConfigVarFromSections<bool>(m_config, "TexturePrims", configSections, m_texturePrims);
+            m_texturePrimSize = Util.GetConfigVarFromSections<float>(m_config, "TexturePrimSize", configSections, m_texturePrimSize);
+            m_renderMeshes = Util.GetConfigVarFromSections<bool>(m_config, "RenderMeshes", configSections, m_renderMeshes);
 
             m_renderMaxHeight = Util.GetConfigVarFromSections<float>(m_config, "RenderMaxHeight", configSections, m_renderMaxHeight);
             m_renderMinHeight = Util.GetConfigVarFromSections<float>(m_config, "RenderMinHeight", configSections, m_renderMinHeight);
 
             if (m_renderMaxHeight < 100f)
+            {
                 m_renderMaxHeight = 100f;
+            }
             else if (m_renderMaxHeight > m_cameraHeight - 10f)
+            {
                 m_renderMaxHeight = m_cameraHeight - 10f;
+            }
 
             if (m_renderMinHeight < -100f)
+            {
                 m_renderMinHeight = -100f;
+            }
             else if (m_renderMinHeight > m_renderMaxHeight - 10f)
+            {
                 m_renderMinHeight = m_renderMaxHeight - 10f;
+            }
         }
 
         public void AddRegion(Scene scene)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             m_scene = scene;
 
             List<string> renderers = RenderingLoader.ListRenderers(Util.ExecutingDirectory());
+
             if (renderers.Count > 0)
-                m_log.Info("[MAPTILE]: Loaded prim mesher " + renderers[0]);
+            {
+                m_log.Info("[Map Tile]: Loaded prim mesher " + renderers[0]);
+            }
             else
-                m_log.Info("[MAPTILE]: No prim mesher loaded, prim rendering will be disabled");
+            {
+                m_log.Info("[Map Tile]: No prim mesher loaded, prim rendering will be disabled");
+            }
 
             m_scene.RegisterModuleInterface<IMapImageGenerator>(this);
         }
@@ -153,7 +162,9 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         public void RegionLoaded(Scene scene)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             m_imgDecoder = m_scene.RequestModuleInterface<IJ2KDecoder>();
         }
@@ -190,6 +201,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         public Bitmap CreateMapTile()
         {
             List<string> renderers = RenderingLoader.ListRenderers(Util.ExecutingDirectory());
+
             if (renderers.Count > 0)
             {
                 m_primMesher = RenderingLoader.LoadRenderer(renderers[0]);
@@ -205,10 +217,8 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             viewHeight = (int)m_scene.RegionInfo.RegionSizeY;
             orto = true;
 
-//            fov = warp_Math.rad2deg(2f * (float)Math.Atan2(viewWitdh, 4096f));
-//            orto = false;
-
             Bitmap tile = GenImage();
+
             // image may be reloaded elsewhere, so no compression format
             string filename = "MAP-" + m_scene.RegionInfo.RegionID.ToString() + ".png";
             tile.Save(filename, ImageFormat.Png);
@@ -219,6 +229,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         public Bitmap CreateViewImage(Vector3 camPos, Vector3 camDir, float pfov, int width, int height, bool useTextures)
         {
             List<string> renderers = RenderingLoader.ListRenderers(Util.ExecutingDirectory());
+
             if (renderers.Count > 0)
             {
                 m_primMesher = RenderingLoader.LoadRenderer(renderers[0]);
@@ -244,7 +255,9 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             WarpRenderer renderer = new WarpRenderer();
 
             if (!renderer.CreateScene(viewWitdh, viewHeight))
+            {
                 return new Bitmap(viewWitdh, viewHeight);
+            }
 
             #region Camera
 
@@ -252,12 +265,17 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             warp_Vector lookat = warp_Vector.add(pos, ConvertVector(cameraDir));
 
             if (orto)
+            {
                 renderer.Scene.defaultCamera.setOrthographic(true, viewWitdh, viewHeight);
+            }
             else
+            {
                 renderer.Scene.defaultCamera.setFov(fov);
+            }
 
             renderer.Scene.defaultCamera.setPos(pos);
             renderer.Scene.defaultCamera.lookAt(lookat);
+
             #endregion Camera
 
             renderer.Scene.setAmbient(warp_Color.getColor(192, 191, 173));
@@ -265,8 +283,11 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
             CreateWater(renderer);
             CreateTerrain(renderer);
+
             if (m_drawPrimVolume)
+            {
                 CreateAllPrims(renderer);
+            }
 
             renderer.Render();
             Bitmap bitmap = renderer.Scene.getImage();
@@ -291,12 +312,14 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             try
             {
                 using (Bitmap mapbmp = CreateMapTile())
+                {
                     return OpenJPEG.EncodeFromImage(mapbmp, false);
+                }
             }
             catch (Exception e)
             {
                 // JPEG2000 encoder failed
-                m_log.Error("[WARP 3D IMAGE MODULE]: Failed generating terrain map: ", e);
+                m_log.Error("[Warp 3D Iimage Module]: Failed generating terrain map: ", e);
             }
 
             return null;
@@ -341,9 +364,14 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             bitHeight = (int)Math.Ceiling((Math.Log(terrain.Height) * log2inv));
 
             if (bitWidth > 8) // more than 256 is very heavy :(
+            {
                 bitWidth = 8;
+            }
+
             if (bitHeight > 8)
+            {
                 bitHeight = 8;
+            }
 
             int twidth = (int)Math.Pow(2, bitWidth);
             int theight = (int)Math.Pow(2, bitHeight);
@@ -364,30 +392,36 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             warp_Vector pos;
             float x, y;
             float tv;
+
             for (y = 0; y < regionsy; y += diff)
             {
                 tv = y * invsy;
+
                 for (x = 0; x < regionsx; x += diff)
                 {
                     pos = ConvertVector(x, y, (float)terrain[(int)x, (int)y]);
                     obj.addVertex(new warp_Vertex(pos, x * invsx, tv));
                 }
+
                 pos = ConvertVector(x, y, (float)terrain[(int)(x - diff), (int)y]);
                 obj.addVertex(new warp_Vertex(pos, 1.0f, tv));
             }
 
             int lastY = (int)(y - diff);
+
             for (x = 0; x < regionsx; x += diff)
             {
                 pos = ConvertVector(x, y, (float)terrain[(int)x, lastY]);
                 obj.addVertex(new warp_Vertex(pos, x * invsx, 1.0f));
             }
+
             pos = ConvertVector(x, y, (float)terrain[(int)(x - diff), lastY]);
             obj.addVertex(new warp_Vertex(pos, 1.0f, 1.0f));
 
             // create triangles.
             int limx = npointsx - 1;
             int limy = npointsy - 1;
+
             for (int j = 0; j < limy; j++)
             {
                 for (int i = 0; i < limx; i++)
@@ -431,11 +465,14 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             heightRanges[3] = (float)regionInfo.Elevation2NE;
 
             warp_Texture texture;
+
             using (Bitmap image = TerrainSplat.Splat(terrain, textureIDs, startHeights, heightRanges,
                         m_scene.RegionInfo.WorldLocX, m_scene.RegionInfo.WorldLocY,
                         m_scene.AssetService, m_imgDecoder, m_textureTerrain, m_textureAverageTerrain,
                         twidth, twidth))
+            {
                 texture = new warp_Texture(image);
+            }
 
             warp_Material material = new warp_Material(texture);
             renderer.Scene.addMaterial("TerrainMat", material);
@@ -445,27 +482,31 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         private void CreateAllPrims(WarpRenderer renderer)
         {
             if (m_primMesher == null)
+            {
                 return;
+            }
 
             m_scene.ForEachSOG(
                 delegate (SceneObjectGroup group)
                 {
                     foreach (SceneObjectPart child in group.Parts)
+                    {
                         CreatePrim(renderer, child);
-                }
-            );
+                    }
+                });
         }
 
         private void UVPlanarMap(Vertex v, Vector3 scale, out float tu, out float tv)
         {
             Vector3 scaledPos = v.Position * scale;
             float d = v.Normal.X;
+
             if (d >= 0.5f)
             {
                 tu = 2f * scaledPos.Y;
                 tv = scaledPos.X * v.Normal.Z - scaledPos.Z * v.Normal.X;
             }
-            else if( d <= -0.5f)
+            else if (d <= -0.5f)
             {
                 tu = -2f * scaledPos.Y;
                 tv = -scaledPos.X * v.Normal.Z + scaledPos.Z * v.Normal.X;
@@ -475,7 +516,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 tu = -2f * scaledPos.X;
                 tv = scaledPos.Y * v.Normal.Z - scaledPos.Z * v.Normal.Y;
             }
-            else 
+            else
             {
                 tu = 2f * scaledPos.X;
                 tv = -scaledPos.Y * v.Normal.Z + scaledPos.Z * v.Normal.Y;
@@ -487,26 +528,38 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         private void CreatePrim(WarpRenderer renderer, SceneObjectPart prim)
         {
             if ((PCode)prim.Shape.PCode != PCode.Prim)
+            {
                 return;
+            }
 
             Vector3 ppos = prim.GetWorldPosition();
+
             if (ppos.Z < m_renderMinHeight || ppos.Z > m_renderMaxHeight)
+            {
                 return;
+            }
 
             warp_Vector primPos = ConvertVector(ppos);
             warp_Quaternion primRot = ConvertQuaternion(prim.GetWorldRotation());
             warp_Matrix m = warp_Matrix.quaternionMatrix(primRot);
 
             float screenFactor = renderer.Scene.EstimateBoxProjectedArea(primPos, ConvertVector(prim.Scale), m);
+
             if (screenFactor < 0)
+            {
                 return;
+            }
 
             int p2 = (int)(-(float)Math.Log(screenFactor) * 1.442695f * 0.5 - 1);
 
             if (p2 < 0)
+            {
                 p2 = 0;
+            }
             else if (p2 > 3)
+            {
                 p2 = 3;
+            }
 
             DetailLevel lod = (DetailLevel)(3 - p2);
 
@@ -519,6 +572,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 {
                     // Try fetchinng the asset
                     byte[] sculptAsset = m_scene.AssetService.GetData(omvPrim.Sculpt.SculptTexture.ToString());
+
                     if (sculptAsset != null)
                     {
                         // Is it a mesh?
@@ -533,6 +587,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                             if (m_imgDecoder != null)
                             {
                                 Image sculpt = m_imgDecoder.DecodeToImage(sculptAsset);
+
                                 if (sculpt != null)
                                 {
                                     renderMesh = m_primMesher.GenerateFacetedSculptMesh(omvPrim, (Bitmap)sculpt, lod);
@@ -551,7 +606,9 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             }
 
             if (renderMesh == null)
+            {
                 return;
+            }
 
             string primID = prim.UUID.ToString();
 
@@ -564,31 +621,42 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
                 // Avoid adding duplicate meshes to the scene
                 if (renderer.Scene.objectData.ContainsKey(meshName))
+                {
                     continue;
+                }
 
                 warp_Object faceObj = new warp_Object();
 
                 Primitive.TextureEntryFace teFace = prim.Shape.Textures.GetFace((uint)i);
                 Color4 faceColor = teFace.RGBA;
+
                 if (faceColor.A == 0)
+                {
                     continue;
+                }
 
                 string materialName = String.Empty;
+
                 if (m_texturePrims)
                 {
-                    //                    if(lod > DetailLevel.Low)
+                    materialName = GetOrCreateMaterial(renderer, faceColor, teFace.TextureID, false);
+
+                    if (String.IsNullOrEmpty(materialName))
                     {
-                        //                    materialName = GetOrCreateMaterial(renderer, faceColor, teFace.TextureID, lod == DetailLevel.Low);
-                        materialName = GetOrCreateMaterial(renderer, faceColor, teFace.TextureID, false);
-                        if (String.IsNullOrEmpty(materialName))
-                            continue;
-                        int c = renderer.Scene.material(materialName).getColor();
-                        if ((c & warp_Color.MASKALPHA) == 0)
-                            continue;
+                        continue;
+                    }
+
+                    int c = renderer.Scene.material(materialName).getColor();
+
+                    if ((c & warp_Color.MASKALPHA) == 0)
+                    {
+                        continue;
                     }
                 }
                 else
+                {
                     materialName = GetOrCreateMaterial(renderer, faceColor);
+                }
 
                 if (renderer.Scene.material(materialName).getTexture() == null)
                 {
@@ -612,6 +680,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                     float rotation = teFace.Rotation;
                     float rc = 0;
                     float rs = 0;
+
                     if (rotation != 0)
                     {
                         rc = (float)Math.Cos(rotation);
@@ -623,13 +692,17 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                         warp_Vertex vert;
                         Vertex v = face.Vertices[j];
                         warp_Vector pos = ConvertVector(v.Position);
-                        if(teFace.TexMapType == MappingType.Planar)
-                            UVPlanarMap(v, prim.Scale,out tu, out tv);
+
+                        if (teFace.TexMapType == MappingType.Planar)
+                        {
+                            UVPlanarMap(v, prim.Scale, out tu, out tv);
+                        }
                         else
                         {
                             tu = v.TexCoord.X - 0.5f;
                             tv = 0.5f - v.TexCoord.Y;
                         }
+
                         if (rotation != 0)
                         {
                             float tur = tu * rc - tv * rs;
@@ -677,7 +750,9 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             Color4 ctmp = Color4.White;
 
             if (face.TextureID == UUID.Zero)
+            {
                 return warp_Color.White;
+            }
 
             if (!m_colors.TryGetValue(face.TextureID, out color))
             {
@@ -686,10 +761,18 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 // Attempt to fetch the texture metadata
                 string cacheName = "MAPCLR" + face.TextureID.ToString();
                 AssetBase metadata = m_scene.AssetService.GetCached(cacheName);
+
                 if (metadata != null)
                 {
                     OSDMap map = null;
-                    try { map = OSDParser.Deserialize(metadata.Data) as OSDMap; } catch { }
+
+                    try
+                    {
+                        map = OSDParser.Deserialize(metadata.Data) as OSDMap;
+                    }
+                    catch
+                    {
+                    }
 
                     if (map != null)
                     {
@@ -703,12 +786,14 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                     // Fetch the texture, decode and get the average color,
                     // then save it to a temporary metadata asset
                     AssetBase textureAsset = m_scene.AssetService.Get(face.TextureID.ToString());
+
                     if (textureAsset != null)
                     {
                         int width, height;
                         ctmp = GetAverageColor(textureAsset.FullID, textureAsset.Data, out width, out height);
 
                         OSDMap data = new OSDMap { { "X-RGBA", OSD.FromColor4(ctmp) } };
+
                         metadata = new AssetBase
                         {
                             Data = System.Text.Encoding.UTF8.GetBytes(OSDParser.SerializeJsonString(data)),
@@ -721,6 +806,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                             Name = String.Empty,
                             Type = (sbyte)AssetType.Unknown
                         };
+
                         m_scene.AssetService.Store(metadata);
                     }
                     else
@@ -728,6 +814,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                         ctmp = new Color4(0.5f, 0.5f, 0.5f, 1.0f);
                     }
                 }
+
                 color = ConvertColor(ctmp);
                 m_colors[face.TextureID] = color;
             }
@@ -740,8 +827,11 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             string name = color.ToString();
 
             warp_Material material = renderer.Scene.material(name);
+
             if (material != null)
+            {
                 return name;
+            }
 
             renderer.AddMaterial(name, ConvertColor(color));
             return name;
@@ -754,19 +844,28 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             string materialName = "MAPMAT" + idstr;
 
             if (renderer.Scene.material(materialName) != null)
+            {
                 return materialName;
+            }
 
             warp_Material mat = new warp_Material();
             warp_Texture texture = GetTexture(textureID);
+
             if (texture != null)
             {
                 if (useAverageTextureColor)
+                {
                     color = warp_Color.multiply(color, texture.averageColor);
+                }
                 else
+                {
                     mat.setTexture(texture);
+                }
             }
             else
+            {
                 color = warp_Color.multiply(color, warp_Color.Grey);
+            }
 
             mat.setColor(color);
             renderer.Scene.addMaterial(materialName, mat);
@@ -777,11 +876,16 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         private warp_Texture GetTexture(UUID id)
         {
             warp_Texture ret = null;
+
             if (id == UUID.Zero)
+            {
                 return ret;
+            }
 
             if (m_warpTextures.TryGetValue(id.ToString(), out ret))
+            {
                 return ret;
+            }
 
             byte[] asset = m_scene.AssetService.GetData(id.ToString());
 
@@ -790,13 +894,16 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 try
                 {
                     using (Bitmap img = (Bitmap)m_imgDecoder.DecodeToImage(asset))
-                        ret = new warp_Texture(img);
+                    {
+                        ret = new warp_Texture(img, 8); // reduce textures size to 256x256
+                    }
                 }
                 catch (Exception e)
                 {
-                    m_log.Warn(string.Format("[WARP 3D IMAGE MODULE]: Failed to decode asset {0}, exception  ", id), e);
+                    m_log.Warn(string.Format("[Warp 3D Image Module]: Failed to decode asset {0}, exception  ", id), e);
                 }
             }
+
             m_warpTextures[id.ToString()] = ret;
             return ret;
         }
@@ -804,6 +911,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         #endregion Rendering Methods
 
         #region Static Helpers
+
         // Note: axis change.
         private static warp_Vector ConvertVector(float x, float y, float z)
         {
@@ -848,6 +956,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
             try
             {
                 using (MemoryStream stream = new MemoryStream(j2kData))
+
                 using (Bitmap bitmap = (Bitmap)J2kImage.FromStream(stream))
                 {
                     width = bitmap.Width;
@@ -890,6 +999,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                         }
                     }
                 }
+
                 // Get the averages for each channel
                 const decimal OO_255 = 1m / 255m;
                 decimal totalPixels = (decimal)(width * height);
@@ -900,15 +1010,16 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 decimal am = ((decimal)a / totalPixels) * OO_255;
 
                 if (pixelBytes == 3)
+                {
                     am = 1m;
+                }
 
                 return new Color4((float)rm, (float)gm, (float)bm, (float)am);
-
             }
             catch (Exception ex)
             {
                 m_log.WarnFormat(
-                    "[WARP 3D IMAGE MODULE]: Error decoding JPEG2000 texture {0} ({1} bytes): {2}",
+                    "[Warp 3D Image Module]: Error decoding JPEG2000 texture {0} ({1} bytes): {2}",
                     textureID, j2kData.Length, ex.Message);
 
                 width = 0;
@@ -923,7 +1034,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
     public static class ImageUtils
     {
         /// <summary>
-        /// Performs bilinear interpolation between four values
+        ///     Performs bilinear interpolation between four values
         /// </summary>
         /// <param name="v00">First, or top left value</param>
         /// <param name="v01">Second, or top right value</param>
@@ -931,7 +1042,9 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
         /// <param name="v11">Fourth, or bottom right value</param>
         /// <param name="xPercent">Interpolation value on the X axis, between 0.0 and 1.0</param>
         /// <param name="yPercent">Interpolation value on fht Y axis, between 0.0 and 1.0</param>
-        /// <returns>The bilinearly interpolated result</returns>
+        /// <returns>
+        ///     The bilinearly interpolated result
+        /// </returns>
         public static float Bilinear(float v00, float v01, float v10, float v11, float xPercent, float yPercent)
         {
             return Utils.Lerp(Utils.Lerp(v00, v01, xPercent), Utils.Lerp(v10, v11, xPercent), yPercent);
