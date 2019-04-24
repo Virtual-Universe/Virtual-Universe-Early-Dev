@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, http://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections;
@@ -2410,12 +2412,17 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 return;
 
             UUID textureID = new UUID();
-
-            textureID = ScriptUtils.GetAssetIdFromItemName(m_host, texture, (int)AssetType.Texture);
-            if (textureID == UUID.Zero)
+            bool dotexture = true;
+            if(String.IsNullOrEmpty(texture) || texture == ScriptBaseClass.NULL_KEY)
+                dotexture = false;
+            else
             {
-                if (!UUID.TryParse(texture, out textureID))
-                    return;
+                textureID = ScriptUtils.GetAssetIdFromItemName(m_host, texture, (int)AssetType.Texture);
+                if (textureID == UUID.Zero)
+                {
+                    if (!UUID.TryParse(texture, out textureID))
+                        return;
+                }
             }
 
             Primitive.TextureEntry tex = part.Shape.Textures;
@@ -2424,7 +2431,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             if (face >= 0 && face < nsides)
             {
                 Primitive.TextureEntryFace texface = tex.CreateFace((uint)face);
-                texface.TextureID = textureID;
+                if (dotexture)
+                    texface.TextureID = textureID;
                 texface.RepeatU = (float)scaleU;
                 texface.RepeatV = (float)ScaleV;
                 texface.OffsetU = (float)offsetU;
@@ -2440,7 +2448,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 {
                     if (tex.FaceTextures[i] != null)
                     {
-                        tex.FaceTextures[i].TextureID = textureID;
+                        if (dotexture)
+                            tex.FaceTextures[i].TextureID = textureID;
                         tex.FaceTextures[i].RepeatU = (float)scaleU;
                         tex.FaceTextures[i].RepeatV = (float)ScaleV;
                         tex.FaceTextures[i].OffsetU = (float)offsetU;
@@ -2448,7 +2457,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         tex.FaceTextures[i].Rotation = (float)rotation;
                     }
                 }
-                tex.DefaultTexture.TextureID = textureID;
+                if (dotexture)
+                    tex.DefaultTexture.TextureID = textureID;
                 tex.DefaultTexture.RepeatU = (float)scaleU;
                 tex.DefaultTexture.RepeatV = (float)ScaleV;
                 tex.DefaultTexture.OffsetU = (float)offsetU;
@@ -10422,17 +10432,19 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             }
 
                             string mapname = rules.Data[idx++].ToString();
-
-                            UUID mapID = ScriptUtils.GetAssetIdFromItemName(m_host, mapname, (int)AssetType.Texture);
-                            if (mapID == UUID.Zero)
+                            UUID mapID = UUID.Zero;
+                            if (!string.IsNullOrEmpty(mapname))
                             {
-                                if (!UUID.TryParse(mapname, out mapID))
+                                mapID = ScriptUtils.GetAssetIdFromItemName(m_host, mapname, (int)AssetType.Texture);
+                                if (mapID == UUID.Zero)
                                 {
-                                    Error(originFunc, string.Format("Error running rule #{0} -> PRIM_NORMAL: arg #{1} - must be a UUID or a texture name on object inventory", rulesParsed, idx - idxStart - 1));
-                                    return new LSL_List();
+                                    if (!UUID.TryParse(mapname, out mapID))
+                                    {
+                                        Error(originFunc, string.Format("Error running rule #{0} -> PRIM_NORMAL: arg #{1} - must be a UUID or a texture name on object inventory", rulesParsed, idx - idxStart - 1));
+                                        return new LSL_List();
+                                    }
                                 }
                             }
-
                             LSL_Vector mnrepeat;
                             try
                             {
@@ -10489,17 +10501,19 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             }
 
                             string smapname = rules.Data[idx++].ToString();
-
-                            UUID smapID = ScriptUtils.GetAssetIdFromItemName(m_host, smapname, (int)AssetType.Texture);
-                            if (smapID == UUID.Zero)
+                            UUID smapID = UUID.Zero;
+                            if(!string.IsNullOrEmpty(smapname))
                             {
-                                if (!UUID.TryParse(smapname, out smapID))
+                                smapID = ScriptUtils.GetAssetIdFromItemName(m_host, smapname, (int)AssetType.Texture);
+                                if (smapID == UUID.Zero)
                                 {
-                                    Error(originFunc, string.Format("Error running rule #{0} -> PRIM_SPECULAR: arg #{1} - must be a UUID or a texture name on object inventory", rulesParsed, idx - idxStart - 1));
-                                    return new LSL_List();
+                                    if (!UUID.TryParse(smapname, out smapID))
+                                    {
+                                        Error(originFunc, string.Format("Error running rule #{0} -> PRIM_SPECULAR: arg #{1} - must be a UUID or a texture name on object inventory", rulesParsed, idx - idxStart - 1));
+                                        return new LSL_List();
+                                    }
                                 }
                             }
-
                             LSL_Vector msrepeat;
                             try
                             {
@@ -10715,24 +10729,27 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             FaceMaterial mat = null;
             UUID oldid = texface.MaterialID;
 
-            if(oldid != UUID.Zero)
-                mat = m_materialsModule.GetMaterialCopy(oldid);
+            if(mapID != UUID.Zero)
+            {
+                if(oldid != UUID.Zero)
+                    mat = m_materialsModule.GetMaterialCopy(oldid);
 
-            if(mat == null)
-                mat = new FaceMaterial();
+                if(mat == null)
+                    mat = new FaceMaterial();
 
-            mat.NormalMapID = mapID;
-            mat.NormalOffsetX = offsetX;
-            mat.NormalOffsetY = offsetY;
-            mat.NormalRepeatX = repeatX;
-            mat.NormalRepeatY = repeatY;
-            mat.NormalRotation = rot;
+                mat.NormalMapID = mapID;
+                mat.NormalOffsetX = offsetX;
+                mat.NormalOffsetY = offsetY;
+                mat.NormalRepeatX = repeatX;
+                mat.NormalRepeatY = repeatY;
+                mat.NormalRotation = rot;
 
-            UUID id = m_materialsModule.AddNewMaterial(mat);
-            if(oldid == id)
+                mapID = m_materialsModule.AddNewMaterial(mat);
+            }
+            if(oldid == mapID)
                 return false;
 
-            texface.MaterialID = id;
+            texface.MaterialID = mapID;
             part.Shape.TextureEntry = tex.GetBytes(9);
             m_materialsModule.RemoveMaterial(oldid);
             return true;
@@ -10777,29 +10794,33 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             FaceMaterial mat = null;
             UUID oldid = texface.MaterialID;
 
-            if(oldid != UUID.Zero)
-                mat = m_materialsModule.GetMaterialCopy(oldid);
+            if (mapID != UUID.Zero)
+            {
+                if (oldid != UUID.Zero)
+                    mat = m_materialsModule.GetMaterialCopy(oldid);
 
-            if(mat == null)
-                mat = new FaceMaterial();
+                if (mat == null)
+                    mat = new FaceMaterial();
 
-            mat.SpecularMapID = mapID;
-            mat.SpecularOffsetX = offsetX;
-            mat.SpecularOffsetY = offsetY;
-            mat.SpecularRepeatX = repeatX;
-            mat.SpecularRepeatY = repeatY;
-            mat.SpecularRotation = rot;
-            mat.SpecularLightColorR = colorR;
-            mat.SpecularLightColorG = colorG;
-            mat.SpecularLightColorB = colorB;
-            mat.SpecularLightExponent = gloss;
-            mat.EnvironmentIntensity = env;
+                mat.SpecularMapID = mapID;
+                mat.SpecularOffsetX = offsetX;
+                mat.SpecularOffsetY = offsetY;
+                mat.SpecularRepeatX = repeatX;
+                mat.SpecularRepeatY = repeatY;
+                mat.SpecularRotation = rot;
+                mat.SpecularLightColorR = colorR;
+                mat.SpecularLightColorG = colorG;
+                mat.SpecularLightColorB = colorB;
+                mat.SpecularLightExponent = gloss;
+                mat.EnvironmentIntensity = env;
 
-            UUID id = m_materialsModule.AddNewMaterial(mat);
-            if(oldid == id)
+                mapID = m_materialsModule.AddNewMaterial(mat);
+            }
+
+            if(oldid == mapID)
                 return false;
 
-            texface.MaterialID = id;
+            texface.MaterialID = mapID;
             part.Shape.TextureEntry = tex.GetBytes(9);
             m_materialsModule.RemoveMaterial(oldid);
             return true;
