@@ -1,32 +1,32 @@
-/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
-using OpenSim.Region.ScriptEngine.Shared.ScriptBase;
-using OpenSim.Region.ScriptEngine.Yengine;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +35,8 @@ using System.Reflection.Emit;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading;
-
+using OpenSim.Region.ScriptEngine.Shared.ScriptBase;
+using OpenSim.Region.ScriptEngine.Yengine;
 using LSL_Float = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLFloat;
 using LSL_Integer = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLInteger;
 using LSL_Key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
@@ -69,7 +70,7 @@ namespace OpenSim.Region.ScriptEngine.Yengine
 
         public static readonly string OBJECT_CODE_MAGIC = "YObjectCode";
         // reserve positive version values for original xmr
-        public static int COMPILED_VERSION_VALUE = -1;  // decremented when compiler or object file changes
+        public static int COMPILED_VERSION_VALUE = -2;  // decremented when compiler or object file changes
 
         public static readonly int CALL_FRAME_MEMUSE = 64;
         public static readonly int STRING_LEN_TO_MEMUSE = 2;
@@ -197,7 +198,7 @@ namespace OpenSim.Region.ScriptEngine.Yengine
         public CallLabel openCallLabel = null;  // only one call label can be open at a time
                                                 // - the call label is open from the time of CallPre() until corresponding CallPost()
                                                 // - so no non-trivial pushes/pops etc allowed between a CallPre() and a CallPost()
-
+        public List<ScriptMyLocal> HeapLocals = new List<ScriptMyLocal>();
         private ScriptMyILGen _ilGen;
         public ScriptMyILGen ilGen
         {
@@ -1258,6 +1259,7 @@ namespace OpenSim.Region.ScriptEngine.Yengine
              // resume at the correct spot.
             actCallLabels.Clear();
             allCallLabels.Clear();
+            HeapLocals.Clear();
             openCallLabel = null;
 
              // Alloc stack space for local vars.
@@ -1398,19 +1400,17 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             _ilGen = collector.WriteOutAll();
             collector = null;
 
-             // Output code to restore stack frame from stream.
-             // It jumps back to the call labels within the function body.
             List<ScriptMyLocal> activeTemps = null;
-            if(!isTrivial)
+            if (!isTrivial)
             {
-                 // Build list of locals and temps active at all the call labels.
+                // Build list of locals and temps active at all the call labels.
                 activeTemps = new List<ScriptMyLocal>();
-                foreach(CallLabel cl in allCallLabels)
-                {
-                    foreach(ScriptMyLocal lcl in cl.callLabel.whereAmI.localsReadBeforeWritten)
+                foreach (CallLabel cl in allCallLabels)
                     {
-                        if(!activeTemps.Contains(lcl))
+                        foreach(ScriptMyLocal lcl in cl.callLabel.whereAmI.localsReadBeforeWritten)
                         {
+                            if(!activeTemps.Contains(lcl))
+                            {
                             activeTemps.Add(lcl);
                         }
                     }
@@ -1452,11 +1452,34 @@ namespace OpenSim.Region.ScriptEngine.Yengine
             }
 
              // Output the 'real' return opcode.
+             // push return value
             ilGen.MarkLabel(retLabel);
-            if(!(curDeclFunc.retType is TokenTypeVoid))
+            if (!(curDeclFunc.retType is TokenTypeVoid))
             {
                 ilGen.Emit(curDeclFunc, OpCodes.Ldloc, retValue);
             }
+
+            // pseudo free memory usage
+            foreach (ScriptMyLocal sml in HeapLocals)
+            {
+                Type t = sml.type;
+                if (t == typeof(HeapTrackerList))
+                {
+                    ilGen.Emit(curDeclFunc, OpCodes.Ldloc, sml);
+                    HeapTrackerList.GenFree(curDeclFunc, ilGen);
+                }
+                else if (t == typeof(HeapTrackerString))
+                {
+                    ilGen.Emit(curDeclFunc, OpCodes.Ldloc, sml);
+                    HeapTrackerString.GenFree(curDeclFunc, ilGen);
+                }
+                else if (t == typeof(HeapTrackerObject))
+                {
+                    ilGen.Emit(curDeclFunc, OpCodes.Ldloc, sml);
+                    HeapTrackerObject.GenFree(curDeclFunc, ilGen);
+                }
+            }
+
             ilGen.Emit(curDeclFunc, OpCodes.Ret);
             retLabel = null;
             retValue = null;
@@ -1675,11 +1698,11 @@ namespace OpenSim.Region.ScriptEngine.Yengine
                 if(u != t)
                 {
                     if(t == typeof(HeapTrackerList))
-                        HeapTrackerList.GenPop(curDeclFunc, ilGen);
+                        HeapTrackerList.GenRestore(curDeclFunc, ilGen);
                     if(t == typeof(HeapTrackerObject))
-                        HeapTrackerObject.GenPop(curDeclFunc, ilGen);
+                        HeapTrackerObject.GenRestore(curDeclFunc, ilGen);
                     if(t == typeof(HeapTrackerString))
-                        HeapTrackerString.GenPop(curDeclFunc, ilGen);
+                        HeapTrackerString.GenRestore(curDeclFunc, ilGen);
                 }
                 else
                 {
