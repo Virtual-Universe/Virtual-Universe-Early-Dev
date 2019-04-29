@@ -49,6 +49,7 @@ using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.PhysicsModules.SharedBase;
 using OpenSim.Services.Interfaces;
 using WarpRenderer = Warp3D.Warp3D;
+using Warp3D;
 
 namespace OpenSim.Region.CoreModules.World.Warp3DMap
 {
