@@ -1,5 +1,5 @@
 ﻿/// <license>
-///     Copyright (c) Contributors, http://virtual-planets.org/
+///     Copyright (c) Contributors, https://virtual-planets.org/
 ///     See CONTRIBUTORS.TXT for a full list of copyright holders.
 ///     For an explanation of the license of each contributor and the content it
 ///     covers please see the Licenses directory.
