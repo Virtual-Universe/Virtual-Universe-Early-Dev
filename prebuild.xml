@@ -2512,6 +2512,8 @@
       </Files>
     </Project>
 
+
+
     <Project frameworkVersion="v4_6" name="OpenSim.Addons.Groups" path="OpenSim/Addons/Groups" type="Library">
       <Configuration name="Debug">
         <Options>
@@ -2562,6 +2564,128 @@
 
     </Project>
 
+<Project frameworkVersion="v4_6" name="OpenSim.Addons.jOpenSimProfile" path="OpenSim/Addons/jOpenSimProfile" type="Library">
+     <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
+      <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Core"/>
+      <Reference name="System.Data"/>
+      <Reference name="System.Web"/>
+      <Reference name="System.Xml"/>
+
+      <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenSim.Framework.Monitoring"/>
+      <Reference name="OpenSim.Framework"/>
+      <Reference name="OpenSim.Data"/>
+      <Reference name="OpenSim.Data.MySQL"/>
+      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
+      <Reference name="OpenSim.Services.Base"/>
+      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="OpenSim.Server.Base"/>
+      <Reference name="OpenSim.Server.Handlers"/>
+	  <Reference name="OpenSim.Framework.Console"/>
+      <Reference name="OpenSim.Region.CoreModules"/>
+	  <Reference name="OpenSim.Services.Connectors"/>
+
+      <Files>
+        <Match pattern="*.cs" recurse="true">
+          <Exclude pattern="Tests" />
+        </Match>
+        <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
+      </Files>
+    </Project>
+    <Project frameworkVersion="v4_6" name="OpenSim.Addons.jOpenSimSearch" path="OpenSim/Addons/jOpenSimSearch" type="Library">
+     <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
+      <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Core"/>
+      <Reference name="System.Data"/>
+      <Reference name="System.Web"/>
+      <Reference name="System.Xml"/>
+
+      <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenSim.Framework.Monitoring"/>
+      <Reference name="OpenSim.Framework"/>
+      <Reference name="OpenSim.Data"/>
+      <Reference name="OpenSim.Data.MySQL"/>
+      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
+      <Reference name="OpenSim.Services.Base"/>
+      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="OpenSim.Server.Base"/>
+      <Reference name="OpenSim.Server.Handlers"/>
+	  <Reference name="OpenSim.Framework.Console"/>
+      <Reference name="OpenSim.Region.CoreModules"/>
+	  <Reference name="OpenSim.Services.Connectors"/>
+
+      <Files>
+        <Match pattern="*.cs" recurse="true">
+          <Exclude pattern="Tests" />
+        </Match>
+        <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
+      </Files>
+    </Project>
+	
+	<Project frameworkVersion="v4_6" name="OpenSimMutelist.Module" path="OpenSim/Addons/MutelistModule" type="Library">
+     <Configuration name="Debug">
+       <Options>
+         <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+       </Options>
+     </Configuration>
+     <Configuration name="Release">
+       <Options>
+         <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+       </Options>
+     </Configuration>
+
+     <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
+     <Reference localCopy="false" name="System"/>
+     <Reference name="System.Xml"/>
+     <Reference name="OpenMetaverseTypes"/>
+     <Reference name="OpenSim.Framework"/>
+     <Reference name="OpenSim.Region.Framework"/>
+     <Reference name="OpenSim.Services.Interfaces"/>
+     <Reference name="log4net"/>
+     <Reference name="Mono.Addins"/>
+     <Reference name="Nini"/>
+     <Reference name="XMLRPC"/>
+
+     <Files>
+       <Match pattern="*.cs" recurse="true"/>
+	   <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
+     </Files>
+</Project>
 
     <!-- Tools -->
 
