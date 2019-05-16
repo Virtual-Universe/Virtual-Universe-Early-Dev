@@ -2409,19 +2409,27 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     double offsetU, double offsetV, double rotation, int face)
         {
             if (part == null || part.ParentGroup == null || part.ParentGroup.IsDeleted)
+            {
                 return;
+            }
 
             UUID textureID = new UUID();
             bool dotexture = true;
-            if(String.IsNullOrEmpty(texture) || texture == ScriptBaseClass.NULL_KEY)
+
+            if (String.IsNullOrEmpty(texture) || texture == ScriptBaseClass.NULL_KEY)
+            {
                 dotexture = false;
+            }
             else
             {
                 textureID = ScriptUtils.GetAssetIdFromItemName(m_host, texture, (int)AssetType.Texture);
+
                 if (textureID == UUID.Zero)
                 {
                     if (!UUID.TryParse(texture, out textureID))
-                        return;
+                    {
+                        dotexture = false;
+                    }
                 }
             }
 
@@ -2431,8 +2439,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             if (face >= 0 && face < nsides)
             {
                 Primitive.TextureEntryFace texface = tex.CreateFace((uint)face);
+
                 if (dotexture)
+                {
                     texface.TextureID = textureID;
+                }
+
                 texface.RepeatU = (float)scaleU;
                 texface.RepeatV = (float)ScaleV;
                 texface.OffsetU = (float)offsetU;
@@ -2449,7 +2461,10 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     if (tex.FaceTextures[i] != null)
                     {
                         if (dotexture)
+                        {
                             tex.FaceTextures[i].TextureID = textureID;
+                        }
+
                         tex.FaceTextures[i].RepeatU = (float)scaleU;
                         tex.FaceTextures[i].RepeatV = (float)ScaleV;
                         tex.FaceTextures[i].OffsetU = (float)offsetU;
@@ -2457,8 +2472,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         tex.FaceTextures[i].Rotation = (float)rotation;
                     }
                 }
+
                 if (dotexture)
+                {
                     tex.DefaultTexture.TextureID = textureID;
+                }
+
                 tex.DefaultTexture.RepeatU = (float)scaleU;
                 tex.DefaultTexture.RepeatV = (float)ScaleV;
                 tex.DefaultTexture.OffsetU = (float)offsetU;
@@ -2472,15 +2491,20 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected void SetTexture(SceneObjectPart part, string texture, int face)
         {
             if (part == null || part.ParentGroup == null || part.ParentGroup.IsDeleted)
+            {
                 return;
+            }
 
             UUID textureID = new UUID();
 
             textureID = ScriptUtils.GetAssetIdFromItemName(m_host, texture, (int)AssetType.Texture);
+
             if (textureID == UUID.Zero)
             {
                 if (!UUID.TryParse(texture, out textureID))
+                {
                     return;
+                }
             }
 
             Primitive.TextureEntry tex = part.Shape.Textures;
@@ -2503,6 +2527,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         tex.FaceTextures[i].TextureID = textureID;
                     }
                 }
+
                 tex.DefaultTexture.TextureID = textureID;
                 part.UpdateTextureEntry(tex);
                 return;
@@ -2520,7 +2545,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected void ScaleTexture(SceneObjectPart part, double u, double v, int face)
         {
             if (part == null || part.ParentGroup == null || part.ParentGroup.IsDeleted)
+            {
                 return;
+            }
 
             Primitive.TextureEntry tex = part.Shape.Textures;
             int nsides = GetNumberOfSides(part);
@@ -2534,6 +2561,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 part.UpdateTextureEntry(tex);
                 return;
             }
+
             if (face == ScriptBaseClass.ALL_SIDES)
             {
                 for (int i = 0; i < nsides; i++)
@@ -2544,6 +2572,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         tex.FaceTextures[i].RepeatV = (float)v;
                     }
                 }
+
                 tex.DefaultTexture.RepeatU = (float)u;
                 tex.DefaultTexture.RepeatV = (float)v;
                 part.UpdateTextureEntry(tex);
@@ -2561,7 +2590,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected void OffsetTexture(SceneObjectPart part, double u, double v, int face)
         {
             if (part == null || part.ParentGroup == null || part.ParentGroup.IsDeleted)
+            {
                 return;
+            }
 
             Primitive.TextureEntry tex = part.Shape.Textures;
             int nsides = GetNumberOfSides(part);
@@ -2575,6 +2606,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 part.UpdateTextureEntry(tex);
                 return;
             }
+
             if (face == ScriptBaseClass.ALL_SIDES)
             {
                 for (int i = 0; i < nsides; i++)
@@ -2585,6 +2617,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         tex.FaceTextures[i].OffsetV = (float)v;
                     }
                 }
+
                 tex.DefaultTexture.OffsetU = (float)u;
                 tex.DefaultTexture.OffsetV = (float)v;
                 part.UpdateTextureEntry(tex);
@@ -2602,7 +2635,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected void RotateTexture(SceneObjectPart part, double rotation, int face)
         {
             if (part == null || part.ParentGroup == null || part.ParentGroup.IsDeleted)
+            {
                 return;
+            }
 
             Primitive.TextureEntry tex = part.Shape.Textures;
             int nsides = GetNumberOfSides(part);
@@ -2615,6 +2650,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 part.UpdateTextureEntry(tex);
                 return;
             }
+
             if (face == ScriptBaseClass.ALL_SIDES)
             {
                 for (int i = 0; i < nsides; i++)
@@ -2624,6 +2660,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         tex.FaceTextures[i].Rotation = (float)rotation;
                     }
                 }
+
                 tex.DefaultTexture.Rotation = (float)rotation;
                 part.UpdateTextureEntry(tex);
                 return;
