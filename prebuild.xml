@@ -33,9 +33,9 @@
         <Prefer32Bit>false</Prefer32Bit>
       </Options>
     </Configuration>
- 
+
     <!-- Core OpenSim Projects -->
-<!--
+    <!--
         <Project frameworkVersion="v4_6" name="OpenSim.Model" path="OpenSim/Model" type="Library">
           <Configuration name="Debug">
             <Options>
@@ -76,7 +76,7 @@
       <Reference name="System.Web"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -102,7 +102,7 @@
       <Reference name="System.Drawing"/>
       <Reference name="System.Web"/>
       <Reference name="System.Security"/>
-       <Reference name="OpenMetaverseTypes" path="../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverseTypes" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../VirtualUniverse/bin/"/>
@@ -117,10 +117,10 @@
       <Files>
         <Match pattern="*.cs" recurse="false"/>
         <Match path="Client" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="ServiceAuth" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -151,7 +151,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
 
       </Files>
@@ -181,7 +181,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -251,7 +251,7 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -339,7 +339,7 @@
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -405,8 +405,8 @@
 
       <Files>
         <Match pattern="*.cs" recurse="false">
-         <Exclude name="obj" pattern="obj"/>
-         <Exclude name="Tests" pattern="Tests"/>
+          <Exclude name="obj" pattern="obj"/>
+          <Exclude name="Tests" pattern="Tests"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.addin.xml" recurse="true"/>
       </Files>
@@ -522,7 +522,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -551,7 +551,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -584,7 +584,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -617,7 +617,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -660,7 +660,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -696,7 +696,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -730,7 +730,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -766,7 +766,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -799,7 +799,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -833,7 +833,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -868,7 +868,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -904,7 +904,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -935,7 +935,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -968,7 +968,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1001,7 +1001,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1072,7 +1072,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1113,7 +1113,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1145,7 +1145,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1169,13 +1169,13 @@
       <Reference name="OpenSim.Services.Base"/>
       <Reference name="OpenSim.Data"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>	  
+      <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1212,11 +1212,11 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
- 
+
     <Project frameworkVersion="v4_6" name="OpenSim.Server.Handlers" path="OpenSim/Server/Handlers" type="Library">
       <Configuration name="Debug">
         <Options>
@@ -1331,8 +1331,8 @@
 
       <Files>
         <Match pattern="*.cs" recurse="false">
-         <Exclude name="obj" pattern="obj"/>
-         <Exclude pattern="Tests"/>
+          <Exclude name="obj" pattern="obj"/>
+          <Exclude pattern="Tests"/>
         </Match>
       </Files>
     </Project>
@@ -1365,8 +1365,8 @@
 
       <Files>
         <Match pattern="*.cs" recurse="false">
-         <Exclude name="obj" pattern="obj"/>
-         <Exclude pattern="Tests"/>
+          <Exclude name="obj" pattern="obj"/>
+          <Exclude pattern="Tests"/>
         </Match>
       </Files>
     </Project>
@@ -1395,7 +1395,7 @@
       <Reference name="OpenMetaverse.StructuredData" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenSim.Data"/>
-	  <Reference name="OpenSim.Capabilities"/>
+      <Reference name="OpenSim.Capabilities"/>
       <Reference name="OpenSim.Framework"/>
       <Reference name="OpenSim.Framework.Monitoring"/>
       <Reference name="OpenSim.Framework.Servers"/>
@@ -1462,7 +1462,7 @@
       </Files>
     </Project>
 
-	
+
     <!-- Data Base Modules -->
     <Project frameworkVersion="v4_6" name="OpenSim.Data.MySQL" path="OpenSim/Data/MySQL" type="Library">
       <Configuration name="Debug">
@@ -1495,8 +1495,8 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
-         <Exclude name="Tests" pattern="Tests"/>
+          <Exclude name="obj" pattern="obj"/>
+          <Exclude name="Tests" pattern="Tests"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.sql"/>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
@@ -1528,14 +1528,14 @@
       <Reference name="OpenSim.Framework.Console"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-	  <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Npgsql" path="../../../VirtualUniverse/bin/"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.addin.xml" recurse="true"/>
@@ -1573,15 +1573,15 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
-         <Exclude name="Tests" pattern="Tests"/>
+          <Exclude name="obj" pattern="obj"/>
+          <Exclude name="Tests" pattern="Tests"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.sql"/>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.addin.xml" recurse="true"/>
       </Files>
     </Project>
-	
+
 
     <Project frameworkVersion="v4_6" name="OpenSim.Region.CoreModules" path="OpenSim/Region/CoreModules" type="Library">
       <Configuration name="Debug">
@@ -1737,7 +1737,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1760,7 +1760,7 @@
       <Reference name="System.Data"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenSim.Framework"/>
-	  <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true">
@@ -1799,7 +1799,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1827,7 +1827,7 @@
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1854,7 +1854,7 @@
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -1891,7 +1891,7 @@
       </Files>
     </Project>
 
-   <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.ubOde" path="OpenSim/Region/PhysicsModules/ubOde" type="Library">
+    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.ubOde" path="OpenSim/Region/PhysicsModules/ubOde" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1914,7 +1914,7 @@
       <Reference name="OpenSim.Region.Framework"/>
       <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
       <Reference name="OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet"/>
-	  <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
       <Files>
@@ -1948,14 +1948,14 @@
       <Reference name="OpenSim.Framework"/>
       <Reference name="OpenSim.Framework.Console"/>
       <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-	  <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="OpenSim.Region.Framework"/>
       <Reference name="OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet"/>
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2040,7 +2040,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2074,7 +2074,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.addin.xml" recurse="true"/>
       </Files>
@@ -2105,7 +2105,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.addin.xml" recurse="true"/>
       </Files>
@@ -2145,7 +2145,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.addin.xml" recurse="true"/>
       </Files>
@@ -2218,7 +2218,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="false">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2253,7 +2253,7 @@
       <Reference name="OpenSim.Region.CoreModules"/>
       <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
       <Reference name="OpenSim.Services.Interfaces"/>
-	  <Reference name="OpenSim.Services.Connectors"/>
+      <Reference name="OpenSim.Services.Connectors"/>
       <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
       <Reference name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime"/>
       <Reference name="Nini" path="../../../../../../VirtualUniverse/bin/"/>
@@ -2261,7 +2261,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2366,7 +2366,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2417,7 +2417,7 @@
       </Files>
     </Project>
 
-    <!-- YEngine/core XMRengine -->   
+    <!-- YEngine/core XMRengine -->
     <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.YEngine" path="OpenSim/Region/ScriptEngine/YEngine" type="Library">
       <Configuration name="Debug">
         <Options>
@@ -2453,15 +2453,15 @@
 
       <Files>
         <Match pattern="MMR*.cs" recurse="true">
-             <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match pattern="XMR*.cs" recurse="true">
-             <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
-</Project>
-   
-    
+    </Project>
+
+
     <!-- Addons -->
 
     <Project frameworkVersion="v4_6" name="OpenSim.Addons.OfflineIM" path="OpenSim/Addons/OfflineIM" type="Library">
@@ -2562,37 +2562,66 @@
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
       </Files>
     </Project>
-    	
-	<Project frameworkVersion="v4_6" name="OpenSimMutelist.Module" path="OpenSim/Addons/MutelistModule" type="Library">
-     <Configuration name="Debug">
-       <Options>
-         <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-       </Options>
-     </Configuration>
-     <Configuration name="Release">
-       <Options>
-         <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-       </Options>
-     </Configuration>
 
-     <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
-     <Reference localCopy="false" name="System"/>
-     <Reference name="System.Xml"/>
-     <Reference name="OpenMetaverseTypes"/>
-     <Reference name="OpenSim.Framework"/>
-     <Reference name="OpenSim.Region.Framework"/>
-     <Reference name="OpenSim.Services.Interfaces"/>
-     <Reference name="log4net"/>
-     <Reference name="Mono.Addins"/>
-     <Reference name="Nini"/>
-     <Reference name="XMLRPC"/>
+    <Project frameworkVersion="v4_6" name="OpenSimMutelist.Module" path="OpenSim/Addons/MutelistModule" type="Library">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
 
-     <Files>
-       <Match pattern="*.cs" recurse="true"/>
-	   <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
-     </Files>
-</Project>
+      <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
+      <Reference localCopy="false" name="System"/>
+      <Reference name="System.Xml"/>
+      <Reference name="OpenMetaverseTypes"/>
+      <Reference name="OpenSim.Framework"/>
+      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="log4net"/>
+      <Reference name="Mono.Addins"/>
+      <Reference name="Nini"/>
+      <Reference name="XMLRPC"/>
 
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+        <Match buildAction="EmbeddedResource" path="Resources" pattern="*.migrations"/>
+      </Files>
+    </Project>
+
+    <Project frameworkVersion="v4_6" name="OpenSimSearch.Modules" path="OpenSim/Addons/OpenSimSearch/Modules" type="Library">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
+      <Reference localCopy="false" name="System"/>
+      <Reference name="System.Xml"/>
+      <Reference name="log4net"/>
+      <Reference name="Mono.Addins"/>
+      <Reference name="Nini"/>
+      <Reference name="OpenMetaverse"/>
+      <Reference name="OpenMetaverseTypes"/>
+      <Reference name="OpenSim.Framework"/>
+      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="XMLRPC"/>
+
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
     <!-- Tools -->
 
     <Project frameworkVersion="v4_6" name="pCampBot" path="OpenSim/Tools/pCampBot" type="Exe">
@@ -2620,7 +2649,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2649,7 +2678,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2675,7 +2704,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2705,7 +2734,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2757,7 +2786,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2860,7 +2889,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2912,10 +2941,10 @@
       <Files>
         <!-- SADLY the way this works means you need to keep adding these paths -->
         <Match path="GetTexture/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="FetchInventory/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -2958,7 +2987,7 @@
       <Reference name="Mono.Data.Sqlite" path="../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="Resources" pattern="*.ini"/>
       </Files>
@@ -3114,62 +3143,62 @@
       <Files>
         <!-- SADLY the way this works means you need to keep adding these paths -->
         <Match path="Asset/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Avatar/Attachments/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Avatar/AvatarFactory/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Avatar/Chat/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Avatar/Friends/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Avatar/Inventory/Archiver/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Avatar/Inventory/Transfer/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Framework/InventoryAccess/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Framework/UserManagement/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Scripting/HttpRequest/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Scripting/VectorRender/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="World/Archiver/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match buildAction="EmbeddedResource" path="World/Archiver/Tests/Resources" pattern="*"/>
         <Match path="World/Land/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="World/Media/Moap/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="World/Serializer/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="World/Terrain/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="ServiceConnectorsOut/Asset/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="ServiceConnectorsOut/Grid/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="ServiceConnectorsOut/Presence/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -3360,16 +3389,16 @@
       <Files>
         <!-- SADLY the way this works means you need to keep adding these paths -->
         <Match path="Shared/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Shared/CodeTools/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="Shared/Instance/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
         <Match path="XEngine/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -3406,7 +3435,7 @@
 
       <Files>
         <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
@@ -3488,7 +3517,7 @@
       <Files>
         <!-- SADLY the way this works means you need to keep adding these paths -->
         <Match path="Asset/Tests" pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
+          <Exclude name="obj" pattern="obj"/>
         </Match>
       </Files>
     </Project>
