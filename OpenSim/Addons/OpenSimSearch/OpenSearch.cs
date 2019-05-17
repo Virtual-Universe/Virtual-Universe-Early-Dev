@@ -1,3 +1,32 @@
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,16 +35,15 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using System.Xml;
-using OpenMetaverse;
 using log4net;
+using Mono.Addins;
 using Nini.Config;
 using Nwc.XmlRpc;
+using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
-using Mono.Addins;
-
 using DirFindFlags = OpenMetaverse.DirectoryManager.DirFindFlags;
 
 [assembly: Addin("OpenSimSearch", OpenSim.VersionInfo.VersionNumber + "0.4")]
@@ -23,26 +51,26 @@ using DirFindFlags = OpenMetaverse.DirectoryManager.DirFindFlags;
 [assembly: AddinDescription("OpenSimSearch module.")]
 [assembly: AddinAuthor("Unknown")]
 
-
 namespace OpenSimSearch.Modules.OpenSearch
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "OpenSimSearch")]
     public class OpenSearchModule : ISearchModule, ISharedRegionModule
     {
-        //
-        // Log module
-        //
+        /// <summary>
+        ///     Log Module
+        /// </summary>
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        //
-        // Module vars
-        //
+        /// <summary>
+        ///     Module Vars
+        /// </summary>
         private List<Scene> m_Scenes = new List<Scene>();
         private string m_SearchServer = "";
         private bool m_Enabled = true;
 
         #region IRegionModuleBase implementation
-        public void Initialise(IConfigSource config)
+
+        public void Initialize(IConfigSource config)
         {
             IConfig searchConfig = config.Configs["Search"];
 
@@ -51,6 +79,7 @@ namespace OpenSimSearch.Modules.OpenSearch
                 m_Enabled = false;
                 return;
             }
+
             if (searchConfig.GetString("Module", "OpenSimSearch") != "OpenSimSearch")
             {
                 m_Enabled = false;
@@ -58,20 +87,23 @@ namespace OpenSimSearch.Modules.OpenSearch
             }
 
             m_SearchServer = searchConfig.GetString("SearchURL", "");
+
             if (m_SearchServer == "")
             {
                 m_Enabled = false;
                 return;
             }
 
-            m_log.Info("[SEARCH] OpenSimSearch module is active");
+            m_log.Info("[Search]: OpenSimSearch module is active");
             m_Enabled = true;
         }
 
         public void AddRegion(Scene scene)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             // Hook up events
             scene.EventManager.OnNewClient += OnNewClient;
@@ -80,7 +112,7 @@ namespace OpenSimSearch.Modules.OpenSearch
             scene.RegisterModuleInterface<ISearchModule>(this);
 
             // Add our scene to our list...
-            lock(m_Scenes)
+            lock (m_Scenes)
             {
                 m_Scenes.Add(scene);
             }
@@ -89,13 +121,15 @@ namespace OpenSimSearch.Modules.OpenSearch
         public void RemoveRegion(Scene scene)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             scene.UnregisterModuleInterface<ISearchModule>(this);
 
             scene.EventManager.OnNewClient -= OnNewClient;
 
-            lock(m_Scenes)
+            lock (m_Scenes)
             {
                 m_Scenes.Remove(scene);
             }
@@ -110,7 +144,7 @@ namespace OpenSimSearch.Modules.OpenSearch
             get { return null; }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -127,9 +161,12 @@ namespace OpenSimSearch.Modules.OpenSearch
         {
             get { return true; }
         }
+
         #endregion
 
-        /// New Client Event Handler
+        /// <summary>
+        ///     New Client Event Handler
+        /// </summary>
         private void OnNewClient(IClientAPI client)
         {
             // Subscribe to messages
@@ -138,15 +175,19 @@ namespace OpenSimSearch.Modules.OpenSearch
             client.OnDirPopularQuery += DirPopularQuery;
             client.OnDirLandQuery += DirLandQuery;
             client.OnDirClassifiedQuery += DirClassifiedQuery;
+
             // Response after Directory Queries
             client.OnEventInfoRequest += EventInfoRequest;
             client.OnClassifiedInfoRequest += ClassifiedInfoRequest;
             client.OnMapItemRequest += HandleMapItemRequest;
         }
 
-        //
-        // Make external XMLRPC request
-        //
+        /// <summary>
+        ///     Make external XMLRPC request
+        /// </summary>
+        /// <param name="ReqParams"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
         private Hashtable GenericXMLRPCRequest(Hashtable ReqParams, string method)
         {
             ArrayList SendParams = new ArrayList();
@@ -154,6 +195,7 @@ namespace OpenSimSearch.Modules.OpenSearch
 
             // Send Request
             XmlRpcResponse Resp;
+
             try
             {
                 XmlRpcRequest Req = new XmlRpcRequest(method, SendParams);
@@ -161,8 +203,7 @@ namespace OpenSimSearch.Modules.OpenSearch
             }
             catch (WebException ex)
             {
-                m_log.ErrorFormat("[SEARCH]: Unable to connect to Search " +
-                        "Server {0}.  Exception {1}", m_SearchServer, ex);
+                m_log.ErrorFormat("[Search]: Unable to connect to Search " + "Server {0}.  Exception {1}", m_SearchServer, ex);
 
                 Hashtable ErrorHash = new Hashtable();
                 ErrorHash["success"] = false;
@@ -173,9 +214,7 @@ namespace OpenSimSearch.Modules.OpenSearch
             }
             catch (SocketException ex)
             {
-                m_log.ErrorFormat(
-                        "[SEARCH]: Unable to connect to Search Server {0}. " +
-                        "Exception {1}", m_SearchServer, ex);
+                m_log.ErrorFormat("[Search]: Unable to connect to Search Server {0}. " + "Exception {1}", m_SearchServer, ex);
 
                 Hashtable ErrorHash = new Hashtable();
                 ErrorHash["success"] = false;
@@ -186,9 +225,7 @@ namespace OpenSimSearch.Modules.OpenSearch
             }
             catch (XmlException ex)
             {
-                m_log.ErrorFormat(
-                        "[SEARCH]: Unable to connect to Search Server {0}. " +
-                        "Exception {1}", m_SearchServer, ex);
+                m_log.ErrorFormat("[Search]: Unable to connect to Search Server {0}. " + "Exception {1}", m_SearchServer, ex);
 
                 Hashtable ErrorHash = new Hashtable();
                 ErrorHash["success"] = false;
@@ -197,6 +234,7 @@ namespace OpenSimSearch.Modules.OpenSearch
 
                 return ErrorHash;
             }
+
             if (Resp.IsFault)
             {
                 Hashtable ErrorHash = new Hashtable();
@@ -205,14 +243,14 @@ namespace OpenSimSearch.Modules.OpenSearch
                 ErrorHash["errorURI"] = "";
                 return ErrorHash;
             }
+
             Hashtable RespData = (Hashtable)Resp.Value;
 
             return RespData;
         }
 
         protected void DirPlacesQuery(IClientAPI remoteClient, UUID queryID,
-                string queryText, int queryFlags, int category, string simName,
-                int queryStart)
+                string queryText, int queryFlags, int category, string simName, int queryStart)
         {
             Hashtable ReqHash = new Hashtable();
             ReqHash["text"] = queryText;
@@ -221,21 +259,22 @@ namespace OpenSimSearch.Modules.OpenSearch
             ReqHash["sim_name"] = simName;
             ReqHash["query_start"] = queryStart.ToString();
 
-            Hashtable result = GenericXMLRPCRequest(ReqHash,
-                    "dir_places_query");
+            Hashtable result = GenericXMLRPCRequest(ReqHash, "dir_places_query");
 
             if (!Convert.ToBoolean(result["success"]))
             {
-                remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                 return;
             }
 
             ArrayList dataArray = (ArrayList)result["data"];
 
             int count = dataArray.Count;
+
             if (count > 100)
+            {
                 count = 101;
+            }
 
             DirPlacesReplyData[] data = new DirPlacesReplyData[count];
 
@@ -253,7 +292,9 @@ namespace OpenSimSearch.Modules.OpenSearch
                 data[i].dwell = Convert.ToSingle(d["dwell"]);
 
                 if (++i >= count)
+                {
                     break;
+                }
             }
 
             remoteClient.SendDirPlacesReply(queryID, data);
@@ -264,21 +305,22 @@ namespace OpenSimSearch.Modules.OpenSearch
             Hashtable ReqHash = new Hashtable();
             ReqHash["flags"] = queryFlags.ToString();
 
-            Hashtable result = GenericXMLRPCRequest(ReqHash,
-                    "dir_popular_query");
+            Hashtable result = GenericXMLRPCRequest(ReqHash, "dir_popular_query");
 
             if (!Convert.ToBoolean(result["success"]))
             {
-                remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                 return;
             }
 
             ArrayList dataArray = (ArrayList)result["data"];
 
             int count = dataArray.Count;
+
             if (count > 100)
+            {
                 count = 101;
+            }
 
             DirPopularReplyData[] data = new DirPopularReplyData[count];
 
@@ -294,15 +336,16 @@ namespace OpenSimSearch.Modules.OpenSearch
                 data[i].dwell = Convert.ToSingle(d["dwell"]);
 
                 if (++i >= count)
+                {
                     break;
+                }
             }
 
             remoteClient.SendDirPopularReply(queryID, data);
         }
 
         public void DirLandQuery(IClientAPI remoteClient, UUID queryID,
-                uint queryFlags, uint searchType, int price, int area,
-                int queryStart)
+                uint queryFlags, uint searchType, int price, int area, int queryStart)
         {
             Hashtable ReqHash = new Hashtable();
             ReqHash["flags"] = queryFlags.ToString();
@@ -311,31 +354,36 @@ namespace OpenSimSearch.Modules.OpenSearch
             ReqHash["area"] = area.ToString();
             ReqHash["query_start"] = queryStart.ToString();
 
-            Hashtable result = GenericXMLRPCRequest(ReqHash,
-                    "dir_land_query");
+            Hashtable result = GenericXMLRPCRequest(ReqHash, "dir_land_query");
 
             if (!Convert.ToBoolean(result["success"]))
             {
-                remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                 return;
             }
 
             ArrayList dataArray = (ArrayList)result["data"];
             int count = 0;
 
-            /* Count entries in dataArray with valid region name to */
-            /* prevent allocating data array with too many entries. */
+            /// <summary>
+            ///     Count entries in dataArray with valid region
+            ///     name to prevent allocating data array with too
+            ///     many entries
+            /// </summary>
             foreach (Object o in dataArray)
             {
                 Hashtable d = (Hashtable)o;
 
                 if (d["name"] != null)
+                {
                     ++count;
+                }
             }
 
             if (count > 100)
+            {
                 count = 101;
+            }
 
             DirLandReplyData[] data = new DirLandReplyData[count];
 
@@ -346,7 +394,9 @@ namespace OpenSimSearch.Modules.OpenSearch
                 Hashtable d = (Hashtable)o;
 
                 if (d["name"] == null)
+                {
                     continue;
+                }
 
                 data[i] = new DirLandReplyData();
                 data[i].parcelID = new UUID(d["parcel_id"].ToString());
@@ -357,46 +407,46 @@ namespace OpenSimSearch.Modules.OpenSearch
                 data[i].actualArea = Convert.ToInt32(d["area"]);
 
                 if (++i >= count)
+                {
                     break;
+                }
             }
 
             remoteClient.SendDirLandReply(queryID, data);
         }
 
-        public void DirFindQuery(IClientAPI remoteClient, UUID queryID,
-                string queryText, uint queryFlags, int queryStart)
+        public void DirFindQuery(IClientAPI remoteClient, UUID queryID, string queryText, uint queryFlags, int queryStart)
         {
             if (((DirFindFlags)queryFlags & DirFindFlags.DateEvents) == DirFindFlags.DateEvents)
             {
-                DirEventsQuery(remoteClient, queryID, queryText, queryFlags,
-                        queryStart);
+                DirEventsQuery(remoteClient, queryID, queryText, queryFlags, queryStart);
                 return;
             }
         }
 
-        public void DirEventsQuery(IClientAPI remoteClient, UUID queryID,
-                string queryText, uint queryFlags, int queryStart)
+        public void DirEventsQuery(IClientAPI remoteClient, UUID queryID, string queryText, uint queryFlags, int queryStart)
         {
             Hashtable ReqHash = new Hashtable();
             ReqHash["text"] = queryText;
             ReqHash["flags"] = queryFlags.ToString();
             ReqHash["query_start"] = queryStart.ToString();
 
-            Hashtable result = GenericXMLRPCRequest(ReqHash,
-                    "dir_events_query");
+            Hashtable result = GenericXMLRPCRequest(ReqHash, "dir_events_query");
 
             if (!Convert.ToBoolean(result["success"]))
             {
-                remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                 return;
             }
 
             ArrayList dataArray = (ArrayList)result["data"];
 
             int count = dataArray.Count;
+
             if (count > 100)
+            {
                 count = 101;
+            }
 
             DirEventsReplyData[] data = new DirEventsReplyData[count];
 
@@ -415,15 +465,16 @@ namespace OpenSimSearch.Modules.OpenSearch
                 data[i].eventFlags = Convert.ToUInt32(d["event_flags"]);
 
                 if (++i >= count)
+                {
                     break;
+                }
             }
 
             remoteClient.SendDirEventsReply(queryID, data);
         }
 
         public void DirClassifiedQuery(IClientAPI remoteClient, UUID queryID,
-                string queryText, uint queryFlags, uint category,
-                int queryStart)
+                string queryText, uint queryFlags, uint category, int queryStart)
         {
             Hashtable ReqHash = new Hashtable();
             ReqHash["text"] = queryText;
@@ -431,21 +482,22 @@ namespace OpenSimSearch.Modules.OpenSearch
             ReqHash["category"] = category.ToString();
             ReqHash["query_start"] = queryStart.ToString();
 
-            Hashtable result = GenericXMLRPCRequest(ReqHash,
-                    "dir_classified_query");
+            Hashtable result = GenericXMLRPCRequest(ReqHash, "dir_classified_query");
 
             if (!Convert.ToBoolean(result["success"]))
             {
-                remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                 return;
             }
 
             ArrayList dataArray = (ArrayList)result["data"];
 
             int count = dataArray.Count;
+
             if (count > 100)
+            {
                 count = 101;
+            }
 
             DirClassifiedReplyData[] data = new DirClassifiedReplyData[count];
 
@@ -464,7 +516,9 @@ namespace OpenSimSearch.Modules.OpenSearch
                 data[i].price = Convert.ToInt32(d["priceforlisting"]);
 
                 if (++i >= count)
+                {
                     break;
+                }
             }
 
             remoteClient.SendDirClassifiedReply(queryID, data);
@@ -475,25 +529,27 @@ namespace OpenSimSearch.Modules.OpenSearch
             Hashtable ReqHash = new Hashtable();
             ReqHash["eventID"] = queryEventID.ToString();
 
-            Hashtable result = GenericXMLRPCRequest(ReqHash,
-                    "event_info_query");
+            Hashtable result = GenericXMLRPCRequest(ReqHash, "event_info_query");
 
             if (!Convert.ToBoolean(result["success"]))
             {
-                remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                 return;
             }
 
             ArrayList dataArray = (ArrayList)result["data"];
+
             if (dataArray.Count == 0)
             {
-                // something bad happened here, if we could return an
-                // event after the search,
-                // we should be able to find it here
-                // TODO do some (more) sensible error-handling here
-                remoteClient.SendAgentAlertMessage("Couldn't find this event.",
-                        false);
+                /// <summary>
+                ///     Something bad happened here,
+                ///     if we could return an event after the
+                ///     search, we should be able to find it here
+                ///     
+                ///     TODO
+                ///     DO some more sensible error handling here
+                /// </summary>
+                remoteClient.SendAgentAlertMessage("Couldn't find this event.", false);
                 return;
             }
 
@@ -521,27 +577,24 @@ namespace OpenSimSearch.Modules.OpenSearch
             Hashtable ReqHash = new Hashtable();
             ReqHash["classifiedID"] = queryClassifiedID.ToString();
 
-            Hashtable result = GenericXMLRPCRequest(ReqHash,
-                    "classifieds_info_query");
+            Hashtable result = GenericXMLRPCRequest(ReqHash, "classifieds_info_query");
 
             if (!Convert.ToBoolean(result["success"]))
             {
-                remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                 return;
             }
 
-            //The viewer seems to issue an info request even when it is
-            //creating a new classified which means the data hasn't been
-            //saved to the database yet so there is no info to find.
+            /// <summary>
+            ///     The viewer appears to issue an info request even
+            ///     when it is creating a new classified which means
+            ///     the data has not been saved to the database yet
+            ///     so there is no info to find
+            /// </summary>
             ArrayList dataArray = (ArrayList)result["data"];
+
             if (dataArray.Count == 0)
             {
-                // Something bad happened here if we could not return an
-                // event after the search. We should be able to find it here.
-                // TODO do some (more) sensible error-handling here
-//                remoteClient.SendAgentAlertMessage("Couldn't find data for classified ad.",
-//                        false);
                 return;
             }
 
@@ -568,12 +621,13 @@ namespace OpenSimSearch.Modules.OpenSearch
                     Convert.ToInt32(d["priceforlisting"]));
         }
 
-        public void HandleMapItemRequest(IClientAPI remoteClient, uint flags,
-                                         uint EstateID, bool godlike,
-                                         uint itemtype, ulong regionhandle)
+        public void HandleMapItemRequest(IClientAPI remoteClient, uint flags, uint EstateID, bool godlike, uint itemtype, ulong regionhandle)
         {
-            //The following constant appears to be from GridLayerType enum
-            //defined in OpenMetaverse/GridManager.cs of libopenmetaverse.
+            /// <summary>
+            ///     The following constant appears to be from
+            ///     GridLayerType enum defined in OpenMetaverse/GridManager.cs
+            ///     of libopenmetaverse
+            /// </summary>
             if (itemtype == (uint)OpenMetaverse.GridItemType.LandForSale)
             {
                 Hashtable ReqHash = new Hashtable();
@@ -585,21 +639,22 @@ namespace OpenSimSearch.Modules.OpenSearch
                 ReqHash["area"] = "0";
                 ReqHash["query_start"] = "0";
 
-                Hashtable result = GenericXMLRPCRequest(ReqHash,
-                                                        "dir_land_query");
+                Hashtable result = GenericXMLRPCRequest(ReqHash, "dir_land_query");
 
                 if (!Convert.ToBoolean(result["success"]))
                 {
-                    remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                    remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                     return;
                 }
 
                 ArrayList dataArray = (ArrayList)result["data"];
 
                 int count = dataArray.Count;
+
                 if (count > 100)
+                {
                     count = 101;
+                }
 
                 List<mapItemReply> mapitems = new List<mapItemReply>();
                 string ParcelRegionUUID;
@@ -610,7 +665,9 @@ namespace OpenSimSearch.Modules.OpenSearch
                     Hashtable d = (Hashtable)o;
 
                     if (d["name"] == null)
+                    {
                         continue;
+                    }
 
                     mapItemReply mapitem = new mapItemReply();
 
@@ -622,10 +679,8 @@ namespace OpenSimSearch.Modules.OpenSearch
                         {
                             landingpoint = d["landing_point"].ToString().Split('/');
 
-                            mapitem.x = (uint)((scene.RegionInfo.RegionLocX * 256) +
-                                                Convert.ToDecimal(landingpoint[0]));
-                            mapitem.y = (uint)((scene.RegionInfo.RegionLocY * 256) +
-                                                Convert.ToDecimal(landingpoint[1]));
+                            mapitem.x = (uint)((scene.RegionInfo.RegionLocX * 256) + Convert.ToDecimal(landingpoint[0]));
+                            mapitem.y = (uint)((scene.RegionInfo.RegionLocY * 256) + Convert.ToDecimal(landingpoint[1]));
                             break;
                         }
                     }
@@ -648,35 +703,37 @@ namespace OpenSimSearch.Modules.OpenSearch
             {
                 Hashtable ReqHash = new Hashtable();
 
-                //Find the maturity level
+                // Find the maturity level
                 int maturity = (1 << 24);
 
-                //Find the maturity level
+                // Find the maturity level
                 if (itemtype == (uint)OpenMetaverse.GridItemType.MatureEvent)
+                {
                     maturity = (1 << 25);
+                }
                 else
                 {
                     if (itemtype == (uint)OpenMetaverse.GridItemType.AdultEvent)
+                    {
                         maturity = (1 << 26);
+                    }
                 }
 
-                //The flags are: SortAsc (1 << 15), PerMeterSort (1 << 17)
+                // The flags are: SortAsc (1 << 15), PerMeterSort (1 << 17)
                 maturity |= 163840;
 
-                //When character before | is a u get upcoming/in-progress events
-                //Character before | is number of days before/after current date
-                //Characters after | is the number for a category
+                // When character before | is a u get upcoming/in-progress events
+                // Character before | is number of days before/after current date
+                // Characters after | is the number for a category
                 ReqHash["text"] = "u|0";
                 ReqHash["flags"] = maturity.ToString();
                 ReqHash["query_start"] = "0";
 
-                Hashtable result = GenericXMLRPCRequest(ReqHash,
-                                                        "dir_events_query");
+                Hashtable result = GenericXMLRPCRequest(ReqHash, "dir_events_query");
 
                 if (!Convert.ToBoolean(result["success"]))
                 {
-                    remoteClient.SendAgentAlertMessage(
-                        result["errorMessage"].ToString(), false);
+                    remoteClient.SendAgentAlertMessage(result["errorMessage"].ToString(), false);
                     return;
                 }
 
@@ -691,20 +748,21 @@ namespace OpenSimSearch.Modules.OpenSearch
                     Hashtable d = (Hashtable)o;
 
                     if (d["name"] == null)
+                    {
                         continue;
+                    }
 
                     mapItemReply mapitem = new mapItemReply();
 
-                    //Events use a comma separator in the landing point
+                    // Events use a comma separator in the landing point
                     landingpoint = d["landing_point"].ToString().Split(',');
                     mapitem.x = Convert.ToUInt32(landingpoint[0]);
                     mapitem.y = Convert.ToUInt32(landingpoint[1]);
 
-                    //This is a crazy way to pass the event ID back to the
-                    //viewer but that is the way it wants the information.
+                    // This is a crazy way to pass the event ID back to the
+                    // viewer but that is the way it wants the information.
                     event_id = Convert.ToInt32(d["event_id"]);
-                    mapitem.id = new UUID("00000000-0000-0000-0000-0000" +
-                                            event_id.ToString("X8"));
+                    mapitem.id = new UUID("00000000-0000-0000-0000-0000" + event_id.ToString("X8"));
 
                     mapitem.Extra = Convert.ToInt32(d["unix_time"]);
                     mapitem.Extra2 = 0; //FIXME: No idea what to do here
