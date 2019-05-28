@@ -50,7 +50,7 @@ using OpenSim.Services.Interfaces;
 [assembly: AddinDescription("OpenSimMutelist module.")]
 [assembly: AddinAuthor("Kevin Cozens")]
 
-namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
+namespace OpenSim.Addons.Mutelist
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "OpenSimMutelist")]
     public class MuteListModule : ISharedRegionModule

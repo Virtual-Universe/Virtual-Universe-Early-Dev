@@ -2563,7 +2563,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSimMutelist.Module" path="OpenSim/Addons/MutelistModule" type="Library">
+    <Project frameworkVersion="v4_6" name="OpenSim.Addons.Mutelist" path="OpenSim/Addons/Mutelist" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2578,13 +2578,13 @@
       <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
       <Reference localCopy="false" name="System"/>
       <Reference name="System.Xml"/>
+	  <Reference name="log4net"/>
+	  <Reference name="Mono.Addins"/>
+	  <Reference name="Nini"/>
       <Reference name="OpenMetaverseTypes"/>
       <Reference name="OpenSim.Framework"/>
       <Reference name="OpenSim.Region.Framework"/>
       <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="log4net"/>
-      <Reference name="Mono.Addins"/>
-      <Reference name="Nini"/>
       <Reference name="XMLRPC"/>
 
       <Files>
