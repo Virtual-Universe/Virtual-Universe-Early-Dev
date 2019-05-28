@@ -1,41 +1,39 @@
-/// <license>
-///     Copyright (c) Contributors, https://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+/*
+ * Copyright (c) Contributors, https://virtual-planets.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the Virtual Universe Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Data;
-using System.Reflection;
-using log4net;
-using Mysql.Data.MySqlClient;
-using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
+using log4net;
+using MySql.Data.MySqlClient;
+using OpenMetaverse;
 
 namespace OpenSim.Data.MySQL
 {
@@ -47,11 +45,8 @@ namespace OpenSim.Data.MySQL
         protected string m_Table;
 
         /// <summary>
-        ///     Number of days that must pass before we 
-        ///     update the access time on an asset when 
-        ///     it has been fetched Config option to 
-        ///     change this is:
-        ///         "DaysBetweenAccessTimeUpdates"
+        /// Number of days that must pass before we update the access time on an asset when it has been fetched
+        /// Config option to change this is "DaysBetweenAccessTimeUpdates"
         /// </summary>
         private int DaysBetweenAccessTimeUpdates = 0;
 
@@ -66,18 +61,9 @@ namespace OpenSim.Data.MySQL
 
         #region IPlugin Members
 
-        public string Version
-        {
-            get { return "1.0.0.0"; }
-        }
+        public string Version { get { return "1.0.0.0"; } }
 
-        /// <summary>
-        ///     Loads and initializes the MySQL storage 
-        ///     plugin and checks for migrations
-        /// </summary>
-        /// <param name="connect"></param>
-        /// <param name="realm"></param>
-        /// <param name="UpdateAccessTime"></param>
+        // Loads and initializes the MySQL storage plugin and checks for migrations
         public void Initialize(string connect, string realm, int UpdateAccessTime)
         {
             m_ConnectionString = connect;
@@ -97,7 +83,7 @@ namespace OpenSim.Data.MySQL
             }
             catch (MySqlException e)
             {
-                m_log.ErrorFormat("[FS Assets]: Can't connect to database: {0}", e.Message.ToString());
+                m_log.ErrorFormat("[FSASSETS]: Can't connect to database: {0}", e.Message.ToString());
             }
         }
 
@@ -125,12 +111,11 @@ namespace OpenSim.Data.MySQL
                 }
                 catch (MySqlException e)
                 {
-                    m_log.ErrorFormat("[FS Assets]: Database open failed with {0}", e.ToString());
+                    m_log.ErrorFormat("[FSASSETS]: Database open failed with {0}", e.ToString());
                     return false;
                 }
 
                 cmd.Connection = conn;
-
                 try
                 {
                     cmd.ExecuteNonQuery();
@@ -139,10 +124,9 @@ namespace OpenSim.Data.MySQL
                 {
                     cmd.Connection = null;
                     conn.Close();
-                    m_log.ErrorFormat("[FS Assets]: Query {0} failed with {1}", cmd.CommandText, e.ToString());
+                    m_log.ErrorFormat("[FSASSETS]: Query {0} failed with {1}", cmd.CommandText, e.ToString());
                     return false;
                 }
-
                 conn.Close();
                 cmd.Connection = null;
             }
@@ -166,7 +150,7 @@ namespace OpenSim.Data.MySQL
                 }
                 catch (MySqlException e)
                 {
-                    m_log.ErrorFormat("[FS Assets]: Database open failed with {0}", e.ToString());
+                    m_log.ErrorFormat("[FSASSETS]: Database open failed with {0}", e.ToString());
                     return null;
                 }
 
@@ -178,9 +162,7 @@ namespace OpenSim.Data.MySQL
                     using (IDataReader reader = cmd.ExecuteReader())
                     {
                         if (!reader.Read())
-                        {
                             return null;
-                        }
 
                         hash = reader["hash"].ToString();
 
@@ -198,7 +180,6 @@ namespace OpenSim.Data.MySQL
                         UpdateAccessTime(id, AccessTime);
                     }
                 }
-
                 conn.Close();
             }
 
@@ -207,16 +188,10 @@ namespace OpenSim.Data.MySQL
 
         private void UpdateAccessTime(string AssetID, int AccessTime)
         {
-            /// <summary>
-            ///     Reduce database work by only updating access
-            ///     time if asset has not recently been accessed
-            ///     0 by default. config option is: 
-            ///         "DaysBetweenAccessTImeUpdates"
-            /// </summary>
+            // Reduce DB work by only updating access time if asset hasn't recently been accessed
+            // 0 By Default, Config option is "DaysBetweenAccessTimeUpdates"
             if (DaysBetweenAccessTimeUpdates > 0 && (DateTime.UtcNow - Utils.UnixTimeToDateTime(AccessTime)).TotalDays < DaysBetweenAccessTimeUpdates)
-            {
                 return;
-            }
 
             using (MySqlConnection conn = new MySqlConnection(m_ConnectionString))
             {
@@ -226,7 +201,7 @@ namespace OpenSim.Data.MySQL
                 }
                 catch (MySqlException e)
                 {
-                    m_log.ErrorFormat("[FS Assets]: Database open failed with {0}", e.ToString());
+                    m_log.ErrorFormat("[FSASSETS]: Database open failed with {0}", e.ToString());
                     return;
                 }
 
@@ -236,7 +211,6 @@ namespace OpenSim.Data.MySQL
                     cmd.Parameters.AddWithValue("?id", AssetID);
                     cmd.ExecuteNonQuery();
                 }
-
                 conn.Close();
             }
         }
@@ -251,8 +225,9 @@ namespace OpenSim.Data.MySQL
                 using (MySqlCommand cmd = new MySqlCommand())
                 {
                     cmd.Parameters.AddWithValue("?id", meta.ID);
-                    cmd.Parameters.AddWithValue("?name", meta.Name.Substring(0, Math.Min(meta.Name.Length, 64)));
-                    cmd.Parameters.AddWithValue("?description", meta.Description.Substring(0, Math.Min(meta.Name.Length, 128)))
+                    cmd.Parameters.AddWithValue("?name", meta.Name);
+                    cmd.Parameters.AddWithValue("?description", meta.Description);
+//                    cmd.Parameters.AddWithValue("?type", meta.Type.ToString());
                     cmd.Parameters.AddWithValue("?type", meta.Type);
                     cmd.Parameters.AddWithValue("?hash", hash);
                     cmd.Parameters.AddWithValue("?asset_flags", meta.Flags);
@@ -260,44 +235,45 @@ namespace OpenSim.Data.MySQL
                     if (existingAsset == null)
                     {
                         cmd.CommandText = String.Format("insert into {0} (id, name, description, type, hash, asset_flags, create_time, access_time) values ( ?id, ?name, ?description, ?type, ?hash, ?asset_flags, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())", m_Table);
+
                         ExecuteNonQuery(cmd);
+
                         return true;
                     }
+
+                    //cmd.CommandText = String.Format("update {0} set hash = ?hash, access_time = UNIX_TIMESTAMP() where id = ?id", m_Table);
+
+                    //ExecuteNonQuery(cmd);
+
                 }
 
-                /// <summary>
-                ///     If the asset already exists
-                ///     then we assume it was already correctly
-                ///     stored or regions will keep retrying
-                /// </summary>
+//                return false;
+                // if the asset already exits
+                // assume it was already correctly stored
+                // or regions will keep retry.
                 return true;
             }
             catch(Exception e)
             {
-                m_log.Error("[FS Assets]: Failed to store asset with ID " + meta.ID);
-                m_log.Error(e.ToString());
+                m_log.Error("[FSAssets] Failed to store asset with ID " + meta.ID);
+        m_log.Error(e.ToString());
                 return false;
             }
         }
 
         /// <summary>
-        ///     Check if the assets exist in the database.
+        /// Check if the assets exist in the database.
         /// </summary>
         /// <param name="uuids">The asset UUID's</param>
         /// <returns>For each asset: true if it exists, false otherwise</returns>
         public bool[] AssetsExist(UUID[] uuids)
         {
             if (uuids.Length == 0)
-            {
                 return new bool[0];
-            }
 
             bool[] results = new bool[uuids.Length];
-
             for (int i = 0; i < uuids.Length; i++)
-            {
                 results[i] = false;
-            }
 
             HashSet<UUID> exists = new HashSet<UUID>();
 
@@ -312,7 +288,7 @@ namespace OpenSim.Data.MySQL
                 }
                 catch (MySqlException e)
                 {
-                    m_log.ErrorFormat("[FS Assets]: Failed to open database: {0}", e.ToString());
+                    m_log.ErrorFormat("[FSASSETS]: Failed to open database: {0}", e.ToString());
                     return results;
                 }
 
@@ -329,15 +305,11 @@ namespace OpenSim.Data.MySQL
                         }
                     }
                 }
-
                 conn.Close();
             }
 
             for (int i = 0; i < uuids.Length; i++)
-            {
                 results[i] = exists.Contains(uuids[i]);
-            }
-
             return results;
         }
 
@@ -353,7 +325,7 @@ namespace OpenSim.Data.MySQL
                 }
                 catch (MySqlException e)
                 {
-                    m_log.ErrorFormat("[FS Assets]: Failed to open database: {0}", e.ToString());
+                    m_log.ErrorFormat("[FSASSETS]: Failed to open database: {0}", e.ToString());
                     return 0;
                 }
 
@@ -364,10 +336,10 @@ namespace OpenSim.Data.MySQL
                     using (IDataReader reader = cmd.ExecuteReader())
                     {
                         reader.Read();
+
                         count = Convert.ToInt32(reader["count"]);
                     }
                 }
-
                 conn.Close();
             }
 
@@ -378,8 +350,11 @@ namespace OpenSim.Data.MySQL
         {
             using(MySqlCommand cmd = new MySqlCommand())
             {
+
                 cmd.CommandText = String.Format("delete from {0} where id = ?id",m_Table);
+
                 cmd.Parameters.AddWithValue("?id", id);
+
                 ExecuteNonQuery(cmd);
             }
 
@@ -398,14 +373,15 @@ namespace OpenSim.Data.MySQL
                 }
                 catch (MySqlException e)
                 {
-                    m_log.ErrorFormat("[FS Assets]: Can't connect to database: {0}", e.Message.ToString());
+                    m_log.ErrorFormat("[FSASSETS]: Can't connect to database: {0}",
+                            e.Message.ToString());
+
                     return;
                 }
 
                 using (MySqlCommand cmd = importConn.CreateCommand())
                 {
                     string limit = String.Empty;
-
                     if (count != -1)
                     {
                         limit = String.Format(" limit {0},{1}", start, count);
@@ -414,7 +390,6 @@ namespace OpenSim.Data.MySQL
                     cmd.CommandText = String.Format("select * from {0}{1}", table, limit);
 
                     MainConsole.Instance.Output("Querying database");
-
                     using (IDataReader reader = cmd.ExecuteReader())
                     {
                         MainConsole.Instance.Output("Reading data");
@@ -447,7 +422,6 @@ namespace OpenSim.Data.MySQL
                         }
                     }
                 }
-
                 importConn.Close();
             }
 
