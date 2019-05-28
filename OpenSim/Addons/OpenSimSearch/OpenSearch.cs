@@ -48,10 +48,10 @@ using DirFindFlags = OpenMetaverse.DirectoryManager.DirFindFlags;
 
 [assembly: Addin("OpenSimSearch", OpenSim.VersionInfo.VersionNumber + "0.4")]
 [assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.VersionNumber)]
-[assembly: AddinDescription("OpenSimSearch module.")]
+[assembly: AddinDescription("OpenSimSearch.")]
 [assembly: AddinAuthor("Unknown")]
 
-namespace OpenSimSearch.Modules.OpenSearch
+namespace OpenSim.Addons.OpenSimSearch
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "OpenSimSearch")]
     public class OpenSearchModule : ISearchModule, ISharedRegionModule

@@ -2593,7 +2593,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSimSearch.Modules" path="OpenSim/Addons/OpenSimSearch/Modules" type="Library">
+    <Project frameworkVersion="v4_6" name="OpenSim.Addons.OpenSimSearch" path="OpenSim/Addons/OpenSimSearch" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
