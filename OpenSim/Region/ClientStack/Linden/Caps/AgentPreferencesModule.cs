@@ -1,39 +1,42 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
 using log4net;
 using Mono.Addins;
 using Nini.Config;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using OpenSim.Capabilities.Handlers;
 using OpenSim.Framework.Console;
 using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
@@ -41,7 +44,6 @@ using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
 using Caps = OpenSim.Framework.Capabilities.Caps;
-using OpenSim.Capabilities.Handlers;
 
 namespace OpenSim.Region.ClientStack.LindenCaps
 {
@@ -61,29 +63,46 @@ namespace OpenSim.Region.ClientStack.LindenCaps
 
         public void AddRegion(Scene scene)
         {
-            lock (m_scenes) m_scenes.Add(scene);
+            lock (m_scenes)
+            {
+                m_scenes.Add(scene);
+            }
         }
 
         public void RemoveRegion(Scene scene)
         {
-            lock (m_scenes) m_scenes.Remove(scene);
+            lock (m_scenes)
+            {
+                m_scenes.Remove(scene);
+            }
+
             scene.EventManager.OnRegisterCaps -= RegisterCaps;
             scene = null;
         }
 
         public void RegionLoaded(Scene scene)
         {
-            scene.EventManager.OnRegisterCaps += delegate(UUID agentID, OpenSim.Framework.Capabilities.Caps caps)
+            scene.EventManager.OnRegisterCaps += delegate (UUID agentID, OpenSim.Framework.Capabilities.Caps caps)
             {
                 RegisterCaps(agentID, caps);
             };
+
+            ISimulatorFeaturesModule simFeatures = scene.RequestModuleInterface<ISimulatorFeaturesModule>();
+
+            if (simFeatures != null)
+            {
+                simFeatures.AddFeature("AvatarHoverHeightEnabled", OSD.FromBoolean(true));
+            }
         }
 
         public void PostInitialize() {}
 
         public void Close() {}
 
-        public string Name { get { return "AgentPreferencesModule"; } }
+        public string Name
+        {
+            get { return "AgentPreferencesModule"; }
+        }
 
         public Type ReplaceableInterface
         {
@@ -93,6 +112,7 @@ namespace OpenSim.Region.ClientStack.LindenCaps
         public void RegisterCaps(UUID agent, Caps caps)
         {
             UUID capId = UUID.Random();
+
             caps.RegisterHandler("AgentPreferences",
                 new RestStreamHandler("POST", "/CAPS/" + capId,
                     delegate(string request, string path, string param,
@@ -100,6 +120,7 @@ namespace OpenSim.Region.ClientStack.LindenCaps
                     {
                         return UpdateAgentPreferences(request, path, param, agent);
                     }));
+
             caps.RegisterHandler("UpdateAgentLanguage",
                 new RestStreamHandler("POST", "/CAPS/" + capId,
                     delegate(string request, string path, string param,
@@ -107,6 +128,7 @@ namespace OpenSim.Region.ClientStack.LindenCaps
                     {
                         return UpdateAgentPreferences(request, path, param, agent);
                     }));
+
             caps.RegisterHandler("UpdateAgentInformation",
                 new RestStreamHandler("POST", "/CAPS/" + capId,
                     delegate(string request, string path, string param,
@@ -119,16 +141,23 @@ namespace OpenSim.Region.ClientStack.LindenCaps
         public string UpdateAgentPreferences(string request, string path, string param, UUID agent)
         {
             OSDMap resp = new OSDMap();
-            // The viewer doesn't do much with the return value, so for now, if there is no preference service,
-            // we'll return a null llsd block for debugging purposes. This may change if someone knows what the
-            // correct server response would be here.
+
+            /// <summary>
+            ///     The viewr does not do much with the return value,
+            ///     so for now, if there is no preference service,
+            ///     we will return a null llsd block for debugging purposes.
+            ///     THis may change if someone knows what the correct
+            ///     server response would be here
+            /// </summary>
             if (m_scenes[0].AgentPreferencesService == null)
             {
                 return OSDParser.SerializeLLSDXmlString(resp);
             }
-            m_log.DebugFormat("[AgentPrefs]: UpdateAgentPreferences for {0}", agent.ToString());
+
+            m_log.DebugFormat("[Agent Preferences]: UpdateAgentPreferences for {0}", agent.ToString());
             OSDMap req = (OSDMap)OSDParser.DeserializeLLSDXml(request);
             AgentPrefs data = m_scenes[0].AgentPreferencesService.GetAgentPreferences(agent);
+
             if (data == null)
             {
                 data = new AgentPrefs(agent);
@@ -139,6 +168,7 @@ namespace OpenSim.Region.ClientStack.LindenCaps
                 OSDMap accessPrefs = (OSDMap)req["access_prefs"];  // We could check with ContainsKey...
                 data.AccessPrefs = accessPrefs["max"].AsString();
             }
+
             if (req.ContainsKey("default_object_perm_masks"))
             {
                 OSDMap permsMap = (OSDMap)req["default_object_perm_masks"];
@@ -146,18 +176,22 @@ namespace OpenSim.Region.ClientStack.LindenCaps
                 data.PermGroup = permsMap["Group"].AsInteger();
                 data.PermNextOwner = permsMap["NextOwner"].AsInteger();
             }
+
             if (req.ContainsKey("hover_height"))
             {
                 data.HoverHeight = req["hover_height"].AsReal();
             }
+
             if (req.ContainsKey("language"))
             {
                 data.Language = req["language"].AsString();
             }
+
             if (req.ContainsKey("language_is_public"))
             {
                 data.LanguageIsPublic = req["language_is_public"].AsBoolean();
             }
+
             m_scenes[0].AgentPreferencesService.StoreAgentPreferences(data);
             OSDMap respAccessPrefs = new OSDMap();
             respAccessPrefs["max"] = data.AccessPrefs;
@@ -179,4 +213,3 @@ namespace OpenSim.Region.ClientStack.LindenCaps
         #endregion Region module
     }
 }
-
