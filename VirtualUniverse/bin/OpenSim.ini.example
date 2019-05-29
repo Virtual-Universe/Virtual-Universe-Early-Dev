@@ -943,7 +943,7 @@
 	
  	; Create inventory entries for textures uploaded with a model
 	; default is false, ie, do not create
-	MeshModelAllowTextureToInventory = true
+	MeshModelAllowTextureToInventory = false
 
 [YEngine]
     ;; experimental engine
