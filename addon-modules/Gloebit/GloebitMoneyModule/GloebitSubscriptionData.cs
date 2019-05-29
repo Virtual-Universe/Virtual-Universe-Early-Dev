@@ -1,4 +1,4 @@
-/*
+﻿/*
  * GloebitSubscriptionData.cs is part of OpenSim-MoneyModule-Gloebit
  * Copyright (C) 2015 Gloebit LLC
  *
@@ -37,7 +37,7 @@ namespace Gloebit.GloebitMoneyModule
 
         private static IGloebitSubscriptionData m_impl;
 
-        public static void Initialise(string storageProvider, string connectionString) {
+        public static void Initialize(string storageProvider, string connectionString) {
             switch(storageProvider) {
                 case "OpenSim.Data.SQLite.dll":
                     m_impl = new SQLiteImpl(connectionString);

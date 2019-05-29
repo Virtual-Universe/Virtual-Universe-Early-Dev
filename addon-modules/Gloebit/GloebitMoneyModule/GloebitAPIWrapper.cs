@@ -96,9 +96,9 @@ namespace Gloebit.GloebitMoneyModule {
 
             //string key = (m_keyAlias != null && m_keyAlias != "") ? m_keyAlias : m_key;
             m_api = new GloebitAPI(m_key, m_keyAlias, m_secret, m_url, this);
-            GloebitUserData.Initialise(dbProvider, dbConnectionString);
-            GloebitTransactionData.Initialise(dbProvider, dbConnectionString);
-            GloebitSubscriptionData.Initialise(dbProvider, dbConnectionString);
+            GloebitUserData.Initialize(dbProvider, dbConnectionString);
+            GloebitTransactionData.Initialize(dbProvider, dbConnectionString);
+            GloebitSubscriptionData.Initialize(dbProvider, dbConnectionString);
         }
 
 
