@@ -221,24 +221,22 @@
     ; login page: optional: if it exists it will be used to tell the client to use
     ; this as splash page. May also be served from an external web server, e.g. for
     ; information on a standalone
-    ;welcome = ${Const|BaseURL}/welcome
+    ;welcome = ${Const|BaseWebURL}/welcome
 
-    ; helper uri: optional: if it exists it will be used to tell the client to use
-    ;                       this for all economy related things
-    ;economy = ${Const|BaseURL}/economy
+    ; helper uri: optional: if it exists it will be used to tell the client to use this for all economy related things
+    ;economy = ${Const|BaseWebURL}/economy
 
     ; web page of grid: optional: page providing further information about your grid
-    ;about = ${Const|BaseURL}/about
+    ;about = ${Const|BaseWebURL}/about
 
-    ; account creation: optional: page providing further information about obtaining
-    ;                             a user account on your grid
-    ;register = ${Const|BaseURL}/register
+    ; account creation: optional: page providing further information about obtaining a user account on your grid
+    ;register = ${Const|BaseWebURL}/register
 
     ; help: optional: page providing further assistance for users of your grid
-    ;help = ${Const|BaseURL}/help
+    ;help = ${Const|BaseWebURL}/help
 
     ; password help: optional: page providing password assistance for users of your grid
-    ;password = ${Const|BaseURL}/password
+    ;password = ${Const|BaseWebURL}/password
 
     ; HG address of the gatekeeper, if you have one
     ; this is the entry point for all the regions of the world

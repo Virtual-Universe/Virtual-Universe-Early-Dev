@@ -44,26 +44,77 @@
 ;;    Any options added to OpenSim.ini.example should be initially commented
 ;;    out.
 
-
 [Const]
-    ; this section defines constants for grid services
-    ; to simplify other configuration files default settings
 
-    ;# {BaseHostname} {} {BaseHostname} {"example.com" "127.0.0.1"} "127.0.0.1"
-    BaseHostname = "127.0.0.1"
+;; This sectin defines specific constants
+;; for the grid services.  It is designed
+;; to simplify configuration of your grid.
+;;
+;; Unless you are a big grid that has split
+;; your grid services up into their own
+;; seperate servers (example: GridServer
+;; exists on GridServer1 while your AssetsServer
+;; exists on AssetServer1 with both GridServer1
+;; and AssetServer1 being two seperate physical
+;; server hardware running their own subdomain
+;; or in their own seperate consoles such as 
+;; GridConsole1 and AssetConsole1), you do not 
+;; need to make any other changes to the urls 
+;; requested in the various configuration
+;; files except for your individual Region.ini 
+;; files
 
-    ;# {BaseURL} {} {BaseURL} {"http://${Const|BaseHostname}} "http://${Const|BaseHostname}"
-    BaseURL = http://${Const|BaseHostname}
+;# {BaseHostname} {} {BaseHostname} {"example.com" "127.0.0.1"} "127.0.0.1"
+;; This is the hostname or domain name that your 
+;; Server hardware is operating on.  It can either
+;; be a IP Address (Internet Protocol Address) or
+;; a FQDN (Fully Qualified Domain Name such as example.com)
+;; But you cannot run both an IP address and FQDN
+;; in the Virtual Universe Server as it will likely
+;; cause problems with rendering and other various
+;; grid and region services
+BaseHostname = "127.0.0.1"
 
-    ;# {PublicPort} {} {PublicPort} {8002 9000} "8002"
-    PublicPort = "8002"
+;# {BaseURL} {} {BaseURL} {"http://${Const|BaseHostname}} "http://${Const|BaseHostname}"
+;; This will create the URL for your grid services
+;; you do not need to do anything here as this has
+;; already been configured in BaseHostname above
+BaseURL = http://${Const|BaseHostname}
 
-    ;grid default private port 8003, not used in standalone
-    ;# {PrivatePort} {} {PrivatePort} {8003} "8003"
-    ; port to access private grid services.
-    ; grids that run all their regions should deny access to this port
-    ; from outside their networks, using firewalls
-    PrivatePort = "8003"
+;# {PublicPort} {} {PublicPort} {8002 9000} "8002"
+;; By default the public port that your viewer needs
+;; in order to obtain the grid's information is set
+;; to 8002 for a grid while a region's default public
+;; port is 9000 in standalone mode.  Unless you have
+;; set up different ports or are running grid services
+;; in seperate consoles on one server machine, then
+;; leaving the default setting here will work just fine
+PublicPort = "8002"
+
+;# {PrivatePort} {} {PrivatePort} {8003} "8003"
+;; This is the default private port used by the
+;; private grid services to communicate with
+;; each other and the viewers.  It is only used
+;; in grid mode (or in hypergrid mode) and not
+;; in standalone mode.  Grids that run all their
+;; regions, should deny access to this port from
+;; outside their networks using firewalls to help keep
+;; your grids secure
+PrivatePort = "8003"
+
+;# {BaseWebname} {} {BaseWebname} {"example.com" "127.0.0.1"} "127.0.0.1"
+;; This is the FQDN (Fully Qualified Domain Name)
+;; or IP (Internet Protocol) address of your grid's
+;; main website.  By setting it here the rest will
+;; be taken care of relating to the grid information
+;; the viewer needs about your grid's website.
+BaseWebname = "example.com"
+
+;# {BaseWebURL} {} {BaseWebURL} {"http://${Const|BaseWebname}} "http://${Const|BaseWebname}"
+;; This will create the URL for your grid's main
+;; website you do not need to do anything here 
+;; as this has already been configured in BaseWebname above
+BaseWebURL = http://${Const|BaseWebname}
 
 [Startup]
     ;# {ConsolePrompt} {} {ConsolePrompt} {} "Region (\R) "
@@ -729,7 +780,7 @@
 
     ;# {OfflineMessageURL} {OfflineMessageModule:OfflineMessageModule Offline Message Module V2:Offline Message Module V2} {URL of offline messaging service} {}
     ;; URL of web service for offline message storage. Leave it commented if your service is local to the sim.
-    ; OfflineMessageURL = ${Const|BaseURL}/Offline.php
+    ; OfflineMessageURL = ${Const|BaseWebURL}/Offline.php
     ; OfflineMessageURL = ${Const|BaseURL}:${Const|PrivatePort}
 
     ;# {StorageProvider} {Offline Message Module V2:Offline Message Module V2} {DLL that provides the storage interface} {OpenSim.Data.MySQL.dll}
@@ -1184,7 +1235,7 @@
 	;; The SearchURL is important. It must be correct or search won't work.
 	;;
 	;; Change the URL to point to the query.php file on your own web server
-	SearchURL = "http://192.168.0.1/query.php"
+	SearchURL = "${Const|BaseWebURL}/query.php"
 	
 [InterestManagement]
      ;; This section controls how state updates are prioritized for each client
