@@ -1,0 +1,3 @@
+In this directory you can place addon modules for Virtual Universe
+
+Each module should be in it's own folder in this directory.  However under the upcoming new method of handling third party addon-modules this directory will ultimately become unnecessary in the longterm.
