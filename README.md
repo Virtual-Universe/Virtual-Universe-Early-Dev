@@ -11,7 +11,7 @@ Discord Server: https://discord.gg/JQb5gEC
 
 ## Security Scans
 
-Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3d3ffbe13c42415b8fc039c65d992b9c)](https://www.codacy.com/app/Virtual-Universe/Virtual-Universe-NXG?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Virtual-Universe/Virtual-Universe-NXG&amp;utm_campaign=Badge_Grade)
+Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a53f3b60757f463bb0fcca9253d1812d)](https://www.codacy.com/app/emperorstarfinder_2/Virtual-Universe-NXG?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Virtual-Universe/Virtual-Universe-NXG&amp;utm_campaign=Badge_Grade)
 
 ## Build Tools Status
 
