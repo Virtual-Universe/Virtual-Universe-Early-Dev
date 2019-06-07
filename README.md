@@ -4,10 +4,13 @@ Development Repository for the next generation of the Virtual Universe Virtual W
 # Virtual Universe Support
 While you should not run a production grid using the code in the Virtual-Universe-NXG repository, we understand there are those who want to get on the cutting edge of what is coming in Virtual Universe.  To get help with an issue or to chat with others who use Virtual Universe you can join the following Virtual Universe communities:
 
-IRC channel #galaxyfutures on freenode (http://webchat.freenode.net?channels=%23galaxyfutures)
-Check out http://virtual-planets.org for the latest developments, downloads and forum
-Virtual Universe MeWe community is for Virtual Universe with a friendly bunch that is happy to answer questions. Find it at https://mewe.com/join/virtualuniverse
-Discord Server: https://discord.gg/JQb5gEC
+* IRC channel #galaxyfutures on freenode (http://webchat.freenode.net?channels=%23galaxyfutures)
+
+* Website: Check out http://virtual-planets.org for the latest developments, downloads and forum
+
+* MeWe Community: Virtual Universe MeWe community is for Virtual Universe with a friendly bunch that is happy to answer questions. Find it at https://mewe.com/join/virtualuniverse
+
+* Our Discord Server: https://discord.gg/JQb5gEC
 
 ## Security Scans
 
