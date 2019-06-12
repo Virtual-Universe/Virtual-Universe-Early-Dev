@@ -63,10 +63,10 @@ namespace OpenSim.Services.Connectors
 
         public MapImageServicesConnector(IConfigSource source)
         {
-            Initialize(source);
+            Initialise(source);
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig config = source.Configs["MapImageService"];
             if (config == null)
@@ -85,7 +85,7 @@ namespace OpenSim.Services.Connectors
             }
             m_ServerURI = serviceURI;
             m_ServerURI = serviceURI.TrimEnd('/');
-            base.Initialize(source, "MapImageService");
+            base.Initialise(source, "MapImageService");
         }
 
         public bool RemoveMapTile(int x, int y, out string reason)

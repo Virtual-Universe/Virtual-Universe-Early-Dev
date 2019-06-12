@@ -64,7 +64,7 @@ namespace OpenSim.Region.OptionalModules.Example.BareBonesNonShared
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             m_log.DebugFormat("[BARE BONES NON SHARED]: INITIALIZED MODULE");
         }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -86,13 +86,13 @@ namespace OpenSim.ApplicationPlugins.RemoteController
             get { return m_name; }
         }
 
-        public void Initialize()
+        public void Initialise()
         {
             m_log.Error("[RADMIN]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitializedException(Name);
+            throw new PluginNotInitialisedException(Name);
         }
 
-        public void Initialize(OpenSimBase openSim)
+        public void Initialise(OpenSimBase openSim)
         {
             m_configSource = openSim.ConfigSource.Source;
             try
@@ -201,7 +201,7 @@ namespace OpenSim.ApplicationPlugins.RemoteController
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (!CreateDefaultAvatars())
             {

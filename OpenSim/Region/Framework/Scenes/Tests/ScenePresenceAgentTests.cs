@@ -41,7 +41,7 @@ using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.ClientStack.Linden;
 using OpenSim.Region.CoreModules.Framework.EntityTransfer;
-using OpenSim.Region.CoreModules.World.Serializer;
+using OpenSim.Region.CoreModules.World.Serialiser;
 using OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation;
 using OpenSim.Tests.Common;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
@@ -73,8 +73,8 @@ namespace OpenSim.Region.Framework.Scenes.Tests
 ////            scene3 = sh.SetupScene("Neighbour x-1", UUID.Random(), 999, 1000);
 ////
 ////            ISharedRegionModule interregionComms = new LocalSimulationConnectorModule();
-////            interregionComms.Initialize(new IniConfigSource());
-////            interregionComms.PostInitialize();
+////            interregionComms.Initialise(new IniConfigSource());
+////            interregionComms.PostInitialise();
 ////            SceneHelpers.SetupSceneModules(scene, new IniConfigSource(), interregionComms);
 ////            SceneHelpers.SetupSceneModules(scene2, new IniConfigSource(), interregionComms);
 ////            SceneHelpers.SetupSceneModules(scene3, new IniConfigSource(), interregionComms);

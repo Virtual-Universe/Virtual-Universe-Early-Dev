@@ -72,7 +72,7 @@ namespace OpenSim.Framework
 
         private List<T> loaded = new List<T>();
         private List<string> extpoints = new List<string>();
-        private PluginInitializerBase initializer;
+        private PluginInitialiserBase initialiser;
 
         private Dictionary<string,IPluginConstraint> constraints
             = new Dictionary<string,IPluginConstraint>();
@@ -83,10 +83,10 @@ namespace OpenSim.Framework
         private static readonly ILog log
             = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        public PluginInitializerBase Initializer
+        public PluginInitialiserBase Initialiser
         {
-            set { initializer = value; }
-            get { return initializer; }
+            set { initialiser = value; }
+            get { return initialiser; }
         }
 
         public List<T> Plugins
@@ -101,20 +101,20 @@ namespace OpenSim.Framework
 
         public PluginLoader()
         {
-            Initializer = new PluginInitializerBase();
-            initialize_plugin_dir_(".");
+            Initialiser = new PluginInitialiserBase();
+            initialise_plugin_dir_(".");
         }
 
-        public PluginLoader(PluginInitializerBase init)
+        public PluginLoader(PluginInitialiserBase init)
         {
-            Initializer = init;
-            initialize_plugin_dir_(".");
+            Initialiser = init;
+            initialise_plugin_dir_(".");
         }
 
-        public PluginLoader(PluginInitializerBase init, string dir)
+        public PluginLoader(PluginInitialiserBase init, string dir)
         {
-            Initializer = init;
-            initialize_plugin_dir_(dir);
+            Initialiser = init;
+            initialise_plugin_dir_(dir);
         }
 
         public void Add(string extpoint)
@@ -183,12 +183,12 @@ namespace OpenSim.Framework
                     loadedPlugins.Add(plugin);
                 }
 
-                // We do Initialize() in a second loop after CreateInstance
+                // We do Initialise() in a second loop after CreateInstance
                 // So that modules who need init before others can do it
                 // Example: Script Engine Component System needs to load its components before RegionLoader starts
                 foreach (T plugin in loadedPlugins)
                 {
-                    Initializer.Initialize(plugin);
+                    Initialiser.Initialise(plugin);
                     Plugins.Add(plugin);
                 }
             }
@@ -205,7 +205,7 @@ namespace OpenSim.Framework
             AddinManager.AddinLoaded -= on_addinloaded_;
         }
 
-        private void initialize_plugin_dir_(string dir)
+        private void initialise_plugin_dir_(string dir)
         {
             if (AddinManager.IsInitialized == true)
                 return;

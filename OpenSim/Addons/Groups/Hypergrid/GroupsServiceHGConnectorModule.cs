@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -66,7 +66,7 @@ namespace OpenSim.Groups
 
         #region ISharedRegionModule
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig groupsConfig = config.Configs["Groups"];
             if (groupsConfig == null)
@@ -147,7 +147,7 @@ namespace OpenSim.Groups
 
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

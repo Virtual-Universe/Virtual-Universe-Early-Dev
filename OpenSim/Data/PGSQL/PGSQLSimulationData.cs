@@ -67,14 +67,14 @@ namespace OpenSim.Data.PGSQL
 
         public PGSQLSimulationData(string connectionString)
         {
-            Initialize(connectionString);
+            Initialise(connectionString);
         }
 
         /// <summary>
-        /// Initializes the region datastore
+        /// Initialises the region datastore
         /// </summary>
         /// <param name="connectionString">The connection string.</param>
-        public void Initialize(string connectionString)
+        public void Initialise(string connectionString)
         {
             m_connectionString = connectionString;
             _Database = new PGSQLManager(connectionString);

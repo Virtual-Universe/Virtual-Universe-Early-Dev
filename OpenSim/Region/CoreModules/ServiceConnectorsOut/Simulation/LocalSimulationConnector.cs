@@ -66,7 +66,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
 
         #region Region Module interface
 
-        public void Initialize(IConfigSource configSource)
+        public void Initialise(IConfigSource configSource)
         {
             IConfig moduleConfig = configSource.Configs["Modules"];
             if (moduleConfig != null)
@@ -74,7 +74,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
                 string name = moduleConfig.GetString("SimulationServices", "");
                 if (name == Name)
                 {
-                    InitializeService(configSource);
+                    InitialiseService(configSource);
 
                     m_ModuleEnabled = true;
 
@@ -83,7 +83,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
             }
         }
 
-        public void InitializeService(IConfigSource configSource)
+        public void InitialiseService(IConfigSource configSource)
         {
             ServiceVersion = "SIMULATION/0.3";
             IConfig config = configSource.Configs["SimulationService"];
@@ -103,7 +103,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

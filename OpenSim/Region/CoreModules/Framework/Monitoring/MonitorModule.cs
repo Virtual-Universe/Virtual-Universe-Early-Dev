@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -72,7 +72,7 @@ namespace OpenSim.Region.CoreModules.Framework.Monitoring
 
         #region Implementation of INonSharedRegionModule
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig cnfg = source.Configs["Monitoring"];
 

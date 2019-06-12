@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -121,7 +121,7 @@ namespace OpenSim.Region.CoreModules.Asset
             get { return m_ModuleName; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             
@@ -205,7 +205,7 @@ namespace OpenSim.Region.CoreModules.Asset
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

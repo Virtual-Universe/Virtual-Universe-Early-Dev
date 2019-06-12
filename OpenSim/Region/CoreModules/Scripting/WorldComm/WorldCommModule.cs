@@ -106,7 +106,7 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
 
         #region INonSharedRegionModule Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             // wrap this in a try block so that defaults will work if
             // the config file doesn't specify otherwise.
@@ -135,7 +135,7 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
             m_pending = Queue.Synchronized(m_pendingQ);
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 
@@ -901,7 +901,7 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
                 UUID hostID, int channel, string name, UUID id,
                 string message)
         {
-            Initialize(handle, localID, ItemID, hostID, channel, name, id,
+            Initialise(handle, localID, ItemID, hostID, channel, name, id,
                     message, 0);
         }
 
@@ -909,25 +909,25 @@ namespace OpenSim.Region.CoreModules.Scripting.WorldComm
                 UUID hostID, int channel, string name, UUID id,
                 string message, int regexBitfield)
         {
-            Initialize(handle, localID, ItemID, hostID, channel, name, id,
+            Initialise(handle, localID, ItemID, hostID, channel, name, id,
                     message, regexBitfield);
         }
 
         public ListenerInfo(ListenerInfo li, string name, UUID id,
                 string message)
         {
-            Initialize(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
+            Initialise(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
                     li.m_channel, name, id, message, 0);
         }
 
         public ListenerInfo(ListenerInfo li, string name, UUID id,
                 string message, int regexBitfield)
         {
-            Initialize(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
+            Initialise(li.m_handle, li.m_localID, li.m_itemID, li.m_hostID,
                     li.m_channel, name, id, message, regexBitfield);
         }
 
-        private void Initialize(int handle, uint localID, UUID ItemID,
+        private void Initialise(int handle, uint localID, UUID ItemID,
                 UUID hostID, int channel, string name, UUID id,
                 string message, int regexBitfield)
         {

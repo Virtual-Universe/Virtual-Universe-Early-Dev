@@ -57,21 +57,21 @@ namespace OpenSim.Data.SQLite
 
         private static bool m_Initialized = false;
 
-        public void Initialize()
+        public void Initialise()
         {
             m_log.Info("[SQLiteInventoryData]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitializedException(Name);
+            throw new PluginNotInitialisedException(Name);
         }
 
         /// <summary>
         /// <list type="bullet">
-        /// <item>Initializes Inventory interface</item>
-        /// <item>Loads and initializes a new SQLite connection and maintains it.</item>
+        /// <item>Initialises Inventory interface</item>
+        /// <item>Loads and initialises a new SQLite connection and maintains it.</item>
         /// <item>use default URI if connect string string is empty.</item>
         /// </list>
         /// </summary>
         /// <param name="dbconnect">connect string</param>
-        public void Initialize(string dbconnect)
+        public void Initialise(string dbconnect)
         {
             if (!m_Initialized)
             {

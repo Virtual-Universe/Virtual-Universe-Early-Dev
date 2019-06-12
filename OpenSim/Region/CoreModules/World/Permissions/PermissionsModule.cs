@@ -156,7 +156,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         #region INonSharedRegionModule Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             string permissionModules = Util.GetConfigVarFromSections<string>(config, "permissionmodules",
                 new string[] { "Startup", "Permissions" }, "DefaultPermissionsModule");

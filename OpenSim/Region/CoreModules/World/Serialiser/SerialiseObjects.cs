@@ -33,24 +33,24 @@ using System.Xml;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Scenes.Serialization;
 
-namespace OpenSim.Region.CoreModules.World.Serializer
+namespace OpenSim.Region.CoreModules.World.Serialiser
 {
-    internal class SerializeObjects : IFileSerializer
+    internal class SerialiseObjects : IFileSerialiser
     {
-        #region IFileSerializer Members
+        #region IFileSerialiser Members
 
         public string WriteToFile(Scene scene, string dir)
         {
             string targetFileName = Path.Combine(dir, "objects.xml");
 
-            SaveSerializedToFile(targetFileName, scene);
+            SaveSerialisedToFile(targetFileName, scene);
 
             return "objects.xml";
         }
 
         #endregion
 
-        public void SaveSerializedToFile(string fileName, Scene scene)
+        public void SaveSerialisedToFile(string fileName, Scene scene)
         {
             string xmlstream = GetObjectXml(scene);
 

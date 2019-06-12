@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -85,7 +85,7 @@ namespace OpenSim.Groups
 
         #region Region Module interfaceBase Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig groupsConfig = config.Configs["Groups"];
 
@@ -228,7 +228,7 @@ namespace OpenSim.Groups
             get { return "Groups Messaging Module V2"; }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             // NoOp
         }

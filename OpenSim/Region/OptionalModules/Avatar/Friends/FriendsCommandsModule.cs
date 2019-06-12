@@ -66,12 +66,12 @@ namespace OpenSim.Region.OptionalModules.Avatar.Friends
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
 //            m_log.DebugFormat("[FRIENDS COMMAND MODULE]: INITIALIZED MODULE");
         }
         
-        public void PostInitialize()
+        public void PostInitialise()
         {
 //            m_log.DebugFormat("[FRIENDS COMMAND MODULE]: POST INITIALIZED MODULE");
         }

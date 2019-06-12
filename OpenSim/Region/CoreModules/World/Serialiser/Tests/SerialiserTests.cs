@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSim Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -38,10 +38,10 @@ using OpenSim.Region.Framework.Scenes.Serialization;
 using OpenSim.Tests.Common;
 using OpenMetaverse.StructuredData;
 
-namespace OpenSim.Region.CoreModules.World.Serializer.Tests
+namespace OpenSim.Region.CoreModules.World.Serialiser.Tests
 {
     [TestFixture]
-    public class SerializerTests : OpenSimTestCase
+    public class SerialiserTests : OpenSimTestCase
     {
         private const string ObjectRootPartStubXml = 
 @"<SceneObjectGroup>
@@ -590,14 +590,14 @@ namespace OpenSim.Region.CoreModules.World.Serializer.Tests
         </SceneObjectGroup>";
 
         protected Scene m_scene;
-        protected SerializerModule m_serializerModule;
+        protected SerialiserModule m_serialiserModule;
 
         [TestFixtureSetUp]
         public void Init()
         {
-            m_serializerModule = new SerializerModule();
+            m_serialiserModule = new SerialiserModule();
             m_scene = new SceneHelpers().SetupScene();
-            SceneHelpers.SetupSceneModules(m_scene, m_serializerModule);
+            SceneHelpers.SetupSceneModules(m_scene, m_serialiserModule);
         }
 
         [Test]
@@ -780,7 +780,7 @@ namespace OpenSim.Region.CoreModules.World.Serializer.Tests
             TestHelpers.InMethod();
             //log4net.Config.XmlConfigurator.Configure();
 
-            SceneObjectGroup so = m_serializerModule.DeserializeGroupFromXml2(ObjectWithNoPartsXml2);
+            SceneObjectGroup so = m_serialiserModule.DeserializeGroupFromXml2(ObjectWithNoPartsXml2);
             SceneObjectPart rootPart = so.RootPart;
 
             Assert.That(rootPart.UUID, Is.EqualTo(new UUID("9be68fdd-f740-4a0f-9675-dfbbb536b946")));
@@ -828,7 +828,7 @@ namespace OpenSim.Region.CoreModules.World.Serializer.Tests
 
             Dictionary<string, object> options = new Dictionary<string, object>();
             options["old-guids"] = true;
-            string xml2 = m_serializerModule.SerializeGroupToXml2(so, options);
+            string xml2 = m_serialiserModule.SerializeGroupToXml2(so, options);
 
             XmlTextReader xtr = new XmlTextReader(new StringReader(xml2));
             xtr.ReadStartElement("SceneObjectGroup");

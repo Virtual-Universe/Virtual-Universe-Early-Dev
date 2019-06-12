@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSim Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -76,12 +76,12 @@ namespace OpenSim.Region.OptionalModules.Scripting.JsonStore
 
         // -----------------------------------------------------------------
         /// <summary>
-        /// Initialize this shared module
+        /// Initialise this shared module
         /// </summary>
-        /// <param name="scene">this region is getting initialized</param>
+        /// <param name="scene">this region is getting initialised</param>
         /// <param name="source">nini config, we are not using this</param>
         // -----------------------------------------------------------------
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             try 
             {
@@ -113,7 +113,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.JsonStore
         /// everything is loaded, perform post load configuration
         /// </summary>
         // -----------------------------------------------------------------
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

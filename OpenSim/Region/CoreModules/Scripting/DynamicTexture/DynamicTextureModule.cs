@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -337,7 +337,7 @@ namespace OpenSim.Region.CoreModules.Scripting.DynamicTexture
 
         #region ISharedRegionModule Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig texturesConfig = config.Configs["Textures"];
             if (texturesConfig != null)
@@ -353,7 +353,7 @@ namespace OpenSim.Region.CoreModules.Scripting.DynamicTexture
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

@@ -91,7 +91,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
         //private int CacheRegionsDistance = 256;
 
         #region INonSharedRegionModule Members
-        public virtual void Initialize (IConfigSource config)
+        public virtual void Initialise (IConfigSource config)
         {
             string[] configSections = new string[] { "Map", "Startup" };
 

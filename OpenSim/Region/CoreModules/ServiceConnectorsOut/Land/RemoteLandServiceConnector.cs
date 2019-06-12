@@ -63,7 +63,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
             get { return "RemoteLandServicesConnector"; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -80,7 +80,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Land
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

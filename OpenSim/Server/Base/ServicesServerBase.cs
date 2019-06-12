@@ -82,7 +82,9 @@ namespace OpenSim.Server.Base
             argvConfig.AddSwitch("Startup", "logconfig", "g");
 
             // Automagically create the ini file name
-            string fileName = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
+            string fileName = "";
+            if (Assembly.GetEntryAssembly() != null)
+                fileName = Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
             string iniFile = fileName + ".ini";
             string logConfig = null;
 
@@ -123,7 +125,7 @@ namespace OpenSim.Server.Base
             }
 
             // Merge OpSys env vars
-            m_log.Info("[Virtual Universe Configuration]: Loading environment variables for Config");
+            m_log.Info("[CONFIG]: Loading environment variables for Config");
             Util.MergeEnvironmentToConfig(Config);
             
             // Merge the configuration from the command line into the loaded file
@@ -158,7 +160,11 @@ namespace OpenSim.Server.Base
                 MainConsole.Instance = new RemoteConsole(prompt);
                 ((RemoteConsole)MainConsole.Instance).ReadConfig(Config);
             }
-            else
+            else if (consoleType == "mock")
+            {
+                MainConsole.Instance = new MockConsole();
+            }
+            else if (consoleType == "local")
             {
                 MainConsole.Instance = new LocalConsole(prompt, startupConfig);
             }
@@ -188,7 +194,7 @@ namespace OpenSim.Server.Base
 
             // Allow derived classes to perform initialization that
             // needs to be done after the console has opened
-            Initialize();
+            Initialise();
         }
 
         public bool Running
@@ -230,7 +236,7 @@ namespace OpenSim.Server.Base
         {
         }
 
-        protected virtual void Initialize()
+        protected virtual void Initialise()
         {
         }
     }

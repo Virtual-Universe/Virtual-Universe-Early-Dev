@@ -52,7 +52,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
             get { return "LocalPresenceServicesConnector"; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)

@@ -68,7 +68,7 @@ namespace OpenSim.Region.OptionalModules.Materials
 
         public Dictionary<UUID, OSDMap> m_regionMaterials = new Dictionary<UUID, OSDMap>();
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             m_enabled = true; // default is enabled
 

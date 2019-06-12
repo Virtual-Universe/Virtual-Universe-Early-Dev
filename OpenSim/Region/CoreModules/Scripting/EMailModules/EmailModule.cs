@@ -76,7 +76,7 @@ namespace OpenSim.Region.CoreModules.Scripting.EmailModules
 
         #region ISharedRegionModule
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             m_Config = config;
             IConfig SMTPConfig;
@@ -149,7 +149,7 @@ namespace OpenSim.Region.CoreModules.Scripting.EmailModules
         {
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

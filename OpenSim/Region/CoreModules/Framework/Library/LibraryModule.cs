@@ -61,7 +61,7 @@ namespace OpenSim.Region.CoreModules.Framework.Library
 
         #region ISharedRegionModule
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             m_Enabled = config.Configs["Modules"].GetBoolean("LibraryModule", m_Enabled);
             if (m_Enabled)
@@ -135,7 +135,7 @@ namespace OpenSim.Region.CoreModules.Framework.Library
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

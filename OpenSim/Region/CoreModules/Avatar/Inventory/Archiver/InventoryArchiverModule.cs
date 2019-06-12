@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -102,7 +102,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
 
         #region ISharedRegionModule
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
         }
 
@@ -162,7 +162,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver
         {
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

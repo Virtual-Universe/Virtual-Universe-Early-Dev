@@ -56,17 +56,17 @@ namespace OpenSim.Data.MySQL
         public override string Version { get { return "1.0.0.0"; } }
 
         /// <summary>
-        /// <para>Initializes Asset interface</para>
+        /// <para>Initialises Asset interface</para>
         /// <para>
         /// <list type="bullet">
-        /// <item>Loads and initializes the MySQL storage plugin.</item>
+        /// <item>Loads and initialises the MySQL storage plugin.</item>
         /// <item>Warns and uses the obsolete mysql_connection.ini if connect string is empty.</item>
         /// <item>Check for migration</item>
         /// </list>
         /// </para>
         /// </summary>
         /// <param name="connect">connect string</param>
-        public override void Initialize(string connect)
+        public override void Initialise(string connect)
         {
             m_connectionString = connect;
 
@@ -78,7 +78,7 @@ namespace OpenSim.Data.MySQL
             }
         }
 
-        public override void Initialize()
+        public override void Initialise()
         {
             throw new NotImplementedException();
         }

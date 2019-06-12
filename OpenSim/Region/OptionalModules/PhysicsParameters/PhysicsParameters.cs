@@ -58,12 +58,12 @@ namespace OpenSim.Region.OptionalModules.PhysicsParameters
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             // m_log.DebugFormat("{0}: INITIALIZED MODULE", LogHeader);
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             // m_log.DebugFormat("[{0}: POST INITIALIZED MODULE", LogHeader);
             InstallInterfaces();

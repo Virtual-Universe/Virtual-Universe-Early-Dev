@@ -71,7 +71,7 @@ namespace OpenSim.Region.OptionalModules.ViewerSupport
             get { return null; }
         }
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig moduleConfig = config.Configs["CameraOnlyModeModule"];
             if (moduleConfig != null)

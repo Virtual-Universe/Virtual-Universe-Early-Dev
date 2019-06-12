@@ -81,7 +81,7 @@ namespace OpenSim.Region.CoreModules.World.Land
             get { return null; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
         }
 

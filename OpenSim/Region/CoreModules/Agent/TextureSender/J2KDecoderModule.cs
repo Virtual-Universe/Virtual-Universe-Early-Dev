@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -82,7 +82,7 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
         {
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig startupConfig = source.Configs["Startup"];
             if (startupConfig != null)
@@ -109,7 +109,7 @@ namespace OpenSim.Region.CoreModules.Agent.TextureSender
                 m_scene = null;
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

@@ -68,17 +68,17 @@ namespace OpenSim.Data.MySQL
         public string Version { get { return "1.0.0.0"; } }
 
         /// <summary>
-        /// <para>Initializes Asset interface</para>
+        /// <para>Initialises Asset interface</para>
         /// <para>
         /// <list type="bullet">
-        /// <item>Loads and initializes the MySQL storage plugin.</item>
+        /// <item>Loads and initialises the MySQL storage plugin.</item>
         /// <item>Warns and uses the obsolete mysql_connection.ini if connect string is empty.</item>
         /// <item>Check for migration</item>
         /// </list>
         /// </para>
         /// </summary>
         /// <param name="connect">connect string</param>
-        public void Initialize(string connect)
+        public void Initialise(string connect)
         {
             m_log.ErrorFormat("[MYSQL XASSETDATA]: ***********************************************************");
             m_log.ErrorFormat("[MYSQL XASSETDATA]: ***********************************************************");
@@ -100,7 +100,7 @@ namespace OpenSim.Data.MySQL
             }
         }
 
-        public void Initialize()
+        public void Initialise()
         {
             throw new NotImplementedException();
         }

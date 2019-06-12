@@ -73,10 +73,10 @@ namespace OpenSim.Services.Connectors
         public AssetServicesConnector(IConfigSource source)
             : base(source, "AssetService")
         {
-            Initialize(source);
+            Initialise(source);
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig netconfig = source.Configs["Network"];
             if (netconfig != null)

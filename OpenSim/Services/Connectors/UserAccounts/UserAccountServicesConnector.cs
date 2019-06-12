@@ -59,10 +59,10 @@ namespace OpenSim.Services.Connectors
 
         public UserAccountServicesConnector(IConfigSource source)
         {
-            Initialize(source);
+            Initialise(source);
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig assetConfig = source.Configs["UserAccountService"];
             if (assetConfig == null)
@@ -81,7 +81,7 @@ namespace OpenSim.Services.Connectors
             }
             m_ServerURI = serviceURI;
 
-            base.Initialize(source, "UserAccountService");
+            base.Initialise(source, "UserAccountService");
         }
 
         public virtual UserAccount GetUserAccount(UUID scopeID, string firstName, string lastName)
@@ -215,9 +215,39 @@ namespace OpenSim.Services.Connectors
                 sendData[kvp.Key] = kvp.Value.ToString();
             }
 
-            return SendAndGetBoolReply(sendData);
+            if (SendAndGetReply(sendData) != null)
+                return true;
+            else
+                return false;
         }
 
+        /// <summary>
+        /// Create user remotely. Note this this is not part of the IUserAccountsService
+        /// </summary>
+        /// <param name="first"></param>
+        /// <param name="last"></param>
+        /// <param name="password"></param>
+        /// <param name="email"></param>
+        /// <param name="scopeID"></param>
+        /// <returns></returns>
+        public virtual UserAccount CreateUser(string first, string last, string password, string email, UUID scopeID)
+        {
+            Dictionary<string, object> sendData = new Dictionary<string, object>();
+            //sendData["SCOPEID"] = scopeID.ToString();
+            sendData["VERSIONMIN"] = ProtocolVersions.ClientProtocolVersionMin.ToString();
+            sendData["VERSIONMAX"] = ProtocolVersions.ClientProtocolVersionMax.ToString();
+            sendData["METHOD"] = "createuser";
+
+            sendData["FirstName"] = first;
+            sendData["LastName"] = last;
+            sendData["Password"] = password;
+            if (!string.IsNullOrEmpty(email))
+                sendData["Email"] = first;
+            sendData["ScopeID"] = scopeID.ToString();
+
+            return SendAndGetReply(sendData);
+        }
+        
         private UserAccount SendAndGetReply(Dictionary<string, object> sendData)
         {
             string reply = string.Empty;
@@ -260,7 +290,7 @@ namespace OpenSim.Services.Connectors
         {
             string reqString = ServerUtils.BuildQueryString(sendData);
             string uri = m_ServerURI + "/accounts";
-            // m_log.DebugFormat("[ACCOUNTS CONNECTOR]: queryString = {0}", reqString);
+            //m_log.DebugFormat("[ACCOUNTS CONNECTOR]: queryString = {0}", reqString);
             try
             {
                 string reply = SynchronousRestFormsRequester.MakeRequest("POST",
@@ -269,6 +299,7 @@ namespace OpenSim.Services.Connectors
                         m_Auth);
                 if (reply != string.Empty)
                 {
+                    //m_log.DebugFormat("[ACCOUNTS CONNECTOR]: reply = {0}", reply);
                     Dictionary<string, object> replyData = ServerUtils.ParseXmlResponse(reply);
 
                     if (replyData.ContainsKey("result"))

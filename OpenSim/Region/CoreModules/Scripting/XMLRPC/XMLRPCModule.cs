@@ -103,7 +103,7 @@ namespace OpenSim.Region.CoreModules.Scripting.XMLRPC
 
         #region ISharedRegionModule Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             // We need to create these early because the scripts might be calling
             // But since this gets called for every region, we need to make sure they
@@ -124,7 +124,7 @@ namespace OpenSim.Region.CoreModules.Scripting.XMLRPC
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (IsEnabled())
             {

@@ -31,18 +31,18 @@ using System.Xml.Serialization;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {
-    public delegate TResponse RestDeserializeMethod<TRequest, TResponse>(TRequest request);
+    public delegate TResponse RestDeserialiseMethod<TRequest, TResponse>(TRequest request);
 
-    public class RestDeserializeHandler<TRequest, TResponse> : BaseOutputStreamHandler, IStreamHandler
+    public class RestDeserialiseHandler<TRequest, TResponse> : BaseOutputStreamHandler, IStreamHandler
         where TRequest : new()
     {
-        private RestDeserializeMethod<TRequest, TResponse> m_method;
+        private RestDeserialiseMethod<TRequest, TResponse> m_method;
 
-        public RestDeserializeHandler(string httpMethod, string path, RestDeserializeMethod<TRequest, TResponse> method)
+        public RestDeserialiseHandler(string httpMethod, string path, RestDeserialiseMethod<TRequest, TResponse> method)
             : this(httpMethod, path, method, null, null) {}
 
-        public RestDeserializeHandler(
-            string httpMethod, string path, RestDeserializeMethod<TRequest, TResponse> method, string name, string description)
+        public RestDeserialiseHandler(
+            string httpMethod, string path, RestDeserialiseMethod<TRequest, TResponse> method, string name, string description)
             : base(httpMethod, path, name, description)
         {
             m_method = method;

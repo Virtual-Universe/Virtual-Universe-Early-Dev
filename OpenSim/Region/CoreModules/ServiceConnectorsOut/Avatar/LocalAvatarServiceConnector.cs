@@ -64,7 +64,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
             get { return "LocalAvatarServicesConnector"; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -104,7 +104,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Avatar
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (!m_Enabled)
                 return;

@@ -60,10 +60,10 @@ namespace OpenSim.Services.Connectors.Friends
 
         public FriendsServicesConnector(IConfigSource source)
         {
-            Initialize(source);
+            Initialise(source);
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig gridConfig = source.Configs["FriendsService"];
             if (gridConfig == null)
@@ -81,7 +81,7 @@ namespace OpenSim.Services.Connectors.Friends
                 throw new Exception("Friends connector init error");
             }
             m_ServerURI = serviceURI;
-            base.Initialize(source, "FriendsService");
+            base.Initialise(source, "FriendsService");
         }
 
 

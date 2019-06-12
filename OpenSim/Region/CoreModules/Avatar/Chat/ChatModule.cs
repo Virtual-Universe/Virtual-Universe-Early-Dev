@@ -57,7 +57,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
         internal IConfig m_config;
 
         #region ISharedRegionModule Members
-        public virtual void Initialize(IConfigSource config)
+        public virtual void Initialise(IConfigSource config)
         {
             m_config = config.Configs["Chat"];
 
@@ -119,7 +119,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
         {
         }
 
-        public virtual void PostInitialize()
+        public virtual void PostInitialise()
         {
         }
 

@@ -52,7 +52,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
         #region INonSharedRegionModule Members
 
-        public void Initialize(IConfigSource pSource)
+        public void Initialise(IConfigSource pSource)
         {
         }
 

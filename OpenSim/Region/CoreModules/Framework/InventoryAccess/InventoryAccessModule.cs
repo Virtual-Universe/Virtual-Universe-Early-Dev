@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -83,7 +83,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
             get { return "BasicInventoryAccessModule"; }
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -93,7 +93,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
                 {
                     m_Enabled = true;
                     
-                    InitializeCommon(source);
+                    InitialiseCommon(source);
                         
                     m_log.InfoFormat("[INVENTORY ACCESS MODULE]: {0} enabled.", Name);                                        
                 }
@@ -104,7 +104,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
         /// Common module config for both this and descendant classes.
         /// </summary>
         /// <param name="source"></param>
-        protected virtual void InitializeCommon(IConfigSource source)
+        protected virtual void InitialiseCommon(IConfigSource source)
         {
             IConfig inventoryConfig = source.Configs["Inventory"];
             
@@ -115,7 +115,7 @@ namespace OpenSim.Region.CoreModules.Framework.InventoryAccess
                 CoalesceMultipleObjectsToInventory = true;
         }
 
-        public virtual void PostInitialize()
+        public virtual void PostInitialise()
         {
         }
 

@@ -65,10 +65,10 @@ namespace OpenSim.Data.MySQL
 
         public MySQLEstateStore(string connectionString)
         {
-            Initialize(connectionString);
+            Initialise(connectionString);
         }
 
-        public void Initialize(string connectionString)
+        public void Initialise(string connectionString)
         {
             m_connectionString = connectionString;
 

@@ -39,7 +39,7 @@ using OpenSim.Framework;
 using OpenSim.Framework.Serialization;
 using OpenSim.Framework.Serialization.External;
 using OpenSim.Region.CoreModules.World.Land;
-using OpenSim.Region.CoreModules.World.Serializer;
+using OpenSim.Region.CoreModules.World.Serialiser;
 using OpenSim.Region.CoreModules.World.Terrain;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Scenes.Serialization;
@@ -62,7 +62,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver.Tests
         protected SceneHelpers m_sceneHelpers;
         protected TestScene m_scene;
         protected ArchiverModule m_archiverModule;
-        protected SerializerModule m_serializerModule;
+        protected SerialiserModule m_serialiserModule;
 
         protected TaskInventoryItem m_soundItem;
         
@@ -72,12 +72,12 @@ namespace OpenSim.Region.CoreModules.World.Archiver.Tests
             base.SetUp();
 
             m_archiverModule = new ArchiverModule();
-            m_serializerModule = new SerializerModule();
+            m_serialiserModule = new SerialiserModule();
             TerrainModule terrainModule = new TerrainModule();
 
             m_sceneHelpers = new SceneHelpers();
             m_scene = m_sceneHelpers.SetupScene();
-            SceneHelpers.SetupSceneModules(m_scene, m_archiverModule, m_serializerModule, terrainModule);
+            SceneHelpers.SetupSceneModules(m_scene, m_archiverModule, m_serialiserModule, terrainModule);
         }
 
         private void LoadCompleted(Guid requestId, List<UUID> loadedScenes, string errorMessage)
@@ -513,12 +513,12 @@ namespace OpenSim.Region.CoreModules.World.Archiver.Tests
 
                 // Reload to new scene
                 ArchiverModule archiverModule = new ArchiverModule();
-                SerializerModule serializerModule = new SerializerModule();
+                SerialiserModule serialiserModule = new SerialiserModule();
                 TerrainModule terrainModule = new TerrainModule();
 
                 SceneHelpers m_sceneHelpers2 = new SceneHelpers();
                 TestScene scene2 = m_sceneHelpers2.SetupScene();
-                SceneHelpers.SetupSceneModules(scene2, archiverModule, serializerModule, terrainModule);
+                SceneHelpers.SetupSceneModules(scene2, archiverModule, serialiserModule, terrainModule);
 
                 // Make sure there's a valid owner for the owner we saved (this should have been wiped if the code is
                 // behaving correctly
@@ -728,11 +728,11 @@ namespace OpenSim.Region.CoreModules.World.Archiver.Tests
             // Create an oar file that we can use for the merge
             {
                 ArchiverModule archiverModule = new ArchiverModule();
-                SerializerModule serializerModule = new SerializerModule();
+                SerialiserModule serialiserModule = new SerialiserModule();
                 TerrainModule terrainModule = new TerrainModule();
 
                 Scene scene = m_sceneHelpers.SetupScene();
-                SceneHelpers.SetupSceneModules(scene, archiverModule, serializerModule, terrainModule);
+                SceneHelpers.SetupSceneModules(scene, archiverModule, serialiserModule, terrainModule);
 
                 m_scene.AddNewSceneObject(new SceneObjectGroup(part2), false);
 
@@ -806,7 +806,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver.Tests
                     else
                     {
                         scene = m_sceneHelpers.SetupScene(string.Format("Unit test region {0}", (y * WIDTH) + x + 1), UUID.Random(), 1000 + x, 1000 + y);
-                        SceneHelpers.SetupSceneModules(scene, new ArchiverModule(), m_serializerModule, new TerrainModule());
+                        SceneHelpers.SetupSceneModules(scene, new ArchiverModule(), m_serialiserModule, new TerrainModule());
                     }
                     scenes.Add(scene);
 
@@ -930,7 +930,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver.Tests
                     else
                     {
                         scene = m_sceneHelpers.SetupScene(string.Format("Unit test region {0}", (y * WIDTH) + x + 1), UUID.Random(), 1000 + x, 1000 + y);
-                        SceneHelpers.SetupSceneModules(scene, new ArchiverModule(), m_serializerModule, new TerrainModule());
+                        SceneHelpers.SetupSceneModules(scene, new ArchiverModule(), m_serialiserModule, new TerrainModule());
                     }
                 }
             }

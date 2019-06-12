@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -64,7 +64,7 @@ namespace OpenSim.Region.CoreModules.Framework
         protected Dictionary<UUID, Dictionary<ulong, string>> m_childrenSeeds 
             = new Dictionary<UUID, Dictionary<ulong, string>>();
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
         }
 
@@ -102,7 +102,7 @@ namespace OpenSim.Region.CoreModules.Framework
             m_scene.UnregisterModuleInterface<ICapabilitiesModule>(this);
         }
         
-        public void PostInitialize() 
+        public void PostInitialise() 
         {
         }
 

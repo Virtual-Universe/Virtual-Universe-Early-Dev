@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -123,7 +123,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
             get { return "HGEntityTransferModule"; }
         }
 
-        public override void Initialize(IConfigSource source)
+        public override void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
 
@@ -146,7 +146,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                         }
                     }
 
-                    InitializeCommon(source);
+                    InitialiseCommon(source);
                     m_log.DebugFormat("[HG ENTITY TRANSFER MODULE]: {0} enabled.", Name);
                 }
             }

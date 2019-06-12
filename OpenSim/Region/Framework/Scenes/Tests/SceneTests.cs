@@ -39,7 +39,7 @@ using OpenSim.Framework;
 using OpenSim.Framework.Communications;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Interfaces;
-using OpenSim.Region.CoreModules.World.Serializer;
+using OpenSim.Region.CoreModules.World.Serialiser;
 using OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation;
 using OpenSim.Tests.Common;
 

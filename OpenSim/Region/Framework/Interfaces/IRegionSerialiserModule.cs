@@ -32,9 +32,9 @@ using OpenSim.Region.Framework.Scenes;
 
 namespace OpenSim.Region.Framework.Interfaces
 {
-    public interface IRegionSerializerModule
+    public interface IRegionSerialiserModule
     {
-        List<string> SerializeRegion(Scene scene, string saveDir);
+        List<string> SerialiseRegion(Scene scene, string saveDir);
 
         /// <summary>
         /// Load prims from the xml format

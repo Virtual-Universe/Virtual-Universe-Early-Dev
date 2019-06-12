@@ -81,7 +81,7 @@ namespace OpenSim.Region.UserStatistics
 
         #region ISharedRegionModule
 
-        public virtual void Initialize(IConfigSource config)
+        public virtual void Initialise(IConfigSource config)
         {
             IConfig cnfg = config.Configs["WebStats"];
 
@@ -89,7 +89,7 @@ namespace OpenSim.Region.UserStatistics
                 enabled = cnfg.GetBoolean("enabled", false);
         }
 
-        public virtual void PostInitialize()
+        public virtual void PostInitialise()
         {
             if (!enabled)
                 return;

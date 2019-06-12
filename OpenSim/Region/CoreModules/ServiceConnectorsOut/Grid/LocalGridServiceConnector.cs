@@ -63,7 +63,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
         public LocalGridServicesConnector(IConfigSource source)
         {
             m_log.DebugFormat("{0} LocalGridServicesConnector instantiated directly.", LogHeader);
-            InitializeService(source);
+            InitialiseService(source);
         }
 
         #region ISharedRegionModule
@@ -78,7 +78,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
             get { return "LocalGridServicesConnector"; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -86,13 +86,13 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
                 string name = moduleConfig.GetString("GridServices", "");
                 if (name == Name)
                 {
-                    InitializeService(source);
+                    InitialiseService(source);
                     m_log.Info("[LOCAL GRID SERVICE CONNECTOR]: Local grid connector enabled");
                 }
             }
         }
 
-        private void InitializeService(IConfigSource source)
+        private void InitialiseService(IConfigSource source)
         {
             IConfig config = source.Configs["GridService"];
             if (config == null)
@@ -123,7 +123,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
             m_Enabled = true;
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             // FIXME: We will still add this command even if we aren't enabled since RemoteGridServiceConnector
             // will have instantiated us directly.

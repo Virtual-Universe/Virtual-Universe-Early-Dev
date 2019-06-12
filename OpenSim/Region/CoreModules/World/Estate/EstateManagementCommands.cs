@@ -57,7 +57,7 @@ namespace OpenSim.Region.CoreModules.World.Estate
             m_module = module;
         }
         
-        public void Initialize()
+        public void Initialise()
         {            
 //            m_log.DebugFormat("[ESTATE MODULE]: Setting up estate commands for region {0}", m_module.Scene.RegionInfo.RegionName);
             

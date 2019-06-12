@@ -54,7 +54,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
 
         public bool Enabled { get; private set; }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig config = source.Configs["NPC"];
 
@@ -71,7 +71,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 
@@ -398,26 +398,30 @@ namespace OpenSim.Region.OptionalModules.World.NPC
 
         public bool DeleteNPC(UUID agentID, Scene scene)
         {
+            bool doRemove = false;
+            NPCAvatar av;
             lock (m_avatars)
             {
-                NPCAvatar av;
                 if (m_avatars.TryGetValue(agentID, out av))
                 {
                     /*
                     m_log.DebugFormat("[NPC MODULE]: Found {0} {1} to remove",
                             agentID, av.Name);
                     */
-
-                    scene.CloseAgent(agentID, false);
-
-                    m_avatars.Remove(agentID);
-
-                    /*
-                    m_log.DebugFormat("[NPC MODULE]: Removed NPC {0} {1}",
-                            agentID, av.Name);
-                    */
-                    return true;
+                    doRemove = true;
                 }
+            }
+
+            if (doRemove)
+            {
+                scene.CloseAgent(agentID, false);
+                lock (m_avatars)
+                {
+                    m_avatars.Remove(agentID);
+                }
+                m_log.DebugFormat("[NPC MODULE]: Removed NPC {0} {1}",
+                        agentID, av.Name);
+                return true;
             }
             /*
             m_log.DebugFormat("[NPC MODULE]: Could not find {0} to remove",

@@ -51,7 +51,7 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
         IMessageTransferModule m_TransferModule = null;
         private bool m_ForwardOfflineGroupMessages = true;
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig cnf = config.Configs["Messaging"];
             if (cnf == null)
@@ -122,7 +122,7 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (!enabled)
                 return;

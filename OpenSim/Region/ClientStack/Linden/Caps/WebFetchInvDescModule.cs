@@ -110,7 +110,7 @@ namespace OpenSim.Region.ClientStack.Linden
             ProcessQueuedRequestsAsync = processQueuedResultsAsync;
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig config = source.Configs["ClientStack.LindenCaps"];
             if (config == null)
@@ -201,11 +201,12 @@ namespace OpenSim.Region.ClientStack.Linden
 
             Scene.EventManager.OnRegisterCaps += RegisterCaps;
 
+            int nworkers = 2; // was 2
             if (ProcessQueuedRequestsAsync && m_workerThreads == null)
             {
-                m_workerThreads = new Thread[2];
+                m_workerThreads = new Thread[nworkers];
 
-                for (uint i = 0; i < 2; i++)
+                for (uint i = 0; i < nworkers; i++)
                 {
                     m_workerThreads[i] = WorkManager.StartThread(DoInventoryRequests,
                             String.Format("InventoryWorkerThread{0}", i),
@@ -218,7 +219,7 @@ namespace OpenSim.Region.ClientStack.Linden
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 
@@ -364,7 +365,11 @@ namespace OpenSim.Region.ClientStack.Linden
                         requestinfo.request["body"].ToString(), String.Empty, String.Empty, null, null);
 
                 lock (responses)
+                {
+                    if (responses.ContainsKey(requestID))
+                        m_log.WarnFormat("[FETCH INVENTORY DESCENDENTS2 MODULE]: Caught in the act of loosing responses! Please report this on mantis #7054");
                     responses[requestID] = response;
+                }
 
                 WebFetchInvDescModule.ProcessedRequestsCount++;
             }

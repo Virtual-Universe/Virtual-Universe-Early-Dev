@@ -76,7 +76,7 @@ namespace OpenSim.ApplicationPlugins.RegionModulesController
 
 #region IApplicationPlugin implementation
         
-        public void Initialize (OpenSimBase openSim)
+        public void Initialise (OpenSimBase openSim)
         {
             m_openSim = openSim;
             m_openSim.ApplicationRegistry.RegisterInterface<IRegionModulesController>(this);
@@ -159,18 +159,18 @@ namespace OpenSim.ApplicationPlugins.RegionModulesController
 
                 // OK, we're up and running
                 m_sharedInstances.Add(module);
-                module.Initialize(m_openSim.ConfigSource.Source);
+                module.Initialise(m_openSim.ConfigSource.Source);
             }
         }
 
-        public void PostInitialize ()
+        public void PostInitialise ()
         {
             m_log.DebugFormat("[REGIONMODULES]: PostInitializing...");
 
-            // Immediately run PostInitialize on shared modules
+            // Immediately run PostInitialise on shared modules
             foreach (ISharedRegionModule module in m_sharedInstances)
             {
-                module.PostInitialize();
+                module.PostInitialise();
             }
         }
 
@@ -215,7 +215,7 @@ namespace OpenSim.ApplicationPlugins.RegionModulesController
 
         // We don't do that here
         //
-        public void Initialize ()
+        public void Initialise ()
         {
             throw new System.NotImplementedException();
         }
@@ -407,15 +407,15 @@ namespace OpenSim.ApplicationPlugins.RegionModulesController
                 m_log.DebugFormat("[REGIONMODULE]: Adding scene {0} to non-shared module {1}",
                                   scene.RegionInfo.RegionName, module.Name);
 
-                // Initialize the module
-                module.Initialize(m_openSim.ConfigSource.Source);
+                // Initialise the module
+                module.Initialise(m_openSim.ConfigSource.Source);
 
                 list.Add(module);
             }
 
             // Now add the modules that we found to the scene. If a module
             // wishes to override a replaceable interface, it needs to
-            // register it in Initialize, so that the deferred module
+            // register it in Initialise, so that the deferred module
             // won't load.
             foreach (INonSharedRegionModule module in list)
             {
@@ -470,7 +470,7 @@ namespace OpenSim.ApplicationPlugins.RegionModulesController
                 m_log.DebugFormat("[REGIONMODULE]: Adding scene {0} to non-shared module {1} (deferred)",
                                   scene.RegionInfo.RegionName, module.Name);
 
-                module.Initialize(m_openSim.ConfigSource.Source);
+                module.Initialise(m_openSim.ConfigSource.Source);
 
                 list.Add(module);
                 deferredlist.Add(module);

@@ -58,7 +58,7 @@ namespace OpenSim.Region.CoreModules.World.Region
         protected bool m_Notice = false;
         protected IDialogModule m_DialogModule = null;
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
         }
 

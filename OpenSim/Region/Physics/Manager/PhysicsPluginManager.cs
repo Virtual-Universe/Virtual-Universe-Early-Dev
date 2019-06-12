@@ -96,7 +96,7 @@ namespace OpenSim.Region.Physics.Manager
             {
                 m_log.Info("[PHYSICS]: creating " + physEngineName);
                 PhysicsScene result = _PhysPlugins[physEngineName].GetScene(regionName);
-                result.Initialize(meshEngine, config, regionExtent);
+                result.Initialise(meshEngine, config, regionExtent);
                 return result;
             }
             else

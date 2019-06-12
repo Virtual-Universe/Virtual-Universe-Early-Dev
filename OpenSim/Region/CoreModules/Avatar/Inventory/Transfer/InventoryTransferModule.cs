@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -53,7 +53,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Transfer
 
         #region Region Module interface
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             if (config.Configs["Messaging"] != null)
             {
@@ -106,7 +106,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Transfer
             m_Scenelist.Remove(scene);
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

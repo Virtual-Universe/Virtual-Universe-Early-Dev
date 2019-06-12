@@ -44,10 +44,10 @@ namespace OpenSim.Data.Null
 
         public NullSimulationData(string connectionString)
         {
-            Initialize(connectionString);
+            Initialise(connectionString);
         }
 
-        public void Initialize(string dbfile)
+        public void Initialise(string dbfile)
         {
             return;
         }

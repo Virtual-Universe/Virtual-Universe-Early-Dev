@@ -52,7 +52,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Attachments
         private Scene m_scene;
         private IRegionConsole m_console;
 
-        public void Initialize(IConfigSource configSource)
+        public void Initialise(IConfigSource configSource)
         {
         }
 

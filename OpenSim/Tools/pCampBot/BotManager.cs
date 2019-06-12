@@ -272,7 +272,7 @@ namespace pCampBot
             StatsManager.RegisterConsoleCommands(m_console);
 
             m_serverStatsCollector = new ServerStatsCollector();
-            m_serverStatsCollector.Initialize(null);
+            m_serverStatsCollector.Initialise(null);
             m_serverStatsCollector.Enabled = true;
             m_serverStatsCollector.Start();
 
@@ -342,6 +342,9 @@ namespace pCampBot
 
                 if (abName == "ph2")
                     newBehaviour = new PhysicsBehaviour2();
+
+                if (abName == "inv")
+                    newBehaviour = new InventoryDownloadBehaviour();
 
                 if (newBehaviour != null)
                 {

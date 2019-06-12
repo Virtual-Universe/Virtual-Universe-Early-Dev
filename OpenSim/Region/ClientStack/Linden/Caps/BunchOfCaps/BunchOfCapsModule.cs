@@ -59,7 +59,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
         public Type ReplaceableInterface { get { return null; } }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
         }
 
@@ -79,7 +79,7 @@ namespace OpenSim.Region.ClientStack.Linden
         {
         }
 
-        public void PostInitialize() { }
+        public void PostInitialise() { }
         #endregion 
 
         private void OnRegisterCaps(UUID agentID, Caps caps)

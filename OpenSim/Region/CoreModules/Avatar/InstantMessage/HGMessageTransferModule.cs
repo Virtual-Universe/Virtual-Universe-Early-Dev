@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -72,7 +72,7 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
             }
         }
 
-        public virtual void Initialize(IConfigSource config)
+        public virtual void Initialise(IConfigSource config)
         {
             IConfig cnf = config.Configs["Messaging"];
             if (cnf != null && cnf.GetString(
@@ -100,7 +100,7 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
             }
         }
 
-        public virtual void PostInitialize()
+        public virtual void PostInitialise()
         {
             if (!m_Enabled)
                 return;

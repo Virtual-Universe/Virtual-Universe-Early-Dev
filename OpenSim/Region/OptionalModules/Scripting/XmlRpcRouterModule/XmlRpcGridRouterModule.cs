@@ -64,7 +64,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.XmlRpcGridRouterModule
 
         #region INonSharedRegionModule
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig startupConfig = config.Configs["XMLRPC"];
             if (startupConfig == null)

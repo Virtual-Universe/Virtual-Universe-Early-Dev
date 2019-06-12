@@ -30,13 +30,13 @@ using System;
 namespace OpenSim.Framework
 {
     /// <summary>
-    /// Exception thrown if Initialize has been called, but failed.
+    /// Exception thrown if Initialise has been called, but failed.
     /// </summary>
-    public class PluginNotInitializedException : Exception
+    public class PluginNotInitialisedException : Exception
     {
-        public PluginNotInitializedException () : base() {}
-        public PluginNotInitializedException (string msg) : base(msg) {}
-        public PluginNotInitializedException (string msg, Exception e) : base(msg, e) {}
+        public PluginNotInitialisedException () : base() {}
+        public PluginNotInitialisedException (string msg) : base(msg) {}
+        public PluginNotInitialisedException (string msg, Exception e) : base(msg, e) {}
     }
 
     /// <summary>
@@ -57,23 +57,23 @@ namespace OpenSim.Framework
         string Name { get; }
 
         /// <summary>
-        /// Default-initializes the plugin
+        /// Default-initialises the plugin
         /// </summary>
-        void Initialize();
+        void Initialise();
     }
 
     /// <summary>
-    /// Any plugins which need to pass parameters to their initializers must
-    /// inherit this class and use it to set the PluginLoader Initializer property
+    /// Any plugins which need to pass parameters to their initialisers must
+    /// inherit this class and use it to set the PluginLoader Initialiser property
     /// </summary>
-    public class PluginInitializerBase
+    public class PluginInitialiserBase
     {
         // this would be a lot simpler if C# supported currying or typedefs
 
         // default initialisation
-        public virtual void Initialize (IPlugin plugin)
+        public virtual void Initialise (IPlugin plugin)
         {
-            plugin.Initialize();
+            plugin.Initialise();
         }
     }
 

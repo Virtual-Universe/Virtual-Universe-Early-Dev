@@ -63,9 +63,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
             get { return "LocalAuthorizationServicesConnector"; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
-            m_log.Info("[AUTHORIZATION CONNECTOR]: Initialize");
+            m_log.Info("[AUTHORIZATION CONNECTOR]: Initialise");
             
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -80,7 +80,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authorization
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

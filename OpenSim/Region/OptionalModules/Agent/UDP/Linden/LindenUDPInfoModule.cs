@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -60,12 +60,12 @@ namespace OpenSim.Region.OptionalModules.UDP.Linden
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
 //            m_log.DebugFormat("[LINDEN UDP INFO MODULE]: INITIALIZED MODULE");
         }
         
-        public void PostInitialize()
+        public void PostInitialise()
         {
 //            m_log.DebugFormat("[LINDEN UDP INFO MODULE]: POST INITIALIZED MODULE");
         }

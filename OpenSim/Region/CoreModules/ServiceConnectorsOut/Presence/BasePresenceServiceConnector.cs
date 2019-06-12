@@ -87,7 +87,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
 
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

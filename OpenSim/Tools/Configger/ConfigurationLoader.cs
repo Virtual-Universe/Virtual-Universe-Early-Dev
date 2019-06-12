@@ -89,12 +89,12 @@ namespace OpenSim.Tools.Configger
             m_config = new IniConfigSource();
             m_config.Merge(DefaultConfig());
 
-            m_log.Info("[Virtual Universe Configuration] Reading configuration settings");
+            m_log.Info("[CONFIG] Reading configuration settings");
 
             if (sources.Count == 0)
             {
-                m_log.FatalFormat("[Virtual Universe Configuration] Could not load any configuration");
-                m_log.FatalFormat("[Virtual Universe Configuration] Did you copy the OpenSim.ini.example file to OpenSim.ini?");
+                m_log.FatalFormat("[CONFIG] Could not load any configuration");
+                m_log.FatalFormat("[CONFIG] Did you copy the OpenSim.ini.example file to OpenSim.ini?");
                 Environment.Exit(1);
             }
 
@@ -107,8 +107,8 @@ namespace OpenSim.Tools.Configger
 
             if (!iniFileExists)
             {
-                m_log.FatalFormat("[Virtual Universe Configuration] Could not load any configuration");
-                m_log.FatalFormat("[Virtual Universe Configuration] Configuration exists, but there was an error loading it!");
+                m_log.FatalFormat("[CONFIG] Could not load any configuration");
+                m_log.FatalFormat("[CONFIG] Configuration exists, but there was an error loading it!");
                 Environment.Exit(1);
             }
 
@@ -186,7 +186,7 @@ namespace OpenSim.Tools.Configger
 
             if (!IsUri(iniPath))
             {
-                m_log.InfoFormat("[Virtual Universe Configuration] Reading configuration file {0}",
+                m_log.InfoFormat("[CONFIG] Reading configuration file {0}",
                         Path.GetFullPath(iniPath));
 
                 m_config.Merge(new IniConfigSource(iniPath));
@@ -194,7 +194,7 @@ namespace OpenSim.Tools.Configger
             }
             else
             {
-                m_log.InfoFormat("[Virtual Universe Configuration] {0} is a http:// URI, fetching ...",
+                m_log.InfoFormat("[CONFIG] {0} is a http:// URI, fetching ...",
                         iniPath);
 
                 // The ini file path is a http URI
@@ -210,7 +210,7 @@ namespace OpenSim.Tools.Configger
                 }
                 catch (Exception e)
                 {
-                    m_log.FatalFormat("[Virtual Universe Configuration] Exception reading config from URI {0}\n" + e.ToString(), iniPath);
+                    m_log.FatalFormat("[CONFIG] Exception reading config from URI {0}\n" + e.ToString(), iniPath);
                     Environment.Exit(1);
                 }
             }

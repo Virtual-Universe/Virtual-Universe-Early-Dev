@@ -153,7 +153,10 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_UrlModule = m_ScriptEngine.World.RequestModuleInterface<IUrlModule>();
 
             if (m_ScriptEngine.Config.GetBoolean("AllowOSFunctions", false))
+            {
                 m_OSFunctionsEnabled = true;
+                // m_log.Warn("[OSSL] OSSL FUNCTIONS ENABLED");
+            }
 
             m_ScriptDelayFactor =
                     m_ScriptEngine.Config.GetFloat("ScriptDelayFactor", 1.0f);
@@ -1625,6 +1628,21 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 return String.Empty;
             }
+        }
+
+        public LSL_Integer osCheckODE()
+        {
+            m_host.AddScriptLPS(1);
+            LSL_Integer ret = 0;    // false
+            if (m_ScriptEngine.World.PhysicsScene != null)
+            {
+                string physEngine = m_ScriptEngine.World.PhysicsScene.EngineType;
+                if (physEngine == "OpenDynamicsEngine")
+                {
+                    ret = 1;    // true
+                }
+            }
+            return ret;
         }
 
         public string osGetPhysicsEngineType()

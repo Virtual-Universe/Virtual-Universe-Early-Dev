@@ -62,23 +62,23 @@ namespace OpenSim.Data.PGSQL
         override public void Dispose() { }
 
         /// <summary>
-        /// <para>Initializes asset interface</para>
+        /// <para>Initialises asset interface</para>
         /// </summary>
         // [Obsolete("Cannot be default-initialized!")]
-        override public void Initialize()
+        override public void Initialise()
         {
             m_log.Info("[PGSQLAssetData]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitializedException(Name);
+            throw new PluginNotInitialisedException(Name);
         }
 
         /// <summary>
-        /// Initializes asset interface
+        /// Initialises asset interface
         /// </summary>
         /// <para>
         /// a string instead of file, if someone writes the support
         /// </para>
         /// <param name="connectionString">connect string</param>
-        override public void Initialize(string connectionString)
+        override public void Initialise(string connectionString)
         {
             m_ticksToEpoch = new System.DateTime(1970, 1, 1).Ticks;
 

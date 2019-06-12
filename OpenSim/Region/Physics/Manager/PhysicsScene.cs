@@ -127,14 +127,14 @@ namespace OpenSim.Region.Physics.Manager
         }
 
         // Deprecated. Do not use this for new physics engines.
-        public abstract void Initialize(IMesher meshmerizer, IConfigSource config);
+        public abstract void Initialise(IMesher meshmerizer, IConfigSource config);
 
         // For older physics engines that do not implement non-legacy region sizes.
         // If the physics engine handles the region extent feature, it overrides this function.
-        public virtual void Initialize(IMesher meshmerizer, IConfigSource config, Vector3 regionExtent)
+        public virtual void Initialise(IMesher meshmerizer, IConfigSource config, Vector3 regionExtent)
         {
             // If not overridden, call the old initialization entry.
-            Initialize(meshmerizer, config);
+            Initialise(meshmerizer, config);
         }
 
         /// <summary>

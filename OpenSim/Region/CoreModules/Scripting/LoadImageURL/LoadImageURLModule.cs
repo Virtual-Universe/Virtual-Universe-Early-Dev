@@ -109,14 +109,14 @@ namespace OpenSim.Region.CoreModules.Scripting.LoadImageURL
 
         #region ISharedRegionModule Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             m_outboundUrlFilter = new OutboundUrlFilter("Script dynamic texture image module", config);
             m_proxyurl = config.Configs["Startup"].GetString("HttpProxy");
             m_proxyexcepts = config.Configs["Startup"].GetString("HttpProxyExceptions");
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

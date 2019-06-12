@@ -76,7 +76,7 @@ namespace OpenSim.Services.Connectors.SimianGrid
         ///<summary>
         ///
         ///</summary>
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig config = source.Configs["SimianGridMaptiles"];
             if (config == null)
@@ -103,7 +103,7 @@ namespace OpenSim.Services.Connectors.SimianGrid
         ///<summary>
         ///
         ///</summary>
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (m_enabled)
             {

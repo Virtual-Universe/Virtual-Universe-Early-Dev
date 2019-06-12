@@ -37,9 +37,9 @@ namespace OpenSim.Data
     public interface IInventoryDataPlugin : IPlugin
     {
         /// <summary>
-        /// Initializes the interface
+        /// Initialises the interface
         /// </summary>
-        void Initialize(string connect);
+        void Initialise(string connect);
 
         /// <summary>
         /// Returns all descendent folders of this folder.  Does not return the parent folder itself.

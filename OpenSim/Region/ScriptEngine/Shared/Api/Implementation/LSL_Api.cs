@@ -28,6 +28,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.Remoting.Lifetime;
 using System.Text;
 using System.Threading;
@@ -35,7 +37,9 @@ using System.Text.RegularExpressions;
 using Nini.Config;
 using log4net;
 using OpenMetaverse;
+using OpenMetaverse.Assets;
 using OpenMetaverse.Packets;
+using OpenMetaverse.Rendering;
 using OpenSim;
 using OpenSim.Framework;
 
@@ -120,9 +124,116 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected IUrlModule m_UrlModule = null;
         protected Dictionary<UUID, UserInfoCacheEntry> m_userInfoCache = new Dictionary<UUID, UserInfoCacheEntry>();
         protected int EMAIL_PAUSE_TIME = 20;  // documented delay value for smtp.
+        protected int m_sleepMsOnSetTexture = 200;
+        protected int m_sleepMsOnSetLinkTexture = 200;
+        protected int m_sleepMsOnScaleTexture = 200;
+        protected int m_sleepMsOnOffsetTexture = 200;
+        protected int m_sleepMsOnRotateTexture = 200;
+        protected int m_sleepMsOnSetPos = 200;
+        protected int m_sleepMsOnSetRot = 200;
+        protected int m_sleepMsOnSetLocalRot = 200;
+        protected int m_sleepMsOnPreloadSound = 1000;
+        protected int m_sleepMsOnMakeExplosion = 100;
+        protected int m_sleepMsOnMakeFountain = 100;
+        protected int m_sleepMsOnMakeSmoke = 100;
+        protected int m_sleepMsOnMakeFire = 100;
+        protected int m_sleepMsOnRezAtRoot = 100;
+        protected int m_sleepMsOnInstantMessage = 2000;
+        protected int m_sleepMsOnEmail = 20000;
+        protected int m_sleepMsOnCreateLink = 1000;
+        protected int m_sleepMsOnGiveInventory = 3000;
+        protected int m_sleepMsOnRequestAgentData = 100;
+        protected int m_sleepMsOnRequestInventoryData = 1000;
+        protected int m_sleepMsOnSetDamage = 5000;
+        protected int m_sleepMsOnTextBox = 1000;
+        protected int m_sleepMsOnAdjustSoundVolume = 100;
+        protected int m_sleepMsOnEjectFromLand = 5000;
+        protected int m_sleepMsOnAddToLandPassList = 100;
+        protected int m_sleepMsOnDialog = 1000;
+        protected int m_sleepMsOnRemoteLoadScript = 3000;
+        protected int m_sleepMsOnRemoteLoadScriptPin = 3000;
+        protected int m_sleepMsOnOpenRemoteDataChannel = 1000;
+        protected int m_sleepMsOnSendRemoteData = 3000;
+        protected int m_sleepMsOnRemoteDataReply = 3000;
+        protected int m_sleepMsOnCloseRemoteDataChannel = 1000;
+        protected int m_sleepMsOnSetPrimitiveParams = 200;
+        protected int m_sleepMsOnSetLinkPrimitiveParams = 200;
+        protected int m_sleepMsOnXorBase64Strings = 300;
+        protected int m_sleepMsOnSetParcelMusicURL = 2000;
+        protected int m_sleepMsOnGetPrimMediaParams = 1000;
+        protected int m_sleepMsOnGetLinkMedia = 1000;
+        protected int m_sleepMsOnSetPrimMediaParams = 1000;
+        protected int m_sleepMsOnSetLinkMedia = 1000;
+        protected int m_sleepMsOnClearPrimMedia = 1000;
+        protected int m_sleepMsOnClearLinkMedia = 1000;
+        protected int m_sleepMsOnRequestSimulatorData = 1000;
+        protected int m_sleepMsOnLoadURL = 10000;
+        protected int m_sleepMsOnParcelMediaCommandList = 2000;
+        protected int m_sleepMsOnParcelMediaQuery = 2000;
+        protected int m_sleepMsOnModPow = 1000;
+        protected int m_sleepMsOnSetPrimURL = 2000;
+        protected int m_sleepMsOnRefreshPrimURL = 20000;
+        protected int m_sleepMsOnMapDestination = 1000;
+        protected int m_sleepMsOnAddToLandBanList = 100;
+        protected int m_sleepMsOnRemoveFromLandPassList = 100;
+        protected int m_sleepMsOnRemoveFromLandBanList = 100;
+        protected int m_sleepMsOnResetLandBanList = 100;
+        protected int m_sleepMsOnResetLandPassList = 100;
+        protected int m_sleepMsOnGetParcelPrimOwners = 2000;
+        protected int m_sleepMsOnGetNumberOfNotecardLines = 100;
+        protected int m_sleepMsOnGetNotecardLine = 100;
         protected string m_internalObjectHost = "lsl.opensim.local";
         protected bool m_restrictEmail = false;
         protected ISoundModule m_SoundModule = null;
+
+        protected float m_avatarHeightCorrection = 0.2f;
+        protected bool m_useSimpleBoxesInGetBoundingBox = false;
+        protected bool m_addStatsInGetBoundingBox = false;
+
+        //LSL Avatar Bounding Box (lABB), lower (1) and upper (2),
+        //standing (Std), Groundsitting (Grs), Sitting (Sit),
+        //along X, Y and Z axes, constants (0) and coefficients (1)
+        protected float m_lABB1StdX0 = -0.275f;
+        protected float m_lABB2StdX0 = 0.275f;
+        protected float m_lABB1StdY0 = -0.35f;
+        protected float m_lABB2StdY0 = 0.35f;
+        protected float m_lABB1StdZ0 = -0.1f;
+        protected float m_lABB1StdZ1 = -0.5f;
+        protected float m_lABB2StdZ0 = 0.1f;
+        protected float m_lABB2StdZ1 = 0.5f;
+        protected float m_lABB1GrsX0 = -0.3875f;
+        protected float m_lABB2GrsX0 = 0.3875f;
+        protected float m_lABB1GrsY0 = -0.5f;
+        protected float m_lABB2GrsY0 = 0.5f;
+        protected float m_lABB1GrsZ0 = -0.05f;
+        protected float m_lABB1GrsZ1 = -0.375f;
+        protected float m_lABB2GrsZ0 = 0.5f;
+        protected float m_lABB2GrsZ1 = 0.0f;
+        protected float m_lABB1SitX0 = -0.5875f;
+        protected float m_lABB2SitX0 = 0.1875f;
+        protected float m_lABB1SitY0 = -0.35f;
+        protected float m_lABB2SitY0 = 0.35f;
+        protected float m_lABB1SitZ0 = -0.35f;
+        protected float m_lABB1SitZ1 = -0.375f;
+        protected float m_lABB2SitZ0 = -0.25f;
+        protected float m_lABB2SitZ1 = 0.25f;
+
+        protected float m_primSafetyCoeffX = 2.414214f;
+        protected float m_primSafetyCoeffY = 2.414214f;
+        protected float m_primSafetyCoeffZ = 1.618034f;
+        protected bool m_useCastRayV3 = false;
+        protected float m_floatToleranceInCastRay = 0.000001f;
+        protected float m_floatTolerance2InCastRay = 0.0001f;
+        protected DetailLevel m_primLodInCastRay = DetailLevel.Medium;
+        protected DetailLevel m_sculptLodInCastRay = DetailLevel.Medium;
+        protected DetailLevel m_meshLodInCastRay = DetailLevel.Highest;
+        protected DetailLevel m_avatarLodInCastRay = DetailLevel.Medium;
+        protected int m_maxHitsInCastRay = 16;
+        protected int m_maxHitsPerPrimInCastRay = 16;
+        protected int m_maxHitsPerObjectInCastRay = 16;
+        protected bool m_detectExitsInCastRay = false;
+        protected bool m_filterPartsInCastRay = false;
+        protected bool m_doAttachmentsInCastRay = false;
 
         //An array of HTTP/1.1 headers that are not allowed to be used
         //as custom headers by llHTTPRequest.
@@ -199,6 +310,49 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 if (lslConfig != null)
                 {
                     m_restrictEmail = lslConfig.GetBoolean("RestrictEmail", m_restrictEmail);
+                    m_avatarHeightCorrection = lslConfig.GetFloat("AvatarHeightCorrection", m_avatarHeightCorrection);
+                    m_useSimpleBoxesInGetBoundingBox = lslConfig.GetBoolean("UseSimpleBoxesInGetBoundingBox", m_useSimpleBoxesInGetBoundingBox);
+                    m_addStatsInGetBoundingBox = lslConfig.GetBoolean("AddStatsInGetBoundingBox", m_addStatsInGetBoundingBox);
+                    m_lABB1StdX0 = lslConfig.GetFloat("LowerAvatarBoundingBoxStandingXconst", m_lABB1StdX0);
+                    m_lABB2StdX0 = lslConfig.GetFloat("UpperAvatarBoundingBoxStandingXconst", m_lABB2StdX0);
+                    m_lABB1StdY0 = lslConfig.GetFloat("LowerAvatarBoundingBoxStandingYconst", m_lABB1StdY0);
+                    m_lABB2StdY0 = lslConfig.GetFloat("UpperAvatarBoundingBoxStandingYconst", m_lABB2StdY0);
+                    m_lABB1StdZ0 = lslConfig.GetFloat("LowerAvatarBoundingBoxStandingZconst", m_lABB1StdZ0);
+                    m_lABB1StdZ1 = lslConfig.GetFloat("LowerAvatarBoundingBoxStandingZcoeff", m_lABB1StdZ1);
+                    m_lABB2StdZ0 = lslConfig.GetFloat("UpperAvatarBoundingBoxStandingZconst", m_lABB2StdZ0);
+                    m_lABB2StdZ1 = lslConfig.GetFloat("UpperAvatarBoundingBoxStandingZcoeff", m_lABB2StdZ1);
+                    m_lABB1GrsX0 = lslConfig.GetFloat("LowerAvatarBoundingBoxGroundsittingXconst", m_lABB1GrsX0);
+                    m_lABB2GrsX0 = lslConfig.GetFloat("UpperAvatarBoundingBoxGroundsittingXconst", m_lABB2GrsX0);
+                    m_lABB1GrsY0 = lslConfig.GetFloat("LowerAvatarBoundingBoxGroundsittingYconst", m_lABB1GrsY0);
+                    m_lABB2GrsY0 = lslConfig.GetFloat("UpperAvatarBoundingBoxGroundsittingYconst", m_lABB2GrsY0);
+                    m_lABB1GrsZ0 = lslConfig.GetFloat("LowerAvatarBoundingBoxGroundsittingZconst", m_lABB1GrsZ0);
+                    m_lABB1GrsZ1 = lslConfig.GetFloat("LowerAvatarBoundingBoxGroundsittingZcoeff", m_lABB1GrsZ1);
+                    m_lABB2GrsZ0 = lslConfig.GetFloat("UpperAvatarBoundingBoxGroundsittingZconst", m_lABB2GrsZ0);
+                    m_lABB2GrsZ1 = lslConfig.GetFloat("UpperAvatarBoundingBoxGroundsittingZcoeff", m_lABB2GrsZ1);
+                    m_lABB1SitX0 = lslConfig.GetFloat("LowerAvatarBoundingBoxSittingXconst", m_lABB1SitX0);
+                    m_lABB2SitX0 = lslConfig.GetFloat("UpperAvatarBoundingBoxSittingXconst", m_lABB2SitX0);
+                    m_lABB1SitY0 = lslConfig.GetFloat("LowerAvatarBoundingBoxSittingYconst", m_lABB1SitY0);
+                    m_lABB2SitY0 = lslConfig.GetFloat("UpperAvatarBoundingBoxSittingYconst", m_lABB2SitY0);
+                    m_lABB1SitZ0 = lslConfig.GetFloat("LowerAvatarBoundingBoxSittingZconst", m_lABB1SitZ0);
+                    m_lABB1SitZ1 = lslConfig.GetFloat("LowerAvatarBoundingBoxSittingZcoeff", m_lABB1SitZ1);
+                    m_lABB2SitZ0 = lslConfig.GetFloat("UpperAvatarBoundingBoxSittingZconst", m_lABB2SitZ0);
+                    m_lABB2SitZ1 = lslConfig.GetFloat("UpperAvatarBoundingBoxSittingZcoeff", m_lABB2SitZ1);
+                    m_primSafetyCoeffX = lslConfig.GetFloat("PrimBoundingBoxSafetyCoefficientX", m_primSafetyCoeffX);
+                    m_primSafetyCoeffY = lslConfig.GetFloat("PrimBoundingBoxSafetyCoefficientY", m_primSafetyCoeffY);
+                    m_primSafetyCoeffZ = lslConfig.GetFloat("PrimBoundingBoxSafetyCoefficientZ", m_primSafetyCoeffZ);
+                    m_useCastRayV3 = lslConfig.GetBoolean("UseLlCastRayV3", m_useCastRayV3);
+                    m_floatToleranceInCastRay = lslConfig.GetFloat("FloatToleranceInLlCastRay", m_floatToleranceInCastRay);
+                    m_floatTolerance2InCastRay = lslConfig.GetFloat("FloatTolerance2InLlCastRay", m_floatTolerance2InCastRay);
+                    m_primLodInCastRay = (DetailLevel)lslConfig.GetInt("PrimDetailLevelInLlCastRay", (int)m_primLodInCastRay);
+                    m_sculptLodInCastRay = (DetailLevel)lslConfig.GetInt("SculptDetailLevelInLlCastRay", (int)m_sculptLodInCastRay);
+                    m_meshLodInCastRay = (DetailLevel)lslConfig.GetInt("MeshDetailLevelInLlCastRay", (int)m_meshLodInCastRay);
+                    m_avatarLodInCastRay = (DetailLevel)lslConfig.GetInt("AvatarDetailLevelInLlCastRay", (int)m_avatarLodInCastRay);
+                    m_maxHitsInCastRay = lslConfig.GetInt("MaxHitsInLlCastRay", m_maxHitsInCastRay);
+                    m_maxHitsPerPrimInCastRay = lslConfig.GetInt("MaxHitsPerPrimInLlCastRay", m_maxHitsPerPrimInCastRay);
+                    m_maxHitsPerObjectInCastRay = lslConfig.GetInt("MaxHitsPerObjectInLlCastRay", m_maxHitsPerObjectInCastRay);
+                    m_detectExitsInCastRay = lslConfig.GetBoolean("DetectExitHitsInLlCastRay", m_detectExitsInCastRay);
+                    m_filterPartsInCastRay = lslConfig.GetBoolean("FilterPartsInLlCastRay", m_filterPartsInCastRay);
+                    m_doAttachmentsInCastRay = lslConfig.GetBoolean("DoAttachmentsInLlCastRay", m_doAttachmentsInCastRay);
                 }
 
                 IConfig smtpConfig = seConfigSource.Configs["SMTP"];
@@ -210,6 +364,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     m_internalObjectHost = smtpConfig.GetString("internal_object_host", m_internalObjectHost);
                 }
             }
+            m_sleepMsOnEmail = EMAIL_PAUSE_TIME * 1000;
         }
 
         public override Object InitializeLifetimeService()
@@ -1958,7 +2113,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             SetTexture(m_host, texture, face);
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnSetTexture);
         }
 
         public void llSetLinkTexture(int linknumber, string texture, int face)
@@ -1970,7 +2125,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             foreach (SceneObjectPart part in parts)
               SetTexture(part, texture, face);
 
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnSetLinkTexture);
         }
 
         protected void SetTexture(SceneObjectPart part, string texture, int face)
@@ -2014,7 +2169,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
 
             ScaleTexture(m_host, u, v, face);
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnScaleTexture);
         }
 
         protected void ScaleTexture(SceneObjectPart part, double u, double v, int face)
@@ -2050,7 +2205,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             OffsetTexture(m_host, u, v, face);
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnOffsetTexture);
         }
 
         protected void OffsetTexture(SceneObjectPart part, double u, double v, int face)
@@ -2086,7 +2241,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             RotateTexture(m_host, rotation, face);
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnRotateTexture);
         }
 
         protected void RotateTexture(SceneObjectPart part, double rotation, int face)
@@ -2161,7 +2316,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             SetPos(m_host, pos, true);
 
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnSetPos);
         }
 
         /// <summary>
@@ -2344,14 +2499,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 }
             }
 
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnSetRot);
         }
 
         public void llSetLocalRot(LSL_Rotation rot)
         {
             m_host.AddScriptLPS(1);
             SetRot(m_host, rot);
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnSetLocalRot);
         }
 
         protected void SetRot(SceneObjectPart part, Quaternion rot)
@@ -2713,7 +2868,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
             if (m_SoundModule != null)
                 m_SoundModule.PreloadSound(m_host.UUID, ScriptUtils.GetAssetIdFromKeyOrItemName(m_host, sound), 0);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnPreloadSound);
         }
 
         /// <summary>
@@ -2986,28 +3141,28 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             Deprecated("llMakeExplosion", "Use llParticleSystem instead");
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnMakeExplosion);
         }
 
         public void llMakeFountain(int particles, double scale, double vel, double lifetime, double arc, int bounce, string texture, LSL_Vector offset, double bounce_offset)
         {
             m_host.AddScriptLPS(1);
             Deprecated("llMakeFountain", "Use llParticleSystem instead");
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnMakeFountain);
         }
 
         public void llMakeSmoke(int particles, double scale, double vel, double lifetime, double arc, string texture, LSL_Vector offset)
         {
             m_host.AddScriptLPS(1);
             Deprecated("llMakeSmoke", "Use llParticleSystem instead");
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnMakeSmoke);
         }
 
         public void llMakeFire(int particles, double scale, double vel, double lifetime, double arc, string texture, LSL_Vector offset)
         {
             m_host.AddScriptLPS(1);
             Deprecated("llMakeFire", "Use llParticleSystem instead");
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnMakeFire);
         }
 
         public void llRezAtRoot(string inventory, LSL_Vector pos, LSL_Vector vel, LSL_Rotation rot, int param)
@@ -3078,7 +3233,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             }, null, "LSL_Api.llRezAtRoot");
 
             //ScriptSleep((int)((groupmass * velmag) / 10));
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnRezAtRoot);
         }
 
         public void llRezObject(string inventory, LSL_Vector pos, LSL_Vector vel, LSL_Rotation rot, int param)
@@ -3385,7 +3540,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 m_TransferModule.SendInstantMessage(msg, delegate(bool success) {});
             }
 
-            ScriptSleep(2000);
+            ScriptSleep(m_sleepMsOnInstantMessage);
       }
 
         public void llEmail(string address, string subject, string message)
@@ -3423,7 +3578,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             }
 
             emailModule.SendEmail(m_host.UUID, address, subject, message);
-            ScriptSleep(EMAIL_PAUSE_TIME * 1000);
+            ScriptSleep(m_sleepMsOnEmail);
         }
 
         public void llGetNextEmail(string address, string subject)
@@ -3622,6 +3777,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
         protected void TargetOmega(SceneObjectPart part, LSL_Vector axis, double spinrate, double gain)
         {
+            PhysicsActor pa = part.PhysActor;
+            if ( ( pa == null || !pa.IsPhysical ) && gain == 0.0d )
+                spinrate = 0.0d;
             part.UpdateAngularVelocity(axis * spinrate);
          }
 
@@ -3882,7 +4040,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             if (client != null)
                 parentPrim.SendPropertiesToClient(client);
 
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnCreateLink);
         }
 
         public void llBreakLink(int linknum)
@@ -4198,7 +4356,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     m_TransferModule.SendInstantMessage(msg, delegate(bool success) {});
                 }
 
-                ScriptSleep(3000);
+                ScriptSleep(m_sleepMsOnGiveInventory);
             }
         }
 
@@ -4368,7 +4526,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             AsyncCommands.
             DataserverPlugin.DataserverReply(rq.ToString(), reply);
 
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnRequestAgentData);
             return tid.ToString();
         }
 
@@ -4401,12 +4559,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                                                              reply);
                         });
 
-                    ScriptSleep(1000);
+                    ScriptSleep(m_sleepMsOnRequestInventoryData);
                     return tid.ToString();
                 }
             }
 
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnRequestInventoryData);
             return String.Empty;
         }
 
@@ -4433,7 +4591,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 }
             }
 
-            ScriptSleep(5000);
+            ScriptSleep(m_sleepMsOnSetDamage);
         }
 
         public void llTeleportAgent(string agent, string destination, LSL_Vector targetPos, LSL_Vector targetLookAt)
@@ -4549,7 +4707,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             else
             {
                 dm.SendTextBoxToUser(av, message, chatChannel, m_host.Name, m_host.UUID, m_host.OwnerID);
-                ScriptSleep(1000);
+                ScriptSleep(m_sleepMsOnTextBox);
             }
         }
 
@@ -6035,7 +6193,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             m_host.AdjustSoundGain(volume);
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnAdjustSoundVolume);
         }
 
         public void llSetSoundRadius(double radius)
@@ -6141,7 +6299,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     }
                 }
             }
-            ScriptSleep(5000);
+            ScriptSleep(m_sleepMsOnEjectFromLand);
         }
 
         public LSL_Integer llOverMyLand(string id)
@@ -7116,7 +7274,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     World.EventManager.TriggerLandObjectUpdated((uint)land.LandData.LocalID, land);
                 }
             }
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnAddToLandPassList);
         }
 
         public void llSetTouchText(string text)
@@ -7254,7 +7412,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 av, m_host.Name, m_host.UUID, m_host.OwnerID,
                 message, new UUID("00000000-0000-2222-3333-100000001000"), chat_channel, buts);
 
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnDialog);
         }
 
         public void llVolumeDetect(int detect)
@@ -7269,7 +7427,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             Deprecated("llRemoteLoadScript", "Use llRemoteLoadScriptPin instead");
-            ScriptSleep(3000);
+            ScriptSleep(m_sleepMsOnRemoteLoadScript);
         }
 
         public void llSetRemoteScriptAccessPin(int pin)
@@ -7310,7 +7468,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             World.RezScriptFromPrim(item.ItemID, m_host, destId, pin, running, start_param);
 
             // this will cause the delay even if the script pin or permissions were wrong - seems ok
-            ScriptSleep(3000);
+            ScriptSleep(m_sleepMsOnRemoteLoadScriptPin);
         }
 
         public void llOpenRemoteDataChannel()
@@ -7341,14 +7499,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 m_ScriptEngine.PostScriptEvent(m_item.ItemID, new EventParams("remote_data", resobj,
                                                                          new DetectParams[0]));
             }
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnOpenRemoteDataChannel);
         }
 
         public LSL_String llSendRemoteData(string channel, string dest, int idata, string sdata)
         {
             m_host.AddScriptLPS(1);
             IXMLRPC xmlrpcMod = m_ScriptEngine.World.RequestModuleInterface<IXMLRPC>();
-            ScriptSleep(3000);
+            ScriptSleep(m_sleepMsOnSendRemoteData);
             if (xmlrpcMod == null)
                 return "";
             return (xmlrpcMod.SendRemoteData(m_host.LocalId, m_item.ItemID, channel, dest, idata, sdata)).ToString();
@@ -7360,7 +7518,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             IXMLRPC xmlrpcMod = m_ScriptEngine.World.RequestModuleInterface<IXMLRPC>();
             if (xmlrpcMod != null)
                 xmlrpcMod.RemoteDataReply(channel, message_id, sdata, idata);
-            ScriptSleep(3000);
+            ScriptSleep(m_sleepMsOnRemoteDataReply);
         }
 
         public void llCloseRemoteDataChannel(string channel)
@@ -7376,7 +7534,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             IXMLRPC xmlrpcMod = m_ScriptEngine.World.RequestModuleInterface<IXMLRPC>();
             if (xmlrpcMod != null)
                 xmlrpcMod.CloseXMLRPCChannel((UUID)channel);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnCloseRemoteDataChannel);
         }
 
         public LSL_String llMD5String(string src, int nonce)
@@ -7422,13 +7580,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 cut.y = 1f;
             }
-            if (cut.y - cut.x < 0.05f)
+            if (cut.y - cut.x < 0.02f)
             {
-                cut.x = cut.y - 0.05f;
+                cut.x = cut.y - 0.02f;
                 if (cut.x < 0.0f)
                 {
                     cut.x = 0.0f;
-                    cut.y = 0.05f;
+                    cut.y = 0.02f;
                 }
             }
             shapeBlock.ProfileBegin = (ushort)(50000 * cut.x);
@@ -7450,12 +7608,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     hollow = 0.70f;
                 }
             }
-            // Otherwise, hollow is limited to 95%.
+            // Otherwise, hollow is limited to 99%.
             else
             {
-                if (hollow > 0.95f)
+                if (hollow > 0.99f)
                 {
-                    hollow = 0.95f;
+                    hollow = 0.99f;
                 }
             }
             shapeBlock.ProfileHollow = (ushort)(50000 * hollow);
@@ -7579,9 +7737,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 dimple.y = 1f;
             }
-            if (dimple.y - cut.x < 0.05f)
+            if (dimple.y - dimple.x < 0.02f)
             {
-                dimple.x = cut.y - 0.05f;
+                dimple.x = dimple.y - 0.02f;
+                if (dimple.x < 0.0f)
+                {
+                    dimple.x = 0.0f;
+                    dimple.y = 0.02f;
+                }
             }
             shapeBlock.ProfileBegin = (ushort)(50000 * dimple.x);
             shapeBlock.ProfileEnd   = (ushort)(50000 * (1 - dimple.y));
@@ -7602,17 +7765,17 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             shapeBlock.PathBegin = shapeBlock.ProfileBegin;
             shapeBlock.PathEnd = shapeBlock.ProfileEnd;
 
-            if (holesize.x < 0.05f)
+            if (holesize.x < 0.01f)
             {
-                holesize.x = 0.05f;
+                holesize.x = 0.01f;
             }
             if (holesize.x > 1f)
             {
                 holesize.x = 1f;
             }
-            if (holesize.y < 0.05f)
+            if (holesize.y < 0.01f)
             {
-                holesize.y = 0.05f;
+                holesize.y = 0.01f;
             }
             if (holesize.y > 0.5f)
             {
@@ -7658,13 +7821,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 profilecut.y = 1f;
             }
-            if (profilecut.y - profilecut.x < 0.05f)
+            if (profilecut.y - profilecut.x < 0.02f)
             {
-                profilecut.x = profilecut.y - 0.05f;
+                profilecut.x = profilecut.y - 0.02f;
                 if (profilecut.x < 0.0f)
                 {
                     profilecut.x = 0.0f;
-                    profilecut.y = 0.05f;
+                    profilecut.y = 0.02f;
                 }
             }
             shapeBlock.ProfileBegin = (ushort)(50000 * profilecut.x);
@@ -7764,7 +7927,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             SetLinkPrimParams(ScriptBaseClass.LINK_THIS, rules, "llSetPrimitiveParams");
 
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnSetPrimitiveParams);
         }
 
         public void llSetLinkPrimitiveParams(int linknumber, LSL_List rules)
@@ -7773,7 +7936,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             SetLinkPrimParams(linknumber, rules, "llSetLinkPrimitiveParams");
 
-            ScriptSleep(200);
+            ScriptSleep(m_sleepMsOnSetLinkPrimitiveParams);
         }
 
         public void llSetLinkPrimitiveParamsFast(int linknumber, LSL_List rules)
@@ -9386,7 +9549,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             Deprecated("llXorBase64Strings", "Use llXorBase64 instead");
-            ScriptSleep(300);
+            ScriptSleep(m_sleepMsOnXorBase64Strings);
             return String.Empty;
         }
 
@@ -9434,7 +9597,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             land.SetMusicUrl(url);
 
-            ScriptSleep(2000);
+            ScriptSleep(m_sleepMsOnSetParcelMusicURL);
         }
 
         public LSL_String llGetParcelMusicURL()
@@ -9517,80 +9680,441 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         }
 
         /// <summary>
-        /// A partial implementation.
+        /// Full implementation of llGetBoundingBox according to SL 2015-04-15.
+        /// http://wiki.secondlife.com/wiki/LlGetBoundingBox
         /// http://lslwiki.net/lslwiki/wakka.php?wakka=llGetBoundingBox
-        /// So far only valid for standing/flying/ground sitting avatars and single prim objects.
-        /// If the object has multiple prims and/or a sitting avatar then the bounding
-        /// box is for the root prim only.
+        /// Returns local bounding box of avatar without attachments
+        /// if target is non-seated avatar or prim/mesh in avatar attachment.
+        /// Returns local bounding box of object including seated avatars
+        /// if target is seated avatar or prim/mesh in object.
+        /// Uses meshing of prims for high accuracy
+        /// or less accurate box models for speed.
         /// </summary>
         public LSL_List llGetBoundingBox(string obj)
         {
             m_host.AddScriptLPS(1);
+
+            // Get target avatar if non-seated avatar or attachment, or prim and object
             UUID objID = UUID.Zero;
-            LSL_List result = new LSL_List();
-            if (!UUID.TryParse(obj, out objID))
+            UUID.TryParse(obj, out objID);
+            ScenePresence agent = World.GetScenePresence(objID);
+            if (agent != null)
             {
-                result.Add(new LSL_Vector());
-                result.Add(new LSL_Vector());
-                return result;
-            }
-            ScenePresence presence = World.GetScenePresence(objID);
-            if (presence != null)
-            {
-                if (presence.ParentID == 0) // not sat on an object
+                if (agent.ParentPart != null)
                 {
-                    LSL_Vector lower;
-                    LSL_Vector upper;
-                    if (presence.Animator.Animations.ImplicitDefaultAnimation.AnimID
-                        == DefaultAvatarAnimations.AnimsUUID["SIT_GROUND_CONSTRAINED"])
-                    {
-                        // This is for ground sitting avatars
-                        float height = presence.Appearance.AvatarHeight / 2.66666667f;
-                        lower = new LSL_Vector(-0.3375f, -0.45f, height * -1.0f);
-                        upper = new LSL_Vector(0.3375f, 0.45f, 0.0f);
-                    }
-                    else
-                    {
-                        // This is for standing/flying avatars
-                        float height = presence.Appearance.AvatarHeight / 2.0f;
-                        lower = new LSL_Vector(-0.225f, -0.3f, height * -1.0f);
-                        upper = new LSL_Vector(0.225f, 0.3f, height + 0.05f);
-                    }
-                    result.Add(lower);
-                    result.Add(upper);
-                    return result;
-                }
-                else
-                {
-                    // sitting on an object so we need the bounding box of that
-                    // which should include the avatar so set the UUID to the
-                    // UUID of the object the avatar is sat on and allow it to fall through
-                    // to processing an object
-                    SceneObjectPart p = World.GetSceneObjectPart(presence.ParentID);
-                    objID = p.UUID;
+                    objID = agent.ParentPart.UUID;
+                    agent = null;
                 }
             }
-            SceneObjectPart part = World.GetSceneObjectPart(objID);
-            // Currently only works for single prims without a sitting avatar
-            if (part != null)
+            SceneObjectGroup group = null;
+            SceneObjectPart target = World.GetSceneObjectPart(objID);
+            if (target != null)
             {
-                Vector3 halfSize = part.Scale / 2.0f;
-                LSL_Vector lower = (new LSL_Vector(halfSize)) * -1.0f;
-                LSL_Vector upper = new LSL_Vector(halfSize);
-                result.Add(lower);
-                result.Add(upper);
-                return result;
+                group = target.ParentGroup;
+                if (group.IsAttachment) {
+                    objID = group.AttachedAvatar;
+                    agent = World.GetScenePresence(objID);
+                    group = null;
+                    target = null;
+                }
             }
 
-            // Not found so return empty values
-            result.Add(new LSL_Vector());
-            result.Add(new LSL_Vector());
+            // Initialize but break if no target
+            LSL_List result = new LSL_List();
+            int groupCount = 0;
+            int partCount = 0;
+            int vertexCount = 0;
+            if (target == null && agent == null)
+            {
+                result.Add(new LSL_Vector());
+                result.Add(new LSL_Vector());
+                if (m_addStatsInGetBoundingBox)
+                    result.Add(new LSL_Vector((float)groupCount, (float)partCount, (float)vertexCount));
+                return result;
+            }
+            Vector3 minPosition = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
+            Vector3 maxPosition = new Vector3(float.MinValue, float.MinValue, float.MinValue);
+
+            // Try to get a mesher
+            IRendering primMesher = null;
+            List<string> renderers = RenderingLoader.ListRenderers(Util.ExecutingDirectory());
+            if (renderers.Count > 0)
+                primMesher = RenderingLoader.LoadRenderer(renderers[0]);
+
+            // Get bounding box of just avatar, seated or not
+            if (agent != null)
+            {
+                bool hasParent = false;
+                Vector3 lower;
+                Vector3 upper;
+                BoundingBoxOfScenePresence(agent, out lower, out upper);
+                Vector3 offset = Vector3.Zero;
+
+                // Since local bounding box unrotated and untilted, keep it simple
+                AddBoundingBoxOfSimpleBox(lower, upper, offset, agent.Rotation, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                partCount++;
+                groupCount++;
+
+                // Return lower and upper bounding box corners
+                result.Add(new LSL_Vector(minPosition));
+                result.Add(new LSL_Vector(maxPosition));
+                if (m_addStatsInGetBoundingBox)
+                    result.Add(new LSL_Vector((float)groupCount, (float)partCount, (float)vertexCount));
+                return result;
+            }
+            // Get bounding box of object including seated avatars
+            else if (group != null)
+            {
+                // Merge bounding boxes of all parts (prims and mesh)
+                foreach (SceneObjectPart part in group.Parts)
+                {
+                    bool hasParent = (!part.IsRoot);
+                    // When requested or if no mesher, keep it simple
+                    if (m_useSimpleBoxesInGetBoundingBox || primMesher == null)
+                    {
+                        AddBoundingBoxOfSimpleBox(part.Scale * -0.5f, part.Scale * 0.5f, part.OffsetPosition, part.RotationOffset, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                    }
+                    // Do the full mounty
+                    else
+                    {
+                        Primitive omvPrim = part.Shape.ToOmvPrimitive(part.OffsetPosition, part.RotationOffset);
+                        byte[] sculptAsset = null;
+                        if (omvPrim.Sculpt != null)
+                            sculptAsset = World.AssetService.GetData(omvPrim.Sculpt.SculptTexture.ToString());
+
+                        // When part is mesh
+                        // Quirk: Only imports as incompletely populated faceted mesh object, so needs an own handler.
+                        if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type == SculptType.Mesh && sculptAsset != null)
+                        {
+                            AssetMesh meshAsset = new AssetMesh(omvPrim.Sculpt.SculptTexture, sculptAsset);
+                            FacetedMesh mesh = null;
+                            FacetedMesh.TryDecodeFromAsset(omvPrim, meshAsset, DetailLevel.Highest, out mesh);
+                            meshAsset = null;
+                            if (mesh != null)
+                            {
+                                AddBoundingBoxOfFacetedMesh(mesh, omvPrim, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                                mesh = null;
+                            }
+                        }
+
+                        // When part is sculpt
+                        // Quirk: Generated sculpt mesh is about 2.8% smaller in X and Y than visual sculpt.
+                        else if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type != SculptType.Mesh && sculptAsset != null)
+                        {
+                            IJ2KDecoder imgDecoder = World.RequestModuleInterface<IJ2KDecoder>();
+                            if (imgDecoder != null)
+                            {
+                                Image sculpt = imgDecoder.DecodeToImage(sculptAsset);
+                                if (sculpt != null)
+                                {
+                                    SimpleMesh mesh = primMesher.GenerateSimpleSculptMesh(omvPrim, (Bitmap)sculpt, DetailLevel.Medium);
+                                    sculpt.Dispose();
+                                    if (mesh != null)
+                                    {
+                                        AddBoundingBoxOfSimpleMesh(mesh, omvPrim, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                                        mesh = null;
+                                    }
+                                }
+                            }
+                        }
+
+                        // When part is prim
+                        else if (omvPrim.Sculpt == null)
+                        {
+                            SimpleMesh mesh = primMesher.GenerateSimpleMesh(omvPrim, DetailLevel.Medium);
+                            if (mesh != null)
+                            {
+                                AddBoundingBoxOfSimpleMesh(mesh, omvPrim, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                                mesh = null;
+                            }
+                        }
+
+                        // When all else fails, try fallback to simple box
+                        else
+                        {
+                            AddBoundingBoxOfSimpleBox(part.Scale * -0.5f, part.Scale * 0.5f, part.OffsetPosition, part.RotationOffset, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                        }
+                    }
+                    partCount++;
+                }
+            }
+
+            // Merge bounding boxes of seated avatars
+            foreach (ScenePresence sp in group.GetSittingAvatars())
+            {
+                Vector3 lower;
+                Vector3 upper;
+                BoundingBoxOfScenePresence(sp, out lower, out upper);
+                Vector3 offset = sp.OffsetPosition;
+
+                bool hasParent = true;
+                // When requested or if no mesher, keep it simple
+                if (m_useSimpleBoxesInGetBoundingBox || primMesher == null)
+                {
+                    AddBoundingBoxOfSimpleBox(lower, upper, offset, sp.Rotation, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                }
+                // Do the full mounty
+                else
+                {
+                    // Prim shapes don't do center offsets, so add it here.
+                    offset = offset + (lower + upper) * 0.5f * sp.Rotation;
+                    Primitive omvPrim = MakeOpenMetaversePrim(upper - lower, offset, sp.Rotation, ScriptBaseClass.PRIM_TYPE_SPHERE);
+                    SimpleMesh mesh = primMesher.GenerateSimpleMesh(omvPrim, DetailLevel.Medium);
+                    AddBoundingBoxOfSimpleMesh(mesh, omvPrim, hasParent, ref minPosition, ref maxPosition, ref vertexCount);
+                    mesh = null;
+                }
+                partCount++;
+            }
+
+            groupCount++;
+
+            // Return lower and upper bounding box corners
+            result.Add(new LSL_Vector(minPosition));
+            result.Add(new LSL_Vector(maxPosition));
+            if (m_addStatsInGetBoundingBox)
+                result.Add(new LSL_Vector((float)groupCount, (float)partCount, (float)vertexCount));
+
+            primMesher = null;
             return result;
         }
 
+        /// <summary>
+        /// Helper to calculate bounding box of an avatar.
+        /// </summary>
+        private void BoundingBoxOfScenePresence(ScenePresence sp, out Vector3 lower, out Vector3 upper)
+        {
+            // Adjust from OS model
+            // avatar height = visual height - 0.2, bounding box height = visual height
+            // to SL model
+            // avatar height = visual height, bounding box height = visual height + 0.2
+            float height = sp.Appearance.AvatarHeight + m_avatarHeightCorrection;
+
+            // According to avatar bounding box in SL 2015-04-18:
+            // standing = <-0.275,-0.35,-0.1-0.5*h> : <0.275,0.35,0.1+0.5*h>
+            // groundsitting = <-0.3875,-0.5,-0.05-0.375*h> : <0.3875,0.5,0.5>
+            // sitting = <-0.5875,-0.35,-0.35-0.375*h> : <0.1875,0.35,-0.25+0.25*h>
+
+            // When avatar is sitting
+            if (sp.ParentPart != null)
+            {
+                lower = new Vector3(m_lABB1SitX0, m_lABB1SitY0, m_lABB1SitZ0 + m_lABB1SitZ1 * height);
+                upper = new Vector3(m_lABB2SitX0, m_lABB2SitY0, m_lABB2SitZ0 + m_lABB2SitZ1 * height);
+            }
+            // When avatar is groundsitting
+            else if (sp.Animator.Animations.ImplicitDefaultAnimation.AnimID == DefaultAvatarAnimations.AnimsUUID["SIT_GROUND_CONSTRAINED"])
+            {
+                lower = new Vector3(m_lABB1GrsX0, m_lABB1GrsY0, m_lABB1GrsZ0 + m_lABB1GrsZ1 * height);
+                upper = new Vector3(m_lABB2GrsX0, m_lABB2GrsY0, m_lABB2GrsZ0 + m_lABB2GrsZ1 * height);
+            }
+            // When avatar is standing or flying
+            else
+            {
+                lower = new Vector3(m_lABB1StdX0, m_lABB1StdY0, m_lABB1StdZ0 + m_lABB1StdZ1 * height);
+                upper = new Vector3(m_lABB2StdX0, m_lABB2StdY0, m_lABB2StdZ0 + m_lABB2StdZ1 * height);
+            }
+        }
+
+        /// <summary>
+        /// Helper to approximate a part with a simple box.
+        /// </summary>
+        private void AddBoundingBoxOfSimpleBox(Vector3 corner1, Vector3 corner2, Vector3 offset, Quaternion rotation, bool hasParent, ref Vector3 lower, ref Vector3 upper, ref int count)
+        {
+            // Parse the 8 box corners
+            for (int i = 0; i < 8; i++)
+            {
+                // Calculate each box corner
+                Vector3 position = corner1;
+                if ((i & 1) != 0)
+                    position.X = corner2.X;
+                if ((i & 2) != 0)
+                    position.Y = corner2.Y;
+                if ((i & 4) != 0)
+                    position.Z = corner2.Z;
+                // Rotate part unless part is root
+                if (hasParent)
+                    position = position * rotation;
+                position = position + offset;
+                // Adjust lower and upper bounding box corners if needed
+                lower = Vector3.Min(lower, position);
+                upper = Vector3.Max(upper, position);
+                count++;
+            }
+        }
+
+        /// <summary>
+        /// Helper to parse a meshed prim and needed especially
+        /// for accuracy with tortured prims and sculpts.
+        /// </summary>
+        private void AddBoundingBoxOfSimpleMesh(SimpleMesh mesh, Primitive prim, bool hasParent, ref Vector3 lower, ref Vector3 upper, ref int count)
+        {
+            // Quirk: A meshed box contains 10 instead of the 8 necessary vertices.
+            if (mesh != null)
+            {
+                // Parse each vertex in mesh
+                foreach (Vertex vertex in mesh.Vertices)
+                {
+                    Vector3 position = vertex.Position;
+                    position = position * prim.Scale;
+                    // Rotate part unless part is root
+                    if (hasParent)
+                        position = position * prim.Rotation;
+                    position = position + prim.Position;
+                    // Adjust lower and upper bounding box corners if needed
+                    lower = Vector3.Min(lower, position);
+                    upper = Vector3.Max(upper, position);
+                    count++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper to parse mesh because no method exists
+        /// to parse mesh assets to SimpleMesh.
+        /// </summary>
+        private void AddBoundingBoxOfFacetedMesh(FacetedMesh mesh, Primitive prim, bool hasParent, ref Vector3 lower, ref Vector3 upper, ref int count)
+        {
+            if (mesh != null)
+            {
+                // Parse each face in mesh
+                // since vertex array isn't populated.
+                // This parses each unique vertex 3-6 times.
+                foreach (Face face in mesh.Faces)
+                {
+                    // Parse each vertex in face
+                    foreach (Vertex vertex in face.Vertices)
+                    {
+                        Vector3 position = vertex.Position;
+                        position = position * prim.Scale;
+                        // Rotate part unless part is root
+                        if (hasParent)
+                            position = position * prim.Rotation;
+                        position = position + prim.Position;
+                        // Adjust lower and upper bounding box corners if needed
+                        lower = Vector3.Min(lower, position);
+                        upper = Vector3.Max(upper, position);
+                        count++;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper to make up an OpenMetaverse prim
+        /// needed to create mesh from parts.
+        /// </summary>
+        private Primitive MakeOpenMetaversePrim(Vector3 scale, Vector3 position, Quaternion rotation, int primType)
+        {
+            // Initialize and set common parameters
+            Primitive prim = new OpenMetaverse.Primitive();
+            prim.Scale = scale;
+            prim.Position = position;
+            prim.Rotation = rotation;
+            prim.PrimData.PathShearX = 0.0f;
+            prim.PrimData.PathShearY = 0.0f;
+            prim.PrimData.PathBegin = 0.0f;
+            prim.PrimData.PathEnd = 1.0f;
+            prim.PrimData.PathScaleX = 1.0f;
+            prim.PrimData.PathScaleY = 1.0f;
+            prim.PrimData.PathTaperX = 0.0f;
+            prim.PrimData.PathTaperY = 0.0f;
+            prim.PrimData.PathTwistBegin = 0.0f;
+            prim.PrimData.PathTwist = 0.0f;
+            prim.PrimData.ProfileBegin = 0.0f;
+            prim.PrimData.ProfileEnd = 1.0f;
+            prim.PrimData.ProfileHollow = 0.0f;
+            prim.PrimData.ProfileCurve = (ProfileCurve)1;
+            prim.PrimData.ProfileHole = (HoleType)0;
+            prim.PrimData.PathCurve = (PathCurve)16;
+            prim.PrimData.PathRadiusOffset = 0.0f;
+            prim.PrimData.PathRevolutions = 1.0f;
+            prim.PrimData.PathSkew = 0.0f;
+            prim.PrimData.PCode = OpenMetaverse.PCode.Prim;
+            prim.PrimData.State = (byte)0;
+
+            // Set type specific parameters
+            switch (primType)
+            {
+                // Set specific parameters for box
+                case ScriptBaseClass.PRIM_TYPE_BOX:
+                    prim.PrimData.PathScaleY = 1.0f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)1;
+                    prim.PrimData.PathCurve = (PathCurve)16;
+                    break;
+                // Set specific parameters for cylinder
+                case ScriptBaseClass.PRIM_TYPE_CYLINDER:
+                    prim.PrimData.PathScaleY = 1.0f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)0;
+                    prim.PrimData.PathCurve = (PathCurve)16;
+                    break;
+                // Set specific parameters for prism
+                case ScriptBaseClass.PRIM_TYPE_PRISM:
+                    prim.PrimData.PathScaleY = 1.0f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)3;
+                    prim.PrimData.PathCurve = (PathCurve)16;
+                    break;
+                // Set specific parameters for sphere
+                case ScriptBaseClass.PRIM_TYPE_SPHERE:
+                    prim.PrimData.PathScaleY = 1.0f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)5;
+                    prim.PrimData.PathCurve = (PathCurve)32;
+                    break;
+                // Set specific parameters for torus
+                case ScriptBaseClass.PRIM_TYPE_TORUS:
+                    prim.PrimData.PathScaleY = 0.5f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)0;
+                    prim.PrimData.PathCurve = (PathCurve)32;
+                    break;
+                // Set specific parameters for tube
+                case ScriptBaseClass.PRIM_TYPE_TUBE:
+                    prim.PrimData.PathScaleY = 0.5f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)1;
+                    prim.PrimData.PathCurve = (PathCurve)32;
+                    break;
+                // Set specific parameters for ring
+                case ScriptBaseClass.PRIM_TYPE_RING:
+                    prim.PrimData.PathScaleY = 0.5f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)3;
+                    prim.PrimData.PathCurve = (PathCurve)32;
+                    break;
+                // Set specific parameters for sculpt
+                case ScriptBaseClass.PRIM_TYPE_SCULPT:
+                    prim.PrimData.PathScaleY = 1.0f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)5;
+                    prim.PrimData.PathCurve = (PathCurve)32;
+                    break;
+                // Default to specific parameters for box
+                default:
+                    prim.PrimData.PathScaleY = 1.0f;
+                    prim.PrimData.ProfileCurve = (ProfileCurve)1;
+                    prim.PrimData.PathCurve = (PathCurve)16;
+                    break;
+            }
+
+            return prim;
+        }
+
+        /// <summary>
+        /// Implementation of llGetGeometricCenter according to SL 2015-04-30.
+        /// http://wiki.secondlife.com/wiki/LlGetGeometricCenter
+        /// Returns the average position offset of all linked parts,
+        /// including the root prim and seated avatars,
+        /// relative to the root prim in local coordinates.
+        /// </summary>
         public LSL_Vector llGetGeometricCenter()
         {
-            return new LSL_Vector(m_host.GetGeometricCenter());
+            // Subtract whatever position the root prim has to make it zero
+            Vector3 offset = m_host.ParentGroup.RootPart.OffsetPosition * -1.0f;
+
+            // Add all prim/part position offsets
+            foreach (SceneObjectPart part in m_host.ParentGroup.Parts)
+                offset = offset + part.OffsetPosition;
+            // Add all avatar/scene presence position offsets
+            foreach (ScenePresence sp in m_host.ParentGroup.GetSittingAvatars())
+                offset = offset + sp.OffsetPosition;
+
+            // Calculate and return the average offset
+            offset = offset / (float)(m_host.ParentGroup.PrimCount + m_host.ParentGroup.GetSittingAvatarsCount());
+            return new LSL_Vector(offset);
         }
 
         public LSL_List GetEntityParams(ISceneEntity entity, LSL_List rules)
@@ -10213,14 +10737,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         public LSL_List llGetPrimMediaParams(int face, LSL_List rules)
         {
             m_host.AddScriptLPS(1);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnGetPrimMediaParams);
             return GetPrimMediaParams(m_host, face, rules);
         }
 
         public LSL_List llGetLinkMedia(LSL_Integer link, LSL_Integer face, LSL_List rules)
         {
             m_host.AddScriptLPS(1);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnGetLinkMedia);
             if (link == ScriptBaseClass.LINK_ROOT)
                 return GetPrimMediaParams(m_host.ParentGroup.RootPart, face, rules);
             else if (link == ScriptBaseClass.LINK_THIS)
@@ -10340,14 +10864,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         public LSL_Integer llSetPrimMediaParams(LSL_Integer face, LSL_List rules)
         {
             m_host.AddScriptLPS(1);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnSetPrimMediaParams);
             return SetPrimMediaParams(m_host, face, rules);
         }
 
         public LSL_Integer llSetLinkMedia(LSL_Integer link, LSL_Integer face, LSL_List rules)
         {
             m_host.AddScriptLPS(1);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnSetLinkMedia);
             if (link == ScriptBaseClass.LINK_ROOT)
                 return SetPrimMediaParams(m_host.ParentGroup.RootPart, face, rules);
             else if (link == ScriptBaseClass.LINK_THIS)
@@ -10466,14 +10990,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         public LSL_Integer llClearPrimMedia(LSL_Integer face)
         {
             m_host.AddScriptLPS(1);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnClearPrimMedia);
             return ClearPrimMedia(m_host, face);
         }
 
         public LSL_Integer llClearLinkMedia(LSL_Integer link, LSL_Integer face)
         {
             m_host.AddScriptLPS(1);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnClearLinkMedia);
             if (link == ScriptBaseClass.LINK_ROOT)
                 return ClearPrimMedia(m_host.ParentGroup.RootPart, face);
             else if (link == ScriptBaseClass.LINK_THIS)
@@ -11160,7 +11684,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     case ScriptBaseClass.DATA_SIM_POS:
                         if (info == null)
                         {
-                            ScriptSleep(1000);
+                            ScriptSleep(m_sleepMsOnRequestSimulatorData);
                             return UUID.Zero.ToString();
                         }
 
@@ -11207,7 +11731,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     case ScriptBaseClass.DATA_SIM_RATING:
                         if (info == null)
                         {
-                            ScriptSleep(1000);
+                            ScriptSleep(m_sleepMsOnRequestSimulatorData);
                             return UUID.Zero.ToString();
                         }
                         int access = info.Maturity;
@@ -11226,7 +11750,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         reply = "OpenSim";
                         break;
                     default:
-                        ScriptSleep(1000);
+                        ScriptSleep(m_sleepMsOnRequestSimulatorData);
                         return UUID.Zero.ToString(); // Raise no event
                 }
                 UUID rq = UUID.Random();
@@ -11237,7 +11761,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 AsyncCommands.
                     DataserverPlugin.DataserverReply(rq.ToString(), reply);
 
-                ScriptSleep(1000);
+                ScriptSleep(m_sleepMsOnRequestSimulatorData);
                 return tid.ToString();
             }
             catch(Exception)
@@ -11382,7 +11906,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 dm.SendUrlToUser(
                     new UUID(avatar_id), m_host.Name, m_host.UUID, m_host.OwnerID, false, message, url);
 
-            ScriptSleep(10000);
+            ScriptSleep(m_sleepMsOnLoadURL);
         }
 
         public void llParcelMediaCommandList(LSL_List commandList)
@@ -11625,7 +12149,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                                                                       time);
                 }
             }
-            ScriptSleep(2000);
+            ScriptSleep(m_sleepMsOnParcelMediaCommandList);
         }
 
         public LSL_List llParcelMediaQuery(LSL_List aList)
@@ -11665,7 +12189,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
                 }
             }
-            ScriptSleep(2000);
+            ScriptSleep(m_sleepMsOnParcelMediaQuery);
             return list;
         }
 
@@ -11674,7 +12198,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
             Int64 tmp = 0;
             Math.DivRem(Convert.ToInt64(Math.Pow(a, b)), c, out tmp);
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnModPow);
             return Convert.ToInt32(tmp);
         }
 
@@ -11757,14 +12281,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             Deprecated("llSetPrimURL", "Use llSetPrimMediaParams instead");
-            ScriptSleep(2000);
+            ScriptSleep(m_sleepMsOnSetPrimURL);
         }
 
         public void llRefreshPrimURL()
         {
             m_host.AddScriptLPS(1);
             Deprecated("llRefreshPrimURL");
-            ScriptSleep(20000);
+            ScriptSleep(m_sleepMsOnRefreshPrimURL);
         }
 
         public LSL_String llEscapeURL(string url)
@@ -11805,7 +12329,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 avatar.ControllingClient.SendScriptTeleportRequest(m_host.Name,
                     simname, pos, lookAt);
             }
-            ScriptSleep(1000);
+            ScriptSleep(m_sleepMsOnMapDestination);
         }
 
         public void llAddToLandBanList(string avatar, double hours)
@@ -11846,7 +12370,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     World.EventManager.TriggerLandObjectUpdated((uint)land.LandData.LocalID, land);
                 }
             }
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnAddToLandBanList);
         }
 
         public void llRemoveFromLandPassList(string avatar)
@@ -11873,7 +12397,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     }
                 }
             }
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnRemoveFromLandPassList);
         }
 
         public void llRemoveFromLandBanList(string avatar)
@@ -11900,7 +12424,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     }
                 }
             }
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnRemoveFromLandBanList);
         }
 
         public void llSetCameraParams(LSL_List rules)
@@ -12283,7 +12807,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     }
                 }
             }
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnResetLandBanList);
         }
 
         public void llResetLandPassList()
@@ -12300,7 +12824,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     }
                 }
             }
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnResetLandPassList);
         }
 
         public LSL_Integer llGetParcelPrimCount(LSL_Vector pos, int category, int sim_wide)
@@ -12358,7 +12882,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     ret.Add(new LSL_Integer(detectedParams.Value));
                 }
             }
-            ScriptSleep(2000);
+            ScriptSleep(m_sleepMsOnGetParcelPrimOwners);
             return ret;
         }
 
@@ -12533,6 +13057,23 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             case ScriptBaseClass.OBJECT_TEMP_ON_REZ:
                                 ret.Add(new LSL_Integer(0));
                                 break;
+                            case ScriptBaseClass.OBJECT_RENDER_WEIGHT:
+                                ret.Add(new LSL_Integer(-1));
+                                break;
+                            case ScriptBaseClass.OBJECT_HOVER_HEIGHT:
+                                ret.Add(new LSL_Float(0));
+                                break;
+                            case ScriptBaseClass.OBJECT_BODY_SHAPE_TYPE:
+                                LSL_Float shapeType;
+                                if (av.Appearance.VisualParams[(int)AvatarAppearance.VPElement.SHAPE_MALE] != 0)
+                                    shapeType = new LSL_Float(1);
+                                else
+                                    shapeType = new LSL_Float(0);
+                                ret.Add(shapeType);
+                                break;
+                            case ScriptBaseClass.OBJECT_LAST_OWNER_ID:
+                                ret.Add(new LSL_Key(ScriptBaseClass.NULL_KEY));
+                                break;
                             default:
                                 // Invalid or unhandled constant.
                                 ret.Add(new LSL_Integer(ScriptBaseClass.OBJECT_UNKNOWN_DETAIL));
@@ -12697,6 +13238,18 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             case ScriptBaseClass.OBJECT_TEMP_ON_REZ:
                                 ret.Add(new LSL_Integer(obj.ParentGroup.IsTemporary ? 1 : 0));
                                 break;
+                            case ScriptBaseClass.OBJECT_RENDER_WEIGHT:
+                                ret.Add(new LSL_Integer(0));
+                                break;
+                            case ScriptBaseClass.OBJECT_HOVER_HEIGHT:
+                                ret.Add(new LSL_Float(0));
+                                break;
+                            case ScriptBaseClass.OBJECT_BODY_SHAPE_TYPE:
+                                ret.Add(new LSL_Float(-1));
+                                break;
+                            case ScriptBaseClass.OBJECT_LAST_OWNER_ID:
+                                ret.Add(new LSL_Key(obj.ParentGroup.LastOwnerID.ToString()));
+                                break;
                             default:
                                 // Invalid or unhandled constant.
                                 ret.Add(new LSL_Integer(ScriptBaseClass.OBJECT_UNKNOWN_DETAIL));
@@ -12831,7 +13384,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 AsyncCommands.DataserverPlugin.DataserverReply(reqIdentifier, NotecardCache.GetLines(assetID).ToString());
 
-                ScriptSleep(100);
+                ScriptSleep(m_sleepMsOnGetNumberOfNotecardLines);
                 return tid.ToString();
             }
 
@@ -12847,7 +13400,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 AsyncCommands.DataserverPlugin.DataserverReply(reqIdentifier, NotecardCache.GetLines(id).ToString());
             });
 
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnGetNumberOfNotecardLines);
             return tid.ToString();
         }
 
@@ -12883,7 +13436,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 AsyncCommands.DataserverPlugin.DataserverReply(
                     reqIdentifier, NotecardCache.GetLine(assetID, line, m_notecardLineReadCharsMax));
 
-                ScriptSleep(100);
+                ScriptSleep(m_sleepMsOnGetNotecardLine);
                 return tid.ToString();
             }
 
@@ -12902,7 +13455,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                                 reqIdentifier, NotecardCache.GetLine(assetID, line, m_notecardLineReadCharsMax));
                          });
 
-            ScriptSleep(100);
+            ScriptSleep(m_sleepMsOnGetNotecardLine);
             return tid.ToString();
         }
 
@@ -13268,6 +13821,10 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
         public LSL_List llCastRay(LSL_Vector start, LSL_Vector end, LSL_List options)
         {
+            // Use llCastRay V3 if configured
+            if (m_useCastRayV3)
+                return llCastRayV3(start, end, options);
+
             LSL_List list = new LSL_List();
 
             m_host.AddScriptLPS(1);
@@ -13455,6 +14012,732 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             list.Add(new LSL_Integer(values));
 
             return list;
+        }
+
+        /// <summary>
+        /// Implementation of llCastRay similar to SL 2015-04-21.
+        /// http://wiki.secondlife.com/wiki/LlCastRay
+        /// Uses pure geometry, bounding shapes, meshing and no physics
+        /// for prims, sculpts, meshes, avatars and terrain.
+        /// Implements all flags, reject types and data flags.
+        /// Can handle both objects/groups and prims/parts, by config.
+        /// May sometimes be inaccurate owing to calculation precision,
+        /// meshing detail level and a bug in libopenmetaverse PrimMesher.
+        /// </summary>
+        public LSL_List llCastRayV3(LSL_Vector start, LSL_Vector end, LSL_List options)
+        {
+            // Initialize
+            m_host.AddScriptLPS(1);
+            List<RayHit> rayHits = new List<RayHit>();
+            LSL_List result = new LSL_List();
+            float tol = m_floatToleranceInCastRay;
+            Vector3 pos1Ray = start;
+            Vector3 pos2Ray = end;
+
+            // Get input options
+            int rejectTypes = 0;
+            int dataFlags = 0;
+            int maxHits = 1;
+            bool detectPhantom = false;
+            for (int i = 0; i < options.Length; i += 2)
+            {
+                if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_REJECT_TYPES)
+                    rejectTypes = options.GetLSLIntegerItem(i + 1);
+                else if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_DATA_FLAGS)
+                    dataFlags = options.GetLSLIntegerItem(i + 1);
+                else if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_MAX_HITS)
+                    maxHits = options.GetLSLIntegerItem(i + 1);
+                else if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_DETECT_PHANTOM)
+                    detectPhantom = (options.GetLSLIntegerItem(i + 1) != 0);
+            }
+            if (maxHits > m_maxHitsInCastRay)
+                maxHits = m_maxHitsInCastRay;
+            bool rejectAgents = ((rejectTypes & ScriptBaseClass.RC_REJECT_AGENTS) != 0);
+            bool rejectPhysical = ((rejectTypes & ScriptBaseClass.RC_REJECT_PHYSICAL) != 0);
+            bool rejectNonphysical = ((rejectTypes & ScriptBaseClass.RC_REJECT_NONPHYSICAL) != 0);
+            bool rejectLand = ((rejectTypes & ScriptBaseClass.RC_REJECT_LAND) != 0);
+            bool getNormal = ((dataFlags & ScriptBaseClass.RC_GET_NORMAL) != 0);
+            bool getRootKey = ((dataFlags & ScriptBaseClass.RC_GET_ROOT_KEY) != 0);
+            bool getLinkNum = ((dataFlags & ScriptBaseClass.RC_GET_LINK_NUM) != 0);
+
+            // Calculate some basic parameters
+            Vector3 vecRay = pos2Ray - pos1Ray;
+            float rayLength = vecRay.Length();
+
+            // Try to get a mesher and return failure if none, degenerate ray, or max 0 hits
+            IRendering primMesher = null;
+            List<string> renderers = RenderingLoader.ListRenderers(Util.ExecutingDirectory());
+            if (renderers.Count < 1 || rayLength < tol || m_maxHitsInCastRay < 1)
+            {
+                result.Add(new LSL_Integer(ScriptBaseClass.RCERR_UNKNOWN));
+                return result;
+            }
+            primMesher = RenderingLoader.LoadRenderer(renderers[0]);
+
+            // Iterate over all objects/groups and prims/parts in region
+            World.ForEachSOG(
+                delegate(SceneObjectGroup group)
+                {
+                    // Check group filters unless part filters are configured
+                    bool isPhysical = (group.RootPart != null && group.RootPart.PhysActor != null && group.RootPart.PhysActor.IsPhysical);
+                    bool isNonphysical = !isPhysical;
+                    bool isPhantom = group.IsPhantom || group.IsVolumeDetect;
+                    bool isAttachment = group.IsAttachment;
+                    bool doGroup = true;
+                    if (isPhysical && rejectPhysical)
+                        doGroup = false;
+                    if (isNonphysical && rejectNonphysical)
+                        doGroup = false;
+                    if (isPhantom && detectPhantom)
+                        doGroup = true;
+                    if (m_filterPartsInCastRay)
+                        doGroup = true;
+                    if (isAttachment && !m_doAttachmentsInCastRay)
+                        doGroup = false;
+                    // Parse object/group if passed filters
+                    if (doGroup)
+                    {
+                        // Iterate over all prims/parts in object/group
+                        foreach(SceneObjectPart part in group.Parts)
+                        {
+                            // Check part filters if configured
+                            if (m_filterPartsInCastRay)
+                            {
+                                isPhysical = (part.PhysActor != null && part.PhysActor.IsPhysical);
+                                isNonphysical = !isPhysical;
+                                isPhantom = ((part.Flags & PrimFlags.Phantom) != 0) || (part.VolumeDetectActive);
+                                bool doPart = true;
+                                if (isPhysical && rejectPhysical)
+                                    doPart = false;
+                                if (isNonphysical && rejectNonphysical)
+                                    doPart = false;
+                                if (isPhantom && detectPhantom)
+                                    doPart = true;
+                                if (!doPart)
+                                    continue;
+                            }
+
+                            // Parse prim/part and project ray if passed filters
+                            Vector3 scalePart = part.Scale;
+                            Vector3 posPart = part.GetWorldPosition();
+                            Quaternion rotPart = part.GetWorldRotation();
+                            Quaternion rotPartInv = Quaternion.Inverse(rotPart);
+                            Vector3 pos1RayProj = ((pos1Ray - posPart) * rotPartInv) / scalePart;
+                            Vector3 pos2RayProj = ((pos2Ray - posPart) * rotPartInv) / scalePart;
+
+                            // Filter parts by shape bounding boxes
+                            Vector3 shapeBoxMax = new Vector3(0.5f, 0.5f, 0.5f);
+                            if (!part.Shape.SculptEntry)
+                                shapeBoxMax = shapeBoxMax * (new Vector3(m_primSafetyCoeffX, m_primSafetyCoeffY, m_primSafetyCoeffZ));
+                            shapeBoxMax = shapeBoxMax + (new Vector3(tol, tol, tol));
+                            if (RayIntersectsShapeBox(pos1RayProj, pos2RayProj, shapeBoxMax))
+                            {
+                                // Prepare data needed to check for ray hits
+                                RayTrans rayTrans = new RayTrans();
+                                rayTrans.PartId = part.UUID;
+                                rayTrans.GroupId = part.ParentGroup.UUID;
+                                rayTrans.Link = group.PrimCount > 1 ? part.LinkNum : 0;
+                                rayTrans.ScalePart = scalePart;
+                                rayTrans.PositionPart = posPart;
+                                rayTrans.RotationPart = rotPart;
+                                rayTrans.ShapeNeedsEnds = true;
+                                rayTrans.Position1Ray = pos1Ray;
+                                rayTrans.Position1RayProj = pos1RayProj;
+                                rayTrans.VectorRayProj = pos2RayProj - pos1RayProj;
+
+                                // Make an OMV prim to be able to mesh part
+                                Primitive omvPrim = part.Shape.ToOmvPrimitive(posPart, rotPart);
+                                byte[] sculptAsset = null;
+                                if (omvPrim.Sculpt != null)
+                                    sculptAsset = World.AssetService.GetData(omvPrim.Sculpt.SculptTexture.ToString());
+                                FacetedMesh mesh = null;
+
+                                // When part is mesh, get mesh and check for hits
+                                if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type == SculptType.Mesh && sculptAsset != null)
+                                {
+                                    AssetMesh meshAsset = new AssetMesh(omvPrim.Sculpt.SculptTexture, sculptAsset);
+                                    FacetedMesh.TryDecodeFromAsset(omvPrim, meshAsset, m_meshLodInCastRay, out mesh);
+                                    meshAsset = null;
+                                }
+
+                                // When part is sculpt, create mesh and check for hits
+                                // Quirk: Generated sculpt mesh is about 2.8% smaller in X and Y than visual sculpt.
+                                else if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type != SculptType.Mesh && sculptAsset != null)
+                                {
+                                    IJ2KDecoder imgDecoder = World.RequestModuleInterface<IJ2KDecoder>();
+                                    if (imgDecoder != null)
+                                    {
+                                        Image sculpt = imgDecoder.DecodeToImage(sculptAsset);
+                                        if (sculpt != null)
+                                        {
+                                            mesh = primMesher.GenerateFacetedSculptMesh(omvPrim, (Bitmap)sculpt, m_sculptLodInCastRay);
+                                            sculpt.Dispose();
+                                        }
+                                    }
+                               }
+
+                                // When part is prim, create mesh and check for hits
+                                else if (omvPrim.Sculpt == null)
+                                {
+                                    if (
+                                        omvPrim.PrimData.PathBegin == 0.0 && omvPrim.PrimData.PathEnd == 1.0 &&
+                                        omvPrim.PrimData.PathTaperX == 0.0 && omvPrim.PrimData.PathTaperY == 0.0 &&
+                                        omvPrim.PrimData.PathSkew == 0.0 &&
+                                        omvPrim.PrimData.PathTwist - omvPrim.PrimData.PathTwistBegin == 0.0
+                                    )
+                                        rayTrans.ShapeNeedsEnds = false;
+                                    mesh = primMesher.GenerateFacetedMesh(omvPrim, m_primLodInCastRay);
+                                }
+
+                                // Check mesh for ray hits
+                                AddRayInFacetedMesh(mesh, rayTrans, ref rayHits);
+                                mesh = null;
+                            }
+                        }
+                    }
+                }
+            );
+
+            // Check avatar filter
+            if (!rejectAgents)
+            {
+                // Iterate over all avatars in region
+                World.ForEachRootScenePresence(
+                    delegate (ScenePresence sp)
+                    {
+                        // Get bounding box
+                        Vector3 lower;
+                        Vector3 upper;
+                        BoundingBoxOfScenePresence(sp, out lower, out upper);
+                        // Parse avatar
+                        Vector3 scalePart = upper - lower;
+                        Vector3 posPart = sp.AbsolutePosition;
+                        Quaternion rotPart = sp.GetWorldRotation();
+                        Quaternion rotPartInv = Quaternion.Inverse(rotPart);
+                        posPart = posPart + (lower + upper) * 0.5f * rotPart;
+                        // Project ray
+                        Vector3 pos1RayProj = ((pos1Ray - posPart) * rotPartInv) / scalePart;
+                        Vector3 pos2RayProj = ((pos2Ray - posPart) * rotPartInv) / scalePart;
+
+                        // Filter avatars by shape bounding boxes
+                        Vector3 shapeBoxMax = new Vector3(0.5f + tol, 0.5f + tol, 0.5f + tol);
+                        if (RayIntersectsShapeBox(pos1RayProj, pos2RayProj, shapeBoxMax))
+                        {
+                            // Prepare data needed to check for ray hits
+                            RayTrans rayTrans = new RayTrans();
+                            rayTrans.PartId = sp.UUID;
+                            rayTrans.GroupId = sp.ParentPart != null ? sp.ParentPart.ParentGroup.UUID : sp.UUID;
+                            rayTrans.Link = sp.ParentPart != null ? UUID2LinkNumber(sp.ParentPart, sp.UUID) : 0;
+                            rayTrans.ScalePart = scalePart;
+                            rayTrans.PositionPart = posPart;
+                            rayTrans.RotationPart = rotPart;
+                            rayTrans.ShapeNeedsEnds = false;
+                            rayTrans.Position1Ray = pos1Ray;
+                            rayTrans.Position1RayProj = pos1RayProj;
+                            rayTrans.VectorRayProj = pos2RayProj - pos1RayProj;
+
+                            // Make OMV prim, create and check mesh
+                            PrimitiveBaseShape prim = PrimitiveBaseShape.CreateSphere();
+                            prim.Scale = scalePart;
+                            Primitive omvPrim = prim.ToOmvPrimitive(posPart, rotPart);
+                            FacetedMesh mesh = primMesher.GenerateFacetedMesh(omvPrim, m_meshLodInCastRay);
+                            AddRayInFacetedMesh(mesh, rayTrans, ref rayHits);
+                            mesh = null;
+                        }
+                    }
+                );
+            }
+
+            // Check terrain filter
+            if (!rejectLand)
+            {
+                // Parse terrain
+
+                // Mesh terrain and check bounding box
+                Vector3 lower;
+                Vector3 upper;
+                List<Tri> triangles = TrisFromHeightmapUnderRay(pos1Ray, pos2Ray, out lower, out upper);
+                lower.Z -= tol;
+                upper.Z += tol;
+                if ((pos1Ray.Z >= lower.Z || pos2Ray.Z >= lower.Z) && (pos1Ray.Z <= upper.Z || pos2Ray.Z <= upper.Z))
+                {
+                    // Prepare data needed to check for ray hits
+                    RayTrans rayTrans = new RayTrans();
+                    rayTrans.PartId = UUID.Zero;
+                    rayTrans.GroupId = UUID.Zero;
+                    rayTrans.Link = 0;
+                    rayTrans.ScalePart = new Vector3 (1.0f, 1.0f, 1.0f);
+                    rayTrans.PositionPart = Vector3.Zero;
+                    rayTrans.RotationPart = Quaternion.Identity;
+                    rayTrans.ShapeNeedsEnds = true;
+                    rayTrans.Position1Ray = pos1Ray;
+                    rayTrans.Position1RayProj = pos1Ray;
+                    rayTrans.VectorRayProj = vecRay;
+
+                    // Check mesh
+                    AddRayInTris(triangles, rayTrans, ref rayHits);
+                    triangles = null;
+                }
+            }
+
+            // Sort hits by ascending distance
+            rayHits.Sort((s1, s2) => s1.Distance.CompareTo(s2.Distance));
+
+            // Check excess hits per part and group
+            for (int t = 0; t < 2; t++)
+            {
+                int maxHitsPerType = 0;
+                UUID id = UUID.Zero;
+                if (t == 0)
+                    maxHitsPerType = m_maxHitsPerPrimInCastRay;
+                else
+                    maxHitsPerType = m_maxHitsPerObjectInCastRay;
+
+                // Handle excess hits only when needed
+                if (maxHitsPerType < m_maxHitsInCastRay)
+                {
+                    // Find excess hits
+                    Hashtable hits = new Hashtable();
+                    for (int i = rayHits.Count - 1; i >= 0; i--)
+                    {
+                        if (t == 0)
+                            id = rayHits[i].PartId;
+                        else
+                            id = rayHits[i].GroupId;
+                        if (hits.ContainsKey(id))
+                            hits[id] = (int)hits[id] + 1;
+                        else
+                            hits[id] = 1;
+                    }
+
+                    // Remove excess hits
+                    for (int i = rayHits.Count - 1; i >= 0; i--)
+                    {
+                        if (t == 0)
+                            id = rayHits[i].PartId;
+                        else
+                            id = rayHits[i].GroupId;
+                        int hit = (int)hits[id];
+                        if (hit > m_maxHitsPerPrimInCastRay)
+                        {
+                            rayHits.RemoveAt(i);
+                            hit--;
+                            hits[id] = hit;
+                        }
+                    }
+                }
+            }
+
+            // Parse hits into result list according to data flags
+            int hitCount = rayHits.Count;
+            if (hitCount > maxHits)
+                hitCount = maxHits;
+            for (int i = 0; i < hitCount; i++)
+            {
+                RayHit rayHit = rayHits[i];
+                if (getRootKey)
+                    result.Add(new LSL_Key(rayHit.GroupId.ToString()));
+                else
+                    result.Add(new LSL_Key(rayHit.PartId.ToString()));
+                result.Add(new LSL_Vector(rayHit.Position));
+                if (getLinkNum)
+                    result.Add(new LSL_Integer(rayHit.Link));
+                if (getNormal)
+                    result.Add(new LSL_Vector(rayHit.Normal));
+            }
+            result.Add(new LSL_Integer(hitCount));
+            return result;
+        }
+
+        /// <summary>
+        /// Struct for transmitting parameters required for finding llCastRay ray hits.
+        /// </summary>
+        public struct RayTrans
+        {
+            public UUID PartId;
+            public UUID GroupId;
+            public int Link;
+            public Vector3 ScalePart;
+            public Vector3 PositionPart;
+            public Quaternion RotationPart;
+            public bool ShapeNeedsEnds;
+            public Vector3 Position1Ray;
+            public Vector3 Position1RayProj;
+            public Vector3 VectorRayProj;
+        }
+
+        /// <summary>
+        /// Struct for llCastRay ray hits.
+        /// </summary>
+        public struct RayHit
+        {
+            public UUID PartId;
+            public UUID GroupId;
+            public int Link;
+            public Vector3 Position;
+            public Vector3 Normal;
+            public float Distance;
+        }
+
+        /// <summary>
+        /// Helper to check if a ray intersects a shape bounding box.
+        /// </summary>
+        private bool RayIntersectsShapeBox(Vector3 pos1RayProj, Vector3 pos2RayProj, Vector3 shapeBoxMax)
+        {
+            // Skip if ray can't intersect bounding box;
+            Vector3 rayBoxProjMin = Vector3.Min(pos1RayProj, pos2RayProj);
+            Vector3 rayBoxProjMax = Vector3.Max(pos1RayProj, pos2RayProj);
+            if (
+                rayBoxProjMin.X > shapeBoxMax.X || rayBoxProjMin.Y > shapeBoxMax.Y || rayBoxProjMin.Z > shapeBoxMax.Z ||
+                rayBoxProjMax.X < -shapeBoxMax.X || rayBoxProjMax.Y < -shapeBoxMax.Y || rayBoxProjMax.Z < -shapeBoxMax.Z
+            )
+                return false;
+
+            // Check if ray intersect any bounding box side
+            int sign = 0;
+            float dist = 0.0f;
+            Vector3 posProj = Vector3.Zero;
+            Vector3 vecRayProj = pos2RayProj - pos1RayProj;
+
+            // Check both X sides unless ray is parallell to them
+            if (Math.Abs(vecRayProj.X) > m_floatToleranceInCastRay)
+            {
+                for (sign = -1; sign <= 1; sign += 2)
+                {
+                    dist = ((float)sign * shapeBoxMax.X - pos1RayProj.X) / vecRayProj.X;
+                    posProj = pos1RayProj + vecRayProj * dist;
+                    if (Math.Abs(posProj.Y) <= shapeBoxMax.Y && Math.Abs(posProj.Z) <= shapeBoxMax.Z)
+                        return true;
+                }
+            }
+
+            // Check both Y sides unless ray is parallell to them
+            if (Math.Abs(vecRayProj.Y) > m_floatToleranceInCastRay)
+            {
+                for (sign = -1; sign <= 1; sign += 2)
+                {
+                    dist = ((float)sign * shapeBoxMax.Y - pos1RayProj.Y) / vecRayProj.Y;
+                    posProj = pos1RayProj + vecRayProj * dist;
+                    if (Math.Abs(posProj.X) <= shapeBoxMax.X && Math.Abs(posProj.Z) <= shapeBoxMax.Z)
+                        return true;
+                }
+            }
+
+            // Check both Z sides unless ray is parallell to them
+            if (Math.Abs(vecRayProj.Z) > m_floatToleranceInCastRay)
+            {
+                for (sign = -1; sign <= 1; sign += 2)
+                {
+                    dist = ((float)sign * shapeBoxMax.Z - pos1RayProj.Z) / vecRayProj.Z;
+                    posProj = pos1RayProj + vecRayProj * dist;
+                    if (Math.Abs(posProj.X) <= shapeBoxMax.X && Math.Abs(posProj.Y) <= shapeBoxMax.Y)
+                        return true;
+                }
+            }
+
+            // No hits on bounding box so return false
+            return false;
+        }
+
+        /// <summary>
+        /// Helper to parse FacetedMesh for ray hits.
+        /// </summary>
+        private void AddRayInFacetedMesh(FacetedMesh mesh, RayTrans rayTrans, ref List<RayHit> rayHits)
+        {
+            if (mesh != null)
+            {
+                foreach (Face face in mesh.Faces)
+                {
+                    for (int i = 0; i < face.Indices.Count; i += 3)
+                    {
+                        Tri triangle = new Tri();
+                        triangle.p1 = face.Vertices[face.Indices[i]].Position;
+                        triangle.p2 = face.Vertices[face.Indices[i + 1]].Position;
+                        triangle.p3 = face.Vertices[face.Indices[i + 2]].Position;
+                        AddRayInTri(triangle, rayTrans, ref rayHits);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper to parse Tri (triangle) List for ray hits.
+        /// </summary>
+        private void AddRayInTris(List<Tri> triangles, RayTrans rayTrans, ref List<RayHit> rayHits)
+        {
+            foreach (Tri triangle in triangles)
+            {
+                AddRayInTri(triangle, rayTrans, ref rayHits);
+            }
+        }
+
+        /// <summary>
+        /// Helper to add ray hit in a Tri (triangle).
+        /// </summary>
+        private void AddRayInTri(Tri triProj, RayTrans rayTrans, ref List<RayHit> rayHits)
+        {
+            // Check for hit in triangle
+            Vector3 posHitProj;
+            Vector3 normalProj;
+            if (HitRayInTri(triProj, rayTrans.Position1RayProj, rayTrans.VectorRayProj, out posHitProj, out normalProj))
+            {
+                // Hack to circumvent ghost face bug in PrimMesher by removing hits in (ghost) face plane through shape center
+                if (Math.Abs(Vector3.Dot(posHitProj, normalProj)) < m_floatToleranceInCastRay && !rayTrans.ShapeNeedsEnds)
+                    return;
+
+                // Transform hit and normal to region coordinate system
+                Vector3 posHit = rayTrans.PositionPart + (posHitProj * rayTrans.ScalePart) * rayTrans.RotationPart;
+                Vector3 normal = Vector3.Normalize((normalProj * rayTrans.ScalePart) * rayTrans.RotationPart);
+
+                // Remove duplicate hits at triangle intersections
+                float distance = Vector3.Distance(rayTrans.Position1Ray, posHit);
+                for (int i = rayHits.Count - 1; i >= 0; i--)
+                {
+                    if (rayHits[i].PartId != rayTrans.PartId)
+                        break;
+                    if (Math.Abs(rayHits[i].Distance - distance) < m_floatTolerance2InCastRay)
+                        return;
+                }
+
+                // Build result data set
+                RayHit rayHit = new RayHit();
+                rayHit.PartId = rayTrans.PartId;
+                rayHit.GroupId = rayTrans.GroupId;
+                rayHit.Link = rayTrans.Link;
+                rayHit.Position = posHit;
+                rayHit.Normal = normal;
+                rayHit.Distance = distance;
+                rayHits.Add(rayHit);
+            }
+        }
+
+        /// <summary>
+        /// Helper to find ray hit in triangle
+        /// </summary>
+        bool HitRayInTri(Tri triProj, Vector3 pos1RayProj, Vector3 vecRayProj, out Vector3 posHitProj, out Vector3 normalProj)
+        {
+            float tol = m_floatToleranceInCastRay;
+            posHitProj = Vector3.Zero;
+
+            // Calculate triangle edge vectors
+            Vector3 vec1Proj = triProj.p2 - triProj.p1;
+            Vector3 vec2Proj = triProj.p3 - triProj.p2;
+            Vector3 vec3Proj = triProj.p1 - triProj.p3;
+
+            // Calculate triangle normal
+            normalProj = Vector3.Cross(vec1Proj, vec2Proj);
+
+            // Skip if degenerate triangle or ray parallell with triangle plane
+            float divisor = Vector3.Dot(vecRayProj, normalProj);
+            if (Math.Abs(divisor) < tol)
+                return false;
+
+            // Skip if exit and not configured to detect
+            if (divisor > tol && !m_detectExitsInCastRay)
+                return false;
+
+            // Skip if outside ray ends
+            float distanceProj = Vector3.Dot(triProj.p1 - pos1RayProj, normalProj) / divisor;
+            if (distanceProj < -tol || distanceProj > 1 + tol)
+                return false;
+
+            // Calculate hit position in triangle
+            posHitProj = pos1RayProj + vecRayProj * distanceProj;
+
+            // Skip if outside triangle bounding box
+            Vector3 triProjMin = Vector3.Min(Vector3.Min(triProj.p1, triProj.p2), triProj.p3);
+            Vector3 triProjMax = Vector3.Max(Vector3.Max(triProj.p1, triProj.p2), triProj.p3);
+            if (
+                posHitProj.X < triProjMin.X - tol || posHitProj.Y < triProjMin.Y - tol || posHitProj.Z < triProjMin.Z - tol ||
+                posHitProj.X > triProjMax.X + tol || posHitProj.Y > triProjMax.Y + tol || posHitProj.Z > triProjMax.Z + tol
+            )
+                return false;
+
+            // Skip if outside triangle
+            if (
+                Vector3.Dot(Vector3.Cross(vec1Proj, normalProj), posHitProj - triProj.p1) > tol ||
+                Vector3.Dot(Vector3.Cross(vec2Proj, normalProj), posHitProj - triProj.p2) > tol ||
+                Vector3.Dot(Vector3.Cross(vec3Proj, normalProj), posHitProj - triProj.p3) > tol
+            )
+                 return false;
+
+            // Return hit
+            return true;
+        }
+
+        /// <summary>
+        /// Helper to parse selected parts of HeightMap into a Tri (triangle) List and calculate bounding box.
+        /// </summary>
+        private List<Tri> TrisFromHeightmapUnderRay(Vector3 posStart, Vector3 posEnd, out Vector3 lower, out Vector3 upper)
+        {
+            // Get bounding X-Y rectangle of terrain under ray
+            lower = Vector3.Min(posStart, posEnd);
+            upper = Vector3.Max(posStart, posEnd);
+            lower.X = (float)Math.Floor(lower.X);
+            lower.Y = (float)Math.Floor(lower.Y);
+            float zLower = float.MaxValue;
+            upper.X = (float)Math.Ceiling(upper.X);
+            upper.Y = (float)Math.Ceiling(upper.Y);
+            float zUpper = float.MinValue;
+
+            // Initialize Tri (triangle) List
+            List<Tri> triangles = new List<Tri>();
+
+            // Set parsing lane direction to major ray X-Y axis
+            Vector3 vec = posEnd - posStart;
+            float xAbs = Math.Abs(vec.X);
+            float yAbs = Math.Abs(vec.Y);
+            bool bigX = true;
+            if (yAbs > xAbs)
+            {
+                bigX = false;
+                vec = vec / yAbs;
+            }
+            else if (xAbs > yAbs || xAbs > 0.0f)
+                vec = vec / xAbs;
+            else
+                vec = new Vector3(1.0f, 1.0f, 0.0f);
+
+            // Simplify by start parsing in lower end of lane
+            if ((bigX && vec.X < 0.0f) || (!bigX && vec.Y < 0.0f))
+            {
+                Vector3 posTemp = posStart;
+                posStart = posEnd;
+                posEnd = posTemp;
+                vec = vec * -1.0f;
+            }
+
+            // First 1x1 rectangle under ray
+            float xFloorOld = 0.0f;
+            float yFloorOld = 0.0f;
+            Vector3 pos = posStart;
+            float xFloor = (float)Math.Floor(pos.X);
+            float yFloor = (float)Math.Floor(pos.Y);
+            AddTrisFromHeightmap(xFloor, yFloor, ref triangles, ref zLower, ref zUpper);
+
+            // Parse every remaining 1x1 rectangle under ray
+            while (pos != posEnd)
+            {
+                // Next 1x1 rectangle under ray
+                xFloorOld = xFloor;
+                yFloorOld = yFloor;
+                pos = pos + vec;
+
+                // Clip position to 1x1 rectangle border
+                xFloor = (float)Math.Floor(pos.X);
+                yFloor = (float)Math.Floor(pos.Y);
+                if (bigX && pos.X > xFloor)
+                {
+                    pos.Y -= vec.Y * (pos.X - xFloor);
+                    pos.X = xFloor;
+                }
+                else if (!bigX && pos.Y > yFloor)
+                {
+                    pos.X -= vec.X * (pos.Y - yFloor);
+                    pos.Y = yFloor;
+                }
+
+                // Last 1x1 rectangle under ray
+                if ((bigX && pos.X >= posEnd.X) || (!bigX && pos.Y >= posEnd.Y))
+                {
+                    pos = posEnd;
+                    xFloor = (float)Math.Floor(pos.X);
+                    yFloor = (float)Math.Floor(pos.Y);
+                }
+
+                // Add new 1x1 rectangle in lane
+                if ((bigX && xFloor != xFloorOld) || (!bigX && yFloor != yFloorOld))
+                    AddTrisFromHeightmap(xFloor, yFloor, ref triangles, ref zLower, ref zUpper);
+                // Add last 1x1 rectangle in old lane at lane shift
+                if (bigX && yFloor != yFloorOld)
+                    AddTrisFromHeightmap(xFloor, yFloorOld, ref triangles, ref zLower, ref zUpper);
+                if (!bigX && xFloor != xFloorOld)
+                    AddTrisFromHeightmap(xFloorOld, yFloor, ref triangles, ref zLower, ref zUpper);
+            }
+
+            // Finalize bounding box Z
+            lower.Z = zLower;
+            upper.Z = zUpper;
+
+            // Done and returning Tri (triangle)List
+            return triangles;
+        }
+
+        /// <summary>
+        /// Helper to add HeightMap squares into Tri (triangle) List and adjust bounding box.
+        /// </summary>
+        private void AddTrisFromHeightmap(float xPos, float yPos, ref List<Tri> triangles, ref float zLower, ref float zUpper)
+        {
+            int xInt = (int)xPos;
+            int yInt = (int)yPos;
+
+            // Corner 1 of 1x1 rectangle
+            int x = Util.Clamp<int>(xInt+1, 0, World.Heightmap.Width - 1);
+            int y = Util.Clamp<int>(yInt+1, 0, World.Heightmap.Height - 1);
+            Vector3 pos1 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+            // Adjust bounding box
+            zLower = Math.Min(zLower, pos1.Z);
+            zUpper = Math.Max(zUpper, pos1.Z);
+
+            // Corner 2 of 1x1 rectangle
+            x = Util.Clamp<int>(xInt, 0, World.Heightmap.Width - 1);
+            y = Util.Clamp<int>(yInt+1, 0, World.Heightmap.Height - 1);
+            Vector3 pos2 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+            // Adjust bounding box
+            zLower = Math.Min(zLower, pos2.Z);
+            zUpper = Math.Max(zUpper, pos2.Z);
+
+            // Corner 3 of 1x1 rectangle
+            x = Util.Clamp<int>(xInt, 0, World.Heightmap.Width - 1);
+            y = Util.Clamp<int>(yInt, 0, World.Heightmap.Height - 1);
+            Vector3 pos3 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+            // Adjust bounding box
+            zLower = Math.Min(zLower, pos3.Z);
+            zUpper = Math.Max(zUpper, pos3.Z);
+
+            // Corner 4 of 1x1 rectangle
+            x = Util.Clamp<int>(xInt+1, 0, World.Heightmap.Width - 1);
+            y = Util.Clamp<int>(yInt, 0, World.Heightmap.Height - 1);
+            Vector3 pos4 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+            // Adjust bounding box
+            zLower = Math.Min(zLower, pos4.Z);
+            zUpper = Math.Max(zUpper, pos4.Z);
+
+            // Add triangle 1
+            Tri triangle1 = new Tri();
+            triangle1.p1 = pos1;
+            triangle1.p2 = pos2;
+            triangle1.p3 = pos3;
+            triangles.Add(triangle1);
+
+            // Add triangle 2
+            Tri triangle2 = new Tri();
+            triangle2.p1 = pos3;
+            triangle2.p2 = pos4;
+            triangle2.p3 = pos1;
+            triangles.Add(triangle2);
+        }
+
+        /// <summary>
+        /// Helper to get link number for a UUID.
+        /// </summary>
+        private int UUID2LinkNumber(SceneObjectPart part, UUID id)
+        {
+            SceneObjectGroup group = part.ParentGroup;
+            if (group != null)
+            {
+                // Parse every link for UUID
+                int linkCount = group.PrimCount + group.GetSittingAvatarsCount();
+                for (int link = linkCount; link > 0; link--)
+                {
+                    ISceneEntity entity = GetLinkEntity(part, link);
+                    // Return link number if UUID match
+                    if (entity != null && entity.UUID == id)
+                        return link;
+                }
+            }
+            // Return link number 0 if no links or UUID matches
+            return 0;
         }
 
         public LSL_Integer llManageEstateAccess(int action, string avatar)

@@ -60,7 +60,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
             get { return "RemoteUserAccountServicesConnector"; }
         }
 
-        public override void Initialize(IConfigSource source)
+        public override void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -77,7 +77,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
 
                     m_Enabled = true;
 
-                    base.Initialize(source);
+                    base.Initialise(source);
                     m_Cache = new UserAccountCache();
 
                     m_log.Info("[USER CONNECTOR]: Remote users enabled");
@@ -85,7 +85,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (!m_Enabled)
                 return;

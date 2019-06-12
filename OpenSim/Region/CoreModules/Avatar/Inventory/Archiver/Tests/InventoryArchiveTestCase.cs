@@ -38,7 +38,7 @@ using OpenSim.Framework.Serialization;
 using OpenSim.Framework.Serialization.External;
 using OpenSim.Framework.Communications;
 using OpenSim.Region.CoreModules.Avatar.Inventory.Archiver;
-using OpenSim.Region.CoreModules.World.Serializer;
+using OpenSim.Region.CoreModules.World.Serialiser;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Scenes.Serialization;
 using OpenSim.Services.Interfaces;

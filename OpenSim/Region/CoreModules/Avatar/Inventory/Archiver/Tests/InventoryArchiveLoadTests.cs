@@ -38,7 +38,7 @@ using OpenSim.Framework.Serialization;
 using OpenSim.Framework.Serialization.External;
 using OpenSim.Framework.Communications;
 using OpenSim.Region.CoreModules.Avatar.Inventory.Archiver;
-using OpenSim.Region.CoreModules.World.Serializer;
+using OpenSim.Region.CoreModules.World.Serialiser;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Scenes.Serialization;
 using OpenSim.Services.Interfaces;
@@ -57,11 +57,11 @@ namespace OpenSim.Region.CoreModules.Avatar.Inventory.Archiver.Tests
         {
             base.SetUp();
             
-            SerializerModule serializerModule = new SerializerModule();
+            SerialiserModule serialiserModule = new SerialiserModule();
             m_archiverModule = new InventoryArchiverModule();
 
             m_scene = new SceneHelpers().SetupScene();
-            SceneHelpers.SetupSceneModules(m_scene, serializerModule, m_archiverModule);            
+            SceneHelpers.SetupSceneModules(m_scene, serialiserModule, m_archiverModule);            
         }
 
         [Test]

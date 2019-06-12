@@ -91,7 +91,7 @@ namespace OpenSim.Data.SQLite
 
         public SQLiteSimulationData(string connectionString)
         {
-            Initialize(connectionString);
+            Initialise(connectionString);
         }
 
         // Temporary attribute while this is experimental
@@ -104,12 +104,12 @@ namespace OpenSim.Data.SQLite
 
         /// <summary>
         /// <list type="bullet">
-        /// <item>Initializes RegionData Interface</item>
-        /// <item>Loads and initializes a new SQLite connection and maintains it.</item>
+        /// <item>Initialises RegionData Interface</item>
+        /// <item>Loads and initialises a new SQLite connection and maintains it.</item>
         /// </list>
         /// </summary>
         /// <param name="connectionString">the connection string</param>
-        public void Initialize(string connectionString)
+        public void Initialise(string connectionString)
         {
             try
             {

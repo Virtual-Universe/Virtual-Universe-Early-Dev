@@ -79,7 +79,7 @@ public class ExtendedPhysics : INonSharedRegionModule
 
     public string Name { get { return this.GetType().Name; } }
 
-    public void Initialize(IConfigSource config)
+    public void Initialise(IConfigSource config)
     {
         BaseScene = null;
         Enabled = false;

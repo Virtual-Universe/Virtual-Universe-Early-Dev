@@ -90,14 +90,14 @@ namespace OpenSim.Region.CoreModules.World.Media.Moap
         /// </summary>
         protected Dictionary<UUID, string> m_omuCapUrls = new Dictionary<UUID, string>();
         
-        public void Initialize(IConfigSource configSource) 
+        public void Initialise(IConfigSource configSource) 
         {
             IConfig config = configSource.Configs["MediaOnAPrim"];
 
             if (config != null && !config.GetBoolean("Enabled", false))
                 m_isEnabled = false;
 //            else
-//                m_log.Debug("[MOAP]: Initialized module.")l
+//                m_log.Debug("[MOAP]: Initialised module.")l
         }
 
         public void AddRegion(Scene scene) 

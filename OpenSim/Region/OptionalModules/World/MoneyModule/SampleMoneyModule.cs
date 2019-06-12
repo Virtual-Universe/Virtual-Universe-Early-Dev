@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -121,7 +121,7 @@ namespace OpenSim.Region.OptionalModules.World.MoneyModule
         /// Called on startup so the module can be configured.
         /// </summary>
         /// <param name="config">Configuration source.</param>
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             m_gConfig = config;
 
@@ -217,7 +217,7 @@ namespace OpenSim.Region.OptionalModules.World.MoneyModule
             return give_result;
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

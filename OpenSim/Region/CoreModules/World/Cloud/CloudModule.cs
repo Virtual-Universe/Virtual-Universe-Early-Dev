@@ -50,7 +50,7 @@ namespace OpenSim.Region.CoreModules.World
         private float m_cloudDensity = 1.0F;
         private float[] cloudCover = new float[16 * 16];
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig cloudConfig = config.Configs["Cloud"];
 
@@ -97,7 +97,7 @@ namespace OpenSim.Region.CoreModules.World
         {
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

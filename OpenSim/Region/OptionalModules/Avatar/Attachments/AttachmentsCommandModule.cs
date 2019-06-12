@@ -58,12 +58,12 @@ namespace OpenSim.Region.OptionalModules.Avatar.Attachments
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
 //            m_log.DebugFormat("[ATTACHMENTS COMMAND MODULE]: INITIALIZED MODULE");
         }
         
-        public void PostInitialize()
+        public void PostInitialise()
         {
 //            m_log.DebugFormat("[ATTACHMENTS COMMAND MODULE]: POST INITIALIZED MODULE");
         }

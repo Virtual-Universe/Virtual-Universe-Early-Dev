@@ -86,67 +86,67 @@ namespace OpenSim.Server.Handlers.Inventory
         protected virtual void AddHttpHandlers(IHttpServer m_httpServer)
         {
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<Guid, List<InventoryFolderBase>>(
+                new RestDeserialiseSecureHandler<Guid, List<InventoryFolderBase>>(
                 "POST", "/SystemFolders/", GetSystemFolders, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<Guid, InventoryCollection>(
+                new RestDeserialiseSecureHandler<Guid, InventoryCollection>(
                 "POST", "/GetFolderContent/", GetFolderContent, CheckAuthSession));
             
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryFolderBase, bool>(
+                new RestDeserialiseSecureHandler<InventoryFolderBase, bool>(
                     "POST", "/UpdateFolder/", m_InventoryService.UpdateFolder, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryFolderBase, bool>(
+                new RestDeserialiseSecureHandler<InventoryFolderBase, bool>(
                     "POST", "/MoveFolder/", m_InventoryService.MoveFolder, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryFolderBase, bool>(
+                new RestDeserialiseSecureHandler<InventoryFolderBase, bool>(
                     "POST", "/PurgeFolder/", m_InventoryService.PurgeFolder, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<List<Guid>, bool>(
+                new RestDeserialiseSecureHandler<List<Guid>, bool>(
                     "POST", "/DeleteFolders/", DeleteFolders, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<List<Guid>, bool>(
+                new RestDeserialiseSecureHandler<List<Guid>, bool>(
                     "POST", "/DeleteItem/", DeleteItems, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryItemBase, InventoryItemBase>(
+                new RestDeserialiseSecureHandler<InventoryItemBase, InventoryItemBase>(
                     "POST", "/QueryItem/", m_InventoryService.GetItem, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryFolderBase, InventoryFolderBase>(
+                new RestDeserialiseSecureHandler<InventoryFolderBase, InventoryFolderBase>(
                     "POST", "/QueryFolder/", m_InventoryService.GetFolder, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeTrustedHandler<Guid, bool>(
+                new RestDeserialiseTrustedHandler<Guid, bool>(
                     "POST", "/CreateInventory/", CreateUsersInventory, CheckTrustSource));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryFolderBase, bool>(
+                new RestDeserialiseSecureHandler<InventoryFolderBase, bool>(
                     "POST", "/NewFolder/", m_InventoryService.AddFolder, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryFolderBase, bool>(
+                new RestDeserialiseSecureHandler<InventoryFolderBase, bool>(
                     "POST", "/CreateFolder/", m_InventoryService.AddFolder, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<InventoryItemBase, bool>(
+                new RestDeserialiseSecureHandler<InventoryItemBase, bool>(
                     "POST", "/NewItem/", m_InventoryService.AddItem, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-             new RestDeserializeTrustedHandler<InventoryItemBase, bool>(
+             new RestDeserialiseTrustedHandler<InventoryItemBase, bool>(
                  "POST", "/AddNewItem/", m_InventoryService.AddItem, CheckTrustSource));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<Guid, List<InventoryItemBase>>(
+                new RestDeserialiseSecureHandler<Guid, List<InventoryItemBase>>(
                     "POST", "/GetItems/", GetFolderItems, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeSecureHandler<List<InventoryItemBase>, bool>(
+                new RestDeserialiseSecureHandler<List<InventoryItemBase>, bool>(
                     "POST", "/MoveItems/", MoveItems, CheckAuthSession));
 
             m_httpServer.AddStreamHandler(new InventoryServerMoveItemsHandler(m_InventoryService));
@@ -154,7 +154,7 @@ namespace OpenSim.Server.Handlers.Inventory
             
             // for persistent active gestures
             m_httpServer.AddStreamHandler(
-                new RestDeserializeTrustedHandler<Guid, List<InventoryItemBase>>
+                new RestDeserialiseTrustedHandler<Guid, List<InventoryItemBase>>
                     ("POST", "/ActiveGestures/", GetActiveGestures, CheckTrustSource));
 
             // WARNING: Root folders no longer just delivers the root and immediate child folders (e.g
@@ -163,11 +163,11 @@ namespace OpenSim.Server.Handlers.Inventory
             // (e.g. any http request not found is automatically treated as an xmlrpc request) make it easier
             // to do this for now.
             m_httpServer.AddStreamHandler(
-                new RestDeserializeTrustedHandler<Guid, List<InventoryFolderBase>>
+                new RestDeserialiseTrustedHandler<Guid, List<InventoryFolderBase>>
                     ("POST", "/RootFolders/", GetInventorySkeleton, CheckTrustSource));
 
             m_httpServer.AddStreamHandler(
-                new RestDeserializeTrustedHandler<InventoryItemBase, int>
+                new RestDeserialiseTrustedHandler<InventoryItemBase, int>
                 ("POST", "/AssetPermissions/", GetAssetPermissions, CheckTrustSource));
 
         }

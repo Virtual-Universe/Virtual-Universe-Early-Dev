@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -49,24 +49,24 @@ namespace OpenSim.Data.MySQL
 
         public string Version { get { return "1.0.0.0"; } }
 
-        public void Initialize()
+        public void Initialise()
         {
             m_log.Info("[MySQLInventoryData]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitializedException (Name);
+            throw new PluginNotInitialisedException (Name);
         }
 
         /// <summary>
-        /// <para>Initializes Inventory interface</para>
+        /// <para>Initialises Inventory interface</para>
         /// <para>
         /// <list type="bullet">
-        /// <item>Loads and initializes the MySQL storage plugin</item>
+        /// <item>Loads and initialises the MySQL storage plugin</item>
         /// <item>warns and uses the obsolete mysql_connection.ini if connect string is empty.</item>
         /// <item>Check for migration</item>
         /// </list>
         /// </para>
         /// </summary>
         /// <param name="connect">connect string</param>
-        public void Initialize(string connect)
+        public void Initialise(string connect)
         {
             m_connectionString = connect;
 

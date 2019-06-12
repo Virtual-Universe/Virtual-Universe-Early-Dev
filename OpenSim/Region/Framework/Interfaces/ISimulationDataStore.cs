@@ -35,11 +35,11 @@ namespace OpenSim.Region.Framework.Interfaces
     public interface ISimulationDataStore
     {
         /// <summary>
-        /// Initializes the data storage engine
+        /// Initialises the data storage engine
         /// </summary>
         /// <param name="filename">The file to save the database to (may not be applicable).  Alternatively,
         /// a connection string for the database</param>
-        void Initialize(string filename);
+        void Initialise(string filename);
 
         /// <summary>
         /// Dispose the database

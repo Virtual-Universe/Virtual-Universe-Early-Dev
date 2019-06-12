@@ -62,17 +62,17 @@ namespace OpenSim.Region.CoreModules.World.Archiver
         {
             public Scene Scene { get; set; }
 
-            public List<string> SerializedSceneObjects { get; set; }
+            public List<string> SerialisedSceneObjects { get; set; }
 
-            public List<string> SerializedParcels { get; set; }
+            public List<string> SerialisedParcels { get; set; }
 
             public List<SceneObjectGroup> SceneObjects { get; set; }
 
             public DearchiveContext(Scene scene)
             {
                 Scene = scene;
-                SerializedSceneObjects = new List<string>();
-                SerializedParcels = new List<string>();
+                SerialisedSceneObjects = new List<string>();
+                SerialisedParcels = new List<string>();
                 SceneObjects = new List<SceneObjectGroup>();
             }
         }
@@ -282,7 +282,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
 
                     if (filePath.StartsWith(ArchiveConstants.OBJECTS_PATH) && !m_noObjects)
                     {
-                        sceneContext.SerializedSceneObjects.Add(Encoding.UTF8.GetString(data));
+                        sceneContext.SerialisedSceneObjects.Add(Encoding.UTF8.GetString(data));
                     }
                     else if (filePath.StartsWith(ArchiveConstants.ASSETS_PATH) && !m_skipAssets)
                     {
@@ -304,7 +304,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
                     } 
                     else if (filePath.StartsWith(ArchiveConstants.LANDDATA_PATH) && (!m_merge || m_forceParcels))
                     {
-                        sceneContext.SerializedParcels.Add(Encoding.UTF8.GetString(data));
+                        sceneContext.SerialisedParcels.Add(Encoding.UTF8.GetString(data));
                     } 
                     else if (filePath == ArchiveConstants.CONTROL_FILE_PATH)
                     {
@@ -351,8 +351,8 @@ namespace OpenSim.Region.CoreModules.World.Archiver
 
                 try
                 {
-                    LoadParcels(sceneContext.Scene, sceneContext.SerializedParcels);
-                    LoadObjects(sceneContext.Scene, sceneContext.SerializedSceneObjects, sceneContext.SceneObjects);
+                    LoadParcels(sceneContext.Scene, sceneContext.SerialisedParcels);
+                    LoadObjects(sceneContext.Scene, sceneContext.SerialisedSceneObjects, sceneContext.SceneObjects);
                     
                     // Inform any interested parties that the region has changed. We waited until now so that all
                     // of the region's objects will be loaded when we send this notification.
@@ -468,35 +468,35 @@ namespace OpenSim.Region.CoreModules.World.Archiver
         /// <summary>
         /// Load serialized scene objects.
         /// </summary>
-        protected void LoadObjects(Scene scene, List<string> serializedSceneObjects, List<SceneObjectGroup> sceneObjects)
+        protected void LoadObjects(Scene scene, List<string> serialisedSceneObjects, List<SceneObjectGroup> sceneObjects)
         {
             // Reload serialized prims
-            m_log.InfoFormat("[ARCHIVER]: Loading {0} scene objects.  Please wait.", serializedSceneObjects.Count);
+            m_log.InfoFormat("[ARCHIVER]: Loading {0} scene objects.  Please wait.", serialisedSceneObjects.Count);
 
             OpenMetaverse.Quaternion rot = OpenMetaverse.Quaternion.CreateFromAxisAngle(0, 0, 1, m_rotation);
 
             UUID oldTelehubUUID = scene.RegionInfo.RegionSettings.TelehubObject;
 
-            IRegionSerializerModule serializer = scene.RequestModuleInterface<IRegionSerializerModule>();
+            IRegionSerialiserModule serialiser = scene.RequestModuleInterface<IRegionSerialiserModule>();
             int sceneObjectsLoadedCount = 0;
 
-            foreach (string serializedSceneObject in serializedSceneObjects)
+            foreach (string serialisedSceneObject in serialisedSceneObjects)
             {
                 /*
-                m_log.DebugFormat("[ARCHIVER]: Loading xml with raw size {0}", serializedSceneObject.Length);
+                m_log.DebugFormat("[ARCHIVER]: Loading xml with raw size {0}", serialisedSceneObject.Length);
 
                 // Really large xml files (multi megabyte) appear to cause
                 // memory problems
                 // when loading the xml.  But don't enable this check yet
                 
-                if (serializedSceneObject.Length > 5000000)
+                if (serialisedSceneObject.Length > 5000000)
                 {
                     m_log.Error("[ARCHIVER]: Ignoring xml since size > 5000000);");
                     continue;
                 }
                 */
 
-                SceneObjectGroup sceneObject = serializer.DeserializeGroupFromXml2(serializedSceneObject);
+                SceneObjectGroup sceneObject = serialiser.DeserializeGroupFromXml2(serialisedSceneObject);
 
                 // Happily this does not do much to the object since it hasn't been added to the scene yet
                 if (!sceneObject.IsAttachment)
@@ -551,7 +551,7 @@ namespace OpenSim.Region.CoreModules.World.Archiver
 
             m_log.InfoFormat("[ARCHIVER]: Restored {0} scene objects to the scene", sceneObjectsLoadedCount);
 
-            int ignoredObjects = serializedSceneObjects.Count - sceneObjectsLoadedCount;
+            int ignoredObjects = serialisedSceneObjects.Count - sceneObjectsLoadedCount;
 
             if (ignoredObjects > 0)
                 m_log.WarnFormat("[ARCHIVER]: Ignored {0} scene objects that already existed in the scene", ignoredObjects);
@@ -629,15 +629,15 @@ namespace OpenSim.Region.CoreModules.World.Archiver
         /// Load serialized parcels.
         /// </summary>
         /// <param name="scene"></param>
-        /// <param name="serializedParcels"></param>
-        protected void LoadParcels(Scene scene, List<string> serializedParcels)
+        /// <param name="serialisedParcels"></param>
+        protected void LoadParcels(Scene scene, List<string> serialisedParcels)
         {
             // Reload serialized parcels
-            m_log.InfoFormat("[ARCHIVER]: Loading {0} parcels.  Please wait.", serializedParcels.Count);
+            m_log.InfoFormat("[ARCHIVER]: Loading {0} parcels.  Please wait.", serialisedParcels.Count);
             List<LandData> landData = new List<LandData>();
-            foreach (string serializedParcel in serializedParcels)
+            foreach (string serialisedParcel in serialisedParcels)
             {
-                LandData parcel = LandDataSerializer.Deserialize(serializedParcel);
+                LandData parcel = LandDataSerializer.Deserialize(serialisedParcel);
 
                 if (m_displacement != Vector3.Zero)
                 {

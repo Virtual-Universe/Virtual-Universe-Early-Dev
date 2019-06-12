@@ -58,10 +58,10 @@ namespace OpenSim.Services.Connectors
 
         public RemoteFreeswitchConnector(IConfigSource source)
         {
-            Initialize(source);
+            Initialise(source);
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig freeswitchConfig = source.Configs["FreeSwitchVoice"];
             if (freeswitchConfig == null)

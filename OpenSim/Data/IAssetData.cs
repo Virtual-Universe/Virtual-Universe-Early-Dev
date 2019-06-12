@@ -37,7 +37,7 @@ namespace OpenSim.Data
         void StoreAsset(AssetBase asset);
         bool[] AssetsExist(UUID[] uuids);
         List<AssetMetadata> FetchAssetMetadataSet(int start, int count);
-        void Initialize(string connect);
+        void Initialise(string connect);
         bool Delete(string id);
     }
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -91,7 +91,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         #region Region Module interfaceBase Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig groupsConfig = config.Configs["Groups"];
 
@@ -248,7 +248,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         #region ISharedRegionModule Members
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             // NoOp
         }

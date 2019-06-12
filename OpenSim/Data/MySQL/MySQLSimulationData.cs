@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -73,10 +73,10 @@ namespace OpenSim.Data.MySQL
 
         public MySQLSimulationData(string connectionString)
         {
-            Initialize(connectionString);
+            Initialise(connectionString);
         }
 
-        public void Initialize(string connectionString)
+        public void Initialise(string connectionString)
         {
             m_connectionString = connectionString;
 

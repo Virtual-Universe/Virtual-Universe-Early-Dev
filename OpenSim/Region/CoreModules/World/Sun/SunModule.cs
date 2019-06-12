@@ -269,7 +269,7 @@ namespace OpenSim.Region.CoreModules
 
         // Called immediately after the module is loaded for a given region
         // i.e. Immediately after instance creation.
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             m_frame = 0;
 

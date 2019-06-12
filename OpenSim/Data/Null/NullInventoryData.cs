@@ -40,7 +40,7 @@ namespace OpenSim.Data.Null
     {
         public string Version { get { return "1.0.0.0"; } }
 
-        public void Initialize()
+        public void Initialise()
         {
         }
 
@@ -54,7 +54,7 @@ namespace OpenSim.Data.Null
             get { return "Null Inventory Data Interface"; }
         }
 
-        public void Initialize(string connect)
+        public void Initialise(string connect)
         {
         }
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -215,15 +215,15 @@ public sealed class BSScene : PhysicsScene, IPhysicsParameters
     }
 
     // Old version of initialization that assumes legacy sized regions (256x256)
-    public override void Initialize(IMesher meshmerizer, IConfigSource config)
+    public override void Initialise(IMesher meshmerizer, IConfigSource config)
     {
         m_log.ErrorFormat("{0} WARNING WARNING WARNING! BulletSim initialized without region extent specification. Terrain will be messed up.");
         Vector3 regionExtent = new Vector3( Constants.RegionSize, Constants.RegionSize, Constants.RegionSize);
-        Initialize(meshmerizer, config, regionExtent);
+        Initialise(meshmerizer, config, regionExtent);
         
     }
 
-    public override void Initialize(IMesher meshmerizer, IConfigSource config, Vector3 regionExtent)
+    public override void Initialise(IMesher meshmerizer, IConfigSource config, Vector3 regionExtent)
     {
         mesher = meshmerizer;
         _taintOperations = new List<TaintCallbackEntry>();

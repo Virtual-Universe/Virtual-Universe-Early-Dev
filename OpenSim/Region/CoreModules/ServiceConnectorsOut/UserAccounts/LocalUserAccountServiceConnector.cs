@@ -69,7 +69,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
             get { return "LocalUserAccountServicesConnector"; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -109,7 +109,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (!m_Enabled)
                 return;

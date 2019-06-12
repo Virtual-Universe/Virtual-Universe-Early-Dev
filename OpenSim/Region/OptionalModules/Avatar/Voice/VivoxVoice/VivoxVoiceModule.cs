@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSim Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -119,7 +119,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
 
         private object m_Lock;
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
 
             m_config = config.Configs["VivoxVoice"];
@@ -363,7 +363,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             // Do nothing.
         }
@@ -405,7 +405,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
         //
         // Note that OnRegisterCaps is called here via a closure
         // delegate containing the scene of the respective region (see
-        // Initialize()).
+        // Initialise()).
         // </summary>
         public void OnRegisterCaps(Scene scene, UUID agentID, Caps caps)
         {
@@ -581,7 +581,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
                 LLSDVoiceAccountResponse voiceAccountResponse =
                     new LLSDVoiceAccountResponse(agentname, password, m_vivoxSipUri, m_vivoxVoiceAccountApi);
 
-                string r = LLSDHelpers.SerializeLLSDReply(voiceAccountResponse);
+                string r = LLSDHelpers.SerialiseLLSDReply(voiceAccountResponse);
 
                 m_log.DebugFormat("[VivoxVoice][PROVISIONVOICE]: avatar \"{0}\": {1}", avatarName, r);
 
@@ -660,7 +660,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
                 creds["channel_uri"] = channel_uri;
 
                 parcelVoiceInfo = new LLSDParcelVoiceInfoResponse(scene.RegionInfo.RegionName, land.LocalID, creds);
-                string r = LLSDHelpers.SerializeLLSDReply(parcelVoiceInfo);
+                string r = LLSDHelpers.SerialiseLLSDReply(parcelVoiceInfo);
 
                 m_log.DebugFormat("[VivoxVoice][PARCELVOICE]: region \"{0}\": Parcel \"{1}\" ({2}): avatar \"{3}\": {4}", 
                                   scene.RegionInfo.RegionName, land.Name, land.LocalID, avatarName, r);

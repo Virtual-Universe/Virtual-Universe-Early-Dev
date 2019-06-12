@@ -65,7 +65,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
             get { return "LocalGridUserServicesConnector"; }
         }
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -107,7 +107,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.GridUser
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (!m_Enabled)
                 return;

@@ -56,7 +56,7 @@ namespace OpenSim.Region.CoreModules.Agent.AssetTransaction
         
         #region Region Module interface
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig sconfig = source.Configs["Startup"];
             if (sconfig != null)

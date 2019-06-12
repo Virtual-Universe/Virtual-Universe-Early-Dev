@@ -67,7 +67,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
         private IBakedTextureModule m_BakedTextureModule;
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             IConfig appearanceConfig = source.Configs["Appearance"];
             if (appearanceConfig != null)
@@ -263,7 +263,7 @@ namespace OpenSim.Region.ClientStack.Linden
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

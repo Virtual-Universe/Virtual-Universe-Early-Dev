@@ -68,7 +68,7 @@ namespace OpenSim.Region.CoreModules.World.Wind.Plugins
             get { return "ConfigurableWind"; }
         }
 
-        public void Initialize()
+        public void Initialise()
         {
             
         }

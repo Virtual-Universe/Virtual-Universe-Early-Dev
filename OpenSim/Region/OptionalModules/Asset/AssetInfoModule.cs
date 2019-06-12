@@ -55,12 +55,12 @@ namespace OpenSim.Region.OptionalModules.Asset
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
 //            m_log.DebugFormat("[ASSET INFO MODULE]: INITIALIZED MODULE");
         }
         
-        public void PostInitialize()
+        public void PostInitialise()
         {
 //            m_log.DebugFormat("[ASSET INFO MODULE]: POST INITIALIZED MODULE");
         }

@@ -143,7 +143,7 @@ namespace OpenSim.Region.CoreModules.Scripting.LSLHttp
             get { return "UrlModule"; }
         }
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig networkConfig = config.Configs["Network"];
 
@@ -168,7 +168,7 @@ namespace OpenSim.Region.CoreModules.Scripting.LSLHttp
                 TotalUrls = DefaultTotalUrls;
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

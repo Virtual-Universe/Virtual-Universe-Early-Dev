@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -292,11 +292,11 @@ namespace OpenSim.Framework.Servers
                     + "  3 = full stack trace, including common threads\n",
                 HandleDebugThreadpoolLevel);
 
-            m_console.Commands.AddCommand(
-                "Debug", false, "show threadpool calls active",
-                "show threadpool calls active",
-                "Show details about threadpool calls that are still active (currently waiting or in progress)",
-                HandleShowThreadpoolCallsActive);
+//            m_console.Commands.AddCommand(
+//                "Debug", false, "show threadpool calls active",
+//                "show threadpool calls active",
+//                "Show details about threadpool calls that are still active (currently waiting or in progress)",
+//                HandleShowThreadpoolCallsActive);
 
             m_console.Commands.AddCommand(
                 "Debug", false, "show threadpool calls complete",
@@ -334,7 +334,7 @@ namespace OpenSim.Framework.Servers
             }
     
             m_serverStatsCollector = new ServerStatsCollector();
-            m_serverStatsCollector.Initialize(configSource);
+            m_serverStatsCollector.Initialise(configSource);
             m_serverStatsCollector.Start();
         }
 

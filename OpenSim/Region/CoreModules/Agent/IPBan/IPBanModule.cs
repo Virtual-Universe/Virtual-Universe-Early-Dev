@@ -44,7 +44,7 @@ namespace OpenSim.Region.CoreModules.Agent.IPBan
 
         private List<string> m_bans = new List<string>();
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
         }
 
@@ -72,7 +72,7 @@ namespace OpenSim.Region.CoreModules.Agent.IPBan
         {
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
             if (File.Exists("bans.txt"))
             {

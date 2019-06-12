@@ -64,7 +64,7 @@ namespace OpenSim.Region.CoreModules.Agent.Xfer
        
         #region INonSharedRegionModule Members
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
         }
 

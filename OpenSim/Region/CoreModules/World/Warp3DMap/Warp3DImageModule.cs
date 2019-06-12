@@ -82,7 +82,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
         #region Region Module interface
 
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
             m_config = source;
 

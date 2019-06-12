@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -155,7 +155,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Friends
         }
 
         #region ISharedRegionModule
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             IConfig moduleConfig = config.Configs["Modules"];
             if (moduleConfig != null)
@@ -198,7 +198,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Friends
             }
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

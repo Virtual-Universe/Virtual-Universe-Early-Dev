@@ -53,7 +53,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Grid
 
         #region Region Module interface
 
-        public void Initialize(IConfigSource config)
+        public void Initialise(IConfigSource config)
         {
             m_Config = config;
             IConfig moduleConfig = config.Configs["Modules"];
@@ -69,7 +69,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsIn.Grid
 
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

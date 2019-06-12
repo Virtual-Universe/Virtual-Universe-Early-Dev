@@ -58,10 +58,10 @@ namespace OpenSim.Services.Connectors
 
         public AuthorizationServicesConnector(IConfigSource source)
         {
-            Initialize(source);
+            Initialise(source);
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig authorizationConfig = source.Configs["AuthorizationService"];
             if (authorizationConfig == null)

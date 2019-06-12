@@ -52,7 +52,7 @@ namespace OpenSim.Region.CoreModules.Framework.Statistics.Logging
         public string Name { get { return "Binary Statistics Logging Module"; } }
         public Type ReplaceableInterface { get { return null; } }
 
-        public void Initialize(IConfigSource source) 
+        public void Initialise(IConfigSource source) 
         {
             try
             {

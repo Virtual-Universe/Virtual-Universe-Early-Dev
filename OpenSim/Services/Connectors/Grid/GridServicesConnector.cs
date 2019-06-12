@@ -60,10 +60,10 @@ namespace OpenSim.Services.Connectors
 
         public GridServicesConnector(IConfigSource source)
         {
-            Initialize(source);
+            Initialise(source);
         }
 
-        public virtual void Initialize(IConfigSource source)
+        public virtual void Initialise(IConfigSource source)
         {
             IConfig gridConfig = source.Configs["GridService"];
             if (gridConfig == null)
@@ -82,7 +82,7 @@ namespace OpenSim.Services.Connectors
             }
             m_ServerURI = serviceURI;
 
-            base.Initialize(source, "GridService");
+            base.Initialise(source, "GridService");
         }
 
 

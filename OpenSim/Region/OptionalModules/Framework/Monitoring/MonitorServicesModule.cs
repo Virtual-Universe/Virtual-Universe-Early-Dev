@@ -53,11 +53,11 @@ namespace OpenSim.Region.OptionalModules.Framework.Monitoring
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialize(IConfigSource source)
+        public void Initialise(IConfigSource source)
         {
         }
 
-        public void PostInitialize()
+        public void PostInitialise()
         {
         }
 

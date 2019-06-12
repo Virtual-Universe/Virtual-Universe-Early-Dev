@@ -100,7 +100,7 @@ namespace OpenSim.Capabilities.Handlers
                 uploadResponse.uploader = uploaderURL;
                 uploadResponse.state = "upload";
 
-                return LLSDHelpers.SerializeLLSDReply(uploadResponse);
+                return LLSDHelpers.SerialiseLLSDReply(uploadResponse);
             }
             catch (Exception e)
             {
@@ -169,7 +169,7 @@ namespace OpenSim.Capabilities.Handlers
             uploadComplete.new_inventory_item = UUID.Zero;
             uploadComplete.state = "complete";
 
-            res = LLSDHelpers.SerializeLLSDReply(uploadComplete);
+            res = LLSDHelpers.SerialiseLLSDReply(uploadComplete);
 
             httpListener.RemoveStreamHandler("POST", uploaderPath);
 
