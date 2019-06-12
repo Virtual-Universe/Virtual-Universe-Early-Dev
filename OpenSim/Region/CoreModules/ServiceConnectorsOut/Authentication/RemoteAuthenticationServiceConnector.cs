@@ -68,7 +68,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Authentication
                     IConfig userConfig = source.Configs["AuthenticationService"];
                     if (userConfig == null)
                     {
-                        m_log.Error("[AUTH CONNECTOR]: AuthenticationService missing from OpenSim.ini");
+                        m_log.Error("[AUTH CONNECTOR]: AuthenticationService missing from Universe.ini");
                         return;
                     }
 

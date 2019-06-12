@@ -68,7 +68,7 @@ namespace OpenSim.Services.Connectors
             IConfig gridConfig = source.Configs["GridUserService"];
             if (gridConfig == null)
             {
-                m_log.Error("[GRID USER CONNECTOR]: GridUserService missing from OpenSim.ini");
+                m_log.Error("[GRID USER CONNECTOR]: GridUserService missing from Universe.ini");
                 throw new Exception("GridUser connector init error");
             }
 

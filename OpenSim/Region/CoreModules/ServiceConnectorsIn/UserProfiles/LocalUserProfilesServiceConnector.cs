@@ -104,7 +104,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Profile
             IConfig config = source.Configs[ConfigName];
             if (config == null)
             {
-                m_log.Error("[LOCAL USERPROFILES SERVICE CONNECTOR]: UserProfilesService missing from OpenSim.ini");
+                m_log.Error("[LOCAL USERPROFILES SERVICE CONNECTOR]: UserProfilesService missing from Universe.ini");
                 return;
             }
             

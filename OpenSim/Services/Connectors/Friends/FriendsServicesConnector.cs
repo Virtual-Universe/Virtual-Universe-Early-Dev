@@ -68,7 +68,7 @@ namespace OpenSim.Services.Connectors.Friends
             IConfig gridConfig = source.Configs["FriendsService"];
             if (gridConfig == null)
             {
-                m_log.Error("[FRIENDS SERVICE CONNECTOR]: FriendsService missing from OpenSim.ini");
+                m_log.Error("[FRIENDS SERVICE CONNECTOR]: FriendsService missing from Universe.ini");
                 throw new Exception("Friends connector init error");
             }
 

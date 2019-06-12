@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (c) Contributors, https://virtual-planets.org/
 * See CONTRIBUTORS.TXT for a full list of copyright holders.
 *
@@ -672,7 +672,7 @@ namespace OpenSim.Region.Framework.Scenes
 
                     if (m_InventoryService == null)
                     {
-                        throw new Exception("No IInventoryService available. This could happen if the config_include folder doesn't exist or if the OpenSim.ini [Architecture] section isn't set.  Please also check that you have the correct version of your inventory service dll.  Sometimes old versions of this dll will still exist.  Do a clean checkout and re-create the opensim.ini from the opensim.ini.example.");
+                        throw new Exception("No IInventoryService available. This could happen if the config_include folder doesn't exist or if the Universe.ini [Architecture] section isn't set.  Please also check that you have the correct version of your inventory service dll.  Sometimes old versions of this dll will still exist.  Do a clean checkout and re-create the opensim.ini from the opensim.ini.example.");
                     }
                 }
 
@@ -690,7 +690,7 @@ namespace OpenSim.Region.Framework.Scenes
 
                     if (m_GridService == null)
                     {
-                        throw new Exception("No IGridService available. This could happen if the config_include folder doesn't exist or if the OpenSim.ini [Architecture] section isn't set.  Please also check that you have the correct version of your inventory service dll.  Sometimes old versions of this dll will still exist.  Do a clean checkout and re-create the opensim.ini from the opensim.ini.example.");
+                        throw new Exception("No IGridService available. This could happen if the config_include folder doesn't exist or if the Universe.ini [Architecture] section isn't set.  Please also check that you have the correct version of your inventory service dll.  Sometimes old versions of this dll will still exist.  Do a clean checkout and re-create the opensim.ini from the opensim.ini.example.");
                     }
                 }
 
@@ -1212,7 +1212,7 @@ namespace OpenSim.Region.Framework.Scenes
                 m_log.InfoFormat(
                     "[SCENE]: Using system timer for statistics.");
             }
-            // Acquire the statistics section of the OpenSim.ini file located
+            // Acquire the statistics section of the Universe.ini file located
             // in the bin directory
             IConfig statisticsConfig = m_config.Configs["Statistics"];
 

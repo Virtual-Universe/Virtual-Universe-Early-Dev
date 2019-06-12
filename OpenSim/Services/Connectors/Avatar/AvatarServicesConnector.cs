@@ -69,7 +69,7 @@ namespace OpenSim.Services.Connectors
             IConfig gridConfig = source.Configs["AvatarService"];
             if (gridConfig == null)
             {
-                m_log.Error("[AVATAR CONNECTOR]: AvatarService missing from OpenSim.ini");
+                m_log.Error("[AVATAR CONNECTOR]: AvatarService missing from Universe.ini");
                 throw new Exception("Avatar connector init error");
             }
 

@@ -70,7 +70,7 @@ namespace OpenSim.Tools.Configger
 
             List<string> sources = new List<string>();
 
-            string iniFileName = startupConfig.GetString("inifile", Path.Combine(".", "OpenSim.ini"));
+            string iniFileName = startupConfig.GetString("inifile", Path.Combine(".", "Universe.ini"));
 
             if (IsUri(iniFileName))
             {
@@ -94,7 +94,7 @@ namespace OpenSim.Tools.Configger
             if (sources.Count == 0)
             {
                 m_log.FatalFormat("[CONFIG] Could not load any configuration");
-                m_log.FatalFormat("[CONFIG] Did you copy the OpenSim.ini.example file to OpenSim.ini?");
+                m_log.FatalFormat("[CONFIG] Did you copy the Universe.ini.example file to Universe.ini?");
                 Environment.Exit(1);
             }
 

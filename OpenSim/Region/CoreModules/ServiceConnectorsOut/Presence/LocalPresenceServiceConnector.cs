@@ -63,7 +63,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Presence
                     IConfig inventoryConfig = source.Configs["PresenceService"];
                     if (inventoryConfig == null)
                     {
-                        m_log.Error("[LOCAL PRESENCE CONNECTOR]: PresenceService missing from OpenSim.ini");
+                        m_log.Error("[LOCAL PRESENCE CONNECTOR]: PresenceService missing from Universe.ini");
                         return;
                     }
 

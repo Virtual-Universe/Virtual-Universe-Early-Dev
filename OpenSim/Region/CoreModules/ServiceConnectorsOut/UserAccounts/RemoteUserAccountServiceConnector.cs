@@ -71,7 +71,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.UserAccounts
                     IConfig userConfig = source.Configs["UserAccountService"];
                     if (userConfig == null)
                     {
-                        m_log.Error("[USER CONNECTOR]: UserAccountService missing from OpenSim.ini");
+                        m_log.Error("[USER CONNECTOR]: UserAccountService missing from Universe.ini");
                         return;
                     }
 

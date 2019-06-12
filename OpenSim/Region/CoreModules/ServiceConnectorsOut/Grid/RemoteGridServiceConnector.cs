@@ -99,7 +99,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
             IConfig gridConfig = source.Configs["GridService"];
             if (gridConfig == null)
             {
-                m_log.Error("[REMOTE GRID CONNECTOR]: GridService missing from OpenSim.ini");
+                m_log.Error("[REMOTE GRID CONNECTOR]: GridService missing from Universe.ini");
                 return;
             }
 

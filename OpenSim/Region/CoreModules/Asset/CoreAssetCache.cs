@@ -73,7 +73,7 @@ namespace OpenSim.Region.CoreModules.Asset
                     IConfig assetConfig = source.Configs["AssetCache"];
                     if (assetConfig == null)
                     {
-                        m_log.Error("[ASSET CACHE]: AssetCache missing from OpenSim.ini");
+                        m_log.Error("[ASSET CACHE]: AssetCache missing from Universe.ini");
                         return;
                     }
 

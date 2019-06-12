@@ -68,7 +68,7 @@ namespace OpenSim
         private const string PLUGIN_ASSET_CACHE = "/OpenSim/AssetCache";
         private const string PLUGIN_ASSET_SERVER_CLIENT = "/OpenSim/AssetClient";
 
-        // OpenSim.ini Section name for ESTATES Settings
+        // Universe.ini Section name for ESTATES Settings
         public const string ESTATE_SECTION_NAME = "Estates";
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace OpenSim
             // Load the simulation data service
             IConfig simDataConfig = Config.Configs["SimulationDataStore"];
             if (simDataConfig == null)
-                throw new Exception("Configuration file is missing the [SimulationDataStore] section.  Have you copied OpenSim.ini.example to OpenSim.ini to reference config-include/ files?");
+                throw new Exception("Configuration file is missing the [SimulationDataStore] section.  Have you copied Universe.ini.example to Universe.ini to reference config-include/ files?");
 
             string module = simDataConfig.GetString("LocalServiceModule", String.Empty);
             if (String.IsNullOrEmpty(module))

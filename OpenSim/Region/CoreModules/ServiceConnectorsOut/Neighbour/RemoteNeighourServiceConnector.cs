@@ -76,7 +76,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Neighbour
                     //IConfig neighbourConfig = source.Configs["NeighbourService"];
                     //if (neighbourConfig == null)
                     //{
-                    //    m_log.Error("[NEIGHBOUR CONNECTOR]: NeighbourService missing from OpenSim.ini");
+                    //    m_log.Error("[NEIGHBOUR CONNECTOR]: NeighbourService missing from Universe.ini");
                     //    return;
                     //}
                     //serviceDll = neighbourConfig.GetString("LocalServiceModule", String.Empty);

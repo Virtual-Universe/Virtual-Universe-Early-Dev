@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -170,7 +170,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 m_groupsServerURI = groupsConfig.GetString("GroupsServerURI", string.Empty);
                 if (string.IsNullOrEmpty(m_groupsServerURI))
                 {
-                    m_log.ErrorFormat("Please specify a valid URL for GroupsServerURI in OpenSim.ini, [Groups]");
+                    m_log.ErrorFormat("Please specify a valid URL for GroupsServerURI in Universe.ini, [Groups]");
                     m_connectorEnabled = false;
                     return;
                 }

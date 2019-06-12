@@ -76,7 +76,7 @@ namespace OpenSim.Services.Connectors
                 IConfig assetConfig = source.Configs["AssetService"];
                 if (assetConfig == null)
                 {
-                    m_log.Error("[HG ASSET SERVICE]: AssetService missing from OpenSim.ini");
+                    m_log.Error("[HG ASSET SERVICE]: AssetService missing from Universe.ini");
                     return;
                 }
 

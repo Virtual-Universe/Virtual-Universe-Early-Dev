@@ -45,7 +45,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
     /// of OSSL, without allowing malicious scripts to access potentially
     /// troublesome functions, each OSSL function is assigned a threat level,
     /// and access to the functions is granted or denied based on a default
-    /// threshold set in OpenSim.ini (which can be overridden for individual
+    /// threshold set in Universe.ini (which can be overridden for individual
     /// functions on a case-by-case basis)
     /// </summary>
     public enum ThreatLevel

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -82,7 +82,7 @@ namespace OpenSim
 
             List<string> sources = new List<string>();
 
-            string masterFileName = startupConfig.GetString("inimaster", "OpenSimDefaults.ini");
+            string masterFileName = startupConfig.GetString("inimaster", "UniverseDefaults.ini");
 
             if (masterFileName == "none")
                 masterFileName = String.Empty;
@@ -112,7 +112,7 @@ namespace OpenSim
                 }
             }
 
-            string iniFileName = startupConfig.GetString("inifile", "OpenSim.ini");
+            string iniFileName = startupConfig.GetString("inifile", "Universe.ini");
 
             if (IsUri(iniFileName))
             {

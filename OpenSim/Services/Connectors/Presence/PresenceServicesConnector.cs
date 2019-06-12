@@ -68,7 +68,7 @@ namespace OpenSim.Services.Connectors
             IConfig gridConfig = source.Configs["PresenceService"];
             if (gridConfig == null)
             {
-                m_log.Error("[PRESENCE CONNECTOR]: PresenceService missing from OpenSim.ini");
+                m_log.Error("[PRESENCE CONNECTOR]: PresenceService missing from Universe.ini");
                 throw new Exception("Presence connector init error");
             }
 

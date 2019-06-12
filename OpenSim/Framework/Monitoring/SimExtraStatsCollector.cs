@@ -196,7 +196,7 @@ namespace OpenSim.Framework.Monitoring
 
         public SimExtraStatsCollector(IConfigSource config)
         {
-            // Acquire the statistics section of the OpenSim.ini file and check to see if it
+            // Acquire the statistics section of the Universe.ini file and check to see if it
             // exists
             IConfig statsConfig = config.Configs["Statistics"];
             if (statsConfig != null)

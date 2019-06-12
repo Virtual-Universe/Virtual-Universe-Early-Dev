@@ -82,7 +82,7 @@ namespace OpenSim.Services.Connectors
             IConfig config = source.Configs["InventoryService"];
             if (config == null)
             {
-                m_log.Error("[INVENTORY CONNECTOR]: InventoryService missing from OpenSim.ini");
+                m_log.Error("[INVENTORY CONNECTOR]: InventoryService missing from Universe.ini");
                 throw new Exception("Inventory connector init error");
             }
 

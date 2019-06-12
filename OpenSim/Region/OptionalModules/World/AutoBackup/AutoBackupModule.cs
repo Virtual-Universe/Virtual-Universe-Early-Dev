@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -59,9 +59,9 @@ namespace OpenSim.Region.OptionalModules.World.AutoBackup
     /// </summary>
     /// <remarks>
     /// Config Settings Documentation.
-    /// Each configuration setting can be specified in two places: OpenSim.ini or Regions.ini.
+    /// Each configuration setting can be specified in two places: Universe.ini or Regions.ini.
     /// If specified in Regions.ini, the settings should be within the region's section name.
-    /// If specified in OpenSim.ini, the settings should be within the [AutoBackupModule] section.
+    /// If specified in Universe.ini, the settings should be within the [AutoBackupModule] section.
     /// Region-specific settings take precedence.
     /// 
     /// AutoBackupModuleEnabled: True/False. Default: False. If True, use the auto backup module. This setting does not support per-region basis.
@@ -155,10 +155,10 @@ namespace OpenSim.Region.OptionalModules.World.AutoBackup
         /// <summary>
         /// Called once in the lifetime of the module at startup.
         /// </summary>
-        /// <param name="source">The input config source for OpenSim.ini.</param>
+        /// <param name="source">The input config source for Universe.ini.</param>
         void IRegionModuleBase.Initialise(IConfigSource source)
         {
-            // Determine if we have been enabled at all in OpenSim.ini -- this is part and parcel of being an optional module
+            // Determine if we have been enabled at all in Universe.ini -- this is part and parcel of being an optional module
             this.m_configSource = source;
             IConfig moduleConfig = source.Configs["AutoBackupModule"];
             if (moduleConfig == null)
@@ -876,8 +876,8 @@ namespace OpenSim.Region.OptionalModules.World.AutoBackup
 
         /// <summary>
         /// Run the script or executable specified by the "AutoBackupScript" config setting.
-        /// Of course this is a security risk if you let anyone modify OpenSim.ini and they want to run some nasty bash script.
-        /// But there are plenty of other nasty things that can be done with an untrusted OpenSim.ini, such as running high threat level scripting functions.
+        /// Of course this is a security risk if you let anyone modify Universe.ini and they want to run some nasty bash script.
+        /// But there are plenty of other nasty things that can be done with an untrusted Universe.ini, such as running high threat level scripting functions.
         /// </summary>
         /// <param name="scriptName"></param>
         /// <param name="savePath"></param>

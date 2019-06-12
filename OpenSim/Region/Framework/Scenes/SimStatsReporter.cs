@@ -236,7 +236,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         // This is the number of frames that will be stored and then averaged for
         // the Total, Simulation, Physics, and Network Frame Time; It is set to
-        // 10 by default but can be changed by the OpenSim.ini configuration file
+        // 10 by default but can be changed by the Universe.ini configuration file
         // NumberOfFrames parameter
         private int m_numberFramesStored = Scene.m_defaultNumberFramesStored;
 
@@ -334,7 +334,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         public SimStatsReporter(Scene scene, int numberOfFrames) : this (scene)
         {
-            // Store the number of frames from the OpenSim.ini configuration file
+            // Store the number of frames from the Universe.ini configuration file
             m_numberFramesStored = numberOfFrames;
         }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -48,7 +48,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
     public class GroupsModule : ISharedRegionModule, IGroupsModule
     {
         /// <summary>
-        /// ; To use this module, you must specify the following in your OpenSim.ini
+        /// ; To use this module, you must specify the following in your Universe.ini
         /// [GROUPS]
         /// Enabled = true
         /// 
