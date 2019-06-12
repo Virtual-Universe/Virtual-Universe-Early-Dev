@@ -45,7 +45,7 @@ namespace Robust._32BitLaunch
             System.Threading.Thread.Sleep(300);
             try
             {
-                global::OpenSim.Server.OpenSimServer.Main(args);
+                global::Universe.Server.OpenSimServer.Main(args);
             }
             catch (Exception ex)
             {

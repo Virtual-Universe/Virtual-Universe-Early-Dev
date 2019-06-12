@@ -27,7 +27,7 @@
 
 using System;
 
-namespace OpenSim._32BitLaunch
+namespace Universe._32BitLaunch
 {
     class Program
     {
@@ -44,7 +44,7 @@ namespace OpenSim._32BitLaunch
             System.Threading.Thread.Sleep(300);
             try
             {
-                global::OpenSim.Application.Main(args);
+                global::Universe.Application.Main(args);
             }
             catch (Exception ex)
             {

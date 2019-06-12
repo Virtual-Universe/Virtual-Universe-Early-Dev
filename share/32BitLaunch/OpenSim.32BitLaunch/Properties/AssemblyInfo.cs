@@ -32,11 +32,11 @@ using System.Runtime.InteropServices;
 // General information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OpenSim.32BitLaunch")]
+[assembly: AssemblyTitle("Universe.32BitLaunch")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://virtual-planets.org")]
-[assembly: AssemblyProduct("OpenSim.32BitLaunch")]
+[assembly: AssemblyProduct("Universe.32BitLaunch")]
 [assembly: AssemblyCopyright("Copyright (c) 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
