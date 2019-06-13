@@ -27,42 +27,38 @@
 ///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// </license>
 
-using Mono.Addins;
-using OpenSim.Framework;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
-namespace OpenSim
-{
-    /// <summary>
-    ///     Plugin framework interface
-    /// </summary>
-    [TypeExtensionPoint(NodeName="Plugin", NodeType = typeof(PluginExtensionNode), Path="/OpenSim/Startup")]
-    public interface IApplicationPlugin : IPlugin
-    {
-        /// <summary>
-        ///     Initialize the Plugin
-        /// </summary>
-        /// <param name="openSim">The Application instance</param>
-        void Initialise(OpenSimBase openSim);
+// General information about an assembly is controlled through the following
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
 
-        /// <summary>
-        ///     Called when the application loading is completed 
-        /// </summary>
-        void PostInitialise();
-    }
+[assembly : AssemblyTitle("OpenSim.Framework")]
+[assembly : AssemblyDescription("")]
+[assembly : AssemblyConfiguration("")]
+[assembly : AssemblyCompany("https://virtual-planets.org")]
+[assembly : AssemblyProduct("OpenSim.Framework")]
+[assembly : AssemblyCopyright("Copyright (c) OpenSimulator.org Developers 2007-2009")]
+[assembly : AssemblyTrademark("")]
+[assembly : AssemblyCulture("")]
 
-    public class ApplicationPluginInitialiser : PluginInitialiserBase
-    {
-        private OpenSimBase server;
+// Setting ComVisible to false makes the types in this assembly not visible
+// to COM components.  If you need to access a type in this assembly from
+// COM, set the ComVisible attribute to true on that type.
 
-        public ApplicationPluginInitialiser(OpenSimBase s)
-        {
-            server = s;
-        }
+[assembly : ComVisible(false)]
 
-        public override void Initialise(IPlugin plugin)
-        {
-            IApplicationPlugin p = plugin as IApplicationPlugin;
-            p.Initialise(server);
-        }
-    }
-}
+// The following GUID is for the ID of the typelib if this project is exposed to COM
+
+[assembly : Guid("a08e20c7-f191-4137-b1f0-9291408fa521")]
+
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version
+//      Build Number
+//      Revision
+//
+
+[assembly : AssemblyVersion("0.2.001.*")]

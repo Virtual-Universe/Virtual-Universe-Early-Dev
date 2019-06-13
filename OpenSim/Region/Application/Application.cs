@@ -1,29 +1,31 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.IO;
@@ -38,32 +40,34 @@ using OpenSim.Framework.Console;
 namespace OpenSim
 {
     /// <summary>
-    /// Starting class for the OpenSimulator Region
+    ///     Starting class for the Region
     /// </summary>
     public class Application
     {
         /// <summary>
-        /// Text Console Logger
+        ///     Text Console Logger
         /// </summary>
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// Path to the main ini Configuration file
+        ///     Path to the main ini Configuration file
         /// </summary>
         public static string iniFilePath = "";
 
         /// <summary>
-        /// Save Crashes in the bin/crashes folder.  Configurable with m_crashDir
+        ///     Save Crashes in the Data/crashes folder.  
+        ///     Configurable with m_crashDir
         /// </summary>
         public static bool m_saveCrashDumps = false;
 
         /// <summary>
-        /// Directory to save crash reports to.  Relative to bin/
+        ///     Directory to save crash reports to.  
+        ///     Relative to bin/
         /// </summary>
-        public static string m_crashDir = "crashes";
+        public static string m_crashDir = Constants.DEFAULT_CRASH_DIR;
 
         /// <summary>
-        /// Instance of the OpenSim class.  This could be OpenSim or OpenSimBackground depending on the configuration
+        ///     Instance of the OpenSim class.
         /// </summary>
         protected static OpenSimBase m_sim = null;
 
@@ -71,8 +75,7 @@ namespace OpenSim
         public static void Main(string[] args)
         {
             // First line, hook the appdomain to the crash reporter
-            AppDomain.CurrentDomain.UnhandledException +=
-                new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             ServicePointManager.DefaultConnectionLimit = 12;
 
@@ -82,33 +85,38 @@ namespace OpenSim
             // Configure Log4Net
             configSource.AddSwitch("Startup", "logconfig");
             string logConfigFile = configSource.Configs["Startup"].GetString("logconfig", String.Empty);
+
             if (logConfigFile != String.Empty)
             {
                 XmlConfigurator.Configure(new System.IO.FileInfo(logConfigFile));
-                m_log.InfoFormat("[OPENSIM MAIN]: configured log4net using \"{0}\" as configuration file", 
-                                 logConfigFile);
+                m_log.InfoFormat("[Virtual Universe]: configured log4net using \"{0}\" as configuration file", logConfigFile);
             } 
             else
             {
                 XmlConfigurator.Configure();
-                m_log.Info("[OPENSIM MAIN]: configured log4net using default OpenSim.exe.config");
+                m_log.Info("[Virtual Universe]: configured log4net using default OpenSim.exe.config");
             }
 
             m_log.InfoFormat(
-                "[OPENSIM MAIN]: System Locale is {0}", System.Threading.Thread.CurrentThread.CurrentCulture);
+                "[Virtual Universe]: System Locale is {0}", System.Threading.Thread.CurrentThread.CurrentCulture);
 
             string monoThreadsPerCpu = System.Environment.GetEnvironmentVariable("MONO_THREADS_PER_CPU");
 
             m_log.InfoFormat(
-                "[OPENSIM MAIN]: Environment variable MONO_THREADS_PER_CPU is {0}", monoThreadsPerCpu ?? "unset");
+                "[Virtual Universe]: Environment variable MONO_THREADS_PER_CPU is {0}", monoThreadsPerCpu ?? "unset");
 
-            // Verify the Threadpool allocates or uses enough worker and IO completion threads
-			// .NET 2.0, workerthreads default to 50 *  numcores
-			// .NET 3.0, workerthreads defaults to 250 * numcores
-			// .NET 4.0, workerthreads are dynamic based on bitness and OS resources
-            // Max IO Completion threads are 1000 on all 3 CLRs
-            //
-            // Mono 2.10.9 to at least Mono 3.1, workerthreads default to 100 * numcores, iocp threads to 4 * numcores
+            /// <summary>
+            ///     Verify the Threadpool allocates or uses enough 
+            ///     worker and IO completion threads
+			///         .NET 2.0, workerthreads default to 50 *  numcores
+			///         .NET 3.0, workerthreads defaults to 250 * numcores
+			///         .NET 4.0, workerthreads are dynamic based on bitness and OS resources
+            ///
+            ///     Max IO Completion threads are 1000 on all 3 CLRs
+            ///
+            ///     Mono 2.10.9 to at least Mono 3.1, workerthreads default 
+            ///     to 100 * numcores, iocp threads to 4 * numcores
+            /// </summary>
 			int workerThreadsMin = 500;
 			int workerThreadsMax = 1000; // may need further adjustment to match other CLR
 			int iocpThreadsMin = 1000;
@@ -118,23 +126,24 @@ namespace OpenSim
                 int currentMinWorkerThreads, currentMinIocpThreads;
                 System.Threading.ThreadPool.GetMinThreads(out currentMinWorkerThreads, out currentMinIocpThreads);
                 m_log.InfoFormat(
-                    "[OPENSIM MAIN]: Runtime gave us {0} min worker threads and {1} min IOCP threads", 
+                    "[Virtual Universe]: Runtime gave us {0} min worker threads and {1} min IOCP threads", 
                     currentMinWorkerThreads, currentMinIocpThreads);
             }
 
             int workerThreads, iocpThreads;
             System.Threading.ThreadPool.GetMaxThreads(out workerThreads, out iocpThreads);
-            m_log.InfoFormat("[OPENSIM MAIN]: Runtime gave us {0} max worker threads and {1} max IOCP threads", workerThreads, iocpThreads);
+            m_log.InfoFormat("[Virtual Universe]: Runtime gave us {0} max worker threads and {1} max IOCP threads", workerThreads, iocpThreads);
 
             if (workerThreads < workerThreadsMin)
             {
                 workerThreads = workerThreadsMin;
-                m_log.InfoFormat("[OPENSIM MAIN]: Bumping up to max worker threads to {0}",workerThreads);
+                m_log.InfoFormat("[Virtual Universe]: Bumping up to max worker threads to {0}",workerThreads);
             }
+
             if (workerThreads > workerThreadsMax)
             {
                 workerThreads = workerThreadsMax;
-                m_log.InfoFormat("[OPENSIM MAIN]: Limiting max worker threads to {0}",workerThreads);
+                m_log.InfoFormat("[Virtual Universe]: Limiting max worker threads to {0}",workerThreads);
             }
 
 			// Increase the number of IOCP threads available.
@@ -142,36 +151,39 @@ namespace OpenSim
 			if (iocpThreads < iocpThreadsMin)
             {
                 iocpThreads = iocpThreadsMin;
-                m_log.InfoFormat("[OPENSIM MAIN]: Bumping up max IOCP threads to {0}",iocpThreads);
+                m_log.InfoFormat("[Virtual Universe]: Bumping up max IOCP threads to {0}",iocpThreads);
             }
-			// Make sure we don't overallocate IOCP threads and thrash system resources
+			
+            // Make sure we don't overallocate IOCP threads and thrash system resources
             if ( iocpThreads > iocpThreadsMax )
             {
                 iocpThreads = iocpThreadsMax;
-                m_log.InfoFormat("[OPENSIM MAIN]: Limiting max IOCP completion threads to {0}",iocpThreads);
+                m_log.InfoFormat("[Virtual Universe]: Limiting max IOCP completion threads to {0}",iocpThreads);
             }
-			// set the resulting worker and IO completion thread counts back to ThreadPool
+			
+            // set the resulting worker and IO completion thread counts back to ThreadPool
             if ( System.Threading.ThreadPool.SetMaxThreads(workerThreads, iocpThreads) )
 			{
 	            m_log.InfoFormat(
-                    "[OPENSIM MAIN]: Threadpool set to {0} max worker threads and {1} max IOCP threads",
+                    "[Virtual Universe]: Threadpool set to {0} max worker threads and {1} max IOCP threads",
                     workerThreads, iocpThreads);
 			}
 			else
 			{
-	            m_log.Warn("[OPENSIM MAIN]: Threadpool reconfiguration failed, runtime defaults still in effect.");				
+	            m_log.Warn("[Virtual Universe]: Threadpool reconfiguration failed, runtime defaults still in effect.");				
 			}
 
             // Check if the system is compatible with OpenSimulator.
             // Ensures that the minimum system requirements are met
             string supported = String.Empty;
+
             if (Util.IsEnvironmentSupported(ref supported))
             {
-                m_log.Info("[OPENSIM MAIN]: Environment is supported by OpenSimulator.");
+                m_log.Info("[Virtual Universe]: Environment is supported by OpenSimulator.");
             }
             else
             {
-                m_log.Warn("[OPENSIM MAIN]: Environment is not supported by OpenSimulator (" + supported + ")\n");
+                m_log.Warn("[Virtual Universe]: Environment is not supported by OpenSimulator (" + supported + ")\n");
             }
 
             // Configure nIni aliases and localles
@@ -180,110 +192,6 @@ namespace OpenSim
             // Validate that the user has the most basic configuration done
             // If not, offer to do the most basic configuration for them warning them along the way of the importance of 
             // reading these files.
-            /*
-            m_log.Info("Checking for reguired configuration...\n");
-
-            bool OpenSim_Ini = (File.Exists(Path.Combine(Util.configDir(), "Universe.ini")))
-                               || (File.Exists(Path.Combine(Util.configDir(), "opensim.ini")))
-                               || (File.Exists(Path.Combine(Util.configDir(), "openSim.ini")))
-                               || (File.Exists(Path.Combine(Util.configDir(), "Opensim.ini")));
-            
-            bool StanaloneCommon_ProperCased = File.Exists(Path.Combine(Path.Combine(Util.configDir(), "config-include"), "StandaloneCommon.ini"));
-            bool StanaloneCommon_lowercased = File.Exists(Path.Combine(Path.Combine(Util.configDir(), "config-include"), "standalonecommon.ini"));
-            bool GridCommon_ProperCased = File.Exists(Path.Combine(Path.Combine(Util.configDir(), "config-include"), "GridCommon.ini"));
-            bool GridCommon_lowerCased = File.Exists(Path.Combine(Path.Combine(Util.configDir(), "config-include"), "gridcommon.ini"));
-
-            if ((OpenSim_Ini) 
-                && (
-                (StanaloneCommon_ProperCased
-                || StanaloneCommon_lowercased
-                || GridCommon_ProperCased
-                || GridCommon_lowerCased
-                )))
-            {
-                m_log.Info("Required Configuration Files Found\n");
-            }
-            else
-            {
-                MainConsole.Instance = new LocalConsole("Region");
-                string resp = MainConsole.Instance.CmdPrompt(
-                                        "\n\n*************Required Configuration files not found.*************\n\n   OpenSimulator will not run without these files.\n\nRemember, these file names are Case Sensitive in Linux and Proper Cased.\n1. ./Universe.ini\nand\n2. ./config-include/StandaloneCommon.ini \nor\n3. ./config-include/GridCommon.ini\n\nAlso, you will want to examine these files in great detail because only the basic system will load by default. OpenSimulator can do a LOT more if you spend a little time going through these files.\n\n" + ": " + "Do you want to copy the most basic Defaults from standalone?",
-                                        "yes");
-                if (resp == "yes")
-                {
-                    
-                        if (!(OpenSim_Ini))
-                        {
-                            try
-                            {
-                                File.Copy(Path.Combine(Util.configDir(), "Universe.ini.example"),
-                                          Path.Combine(Util.configDir(), "Universe.ini"));
-                            } catch (UnauthorizedAccessException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, Make sure OpenSim has have the required permissions\n");
-                            } catch (ArgumentException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, The current directory is invalid.\n");
-                            } catch (System.IO.PathTooLongException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, the Path to these files is too long.\n");
-                            } catch (System.IO.DirectoryNotFoundException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, the current directory is reporting as not found.\n");
-                            } catch (System.IO.FileNotFoundException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, the example is not found, please make sure that the example files exist.\n");
-                            } catch (System.IO.IOException)
-                            {
-                                // Destination file exists already or a hard drive failure...   ..    so we can just drop this one
-                                //MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, the example is not found, please make sure that the example files exist.\n");
-                            } catch (System.NotSupportedException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, The current directory is invalid.\n");
-                            }
-
-                        }
-                        if (!(StanaloneCommon_ProperCased || StanaloneCommon_lowercased))
-                        {
-                            try
-                            {
-                                File.Copy(Path.Combine(Path.Combine(Util.configDir(), "config-include"), "StandaloneCommon.ini.example"),
-                                          Path.Combine(Path.Combine(Util.configDir(), "config-include"), "StandaloneCommon.ini"));
-                            }
-                            catch (UnauthorizedAccessException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy StandaloneCommon.ini.example to StandaloneCommon.ini, Make sure OpenSim has the required permissions\n");
-                            }
-                            catch (ArgumentException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy StandaloneCommon.ini.example to StandaloneCommon.ini, The current directory is invalid.\n");
-                            }
-                            catch (System.IO.PathTooLongException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy StandaloneCommon.ini.example to StandaloneCommon.ini, the Path to these files is too long.\n");
-                            }
-                            catch (System.IO.DirectoryNotFoundException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy StandaloneCommon.ini.example to StandaloneCommon.ini, the current directory is reporting as not found.\n");
-                            }
-                            catch (System.IO.FileNotFoundException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy StandaloneCommon.ini.example to StandaloneCommon.ini, the example is not found, please make sure that the example files exist.\n");
-                            }
-                            catch (System.IO.IOException)
-                            {
-                                // Destination file exists already or a hard drive failure...   ..    so we can just drop this one
-                                //MainConsole.Instance.Output("Unable to Copy Universe.ini.example to Universe.ini, the example is not found, please make sure that the example files exist.\n");
-                            }
-                            catch (System.NotSupportedException)
-                            {
-                                MainConsole.Instance.Output("Unable to Copy StandaloneCommon.ini.example to StandaloneCommon.ini, The current directory is invalid.\n");
-                            }
-                        }
-                }
-                MainConsole.Instance = null;
-            }
-            */
             configSource.Alias.AddAlias("On", true);
             configSource.Alias.AddAlias("Off", false);
             configSource.Alias.AddAlias("True", true);
@@ -342,7 +250,8 @@ namespace OpenSim
         private static bool _IsHandlingException = false; // Make sure we don't go recursive on ourself
 
         /// <summary>
-        /// Global exception handler -- all unhandlet exceptions end up here :)
+        ///     Global exception handler 
+        ///     all unhandlet exceptions end up here :)
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -354,6 +263,7 @@ namespace OpenSim
             }
 
             _IsHandlingException = true;
+
             // TODO: Add config option to allow users to turn off error reporting
             // TODO: Post error report (disabled for now)
 
@@ -364,6 +274,7 @@ namespace OpenSim
 
             msg += "Exception: " + e.ExceptionObject.ToString() + "\r\n";
             Exception ex = (Exception) e.ExceptionObject;
+
             if (ex.InnerException != null)
             {
                 msg += "InnerException: " + ex.InnerException.ToString() + "\r\n";
@@ -372,7 +283,7 @@ namespace OpenSim
             msg += "\r\n";
             msg += "Application is terminating: " + e.IsTerminating.ToString() + "\r\n";
 
-            m_log.ErrorFormat("[APPLICATION]: {0}", msg);
+            m_log.ErrorFormat("[Virtual Universe Application]: {0}", msg);
 
             if (m_saveCrashDumps)
             {
@@ -383,7 +294,9 @@ namespace OpenSim
                     {
                         Directory.CreateDirectory(m_crashDir);
                     }
+
                     string log = Util.GetUniqueFilename(ex.GetType() + ".txt");
+
                     using (StreamWriter m_crashLog = new StreamWriter(Path.Combine(m_crashDir, log)))
                     {
                         m_crashLog.WriteLine(msg);
@@ -393,7 +306,7 @@ namespace OpenSim
                 }
                 catch (Exception e2)
                 {
-                    m_log.ErrorFormat("[CRASH LOGGER CRASHED]: {0}", e2);
+                    m_log.ErrorFormat("[Virtual Universe Crash Logger]: {0}", e2);
                 }
             }
 
