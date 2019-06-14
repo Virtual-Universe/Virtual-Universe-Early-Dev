@@ -1,45 +1,45 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using log4net;
+using OpenMetaverse;
+using OpenSim.Framework;
+using OpenSim.Framework.Servers.HttpServer;
+using OpenSim.Region.Framework.Scenes;
+using OpenSim.Server.Base;
 using OpenSim.Services.Interfaces;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
-using OpenSim.Server.Base;
-using OpenSim.Framework.Servers.HttpServer;
-using OpenSim.Framework;
-using OpenSim.Region.Framework.Scenes;
 
-using OpenMetaverse;
-using log4net;
-
-namespace OpenSim.Region.CoreModules.World.Estate
+namespace OpenSim.Region.CoreModules.World.Land
 {
     public class EstateConnector
     {
@@ -82,12 +82,12 @@ namespace OpenSim.Region.CoreModules.World.Estate
             sendData["EstateID"] = EstateID.ToString();
 
             // Handle local regions locally
-            //
             foreach (Scene s in m_EstateModule.Scenes)
             {
                 if (s.RegionInfo.EstateSettings.EstateID == EstateID)
+                {
                     s.RegionInfo.RegionSettings.Covenant = CovenantID;
-//                    s.ReloadEstateData();
+                }
             }
 
             SendToEstate(EstateID, sendData);
@@ -103,11 +103,12 @@ namespace OpenSim.Region.CoreModules.World.Estate
             sendData["EstateID"] = EstateID.ToString();
 
             // Handle local regions locally
-            //
             foreach (Scene s in m_EstateModule.Scenes)
             {
                 if (s.RegionInfo.EstateSettings.EstateID == EstateID)
+                {
                     s.ReloadEstateData();
+                }
             }
 
             SendToEstate(EstateID, sendData);
@@ -135,7 +136,6 @@ namespace OpenSim.Region.CoreModules.World.Estate
             UUID ScopeID = UUID.Zero;
 
             // Handle local regions locally
-            //
             lock (m_EstateModule.Scenes)
             {
                 foreach (Scene s in m_EstateModule.Scenes)
@@ -144,7 +144,6 @@ namespace OpenSim.Region.CoreModules.World.Estate
                     {
                         // All regions in one estate are in the same scope.
                         // Use that scope.
-                        //
                         ScopeID = s.RegionInfo.ScopeID;
                         regions.Remove(s.RegionInfo.RegionID);
                     }
@@ -154,24 +153,27 @@ namespace OpenSim.Region.CoreModules.World.Estate
             // Our own region should always be in the above list.
             // In a standalone this would not be true. But then,
             // Scope ID is not relevat there. Use first scope.
-            //
             if (ScopeID == UUID.Zero)
+            {
                 ScopeID = m_EstateModule.Scenes[0].RegionInfo.ScopeID;
+            }
 
             // Don't send to the same instance twice
-            //
             List<string> done = new List<string>();
 
             // Send to remote regions
-            //
             foreach (UUID regionID in regions)
             {
                 GridRegion region = m_EstateModule.Scenes[0].GridService.GetRegionByUUID(ScopeID, regionID);
+
                 if (region != null)
                 {
                     string url = "http://" + region.ExternalHostName + ":" + region.HttpPort;
+
                     if (done.Contains(url))
+                    {
                         continue;
+                    }
 
                     Call(region, sendData);
                     done.Add(url);
@@ -182,13 +184,12 @@ namespace OpenSim.Region.CoreModules.World.Estate
         private bool Call(GridRegion region, Dictionary<string, object> sendData)
         {
             string reqString = ServerUtils.BuildQueryString(sendData);
-            // m_log.DebugFormat("[XESTATE CONNECTOR]: queryString = {0}", reqString);
+
             try
             {
                 string url = "http://" + region.ExternalHostName + ":" + region.HttpPort;
-                string reply = SynchronousRestFormsRequester.MakeRequest("POST",
-                        url + "/estate",
-                        reqString);
+                string reply = SynchronousRestFormsRequester.MakeRequest("POST", url + "/estate", reqString);
+
                 if (reply != string.Empty)
                 {
                     Dictionary<string, object> replyData = ServerUtils.ParseXmlResponse(reply);
@@ -196,20 +197,27 @@ namespace OpenSim.Region.CoreModules.World.Estate
                     if (replyData.ContainsKey("RESULT"))
                     {
                         if (replyData["RESULT"].ToString().ToLower() == "true")
+                        {
                             return true;
+                        }
                         else
+                        {
                             return false;
+                        }
                     }
                     else
-                        m_log.DebugFormat("[XESTATE CONNECTOR]: reply data does not contain result field");
-
+                    {
+                        m_log.DebugFormat("[XEstate Connector]: reply data does not contain result field");
+                    }
                 }
                 else
-                    m_log.DebugFormat("[XESTATE CONNECTOR]: received empty reply");
+                {
+                    m_log.DebugFormat("[XEstate Connector]: received empty reply");
+                }
             }
             catch (Exception e)
             {
-                m_log.DebugFormat("[XESTATE CONNECTOR]: Exception when contacting remote sim: {0}", e.Message);
+                m_log.DebugFormat("[XEstate Connector]: Exception when contacting remote sim: {0}", e.Message);
             }
 
             return false;

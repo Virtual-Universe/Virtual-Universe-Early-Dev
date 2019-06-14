@@ -1,37 +1,40 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Timers;
 using System.Threading;
-using System.Collections.Generic;
 using log4net;
+using Mono.Addins;
 using Nini.Config;
 using OpenMetaverse;
 using OpenSim.Framework;
@@ -39,15 +42,13 @@ using OpenSim.Framework.Console;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using Timer=System.Timers.Timer;
-using Mono.Addins;
 
-namespace OpenSim.Region.CoreModules.World.Region
+namespace OpenSim.Region.CoreModules.World.Management
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "RestartModule")]
     public class RestartModule : INonSharedRegionModule, IRestartModule
     {
-        private static readonly ILog m_log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         protected Scene m_Scene;
         protected Timer m_CountdownTimer = null;
@@ -67,6 +68,7 @@ namespace OpenSim.Region.CoreModules.World.Region
             m_Scene = scene;
             
             scene.RegisterModuleInterface<IRestartModule>(this);
+
             MainConsole.Instance.Commands.AddCommand("Regions",
                     false, "region restart bluebox",
                     "region restart bluebox <message> <delta seconds>+",
@@ -118,7 +120,9 @@ namespace OpenSim.Region.CoreModules.World.Region
         public void ScheduleRestart(UUID initiator, string message, int[] alerts, bool notice)
         {
             if (m_CountdownTimer != null)
+            {
                 return;
+            }
 
             if (alerts == null)
             {
@@ -153,6 +157,7 @@ namespace OpenSim.Region.CoreModules.World.Region
             }
 
             int nextAlert = 0;
+
             while (m_Alerts.Count > 1)
             {
                 if (m_Alerts[1] == m_Alerts[0])
@@ -160,6 +165,7 @@ namespace OpenSim.Region.CoreModules.World.Region
                     m_Alerts.RemoveAt(0);
                     continue;
                 }
+
                 nextAlert = m_Alerts[1];
                 break;
             }
@@ -170,22 +176,36 @@ namespace OpenSim.Region.CoreModules.World.Region
 
             int minutes = currentAlert / 60;
             string currentAlertString = String.Empty;
+
             if (minutes > 0)
             {
                 if (minutes == 1)
+                {
                     currentAlertString += "1 minute";
+                }
                 else
+                {
                     currentAlertString += String.Format("{0} minutes", minutes);
+                }
+
                 if ((currentAlert % 60) != 0)
+                {
                     currentAlertString += " and ";
+                }
             }
+
             if ((currentAlert % 60) != 0)
             {
                 int seconds = currentAlert % 60;
+
                 if (seconds == 1)
+                {
                     currentAlertString += "1 second";
+                }
                 else
+                {
                     currentAlertString += String.Format("{0} seconds", seconds);
+                }
             }
 
             string msg = String.Format(m_Message, currentAlertString);
@@ -193,9 +213,13 @@ namespace OpenSim.Region.CoreModules.World.Region
             if (m_DialogModule != null && msg != String.Empty)
             {
                 if (m_Notice)
+                {
                     m_DialogModule.SendGeneralAlert(msg);
+                }
                 else
+                {
                     m_DialogModule.SendNotificationToUsersInRegion(m_Initiator, "System", msg);
+                }
             }
 
             return currentAlert - nextAlert;
@@ -219,7 +243,7 @@ namespace OpenSim.Region.CoreModules.World.Region
             else
             {
                 m_log.WarnFormat(
-                    "[RESTART MODULE]: Tried to set restart timer to {0} in {1}, which is not a valid interval", 
+                    "[Restart Module]: Tried to set restart timer to {0} in {1}, which is not a valid interval", 
                     intervalSeconds, m_Scene.Name);
             }
         }
@@ -235,18 +259,25 @@ namespace OpenSim.Region.CoreModules.World.Region
             {
                 m_CountdownTimer.Stop();
                 m_CountdownTimer = null;
+
                 if (m_DialogModule != null && message != String.Empty)
+                {
                     m_DialogModule.SendGeneralAlert(message);
+                }
             }
         }
         
         private void HandleRegionRestart(string module, string[] args)
         {
             if (!(MainConsole.Instance.ConsoleScene is Scene))
+            {
                 return;
+            }
 
             if (MainConsole.Instance.ConsoleScene != m_Scene)
+            {
                 return;
+            }
 
             if (args.Length < 5)
             {
@@ -255,8 +286,11 @@ namespace OpenSim.Region.CoreModules.World.Region
                     if (args[2] == "abort")
                     {
                         string msg = String.Empty;
+
                         if (args.Length > 3)
+                        {
                             msg = args[3];
+                        }
 
                         AbortRestart(msg);
 
@@ -270,15 +304,20 @@ namespace OpenSim.Region.CoreModules.World.Region
             }
 
             bool notice = false;
+
             if (args[2] == "notice")
+            {
                 notice = true;
+            }
 
             List<int> times = new List<int>();
-            for (int i = 4 ; i < args.Length ; i++)
-                times.Add(Convert.ToInt32(args[i]));
 
-            MainConsole.Instance.OutputFormat(
-                "Region {0} scheduled for restart in {1} seconds", m_Scene.Name, times.Sum());
+            for (int i = 4; i < args.Length; i++)
+            {
+                times.Add(Convert.ToInt32(args[i]));
+            }
+
+            MainConsole.Instance.OutputFormat("Region {0} scheduled for restart in {1} seconds", m_Scene.Name, times.Sum());
 
             ScheduleRestart(UUID.Zero, args[3], times.ToArray(), notice);
         }

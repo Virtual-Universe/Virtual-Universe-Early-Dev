@@ -1,42 +1,45 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Reflection;
+using System.Xml;
+using log4net;
 using OpenMetaverse;
 using OpenMetaverse.Packets;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
-using OpenSim.Region.CoreModules.World.Estate;
-using log4net;
-using System.Reflection;
-using System.Xml;
+using OpenSim.Region.CoreModules.World.Land;
+using OpenSim.Region.CoreModules.World.Management;
 
 namespace OpenSim.Region.OptionalModules.World.NPC
 {
@@ -49,12 +52,12 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             UUID fromAgentID, UUID ownerID, byte source, byte audible);
 
         /// <summary>
-        /// Fired when the NPC receives a chat message.
+        ///     Fired when the NPC receives a chat message.
         /// </summary>
         public event ChatToNPC OnChatToNPC;
 
         /// <summary>
-        /// Fired when the NPC receives an instant message.
+        ///     Fired when the NPC receives an instant message.
         /// </summary>
         public event Action<GridInstantMessage> OnInstantMessageToNPC;
 
@@ -65,8 +68,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         private readonly Scene m_scene;
         private readonly UUID m_ownerID;
 
-        public NPCAvatar(
-            string firstname, string lastname, Vector3 position, UUID ownerID, bool senseAsAgent, Scene scene)
+        public NPCAvatar(string firstname, string lastname, Vector3 position, UUID ownerID, bool senseAsAgent, Scene scene)
         {
             m_firstname = firstname;
             m_lastname = lastname;
@@ -77,8 +79,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             SenseAsAgent = senseAsAgent;
         }
 
-        public NPCAvatar(
-            string firstname, string lastname, UUID agentID, Vector3 position, UUID ownerID, bool senseAsAgent, Scene scene)
+        public NPCAvatar(string firstname, string lastname, UUID agentID, Vector3 position, UUID ownerID, bool senseAsAgent, Scene scene)
         {
             m_firstname = firstname;
             m_lastname = lastname;
@@ -134,13 +135,24 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public bool Touch(UUID target)
         {
             SceneObjectPart part = m_scene.GetSceneObjectPart(target);
+
             if (part == null)
+            {
                 return false;
+            }
+
             bool objectTouchable = hasTouchEvents(part); // Only touch an object that is scripted to respond
+
             if (!objectTouchable && !part.IsRoot)
+            {
                 objectTouchable = hasTouchEvents(part.ParentGroup.RootPart);
+            }
+
             if (!objectTouchable)
+            {
                 return false;
+            }
+
             // Set up the surface args as if the touch is from a client that does not support this
             SurfaceTouchEventArgs surfaceArgs = new SurfaceTouchEventArgs();
             surfaceArgs.FaceIndex = -1; // TOUCH_INVALID_FACE
@@ -151,13 +163,24 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             List<SurfaceTouchEventArgs> touchArgs = new List<SurfaceTouchEventArgs>();
             touchArgs.Add(surfaceArgs);
             Vector3 offset = part.OffsetPosition * -1.0f;
+
             if (OnGrabObject == null)
+            {
                 return false;
+            }
+
             OnGrabObject(part.LocalId, offset, this, touchArgs);
+
             if (OnGrabUpdate != null)
+            {
                 OnGrabUpdate(part.UUID, offset, part.ParentGroup.RootPart.GroupPosition, this, touchArgs);
+            }
+
             if (OnDeGrabObject != null)
+            {
                 OnDeGrabObject(part.LocalId, this, touchArgs);
+            }
+
             return true;
         }
 
@@ -166,7 +189,10 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             if ((part.ScriptEvents & scriptEvents.touch) != 0 ||
                 (part.ScriptEvents & scriptEvents.touch_start) != 0 ||
                 (part.ScriptEvents & scriptEvents.touch_end) != 0)
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -222,11 +248,13 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             if (channel == 0)
             {
                 message = message.Trim();
+
                 if (string.IsNullOrEmpty(message))
                 {
                     return;
                 }
             }
+
             OSChatMessage chatFromClient = new OSChatMessage();
             chatFromClient.Channel = channel;
             chatFromClient.From = Name;
@@ -507,6 +535,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public void ActivateGesture(UUID assetId, UUID gestureId)
         {
         }
+
         public void DeactivateGesture(UUID assetId, UUID gestureId)
         {
         }
@@ -560,6 +589,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             get { return false; }
             set { }
         }
+
         public UUID ActiveGroupId
         {
             get { return UUID.Zero; }
@@ -627,11 +657,11 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public virtual void SetChildAgentThrottle(byte[] throttle)
         {
         }
+
         public byte[] GetThrottlesPacked(float multiplier)
         {
             return new byte[0];
         }
-
 
         public virtual void SendAnimations(UUID[] animations, int[] seqs, UUID sourceAgentId, UUID[] objectIDs)
         {
@@ -644,7 +674,9 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             ChatToNPC ctn = OnChatToNPC;
 
             if (ctn != null)
+            {
                 ctn(message, type, fromPos, fromName, fromAgentID, ownerID, source, audible);
+            }
         }
 
         public void SendInstantMessage(GridInstantMessage im)
@@ -652,7 +684,9 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             Action<GridInstantMessage> oimtn = OnInstantMessageToNPC;
 
             if (oimtn != null)
+            {
                 oimtn(im);
+            }
         }
 
         public void SendGenericMessage(string method, UUID invoice, List<string> message)
@@ -672,6 +706,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public virtual void SendLayerData(int px, int py, float[] map)
         {
         }
+
         public virtual void SendLayerData(int px, int py, float[] map, bool track)
         {
         }
@@ -693,8 +728,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             return new AgentCircuitData();
         }
 
-        public virtual void CrossRegion(ulong newRegionHandle, Vector3 pos, Vector3 lookAt,
-                                        IPEndPoint newRegionExternalEndPoint, string capsURL)
+        public virtual void CrossRegion(ulong newRegionHandle, Vector3 pos, Vector3 lookAt, IPEndPoint newRegionExternalEndPoint, string capsURL)
         {
         }
 
@@ -706,8 +740,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void SendRegionTeleport(ulong regionHandle, byte simAccess, IPEndPoint regionExternalEndPoint,
-                                               uint locationID, uint flags, string capsURL)
+        public virtual void SendRegionTeleport(ulong regionHandle, byte simAccess, IPEndPoint regionExternalEndPoint, uint locationID, uint flags, string capsURL)
         {
         }
 
@@ -755,12 +788,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void SendInventoryFolderDetails(UUID ownerID, UUID folderID,
-                                                       List<InventoryItemBase> items,
-                                                       List<InventoryFolderBase> folders,
-                                                       int version,
-                                                       bool fetchFolders,
-                                                       bool fetchItems)
+        public virtual void SendInventoryFolderDetails(UUID ownerID, UUID folderID, List<InventoryItemBase> items, List<InventoryFolderBase> folders, int version, bool fetchFolders, bool fetchItems)
         {
         }
 
@@ -791,6 +819,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public virtual void SendXferPacket(ulong xferID, uint packet, byte[] data)
         {
         }
+
         public virtual void SendAbortXferPacket(ulong xferID)
         {
 
@@ -803,6 +832,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
 
         }
+
         public virtual void SendNameReply(UUID profileId, string firstname, string lastname)
         {
         }
@@ -811,8 +841,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void SendPlayAttachedSound(UUID soundID, UUID objectID, UUID ownerID, float gain,
-                                                  byte flags)
+        public virtual void SendPlayAttachedSound(UUID soundID, UUID objectID, UUID ownerID, float gain, byte flags)
         {
         }
 
@@ -837,8 +866,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public void SendLoadURL(string objectname, UUID objectID, UUID ownerID, bool groupOwned, string message,
-                                string url)
+        public void SendLoadURL(string objectname, UUID objectID, UUID ownerID, bool groupOwned, string message, string url)
         {
         }
 
@@ -1009,12 +1037,15 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public void SendRegionInfoToEstateMenu(RegionInfoForEstateMenuArgs args)
         {
         }
+
         public void SendEstateCovenantInformation(UUID covenant)
         {
         }
+
         public void SendTelehubInfo(UUID ObjectID, string ObjectName, Vector3 ObjectPos, Quaternion ObjectRot, List<Vector3> SpawnPoint)
         {
         }
+
         public void SendDetailedEstateData(UUID invoice, string estateName, uint estateID, uint parentEstate, uint estateFlags, uint sunPosition, UUID covenant, uint covenantChanged, string abuseEmail, UUID estateOwner)
         {
         }
@@ -1022,18 +1053,23 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public void SendLandProperties(int sequence_id, bool snap_selection, int request_result, ILandObject lo, float simObjectBonusFactor,int parcelObjectCapacity, int simObjectCapacity, uint regionFlags)
         {
         }
+
         public void SendLandAccessListData(List<LandAccessEntry> accessList, uint accessFlag, int localLandID)
         {
         }
+
         public void SendForceClientSelectObjects(List<uint> objectIDs)
         {
         }
+
         public void SendCameraConstraint(Vector4 ConstraintPlane)
         {
         }
+
         public void SendLandObjectOwners(LandData land, List<UUID> groups, Dictionary<UUID, int> ownersAndCount)
         {
         }
+
         public void SendLandParcelOverlay(byte[] data, int sequence_id)
         {
         }
@@ -1049,6 +1085,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public void SendLandStatReply(uint reportType, uint requestFlags, uint resultCount, LandStatReportItem[] lsrpia)
         {
         }
+
         #endregion
 
 
@@ -1164,7 +1201,6 @@ namespace OpenSim.Region.OptionalModules.World.NPC
 
         public bool AddGenericPacketHandler(string MethodName, GenericMessage handler)
         {
-            //throw new NotImplementedException();
             return false;
         }
 
@@ -1219,6 +1255,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public void SendPickInfoReply(UUID pickID,UUID creatorID, bool topPick, UUID parcelID, string name, string desc, UUID snapshotID, string user, string originalName, string simName, Vector3 posGlobal, int sortOrder, bool enabled)
         {
         }
+
         #endregion
         
         public void SendRebakeAvatarTextures(UUID textureID)
@@ -1268,6 +1305,5 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public void SendPartPhysicsProprieties(ISceneEntity entity)
         {
         }
-
     }
 }
