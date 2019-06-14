@@ -2685,121 +2685,6 @@
 
     </Project>
 
-	<Project frameworkVersion="v4_0" name="OpenSim.Addons.Search" path="OpenSim/Addons/OpenSimSearch" type="Library">
-	   <Configuration name="Debug">
-		 <Options>
-		   <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-		 </Options>
-	   </Configuration>
-	   <Configuration name="Release">
-		 <Options>
-		   <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-		 </Options>
-	   </Configuration>
-
-	   <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
-	   <Reference localCopy="false" name="System"/>
-	   <Reference name="System.Xml"/>
-	   <Reference name="System.Drawing"/>
-	   <Reference name="System.Runtime.Remoting"/>
-	   <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-	   <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-	   <Reference name="OpenSim.Framework"/>
-	   <Reference name="OpenSim.Data"/>
-	   <Reference name="OpenSim.Region.Framework"/>
-	   <Reference name="OpenSim.Framework.Console"/>
-	   <Reference name="OpenSim.Framework.Servers"/>
-	   <Reference name="OpenSim.Framework.Communications"/>
-	   <Reference name="OpenSim.Region.Physics.Manager"/>
-	   <Reference name="OpenSim.Services.Interfaces"/>
-	   <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
-	   <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
-	   <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
-	   <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
-	   <Reference name="ThreadedClasses" path="../../../VirtualUniverse/bin/"/>
-	   
-	   <Files>
-		 <Match pattern="*.cs" recurse="true"/>
-	   </Files>
-	</Project>
-
-	<Project frameworkVersion="v4_0" name="OpenSim.Addons.OpenSimProfile" path="OpenSim/Addons/OpenSimProfile" type="Library">
-		 <Configuration name="Debug">
-		   <Options>
-			 <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-		   </Options>
-		 </Configuration>
-		 <Configuration name="Release">
-		   <Options>
-			 <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-		   </Options>
-		 </Configuration>
-
-		 <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
-		 <Reference localCopy="false" name="System"/>
-		 <Reference name="System.Xml"/>
-		 <Reference name="System.Drawing"/>
-		 <Reference name="System.Runtime.Remoting"/>
-		 <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-		 <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-		 <Reference name="OpenSim.Framework"/>
-		 <Reference name="OpenSim.Data"/>
-		 <Reference name="OpenSim.Region.Framework"/>
-		 <Reference name="OpenSim.Framework.Console"/>
-		 <Reference name="OpenSim.Framework.Servers"/>
-		 <Reference name="OpenSim.Framework.Communications"/>
-		 <Reference name="OpenSim.Region.Physics.Manager"/>
-		 <Reference name="OpenSim.Services.Interfaces"/>
-		 <Reference name="OpenSim.Services.Connectors"/>
-		 <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
-		 <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
-		 <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
-		 <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
-		 <Reference name="ThreadedClasses" path="../../../VirtualUniverse/bin/"/>
-
-		 <Files>
-		   <Match pattern="*.cs" recurse="true"/>
-		 </Files>
-	</Project>
-
-	<Project frameworkVersion="v4_0" name="OpenSim.Addons.Currency" path="OpenSim/Addons/OpenSimCurrency" type="Library">
-	   <Configuration name="Debug">
-		 <Options>
-		   <OutputPath>../../VirtualUniverse/bin/</OutputPath>
-		 </Options>
-	   </Configuration>
-	   <Configuration name="Release">
-		 <Options>
-		   <OutputPath>../../VirtualUniverse/bin/</OutputPath>
-		 </Options>
-	   </Configuration>
-
-	   <ReferencePath>../../VirtualUniverse/bin/</ReferencePath>
-	   <Reference localCopy="false" name="System"/>
-	   <Reference name="System.Xml"/>
-	   <Reference name="System.Drawing"/>
-	   <Reference name="System.Runtime.Remoting"/>
-	   <Reference name="OpenMetaverseTypes" path="../../VirtualUniverse/bin/"/>
-	   <Reference name="OpenMetaverse" path="../../VirtualUniverse/bin/"/>
-	   <Reference name="OpenSim.Framework"/>
-	   <Reference name="OpenSim.Data"/>
-	   <Reference name="OpenSim.Region.Framework"/>
-	   <Reference name="OpenSim.Framework.Console"/>
-	   <Reference name="OpenSim.Framework.Servers"/>
-	   <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-	   <Reference name="OpenSim.Framework.Communications"/>
-	   <Reference name="OpenSim.Region.Physics.Manager"/>
-	   <Reference name="OpenSim.Services.Interfaces"/>
-	   <Reference name="Nini" path="../../VirtualUniverse/bin/"/>
-	   <Reference name="log4net" path="../../VirtualUniverse/bin/"/>
-	   <Reference name="XMLRPC" path="../../VirtualUniverse/bin/"/>
-	   <Reference name="Mono.Addins" path="../../VirtualUniverse/bin/"/>
-	   <Reference name="ThreadedClasses" path="../../VirtualUniverse/bin/"/>
-	   
-	   <Files>
-		 <Match pattern="*.cs" recurse="true"/>
-	   </Files>
-	</Project>
 
     <!-- Tools -->
 
@@ -3316,7 +3201,7 @@
         <Match buildAction="EmbeddedResource" path="World/Archiver/Tests/Resources" pattern="*"/>
         <Match path="World/Land/Tests" pattern="*.cs" recurse="true"/>
         <Match path="World/Media/Moap/Tests" pattern="*.cs" recurse="true"/>
-        <Match path="World/Serializer/Tests" pattern="*.cs" recurse="true"/>
+        <Match path="World/Serialiser/Tests" pattern="*.cs" recurse="true"/>
         <Match path="World/Terrain/Tests" pattern="*.cs" recurse="true"/>
         <Match path="ServiceConnectorsOut/Asset/Tests" pattern="*.cs" recurse="true"/>
         <Match path="ServiceConnectorsOut/Grid/Tests" pattern="*.cs" recurse="true"/>
