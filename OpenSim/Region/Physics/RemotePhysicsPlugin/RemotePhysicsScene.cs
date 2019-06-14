@@ -366,7 +366,7 @@ namespace OpenSim.Region.Physics.RemotePhysicsPlugin
         /// meshes from shape descriptions</param>
         /// <param name="config">The configuration settings to be used to
         /// configure the scene</param>
-        public override void Initialise(IMesher meshmerizer,
+        public override void Initialize(IMesher meshmerizer,
             IConfigSource config)
         {
             Vector3 regionExtent;
@@ -376,7 +376,7 @@ namespace OpenSim.Region.Physics.RemotePhysicsPlugin
                 Constants.RegionSize, Constants.RegionSize);
 
             // Call the actual intialization method with the new extents
-            Initialise(meshmerizer, config, regionExtent);
+            Initialize(meshmerizer, config, regionExtent);
         }
 
         // Initializes the physics scene
@@ -389,7 +389,7 @@ namespace OpenSim.Region.Physics.RemotePhysicsPlugin
         /// configure the scene</param>
         /// <param name="regionExtent">The size of the scene in Open Simulator
         /// units</param>
-        public override void Initialise(IMesher meshmerizer,
+        public override void Initialize(IMesher meshmerizer,
             IConfigSource config, Vector3 regionExtent)
         {
             OpenMetaverse.Vector3 gravityVector;

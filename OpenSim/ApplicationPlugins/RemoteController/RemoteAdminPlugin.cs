@@ -86,13 +86,13 @@ namespace OpenSim.ApplicationPlugins.RemoteController
             get { return m_name; }
         }
 
-        public void Initialise()
+        public void Initialize()
         {
             m_log.Error("[RADMIN]: " + Name + " cannot be default-initialized!");
-            throw new PluginNotInitialisedException(Name);
+            throw new PluginNotInitializedException(Name);
         }
 
-        public void Initialise(OpenSimBase openSim)
+        public void Initialize(OpenSimBase openSim)
         {
             m_configSource = openSim.ConfigSource.Source;
             try
@@ -201,7 +201,7 @@ namespace OpenSim.ApplicationPlugins.RemoteController
             }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
             if (!CreateDefaultAvatars())
             {

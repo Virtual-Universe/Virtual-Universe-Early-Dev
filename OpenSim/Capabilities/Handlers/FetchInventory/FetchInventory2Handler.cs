@@ -75,7 +75,7 @@ namespace OpenSim.Capabilities.Handlers
                 }
             }
 
-            reply = LLSDHelpers.SerialiseLLSDReply(llsdReply);
+            reply = LLSDHelpers.SerializeLLSDReply(llsdReply);
 
             return reply;
         }

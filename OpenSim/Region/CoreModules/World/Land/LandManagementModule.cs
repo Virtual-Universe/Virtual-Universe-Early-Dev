@@ -116,7 +116,7 @@ namespace OpenSim.Region.CoreModules.World.Land
             get { return null; }
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             shouldLimitParcelLayerInfoToViewDistance = true;
             parcelLayerViewDistance = 128;
@@ -1738,7 +1738,7 @@ namespace OpenSim.Region.CoreModules.World.Land
             if (!m_scene.TryGetClient(agentID, out client)) 
             {
                 m_log.WarnFormat("[LAND MANAGEMENT MODULE]: Unable to retrieve IClientAPI for {0}", agentID);
-                return LLSDHelpers.SerialiseLLSDReply(new LLSDEmpty());
+                return LLSDHelpers.SerializeLLSDReply(new LLSDEmpty());
             }
 
             ParcelPropertiesUpdateMessage properties = new ParcelPropertiesUpdateMessage();
@@ -1788,7 +1788,7 @@ namespace OpenSim.Region.CoreModules.World.Land
             {
                 m_log.WarnFormat("[LAND MANAGEMENT MODULE]: Unable to find parcelID {0}", parcelID);
             }
-            return LLSDHelpers.SerialiseLLSDReply(new LLSDEmpty());
+            return LLSDHelpers.SerializeLLSDReply(new LLSDEmpty());
         }
         // we cheat here: As we don't have (and want) a grid-global parcel-store, we can't return the
         // "real" parcelID, because we wouldn't be able to map that to the region the parcel belongs to.
@@ -1856,7 +1856,7 @@ namespace OpenSim.Region.CoreModules.World.Land
             response.parcel_id = parcelID;
             m_log.DebugFormat("[LAND MANAGEMENT MODULE]: Got parcelID {0}", parcelID);
 
-            return LLSDHelpers.SerialiseLLSDReply(response);
+            return LLSDHelpers.SerializeLLSDReply(response);
         }
 
         #endregion

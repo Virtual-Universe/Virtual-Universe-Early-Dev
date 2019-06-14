@@ -334,7 +334,7 @@ namespace OpenSim.Framework.Servers
             }
     
             m_serverStatsCollector = new ServerStatsCollector();
-            m_serverStatsCollector.Initialise(configSource);
+            m_serverStatsCollector.Initialize(configSource);
             m_serverStatsCollector.Start();
         }
 

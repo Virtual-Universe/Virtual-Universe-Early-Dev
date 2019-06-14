@@ -64,7 +64,7 @@ namespace OpenSim.Region.ClientStack.Linden
         private Commands m_commands = new Commands();
         public ICommands Commands { get { return m_commands; } }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             m_commands.AddCommand( "Help", false, "help", "help [<item>]", "Display help on a particular command or on a list of commands in a category", Help);
         }
@@ -87,7 +87,7 @@ namespace OpenSim.Region.ClientStack.Linden
             m_eventQueue = m_scene.RequestModuleInterface<IEventQueue>();
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

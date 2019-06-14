@@ -105,7 +105,7 @@ namespace OpenSim.Data.Tests
         {
             ClearDB();
             db = (ISimulationDataStore)service;
-            db.Initialise(m_connStr);
+            db.Initialize(m_connStr);
         }
 
         private void ClearDB()

@@ -73,7 +73,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.Minimodule
 
         #region INonSharedRegionModule
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             if (source.Configs["MRM"] != null)
             {

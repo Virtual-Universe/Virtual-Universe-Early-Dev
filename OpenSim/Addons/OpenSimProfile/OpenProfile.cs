@@ -50,7 +50,7 @@ namespace OpenSimProfile.Modules.OpenProfile
         }
 
         #region IRegionModuleBase implementation
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig profileConfig = config.Configs["Profile"];
 
@@ -113,7 +113,7 @@ namespace OpenSimProfile.Modules.OpenProfile
             get { return null; }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

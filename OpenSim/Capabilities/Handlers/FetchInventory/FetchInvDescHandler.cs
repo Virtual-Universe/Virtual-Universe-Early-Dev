@@ -101,7 +101,7 @@ namespace OpenSim.Capabilities.Handlers
 
                 try
                 {
-                    LLSDHelpers.DeserialiseOSDMap(inventoryhash, llsdRequest);
+                    LLSDHelpers.DeserializeOSDMap(inventoryhash, llsdRequest);
                 }
                 catch (Exception e)
                 {
@@ -131,7 +131,7 @@ namespace OpenSim.Capabilities.Handlers
                 {
                     LLSDInventoryDescendents reply = ToLLSD(icoll.Collection, icoll.Descendents);
 
-                    inventoryitemstr = LLSDHelpers.SerialiseLLSDReply(reply);
+                    inventoryitemstr = LLSDHelpers.SerializeLLSDReply(reply);
                     inventoryitemstr = inventoryitemstr.Replace("<llsd><map><key>folders</key><array>", "");
                     inventoryitemstr = inventoryitemstr.Replace("</array></map></llsd>", "");
 
@@ -289,7 +289,7 @@ namespace OpenSim.Capabilities.Handlers
 
                 try
                 {
-                    LLSDHelpers.DeserialiseOSDMap(inventoryhash, llsdRequest);
+                    LLSDHelpers.DeserializeOSDMap(inventoryhash, llsdRequest);
                 }
                 catch (Exception e)
                 {
@@ -304,7 +304,7 @@ namespace OpenSim.Capabilities.Handlers
                 }
                 else
                 {
-                    inventoryitemstr = LLSDHelpers.SerialiseLLSDReply(reply);
+                    inventoryitemstr = LLSDHelpers.SerializeLLSDReply(reply);
                     inventoryitemstr = inventoryitemstr.Replace("<llsd><map><key>folders</key><array>", "");
                     inventoryitemstr = inventoryitemstr.Replace("</array></map></llsd>", "");
                 }

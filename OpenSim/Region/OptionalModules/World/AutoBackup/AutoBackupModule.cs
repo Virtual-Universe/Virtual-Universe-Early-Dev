@@ -156,7 +156,7 @@ namespace OpenSim.Region.OptionalModules.World.AutoBackup
         /// Called once in the lifetime of the module at startup.
         /// </summary>
         /// <param name="source">The input config source for Universe.ini.</param>
-        void IRegionModuleBase.Initialise(IConfigSource source)
+        void IRegionModuleBase.Initialize(IConfigSource source)
         {
             // Determine if we have been enabled at all in Universe.ini -- this is part and parcel of being an optional module
             this.m_configSource = source;
@@ -284,7 +284,7 @@ namespace OpenSim.Region.OptionalModules.World.AutoBackup
         /// <summary>
         /// Currently a no-op.
         /// </summary>
-        void ISharedRegionModule.PostInitialise()
+        void ISharedRegionModule.PostInitialize()
         {
         }
 

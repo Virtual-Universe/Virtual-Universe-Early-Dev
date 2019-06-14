@@ -67,7 +67,7 @@ namespace OpenSim.Region.OptionalModules.Scripting.RegionReady
             get { return null; }
         }
             
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_config = config.Configs["RegionReady"];
             if (m_config != null) 

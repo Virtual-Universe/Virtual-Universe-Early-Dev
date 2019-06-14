@@ -185,9 +185,9 @@ namespace OpenSim.Region.Physics.PhysXPlugin
         /// Create the PhysX Scene.
         /// </summary>
         /// <param name="gpuEnabled">Controls whether PhysX should attempt to
-        /// initialise the GPU dispatcher</param>
+        /// initialize the GPU dispatcher</param>
         /// <param name="cpuEnabled">Controls whether PhysX should attempt to
-        /// initialise the CPU dispatcher</param>
+        /// initialize the CPU dispatcher</param>
         /// <param name="cpuMaxThreads">The number of threads that the cpu will
         /// attempt to run in parallel for PhysX, if and only if the cpuEnabled
         /// value is set to true</param>

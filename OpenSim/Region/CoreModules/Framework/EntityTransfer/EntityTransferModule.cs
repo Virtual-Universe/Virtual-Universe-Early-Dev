@@ -187,7 +187,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
             get { return "BasicEntityTransferModule"; }
         }
 
-        public virtual void Initialise(IConfigSource source)
+        public virtual void Initialize(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -195,7 +195,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                 string name = moduleConfig.GetString("EntityTransferModule", "");
                 if (name == Name)
                 {
-                    InitialiseCommon(source);
+                    InitializeCommon(source);
                     m_log.DebugFormat("[ENTITY TRANSFER MODULE]: {0} enabled.", Name);
                 }
             }
@@ -205,7 +205,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
         /// Initialize config common for this module and any descendents.
         /// </summary>
         /// <param name="source"></param>
-        protected virtual void InitialiseCommon(IConfigSource source)
+        protected virtual void InitializeCommon(IConfigSource source)
         {
             string transferVersionName = "SIMULATION";
             float maxTransferVersion = 0.3f;
@@ -273,7 +273,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
             m_Enabled = true;
         }
 
-        public virtual void PostInitialise()
+        public virtual void PostInitialize()
         {
         }
 
@@ -2576,7 +2576,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
 
                 //successYN
                 //    = m_sceneGridService.PrimCrossToNeighboringRegion(
-                //        newRegionHandle, grp.UUID, m_serialiser.SaveGroupToXml2(grp), primcrossingXMLmethod);
+                //        newRegionHandle, grp.UUID, m_serializer.SaveGroupToXml2(grp), primcrossingXMLmethod);
                 //if (successYN && (objectState != "") && m_allowScriptCrossings)
                 //{
                 //    successYN = m_sceneGridService.PrimCrossToNeighboringRegion(

@@ -230,7 +230,7 @@ namespace OpenSim.Modules.Currency
             }
             catch
             {
-                m_log.ErrorFormat("[Virtual Universe Economy]: Initialise: Faile to read configuration file");
+                m_log.ErrorFormat("[Virtual Universe Economy]: Initialize: Faile to read configuration file");
             }
         }
 
@@ -296,7 +296,7 @@ namespace OpenSim.Modules.Currency
             get { return "DTLNSLMoneyModule"; }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

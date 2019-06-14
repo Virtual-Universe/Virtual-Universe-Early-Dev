@@ -74,7 +74,7 @@ namespace OpenSim.Region.CoreModules.World.Estate
         
         public Type ReplaceableInterface { get { return null; } }        
 
-        public void Initialise(IConfigSource source) 
+        public void Initialize(IConfigSource source) 
         {
             AllowRegionRestartFromClient = true;
 
@@ -94,7 +94,7 @@ namespace OpenSim.Region.CoreModules.World.Estate
             m_Telehub = new TelehubManager(scene);
 
             m_commands = new EstateManagementCommands(this);
-            m_commands.Initialise();
+            m_commands.Initialize();
         }
         
         public void RemoveRegion(Scene scene) {}            

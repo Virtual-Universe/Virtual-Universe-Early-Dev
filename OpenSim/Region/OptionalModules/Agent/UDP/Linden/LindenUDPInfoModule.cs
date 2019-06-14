@@ -60,12 +60,12 @@ namespace OpenSim.Region.OptionalModules.UDP.Linden
         
         public Type ReplaceableInterface { get { return null; } }
         
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
 //            m_log.DebugFormat("[LINDEN UDP INFO MODULE]: INITIALIZED MODULE");
         }
         
-        public void PostInitialise()
+        public void PostInitialize()
         {
 //            m_log.DebugFormat("[LINDEN UDP INFO MODULE]: POST INITIALIZED MODULE");
         }

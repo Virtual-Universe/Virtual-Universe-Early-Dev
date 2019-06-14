@@ -167,7 +167,7 @@ namespace OpenSim.Data.Null
         protected Dictionary<UUID, TerrainData> m_terrains = new Dictionary<UUID, TerrainData>();
         protected Dictionary<UUID, LandData> m_landData = new Dictionary<UUID, LandData>();
         
-        public void Initialise(string dbfile)
+        public void Initialize(string dbfile)
         {
             return;
         }

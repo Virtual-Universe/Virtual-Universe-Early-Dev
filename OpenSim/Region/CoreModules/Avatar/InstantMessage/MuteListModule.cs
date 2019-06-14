@@ -49,7 +49,7 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
         private List<Scene> m_SceneList = new List<Scene>();
         private string m_RestURL = String.Empty;
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig cnf = config.Configs["Messaging"];
             if (cnf == null)
@@ -102,7 +102,7 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
             }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
             if (!enabled)
                 return;

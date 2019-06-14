@@ -133,7 +133,7 @@ namespace OpenSim.Server.Base
             }
         }
 
-        protected override void Initialise()
+        protected override void Initialize()
         {
             foreach (BaseHttpServer s in MainServer.Servers.Values)
                 s.Start();

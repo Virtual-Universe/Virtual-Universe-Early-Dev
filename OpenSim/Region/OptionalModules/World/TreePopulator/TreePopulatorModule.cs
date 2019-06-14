@@ -172,7 +172,7 @@ namespace OpenSim.Region.OptionalModules.World.TreePopulator
 
         #region Region Module interface
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             
             // ini file settings
@@ -196,7 +196,7 @@ namespace OpenSim.Region.OptionalModules.World.TreePopulator
 
             InstallCommands();
 
-            m_log.Debug("[TREES]: Initialised tree module");
+            m_log.Debug("[TREES]: Initialized tree module");
         }
 
         public void AddRegion(Scene scene)

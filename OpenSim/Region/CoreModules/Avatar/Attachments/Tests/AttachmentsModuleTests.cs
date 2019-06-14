@@ -46,7 +46,7 @@ using OpenSim.Region.CoreModules.Framework.EntityTransfer;
 using OpenSim.Region.CoreModules.Framework.InventoryAccess;
 using OpenSim.Region.CoreModules.Scripting.WorldComm;
 using OpenSim.Region.CoreModules.ServiceConnectorsOut.Simulation;
-using OpenSim.Region.CoreModules.World.Serialiser;
+using OpenSim.Region.CoreModules.World.Serializer;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.ScriptEngine.Interfaces;

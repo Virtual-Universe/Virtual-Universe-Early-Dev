@@ -37,7 +37,7 @@ namespace OpenSimSearch.Modules.OpenSearch
         private bool m_Enabled = true;
 
         #region IRegionModuleBase implementation
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig searchConfig = config.Configs["Search"];
 
@@ -97,7 +97,7 @@ namespace OpenSimSearch.Modules.OpenSearch
             get { return null; }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

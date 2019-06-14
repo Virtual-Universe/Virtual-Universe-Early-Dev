@@ -73,10 +73,10 @@ namespace OpenSim.Data.MySQL
 
         public MySQLSimulationData(string connectionString)
         {
-            Initialise(connectionString);
+            Initialize(connectionString);
         }
 
-        public void Initialise(string connectionString)
+        public void Initialize(string connectionString)
         {
             m_connectionString = connectionString;
 

@@ -56,7 +56,7 @@ namespace OpenSim.Region.CoreModules.Framework
 
         #region ISharedRegionModule
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_Interval = Util.GetConfigVarFromSections<int>(config, "Interval", new string[] { "ServiceThrottle" }, 5000);
 
@@ -99,7 +99,7 @@ namespace OpenSim.Region.CoreModules.Framework
             }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

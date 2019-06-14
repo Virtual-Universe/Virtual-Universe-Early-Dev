@@ -57,12 +57,12 @@ namespace OpenSim.Region.Physics.BasicPhysicsPlugin
             //sceneIdentifier = _sceneIdentifier;
         }
 
-        public override void Initialise(IMesher meshmerizer, IConfigSource config)
+        public override void Initialize(IMesher meshmerizer, IConfigSource config)
         {
             throw new Exception("Should not be called.");
         }
 
-        public override void Initialise(IMesher meshmerizer, IConfigSource config, Vector3 regionExtent)
+        public override void Initialize(IMesher meshmerizer, IConfigSource config, Vector3 regionExtent)
         {
             m_regionExtent = regionExtent;
         }

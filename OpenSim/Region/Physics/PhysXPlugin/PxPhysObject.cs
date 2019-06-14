@@ -442,7 +442,7 @@ namespace OpenSim.Region.Physics.PhysXPlugin
             // be associated with this actor
             m_shapeID = m_pxScene.GetNewShapeID();
 
-            // Initialise the collision event update collections
+            // Initialize the collision event update collections
             m_collisionCollection = new CollisionEventUpdate();
             m_prevCollisionCollection = m_collisionCollection;
 
@@ -594,7 +594,7 @@ namespace OpenSim.Region.Physics.PhysXPlugin
             // Create the PhysX Wrapper physical shape for this physical object
             m_pxScene.AddTaintedObject(this);
 
-            // Initialise the collision event update collections
+            // Initialize the collision event update collections
             m_collisionCollection = new CollisionEventUpdate();
             m_prevCollisionCollection = m_collisionCollection;
         }
@@ -2403,7 +2403,7 @@ namespace OpenSim.Region.Physics.PhysXPlugin
             bool ret;
             bool sendEndEvent;
 
-            // Initialise the return value with true until proven that all
+            // Initialize the return value with true until proven that all
             // collisions were handled
             ret = true;
 

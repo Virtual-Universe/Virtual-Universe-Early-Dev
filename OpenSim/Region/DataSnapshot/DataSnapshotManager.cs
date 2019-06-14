@@ -103,7 +103,7 @@ namespace OpenSim.Region.DataSnapshot
 
         #region Region Module interface
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             if (!m_configLoaded) 
             {
@@ -239,7 +239,7 @@ namespace OpenSim.Region.DataSnapshot
             m_snapStore.RemoveScene(restartedScene);
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

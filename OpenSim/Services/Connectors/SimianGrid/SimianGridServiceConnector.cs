@@ -69,7 +69,7 @@ namespace OpenSim.Services.Connectors.SimianGrid
             CommonInit(source);
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             CommonInit(source);
         }

@@ -73,7 +73,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Gods
             }
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
         }
 

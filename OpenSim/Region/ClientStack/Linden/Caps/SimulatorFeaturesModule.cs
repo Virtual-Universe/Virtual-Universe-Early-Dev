@@ -77,7 +77,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
         #region ISharedRegionModule Members
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             IConfig config = source.Configs["SimulatorFeatures"];
 
@@ -126,7 +126,7 @@ namespace OpenSim.Region.ClientStack.Linden
             GetGridExtraFeatures(s);
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

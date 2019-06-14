@@ -40,7 +40,7 @@ namespace OpenSim.Region.Physics.Manager
         
         private static int m_workIndicator;
 
-        public override void Initialise(IMesher meshmerizer, IConfigSource config)
+        public override void Initialize(IMesher meshmerizer, IConfigSource config)
         {
             // Does nothing right now
         }

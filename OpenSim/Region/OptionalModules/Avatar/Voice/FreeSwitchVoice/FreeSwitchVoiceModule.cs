@@ -101,7 +101,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
 
         private IFreeswitchService m_FreeswitchService;
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_Config = config.Configs["FreeSwitchVoice"];
 
@@ -207,7 +207,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
             }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 
@@ -297,7 +297,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
         //
         // Note that OnRegisterCaps is called here via a closure
         // delegate containing the scene of the respective region (see
-        // Initialise()).
+        // Initialize()).
         // </summary>
         public void OnRegisterCaps(Scene scene, UUID agentID, Caps caps)
         {
@@ -394,7 +394,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
                                                 String.Format("http://{0}:{1}{2}/", m_openSimWellKnownHTTPAddress,
                                                               m_freeSwitchServicePort, m_freeSwitchAPIPrefix));
 
-                string r = LLSDHelpers.SerialiseLLSDReply(voiceAccountResponse);
+                string r = LLSDHelpers.SerializeLLSDReply(voiceAccountResponse);
 
 //                m_log.DebugFormat("[FreeSwitchVoice][PROVISIONVOICE]: avatar \"{0}\": {1}", avatarName, r);
 
@@ -477,7 +477,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.FreeSwitchVoice
                 creds["channel_uri"] = channelUri;
 
                 parcelVoiceInfo = new LLSDParcelVoiceInfoResponse(scene.RegionInfo.RegionName, land.LocalID, creds);
-                string r = LLSDHelpers.SerialiseLLSDReply(parcelVoiceInfo);
+                string r = LLSDHelpers.SerializeLLSDReply(parcelVoiceInfo);
 
 //                m_log.DebugFormat("[FreeSwitchVoice][PARCELVOICE]: region \"{0}\": Parcel \"{1}\" ({2}): avatar \"{3}\": {4}",
 //                                  scene.RegionInfo.RegionName, land.Name, land.LocalID, avatarName, r);

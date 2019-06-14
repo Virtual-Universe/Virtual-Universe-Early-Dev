@@ -195,7 +195,7 @@ namespace OpenSim
             // without a location parameter to allow that to happen.
             if (registryLocation == String.Empty)
             {
-                using (PluginLoader<IApplicationPlugin> loader = new PluginLoader<IApplicationPlugin>(new ApplicationPluginInitialiser(this)))
+                using (PluginLoader<IApplicationPlugin> loader = new PluginLoader<IApplicationPlugin>(new ApplicationPluginInitializer(this)))
                 {
                     loader.Load("/OpenSim/Startup");
                     m_plugins = loader.Plugins;
@@ -203,7 +203,7 @@ namespace OpenSim
             }
             else
             {
-                using (PluginLoader<IApplicationPlugin> loader = new PluginLoader<IApplicationPlugin>(new ApplicationPluginInitialiser(this), registryLocation))
+                using (PluginLoader<IApplicationPlugin> loader = new PluginLoader<IApplicationPlugin>(new ApplicationPluginInitializer(this), registryLocation))
                 {
                     loader.Load("/OpenSim/Startup");
                     m_plugins = loader.Plugins;
@@ -304,7 +304,7 @@ namespace OpenSim
             // inserted them manually.
             foreach (IApplicationPlugin plugin in m_plugins)
             {
-                plugin.PostInitialise();
+                plugin.PostInitialize();
             }
 
             if (m_console != null)
@@ -786,7 +786,7 @@ namespace OpenSim
             scene.LoadWorldMap();
 
             scene.PhysicsScene.RequestAssetMethod = scene.PhysicsRequestAsset;
-            scene.PhysicsScene.SetTerrain(scene.Heightmap.GetFloatsSerialised());
+            scene.PhysicsScene.SetTerrain(scene.Heightmap.GetFloatsSerialized());
             scene.PhysicsScene.SetWaterLevel((float)regionInfo.RegionSettings.WaterHeight);
 
             return scene;

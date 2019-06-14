@@ -351,7 +351,7 @@ namespace OpenSim.Region.Framework.Scenes
         protected IWorldComm m_worldCommModule;
         protected IAvatarFactoryModule m_AvatarFactory;
         protected IConfigSource m_config;
-        protected IRegionSerialiserModule m_serialiser;
+        protected IRegionSerializerModule m_serializer;
         protected IDialogModule m_dialogModule;
         protected ICapabilitiesModule m_capsModule;
         protected IGroupsModule m_groupsModule;
@@ -1621,7 +1621,7 @@ namespace OpenSim.Region.Framework.Scenes
             XferManager = RequestModuleInterface<IXfer>();
             m_AvatarFactory = RequestModuleInterface<IAvatarFactoryModule>();
             AttachmentsModule = RequestModuleInterface<IAttachmentsModule>();
-            m_serialiser = RequestModuleInterface<IRegionSerialiserModule>();
+            m_serializer = RequestModuleInterface<IRegionSerializerModule>();
             m_dialogModule = RequestModuleInterface<IDialogModule>();
             m_capsModule = RequestModuleInterface<ICapabilitiesModule>();
             EntityTransferModule = RequestModuleInterface<IEntityTransferModule>();

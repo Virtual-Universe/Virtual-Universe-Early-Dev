@@ -132,7 +132,7 @@ namespace OpenSim.Region.ClientStack
                     IClientNetworkServer server =
                         (IClientNetworkServer) Activator.CreateInstance(pluginAssembly[i].GetType(plugin[i].ToString()));
 
-                    server.Initialise(
+                    server.Initialize(
                         _listenIP, ref port, proxyPortOffset, allow_alternate_port,
                         configSource, authenticateClass);
                     servers.Add(server);

@@ -357,7 +357,7 @@ namespace OpenSim.Region.CoreModules.Scripting.HttpRequest
 
         #region ISharedRegionModule Members
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             m_proxyurl = config.Configs["Startup"].GetString("HttpProxy");
             m_proxyexcepts = config.Configs["Startup"].GetString("HttpProxyExceptions");
@@ -381,7 +381,7 @@ namespace OpenSim.Region.CoreModules.Scripting.HttpRequest
                 m_scene = null;
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

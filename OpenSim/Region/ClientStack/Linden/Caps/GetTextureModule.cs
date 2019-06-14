@@ -69,7 +69,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
         #region ISharedRegionModule Members
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             IConfig config = source.Configs["ClientStack.LindenCaps"];
             if (config == null)
@@ -110,7 +110,7 @@ namespace OpenSim.Region.ClientStack.Linden
             m_scene.EventManager.OnRegisterCaps += RegisterCaps;
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

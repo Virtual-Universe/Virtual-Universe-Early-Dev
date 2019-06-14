@@ -91,10 +91,10 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Profile
         public LocalUserProfilesServicesConnector(IConfigSource source)
         {
             m_log.Debug("[LOCAL USERPROFILES SERVICE CONNECTOR]: LocalUserProfileServicesConnector instantiated directly.");
-            InitialiseService(source);
+            InitializeService(source);
         }
 
-        public void InitialiseService(IConfigSource source)
+        public void InitializeService(IConfigSource source)
         {
             ConfigName = "UserProfilesService";
             
@@ -163,7 +163,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Profile
 
         #region ISharedRegionModule implementation
 
-        void ISharedRegionModule.PostInitialise()
+        void ISharedRegionModule.PostInitialize()
         {
             if(!Enabled)
                 return;
@@ -173,7 +173,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Profile
 
         #region IRegionModuleBase implementation
 
-        void IRegionModuleBase.Initialise(IConfigSource source)
+        void IRegionModuleBase.Initialize(IConfigSource source)
         {
             IConfig moduleConfig = source.Configs["Modules"];
             if (moduleConfig != null)
@@ -181,7 +181,7 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Profile
                 string name = moduleConfig.GetString("UserProfilesServices", "");
                 if (name == Name)
                 {
-                    InitialiseService(source);
+                    InitializeService(source);
                     m_log.Info("[LOCAL USERPROFILES SERVICE CONNECTOR]: Local user profiles connector enabled");
                 }
             }

@@ -119,7 +119,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
 
         private object m_Lock;
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
 
             m_config = config.Configs["VivoxVoice"];
@@ -363,7 +363,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
             }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
             // Do nothing.
         }
@@ -405,7 +405,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
         //
         // Note that OnRegisterCaps is called here via a closure
         // delegate containing the scene of the respective region (see
-        // Initialise()).
+        // Initialize()).
         // </summary>
         public void OnRegisterCaps(Scene scene, UUID agentID, Caps caps)
         {
@@ -581,7 +581,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
                 LLSDVoiceAccountResponse voiceAccountResponse =
                     new LLSDVoiceAccountResponse(agentname, password, m_vivoxSipUri, m_vivoxVoiceAccountApi);
 
-                string r = LLSDHelpers.SerialiseLLSDReply(voiceAccountResponse);
+                string r = LLSDHelpers.SerializeLLSDReply(voiceAccountResponse);
 
                 m_log.DebugFormat("[VivoxVoice][PROVISIONVOICE]: avatar \"{0}\": {1}", avatarName, r);
 
@@ -660,7 +660,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.Voice.VivoxVoice
                 creds["channel_uri"] = channel_uri;
 
                 parcelVoiceInfo = new LLSDParcelVoiceInfoResponse(scene.RegionInfo.RegionName, land.LocalID, creds);
-                string r = LLSDHelpers.SerialiseLLSDReply(parcelVoiceInfo);
+                string r = LLSDHelpers.SerializeLLSDReply(parcelVoiceInfo);
 
                 m_log.DebugFormat("[VivoxVoice][PARCELVOICE]: region \"{0}\": Parcel \"{1}\" ({2}): avatar \"{3}\": {4}", 
                                   scene.RegionInfo.RegionName, land.Name, land.LocalID, avatarName, r);

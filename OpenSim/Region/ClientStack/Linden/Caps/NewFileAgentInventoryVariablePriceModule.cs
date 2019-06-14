@@ -67,7 +67,7 @@ namespace OpenSim.Region.ClientStack.Linden
             get { return null; }
         }
 
-        public void Initialise(IConfigSource source)
+        public void Initialize(IConfigSource source)
         {
             IConfig meshConfig = source.Configs["Mesh"];
             if (meshConfig == null)

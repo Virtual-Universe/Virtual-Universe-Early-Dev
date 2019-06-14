@@ -66,7 +66,7 @@ namespace OpenSim.Region.CoreModules.World.Estate
 
         protected EstateConnector m_EstateConnector;
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             int port = 0;
 
@@ -83,7 +83,7 @@ namespace OpenSim.Region.CoreModules.World.Estate
             server.AddStreamHandler(new EstateRequestHandler(this));
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
         }
 

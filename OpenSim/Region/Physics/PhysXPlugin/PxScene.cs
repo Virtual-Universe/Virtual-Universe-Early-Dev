@@ -298,7 +298,7 @@ namespace OpenSim.Region.Physics.PhysXPlugin
         /// shape descriptions</param>
         /// <param name="config">Configuration file that will load the initial
         /// values set up inside of TBD</param>
-        public override void Initialise(
+        public override void Initialize(
             IMesher meshmerizer, IConfigSource config)
         {
             Vector3 regionExtent;
@@ -309,12 +309,12 @@ namespace OpenSim.Region.Physics.PhysXPlugin
             // size of the region when creating it
             // NOTE: The third value is not used and is assigned arbitrarily to
             // match the value BulletSim used, it is here to match the override
-            // method of Initialise inside of the PhysicsScene class
+            // method of Initialize inside of the PhysicsScene class
             regionExtent = new Vector3(Constants.RegionSize,
                 Constants.RegionSize, Constants.RegionSize);
 
             // Call the actual initialization method with the new extents
-            Initialise(meshmerizer, config, regionExtent);
+            Initialize(meshmerizer, config, regionExtent);
         }
 
 
@@ -327,7 +327,7 @@ namespace OpenSim.Region.Physics.PhysXPlugin
         /// values set up inside of TBD</param>
         /// <param name="regionExtent">The size of the region which will either
         /// be the basic 256 by 256 or a value given by the scene class</param>
-        public override void Initialise(IMesher meshmerizer,
+        public override void Initialize(IMesher meshmerizer,
             IConfigSource config, Vector3 regionExtent)
         {
             // Get the PhysX configuration section

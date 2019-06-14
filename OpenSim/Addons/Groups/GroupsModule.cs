@@ -63,7 +63,7 @@ namespace OpenSim.Groups
 
         #region Region Module interfaceBase Members
 
-        public void Initialise(IConfigSource config)
+        public void Initialize(IConfigSource config)
         {
             IConfig groupsConfig = config.Configs["Groups"];
 
@@ -221,7 +221,7 @@ namespace OpenSim.Groups
             get { return "Groups Module V2"; }
         }
 
-        public void PostInitialise()
+        public void PostInitialize()
         {
             // NoOp
         }
