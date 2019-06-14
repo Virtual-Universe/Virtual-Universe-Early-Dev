@@ -1,46 +1,46 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Reflection;
+using log4net;
+using Mono.Addins;
+using Nini.Config;
 using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Capabilities;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
-using log4net;
-using Nini.Config;
-using Mono.Addins;
-
 using Caps = OpenSim.Framework.Capabilities.Caps;
 
-
-namespace OpenSim.Region.CoreModules.World.LightShare
+namespace OpenSim.Region.CoreModules.World.GlobalEnvironment
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "EnvironmentModule")]
 
@@ -58,12 +58,15 @@ namespace OpenSim.Region.CoreModules.World.LightShare
         private LLSDEnvironmentSetResponse setResponse = null;
 
         #region INonSharedRegionModule
+
         public void Initialize(IConfigSource source)
         {
             IConfig config = source.Configs["ClientStack.LindenCaps"];
 
             if (null == config)
+            {
                 return;
+            }
 
             if (config.GetString("Cap_EnvironmentSettings", String.Empty) != "localhost")
             {
@@ -93,7 +96,9 @@ namespace OpenSim.Region.CoreModules.World.LightShare
         public void AddRegion(Scene scene)
         {
             if (!Enabled)
+            {
                 return;
+            }
 
             scene.RegisterModuleInterface<IEnvironmentModule>(this);
             m_scene = scene;
@@ -103,7 +108,9 @@ namespace OpenSim.Region.CoreModules.World.LightShare
         public void RegionLoaded(Scene scene)
         {
             if (!Enabled)
+            {
                 return;
+            }
 
             setResponse = new LLSDEnvironmentSetResponse();
             scene.EventManager.OnRegisterCaps += OnRegisterCaps;
@@ -112,29 +119,34 @@ namespace OpenSim.Region.CoreModules.World.LightShare
         public void RemoveRegion(Scene scene)
         {
             if (Enabled)
+            {
                 return;
+            }
 
             scene.EventManager.OnRegisterCaps -= OnRegisterCaps;
             m_scene = null;
         }
+
         #endregion
 
         #region IEnvironmentModule
+
         public void ResetEnvironmentSettings(UUID regionUUID)
         {
             if (!Enabled)
+            {
                 return;
+            }
 
             m_scene.SimulationDataService.RemoveRegionEnvironmentSettings(regionUUID);
         }
+
         #endregion
 
         #region Events
+
         private void OnRegisterCaps(UUID agentID, Caps caps)
         {
-            //            m_log.DebugFormat("[{0}]: Register capability for agentID {1} in region {2}",
-            //                Name, agentID, caps.RegionName);
-
             string capsPath = capsBase + UUID.Random();
 
             // Get handler
@@ -158,14 +170,11 @@ namespace OpenSim.Region.CoreModules.World.LightShare
                  capsName,
                  agentID.ToString()));
         }
+
         #endregion
 
-        private string GetEnvironmentSettings(string request, string path, string param,
-              UUID agentID, Caps caps)
+        private string GetEnvironmentSettings(string request, string path, string param, UUID agentID, Caps caps)
         {
-            //            m_log.DebugFormat("[{0}]: Environment GET handle for agentID {1} in region {2}",
-            //                Name, agentID, caps.RegionName);
-
             string env = String.Empty;
 
             try
@@ -179,18 +188,15 @@ namespace OpenSim.Region.CoreModules.World.LightShare
             }
 
             if (String.IsNullOrEmpty(env))
+            {
                 env = EnvironmentSettings.EmptySettings(UUID.Zero, regionID);
+            }
 
             return env;
         }
 
-        private string SetEnvironmentSettings(string request, string path, string param,
-                              UUID agentID, Caps caps)
+        private string SetEnvironmentSettings(string request, string path, string param, UUID agentID, Caps caps)
         {
-
-            //            m_log.DebugFormat("[{0}]: Environment SET handle from agentID {1} in region {2}",
-            //                Name, agentID, caps.RegionName);
-
             setResponse.regionID = regionID;
             setResponse.success = false;
 
@@ -221,4 +227,3 @@ namespace OpenSim.Region.CoreModules.World.LightShare
         }
     }
 }
-

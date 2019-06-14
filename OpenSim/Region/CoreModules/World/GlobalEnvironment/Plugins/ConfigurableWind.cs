@@ -1,42 +1,42 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using log4net;
-using OpenMetaverse;
 using Mono.Addins;
-
+using OpenMetaverse;
 using OpenSim.Region.Framework.Interfaces;
-using OpenSim.Region.CoreModules.World.Wind;
+using OpenSim.Region.CoreModules.World.GlobalEnvironment;
 
-namespace OpenSim.Region.CoreModules.World.Wind.Plugins
+namespace OpenSim.Region.CoreModules.World.GlobalEnvironment.Plugins
 {
     [Extension(Path = "/OpenSim/WindModule", NodeName = "WindModel", Id = "ConfigurableWind")]
     class ConfigurableWind : Mono.Addins.TypeExtensionNode, IWindModelPlugin
@@ -44,8 +44,6 @@ namespace OpenSim.Region.CoreModules.World.Wind.Plugins
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private Vector2[] m_windSpeeds = new Vector2[16 * 16];
-        //private Random m_rndnums = new Random(Environment.TickCount);
-
         private float m_avgStrength = 5.0f; // Average magnitude of the wind vector
         private float m_avgDirection = 0.0f; // Average direction of the wind in degrees
         private float m_varStrength = 5.0f; // Max Strength  Variance
@@ -53,8 +51,6 @@ namespace OpenSim.Region.CoreModules.World.Wind.Plugins
         private float m_rateChange = 1.0f; // 
 
         private Vector2 m_curPredominateWind = new Vector2();
-
-
 
         #region IPlugin Members
 
@@ -115,20 +111,16 @@ namespace OpenSim.Region.CoreModules.World.Wind.Plugins
             // * This should probably be based on in-world time.
             // * should probably move all these local variables to class members and constants
             double time = DateTime.Now.TimeOfDay.Seconds / 86400.0f;
-
             double theta = time * (2 * Math.PI) * m_rateChange;
-
             double offset = Math.Sin(theta) * Math.Sin(theta*2) * Math.Sin(theta*9) * Math.Cos(theta*4);
-
             double windDir = avgAng + (varDir * offset);
-
             offset = Math.Sin(theta) * Math.Sin(theta*4) + (Math.Sin(theta*13) / 3);
             double windSpeed = m_avgStrength + (m_varStrength * offset);
 
-            if (windSpeed<0) 
-                windSpeed=0;
-
-
+            if (windSpeed < 0)
+            {
+                windSpeed = 0;
+            }
 
             m_curPredominateWind.X = (float)Math.Cos(windDir);
             m_curPredominateWind.Y = (float)Math.Sin(windDir);
@@ -158,10 +150,7 @@ namespace OpenSim.Region.CoreModules.World.Wind.Plugins
 
         public string Description
         {
-            get 
-            {
-                return "Provides a predominate wind direction that can change within configured variances for direction and speed."; 
-            }
+            get { return "Provides a predominate wind direction that can change within configured variances for direction and speed."; }
         }
 
         public System.Collections.Generic.Dictionary<string, string> WindParams()
@@ -215,22 +204,18 @@ namespace OpenSim.Region.CoreModules.World.Wind.Plugins
                     return m_rateChange;
                 default:
                     throw new Exception(String.Format("Unknown {0} parameter {1}", this.Name, param));
-
             }
         }
 
-
-
         #endregion
-
 
         private void LogSettings()
         {
-            m_log.InfoFormat("[ConfigurableWind] Average Strength   : {0}", m_avgStrength);
-            m_log.InfoFormat("[ConfigurableWind] Average Direction  : {0}", m_avgDirection);
-            m_log.InfoFormat("[ConfigurableWind] Varience Strength  : {0}", m_varStrength);
-            m_log.InfoFormat("[ConfigurableWind] Varience Direction : {0}", m_varDirection);
-            m_log.InfoFormat("[ConfigurableWind] Rate Change        : {0}", m_rateChange);
+            m_log.InfoFormat("[Configurable Wind]: Average Strength   : {0}", m_avgStrength);
+            m_log.InfoFormat("[Configurable Wind]: Average Direction  : {0}", m_avgDirection);
+            m_log.InfoFormat("[Configurable Wind]: Varience Strength  : {0}", m_varStrength);
+            m_log.InfoFormat("[Configurable Wind]: Varience Direction : {0}", m_varDirection);
+            m_log.InfoFormat("[Configurable Wind]: Rate Change        : {0}", m_rateChange);
         }
 
         #region IWindModelPlugin Members
