@@ -2723,6 +2723,45 @@
    </Files>
 </Project>
 
+<Project frameworkVersion="v4_0" name="OpenSim.Addons.OpenSimProfile" path="OpenSim/Addons/OpenSimProfile" type="Library">
+     <Configuration name="Debug">
+       <Options>
+         <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+       </Options>
+     </Configuration>
+     <Configuration name="Release">
+       <Options>
+         <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+       </Options>
+     </Configuration>
+
+     <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
+     <Reference localCopy="false" name="System"/>
+     <Reference name="System.Xml"/>
+     <Reference name="System.Drawing"/>
+     <Reference name="System.Runtime.Remoting"/>
+     <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
+     <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
+     <Reference name="OpenSim.Framework"/>
+     <Reference name="OpenSim.Data"/>
+     <Reference name="OpenSim.Region.Framework"/>
+     <Reference name="OpenSim.Framework.Console"/>
+     <Reference name="OpenSim.Framework.Servers"/>
+     <Reference name="OpenSim.Framework.Communications"/>
+     <Reference name="OpenSim.Region.Physics.Manager"/>
+     <Reference name="OpenSim.Services.Interfaces"/>
+     <Reference name="OpenSim.Services.Connectors"/>
+     <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
+     <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
+     <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
+     <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
+     <Reference name="ThreadedClasses" path="../../../VirtualUniverse/bin/"/>
+
+     <Files>
+       <Match pattern="*.cs" recurse="true"/>
+     </Files>
+</Project>
+
     <!-- Tools -->
 
     <Project frameworkVersion="v4_0" name="pCampBot" path="OpenSim/Tools/pCampBot" type="Exe">
