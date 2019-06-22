@@ -514,7 +514,8 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_0" name="OpenSim.Region.Physics.PhysXPlugin" path="OpenSim/Region/Physics/PhysXPlugin" type="Library">
+
+    <!--- <Project frameworkVersion="v4_0" name="OpenSim.Region.Physics.PhysXPlugin" path="OpenSim/Region/Physics/PhysXPlugin" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/Physics/</OutputPath>
@@ -579,7 +580,7 @@
       <Files>
         <Match pattern="*.cs" recurse="false"/>
       </Files>
-    </Project>
+    </Project> -->
 
     <Project frameworkVersion="v4_0" name="OpenSim.Region.Physics.Meshing" path="OpenSim/Region/Physics/Meshing" type="Library">
       <Configuration name="Debug">
