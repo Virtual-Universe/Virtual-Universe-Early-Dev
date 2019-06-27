@@ -1,29 +1,32 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -41,12 +44,11 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "InstantMessageModule")]
     public class InstantMessageModule : ISharedRegionModule
     {
-        private static readonly ILog m_log = LogManager.GetLogger(
-                MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        /// <value>
+        /// <summary>
         /// Is this module enabled?
-        /// </value>
+        /// </summary>
         private bool m_enabled = false;
         
         private readonly List<Scene> m_scenes = new List<Scene>();
@@ -59,10 +61,10 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
         {
             if (config.Configs["Messaging"] != null)
             {
-                if (config.Configs["Messaging"].GetString(
-                        "InstantMessageModule", "InstantMessageModule") !=
-                        "InstantMessageModule")
+                if (config.Configs["Messaging"].GetString("InstantMessageModule", "InstantMessageModule") != "InstantMessageModule")
+                {
                     return;
+                }
             }
             
             m_enabled = true;
@@ -71,7 +73,9 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
         public void AddRegion(Scene scene)
         {
             if (!m_enabled)
+            {
                 return;
+            }
 
             lock (m_scenes)
             {
@@ -87,16 +91,17 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
         public void RegionLoaded(Scene scene)
         {
             if (!m_enabled)
+            {
                 return;
+            }
 
             if (m_TransferModule == null)
             {
-                m_TransferModule =
-                    scene.RequestModuleInterface<IMessageTransferModule>();
+                m_TransferModule = scene.RequestModuleInterface<IMessageTransferModule>();
 
                 if (m_TransferModule == null)
                 {
-                    m_log.Error("[INSTANT MESSAGE]: No message transfer module, IM will not work!");
+                    m_log.Error("[Instant Message]: No message transfer module, IM will not work!");
                     scene.EventManager.OnClientConnect -= OnClientConnect;
                     scene.EventManager.OnIncomingInstantMessage -= OnGridInstantMessage;
 
@@ -109,7 +114,9 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
         public void RemoveRegion(Scene scene)
         {
             if (!m_enabled)
+            {
                 return;
+            }
 
             lock (m_scenes)
             {
@@ -120,6 +127,7 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
         void OnClientConnect(IClientCore client)
         {
             IClientIM clientIM;
+
             if (client.TryGet(out clientIM))
             {
                 clientIM.OnInstantMessage += OnInstantMessage;
@@ -162,7 +170,10 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
             if (m_TransferModule != null)
             {
                 if (client != null)
+                {
                     im.fromAgentName = client.FirstName + " " + client.LastName;
+                }
+
                 m_TransferModule.SendInstantMessage(im,
                     delegate(bool success)
                     {
@@ -180,12 +191,11 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
                                     null, new UUID(im.fromAgentID), "System",
                                     new UUID(im.toAgentID),
                                     (byte)InstantMessageDialog.BusyAutoResponse,
-                                    "Unable to send instant message. "+
-                                    "User is not logged in.", false,
+                                    "User is not online. "+
+                                    "Message will be stored and delivered later.", false,
                                     new Vector3()));
                         }
-                    }
-                );
+                    });
             }
         }
 
@@ -199,7 +209,6 @@ namespace OpenSim.Region.CoreModules.Avatar.InstantMessage
             // This event won't be raised unless we have that agent,
             // so we can depend on the above not trying to send
             // via grid again
-            //
             OnInstantMessage(null, msg);
         }
     }

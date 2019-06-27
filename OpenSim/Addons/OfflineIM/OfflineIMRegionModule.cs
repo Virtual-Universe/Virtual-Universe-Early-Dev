@@ -1,29 +1,32 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -32,13 +35,13 @@ using Mono.Addins;
 using Nini.Config;
 using OpenMetaverse;
 using OpenSim.Framework;
-using OpenSim.Framework.Servers;
 using OpenSim.Framework.Client;
+using OpenSim.Framework.Servers;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
 
-namespace OpenSim.OfflineIM
+namespace OpenSim.Addons.OfflineIM
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "OfflineIMConnectorModule")]
     public class OfflineIMRegionModule : ISharedRegionModule, IOfflineIMService
@@ -55,27 +58,40 @@ namespace OpenSim.OfflineIM
         public void Initialize(IConfigSource config)
         {
             IConfig cnf = config.Configs["Messaging"];
+
             if (cnf == null)
+            {
                 return;
+            }
+
             if (cnf != null && cnf.GetString("OfflineMessageModule", string.Empty) != Name)
+            {
                 return;
+            }
 
             m_Enabled = true;
 
             string serviceLocation = cnf.GetString("OfflineMessageURL", string.Empty);
+
             if (serviceLocation == string.Empty)
+            {
                 m_OfflineIMService = new OfflineIMService(config);
+            }
             else
+            {
                 m_OfflineIMService = new OfflineIMServiceRemoteConnector(config);
+            }
 
             m_ForwardOfflineGroupMessages = cnf.GetBoolean("ForwardOfflineGroupMessages", m_ForwardOfflineGroupMessages);
-            m_log.DebugFormat("[OfflineIM.V2]: Offline messages enabled by {0}", Name);
+            m_log.DebugFormat("[Offline IM V2]: Offline messages enabled by {0}", Name);
         }
 
         public void AddRegion(Scene scene)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             scene.RegisterModuleInterface<IOfflineIMService>(this);
             m_SceneList.Add(scene);
@@ -85,19 +101,23 @@ namespace OpenSim.OfflineIM
         public void RegionLoaded(Scene scene)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             if (m_TransferModule == null)
             {
                 m_TransferModule = scene.RequestModuleInterface<IMessageTransferModule>();
+
                 if (m_TransferModule == null)
                 {
                     scene.EventManager.OnNewClient -= OnNewClient;
 
                     m_SceneList.Clear();
 
-                    m_log.Error("[OfflineIM.V2]: No message transfer module is enabled. Disabling offline messages");
+                    m_log.Error("[Offline IM V2]: No message transfer module is enabled. Disabling offline messages");
                 }
+
                 m_TransferModule.OnUndeliveredMessage += UndeliveredMessage;
             }
         }
@@ -105,7 +125,9 @@ namespace OpenSim.OfflineIM
         public void RemoveRegion(Scene scene)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             m_SceneList.Remove(scene);
             scene.EventManager.OnNewClient -= OnNewClient;
@@ -142,9 +164,13 @@ namespace OpenSim.OfflineIM
             foreach (Scene s in m_SceneList)
             {
                 ScenePresence presence = s.GetScenePresence(agentID);
+
                 if (presence != null && !presence.IsChildAgent)
+                {
                     return s;
+                }
             }
+
             return null;
         }
 
@@ -153,9 +179,13 @@ namespace OpenSim.OfflineIM
             foreach (Scene s in m_SceneList)
             {
                 ScenePresence presence = s.GetScenePresence(agentID);
+
                 if (presence != null && !presence.IsChildAgent)
+                {
                     return presence.ControllingClient;
+                }
             }
+
             return null;
         }
 
@@ -167,18 +197,22 @@ namespace OpenSim.OfflineIM
 
         private void RetrieveInstantMessages(IClientAPI client)
         {
-            m_log.DebugFormat("[OfflineIM.V2]: Retrieving stored messages for {0}", client.AgentId);
+            m_log.DebugFormat("[Offline IM V2]: Retrieving stored messages for {0}", client.AgentId);
 
             List<GridInstantMessage> msglist = m_OfflineIMService.GetMessages(client.AgentId);
 
             if (msglist == null)
-                m_log.DebugFormat("[OfflineIM.V2]: WARNING null message list.");
+            {
+                m_log.DebugFormat("[Offline IM V2]: WARNING null message list.");
+            }
 
             foreach (GridInstantMessage im in msglist)
             {
                 if (im.dialog == (byte)InstantMessageDialog.InventoryOffered)
+                {
                     // send it directly or else the item will be given twice
                     client.SendInstantMessage(im);
+                }
                 else
                 {
                     // Send through scene event manager so all modules get a chance
@@ -186,10 +220,12 @@ namespace OpenSim.OfflineIM
                     //
                     // Needed for proper state management for stored group
                     // invitations
-                    //
                     Scene s = FindScene(client.AgentId);
+
                     if (s != null)
+                    {
                         s.EventManager.TriggerIncomingInstantMessage(im);
+                    }
                 }
             }
         }
@@ -197,10 +233,11 @@ namespace OpenSim.OfflineIM
         // Apparently this is needed in order for the viewer to request the IMs.
         private void OnMuteListRequest(IClientAPI client, uint crc)
         {
-            m_log.DebugFormat("[OfflineIM.V2] Got mute list request for crc {0}", crc);
+            m_log.DebugFormat("[Offline IM V2]: Got mute list request for crc {0}", crc);
             string filename = "mutes" + client.AgentId.ToString();
 
             IXfer xfer = client.Scene.RequestModuleInterface<IXfer>();
+
             if (xfer != null)
             {
                 xfer.AddNewFile(filename, new Byte[0]);
@@ -223,7 +260,9 @@ namespace OpenSim.OfflineIM
             {
                 if (im.dialog == (byte)InstantMessageDialog.GroupNotice ||
                     im.dialog == (byte)InstantMessageDialog.GroupInvitation)
+                {
                     return;
+                }
             }
 
             string reason = string.Empty;
@@ -232,15 +271,18 @@ namespace OpenSim.OfflineIM
             if (im.dialog == (byte)InstantMessageDialog.MessageFromAgent)
             {
                 IClientAPI client = FindClient(new UUID(im.fromAgentID));
+
                 if (client == null)
+                {
                     return;
+                }
 
                 client.SendInstantMessage(new GridInstantMessage(
                         null, new UUID(im.toAgentID),
                         "System", new UUID(im.fromAgentID),
                         (byte)InstantMessageDialog.MessageFromAgent,
-                        "User is not logged in. " +
-                        (success ? "Message saved." : "Message not saved: " + reason),
+                        "User is not online. " +
+                        (success ? "Message will be stored and delivered later." : "Message not saved: " + reason),
                         false, new Vector3()));
             }
         }
@@ -265,4 +307,3 @@ namespace OpenSim.OfflineIM
         #endregion
     }
 }
-
