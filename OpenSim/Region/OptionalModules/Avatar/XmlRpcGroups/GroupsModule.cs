@@ -1,33 +1,36 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using System.Timers;
 using log4net;
 using Mono.Addins;
@@ -39,7 +42,6 @@ using OpenSim.Framework.Communications;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
-using System.Text;
 using DirFindFlags = OpenMetaverse.DirectoryManager.DirFindFlags;
 
 namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
@@ -71,16 +73,11 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         ///
         /// XmlRpcDisableKeepAlive = false
         /// </summary>
-
-        private static readonly ILog m_log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private List<Scene> m_sceneList = new List<Scene>();
-
         private IMessageTransferModule m_msgTransferModule;
-
         private IGroupsMessagingModule m_groupsMessagingModule;
-        
         private IGroupsServicesConnector m_groupData;
 
         // Configuration settings
@@ -103,6 +100,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             else
             {
                 m_groupsEnabled = groupsConfig.GetBoolean("Enabled", false);
+
                 if (!m_groupsEnabled)
                 {
                     return;
@@ -111,11 +109,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 if (groupsConfig.GetString("Module", "Default") != Name)
                 {
                     m_groupsEnabled = false;
-
                     return;
                 }
 
-                m_log.InfoFormat("[GROUPS]: Initializing {0}", this.Name);
+                m_log.InfoFormat("[Groups]: Initializing {0}", this.Name);
 
                 m_groupNoticesEnabled   = groupsConfig.GetBoolean("NoticesEnabled", true);
                 m_debugEnabled          = groupsConfig.GetBoolean("DebugEnabled", false);
@@ -147,6 +144,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             }
 
             bool verbose = false;
+
             if (!bool.TryParse(args[3], out verbose))
             {
                 MainConsole.Instance.Output("Usage: debug groups verbose <true|false>");
@@ -161,9 +159,14 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         public void RegionLoaded(Scene scene)
         {
             if (!m_groupsEnabled)
+            {
                 return;
+            }
 
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             if (m_groupData == null)
             {
@@ -173,7 +176,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 if (m_groupData == null)
                 {
                     m_groupsEnabled = false;
-                    m_log.Error("[GROUPS]: Could not get IGroupsServicesConnector");
+                    m_log.Error("[Groups]: Could not get IGroupsServicesConnector");
                     Close();
                     return;
                 }
@@ -187,7 +190,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 if (m_msgTransferModule == null)
                 {
                     m_groupsEnabled = false;
-                    m_log.Warn("[GROUPS]: Could not get IMessageTransferModule");
+                    m_log.Warn("[Groups]: Could not get IMessageTransferModule");
                 }
             }
 
@@ -197,7 +200,9 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
                 // No message transfer module, no notices, group invites, rejects, ejects, etc
                 if (m_groupsMessagingModule == null)
-                    m_log.Warn("[GROUPS]: Could not get IGroupsMessagingModule");
+                {
+                    m_log.Warn("[Groups]: Could not get IGroupsMessagingModule");
+                }
             }
 
             lock (m_sceneList)
@@ -207,18 +212,19 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
             scene.EventManager.OnNewClient += OnNewClient;
             scene.EventManager.OnIncomingInstantMessage += OnGridInstantMessage;
-            // The InstantMessageModule itself doesn't do this, 
-            // so lets see if things explode if we don't do it
-            // scene.EventManager.OnClientClosed += OnClientClosed;
-
         }
 
         public void RemoveRegion(Scene scene)
         {
             if (!m_groupsEnabled)
+            {
                 return;
+            }
 
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             lock (m_sceneList)
             {
@@ -229,9 +235,14 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         public void Close()
         {
             if (!m_groupsEnabled)
+            {
                 return;
+            }
 
-            if (m_debugEnabled) m_log.Debug("[GROUPS]: Shutting down Groups module.");
+            if (m_debugEnabled)
+            {
+                m_log.Debug("[Groups]: Shutting down Groups module.");
+            }
         }
 
         public Type ReplaceableInterface 
@@ -256,9 +267,13 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         #endregion
 
         #region EventHandlers
+
         private void OnNewClient(IClientAPI client)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             client.OnUUIDGroupNameRequest += HandleUUIDGroupNameRequest;
             client.OnAgentDataUpdateRequest += OnAgentDataUpdateRequest;
@@ -273,50 +288,21 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         private void OnRequestAvatarProperties(IClientAPI remoteClient, UUID avatarID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
-            //GroupMembershipData[] avatarGroups = m_groupData.GetAgentGroupMemberships(GetRequestingAgentID(remoteClient), avatarID).ToArray();
             GroupMembershipData[] avatarGroups = GetProfileListedGroupMemberships(remoteClient, avatarID);
             remoteClient.SendAvatarGroupsReply(avatarID, avatarGroups);
         }
 
-        /*
-         * This becomes very problematic in a shared module.  In a shared module you may have more then one
-         * reference to IClientAPI's, one for 0 or 1 root connections, and 0 or more child connections.
-         * The OnClientClosed event does not provide anything to indicate which one of those should be closed
-         * nor does it provide what scene it was from so that the specific reference can be looked up.
-         * The InstantMessageModule.cs does not currently worry about unregistering the handles, 
-         * and it should be an issue, since it's the client that references us not the other way around
-         * , so as long as we don't keep a reference to the client laying around, the client can still be GC'ed
-        private void OnClientClosed(UUID AgentId)
-        {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
-
-            lock (m_ActiveClients)
-            {
-                if (m_ActiveClients.ContainsKey(AgentId))
-                {
-                    IClientAPI client = m_ActiveClients[AgentId];
-                    client.OnUUIDGroupNameRequest -= HandleUUIDGroupNameRequest;
-                    client.OnAgentDataUpdateRequest -= OnAgentDataUpdateRequest;
-                    client.OnDirFindQuery -= OnDirFindQuery;
-                    client.OnInstantMessage -= OnInstantMessage;
-
-                    m_ActiveClients.Remove(AgentId);
-                }
-                else
-                {
-                    if (m_debugEnabled) m_log.WarnFormat("[GROUPS]: Client closed that wasn't registered here.");
-                }
-
-                
-            }
-        }
-        */
-
         private void OnAgentDataUpdateRequest(IClientAPI remoteClient, UUID dataForAgentID, UUID sessionID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             UUID activeGroupID = UUID.Zero;
             string activeGroupTitle = string.Empty;
@@ -324,6 +310,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             ulong activeGroupPowers  = (ulong)GroupPowers.None;
 
             GroupMembershipData membership = m_groupData.GetAgentActiveMembership(GetRequestingAgentID(remoteClient), dataForAgentID);
+
             if (membership != null)
             {
                 activeGroupID = membership.GroupID;
@@ -338,11 +325,15 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         private void HandleUUIDGroupNameRequest(UUID GroupID, IClientAPI remoteClient)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             string GroupName;
             
             GroupRecord group = m_groupData.GetGroupRecord(GetRequestingAgentID(remoteClient), GroupID, null);
+
             if (group != null)
             {
                 GroupName = group.GroupName;
@@ -357,10 +348,12 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         private void OnInstantMessage(IClientAPI remoteClient, GridInstantMessage im)
         {
-            if (m_debugEnabled) 
+            if (m_debugEnabled)
+            {
                 m_log.DebugFormat(
-                    "[GROUPS]: {0} called for {1}, message type {2}", 
+                    "[Groups]: {0} called for {1}, message type {2}",
                     System.Reflection.MethodBase.GetCurrentMethod().Name, remoteClient.Name, (InstantMessageDialog)im.dialog);
+            }
 
             // Group invitations
             if ((im.dialog == (byte)InstantMessageDialog.GroupInvitationAccept) || (im.dialog == (byte)InstantMessageDialog.GroupInvitationDecline))
@@ -370,13 +363,21 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
                 if (inviteInfo == null)
                 {
-                    if (m_debugEnabled) m_log.WarnFormat("[GROUPS]: Received an Invite IM for an invite that does not exist {0}.", inviteID);
+                    if (m_debugEnabled)
+                    {
+                        m_log.WarnFormat("[Groups]: Received an Invite IM for an invite that does not exist {0}.", inviteID);
+                    }
+
                     return;
                 }
 
-                if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: Invite is for Agent {0} to Group {1}.", inviteInfo.AgentID, inviteInfo.GroupID);
+                if (m_debugEnabled)
+                {
+                    m_log.DebugFormat("[Groups]: Invite is for Agent {0} to Group {1}.", inviteInfo.AgentID, inviteInfo.GroupID);
+                }
 
                 UUID fromAgentID = new UUID(im.fromAgentID);
+
                 if ((inviteInfo != null) && (fromAgentID == inviteInfo.AgentID))
                 {
                     // Accept
@@ -415,7 +416,11 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                     // Reject
                     if (im.dialog == (byte)InstantMessageDialog.GroupInvitationDecline)
                     {
-                        if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: Received a reject invite notice.");
+                        if (m_debugEnabled)
+                        {
+                            m_log.DebugFormat("[Groups]: Received a reject invite notice.");
+                        }
+
                         m_groupData.RemoveAgentToGroupInvite(GetRequestingAgentID(remoteClient), inviteID);
                     }
                 }
@@ -430,6 +435,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 }
 
                 UUID GroupID = new UUID(im.toAgentID);
+
                 if (m_groupData.GetGroupRecord(GetRequestingAgentID(remoteClient), GroupID, null) != null)
                 {
                     UUID NoticeID = UUID.Random();
@@ -448,6 +454,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                         binBucket = binBucket.Remove(0, 14).Trim();
 
                         OSDMap binBucketOSD = (OSDMap)OSDParser.DeserializeLLSDXml(binBucket);
+
                         if (binBucketOSD is OSD)
                         {
                             OSDMap binBucketMap = (OSDMap)binBucketOSD;
@@ -455,17 +462,17 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                             itemID = binBucketMap["item_id"].AsUUID();
                             ownerID = binBucketMap["owner_id"].AsUUID();
 
-                            //Attempt to get the details of the attached item.
-                            //If sender doesn't own the attachment, the item
-                            //variable will be set to null and attachment will
-                            //not be included with the group notice.
+                            // Attempt to get the details of the attached item.
+                            // If sender doesn't own the attachment, the item
+                            // variable will be set to null and attachment will
+                            // not be included with the group notice.
                             Scene scene = (Scene)remoteClient.Scene;
                             item = new InventoryItemBase(itemID, ownerID);
                             item = scene.InventoryService.GetItem(item);
 
                             if (item != null)
                             {
-                                //Got item details so include the attachment.
+                                // Got item details so include the attachment.
                                 hasAttachment = true;
                             }
                         }
@@ -477,16 +484,18 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
                     if (hasAttachment)
                     {
-                        //Bucket contains information about attachment.
-                        //
-                        //Byte offset and description of bucket data:
-                        //0:  1 byte indicating if attachment is present
-                        //1:  1 byte indicating the type of attachment
-                        //2:  16 bytes - Group UUID
-                        //18: 16 bytes - UUID of the attachment owner
-                        //34: 16 bytes - UUID of the attachment
-                        //50: variable - Name of the attachment
-                        //??: NUL byte to terminate the attachment name
+                        /// <summary>
+                        /// Bucket contains information about attachment.
+                        ///
+                        /// Byte offset and description of bucket data:
+                        /// 0:  1 byte indicating if attachment is present
+                        /// 1:  1 byte indicating the type of attachment
+                        /// 2:  16 bytes - Group UUID
+                        /// 18: 16 bytes - UUID of the attachment owner
+                        /// 34: 16 bytes - UUID of the attachment
+                        /// 50: variable - Name of the attachment
+                        /// ??: NUL byte to terminate the attachment name
+                        /// </summary>
                         byte[] name = Encoding.UTF8.GetBytes(item.Name);
                         bucket = new byte[51 + name.Length];//3 bytes, 3 UUIDs, and name
                         bucket[0] = 1;                      //Has attachment flag
@@ -506,6 +515,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                     }
 
                     m_groupData.AddGroupNotice(GetRequestingAgentID(remoteClient), GroupID, NoticeID, im.fromAgentName, Subject, Message, bucket);
+
                     if (OnNewGroupNotice != null)
                     {
                         OnNewGroupNotice(GroupID, NoticeID);
@@ -518,31 +528,30 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                             if (m_debugEnabled)
                             {
                                 UserAccount targetUser
-                                    = m_sceneList[0].UserAccountService.GetUserAccount(
-                                        remoteClient.Scene.RegionInfo.ScopeID, member.AgentID);
+                                    = m_sceneList[0].UserAccountService.GetUserAccount(remoteClient.Scene.RegionInfo.ScopeID, member.AgentID);
 
                                 if (targetUser != null)
                                 {
                                     m_log.DebugFormat(
-                                        "[GROUPS]: Prepping group notice {0} for agent: {1} who Accepts Notices ({2})", 
+                                        "[Groups]: Prepping group notice {0} for agent: {1} who Accepts Notices ({2})",
                                         NoticeID, targetUser.FirstName + " " + targetUser.LastName, member.AcceptNotices);
                                 }
                                 else
                                 {
                                     m_log.DebugFormat(
-                                        "[GROUPS]: Prepping group notice {0} for agent: {1} who Accepts Notices ({2})", 
+                                        "[Groups]: Prepping group notice {0} for agent: {1} who Accepts Notices ({2})",
                                         NoticeID, member.AgentID, member.AcceptNotices);
                                 }
                             }
                         }
                     }
 
-                    GridInstantMessage msg 
-                        = CreateGroupNoticeIM(UUID.Zero, NoticeID, (byte)OpenMetaverse.InstantMessageDialog.GroupNotice);
+                    GridInstantMessage msg = CreateGroupNoticeIM(UUID.Zero, NoticeID, (byte)OpenMetaverse.InstantMessageDialog.GroupNotice);
 
                     if (m_groupsMessagingModule != null)
-                        m_groupsMessagingModule.SendMessageToGroup(
-                            msg, GroupID, remoteClient.AgentId, gmd => gmd.AcceptNotices);
+                    {
+                        m_groupsMessagingModule.SendMessageToGroup(msg, GroupID, remoteClient.AgentId, gmd => gmd.AcceptNotices);
+                    }
                 }
             }
 
@@ -550,25 +559,31 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             {
                 //Is bucket large enough to hold UUID of the attachment?
                 if (im.binaryBucket.Length < 16)
+                {
                     return;
+                }
 
                 UUID noticeID = new UUID(im.imSessionID);
 
-                if (m_debugEnabled) 
-                    m_log.DebugFormat("[GROUPS]: Requesting notice {0} for {1}", noticeID, remoteClient.AgentId);
+                if (m_debugEnabled)
+                {
+                    m_log.DebugFormat("[Groups]: Requesting notice {0} for {1}", noticeID, remoteClient.AgentId);
+                }
 
                 GroupNoticeInfo notice = m_groupData.GetGroupNotice(GetRequestingAgentID(remoteClient), noticeID);
+
                 if (notice != null)
                 {
                     UUID giver = new UUID(notice.BinaryBucket, 18);
                     UUID attachmentUUID = new UUID(notice.BinaryBucket, 34);
 
                     if (m_debugEnabled)
+                    {
                         m_log.DebugFormat("[Groups]: Giving inventory from {0} to {1}", giver, remoteClient.AgentId);
+                    }
 
                     string message;
-                    InventoryItemBase itemCopy = ((Scene)(remoteClient.Scene)).GiveInventoryItem(remoteClient.AgentId,
-                        giver, attachmentUUID, out message);
+                    InventoryItemBase itemCopy = ((Scene)(remoteClient.Scene)).GiveInventoryItem(remoteClient.AgentId, giver, attachmentUUID, out message);
 
                     if (itemCopy == null)
                     {
@@ -580,10 +595,11 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 }
                 else
                 {
-                    if (m_debugEnabled) 
+                    if (m_debugEnabled)
+                    {
                         m_log.DebugFormat(
-                            "[GROUPS]: Could not find notice {0} for {1} on GroupNoticeInventoryAccepted.", 
-                            noticeID, remoteClient.AgentId);                   
+                            "[Groups]: Could not find notice {0} for {1} on GroupNoticeInventoryAccepted.", noticeID, remoteClient.AgentId);
+                    }
                 }
             }
 
@@ -597,13 +613,13 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 // This is sent from the region that the ejectee was ejected from
                 // if it's being delivered here, then the ejectee is here
                 // so we need to send local updates to the agent.
-
                 UUID ejecteeID = new UUID(im.toAgentID);
 
                 im.dialog = (byte)InstantMessageDialog.MessageFromAgent;
                 OutgoingInstantMessage(im, ejecteeID);
 
                 IClientAPI ejectee = GetActiveClient(ejecteeID);
+
                 if (ejectee != null)
                 {
                     UUID groupID = new UUID(im.imSessionID);
@@ -614,7 +630,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         private void OnGridInstantMessage(GridInstantMessage msg)
         {
-            if (m_debugEnabled) m_log.InfoFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.InfoFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // Trigger the above event handler
             OnInstantMessage(null, msg);
@@ -628,6 +647,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                     case (byte)InstantMessageDialog.GroupNotice:
                         UUID toAgentID = new UUID(msg.toAgentID);
                         IClientAPI localClient = GetActiveClient(toAgentID);
+
                         if (localClient != null)
                         {
                             localClient.SendInstantMessage(msg);
@@ -655,7 +675,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         
         public void ActivateGroup(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             m_groupData.SetAgentActiveGroup(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID);
 
@@ -671,21 +694,26 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         /// </summary>
         public List<GroupTitlesData> GroupTitlesRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
-
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             List<GroupRolesData> agentRoles = m_groupData.GetAgentGroupRoles(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID);
             GroupMembershipData agentMembership = m_groupData.GetAgentGroupMembership(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID);
 
             List<GroupTitlesData> titles = new List<GroupTitlesData>();
+
             foreach (GroupRolesData role in agentRoles)
             {
                 GroupTitlesData title = new GroupTitlesData();
                 title.Name = role.Name;
+
                 if (agentMembership != null)
                 {
                     title.Selected = agentMembership.ActiveRole == role.RoleID;
                 }
+
                 title.UUID = role.RoleID;
 
                 titles.Add(title);
@@ -696,27 +724,30 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public List<GroupMembersData> GroupMembersRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) 
-                m_log.DebugFormat(
-                    "[GROUPS]: GroupMembersRequest called for {0} from client {1}", groupID, remoteClient.Name);
-            
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: GroupMembersRequest called for {0} from client {1}", groupID, remoteClient.Name);
+            }
+
             List<GroupMembersData> data = m_groupData.GetGroupMembers(GetRequestingAgentID(remoteClient), groupID);
 
             if (m_debugEnabled)
             {
                 foreach (GroupMembersData member in data)
                 {
-                    m_log.DebugFormat("[GROUPS]: Member({0}) - IsOwner({1})", member.AgentID, member.IsOwner);
+                    m_log.DebugFormat("[Groups]: Member({0}) - IsOwner({1})", member.AgentID, member.IsOwner);
                 }
             }
 
             return data;
-
         }
 
         public List<GroupRolesData> GroupRoleDataRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             List<GroupRolesData> data = m_groupData.GetGroupRoles(GetRequestingAgentID(remoteClient), groupID);
 
@@ -725,7 +756,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public List<GroupRoleMembersData> GroupRoleMembersRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             List<GroupRoleMembersData> data = m_groupData.GetGroupRoleMembers(GetRequestingAgentID(remoteClient), groupID);
 
@@ -733,20 +767,24 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             {
                 foreach (GroupRoleMembersData member in data)
                 {
-                    m_log.DebugFormat("[GROUPS]: Member({0}) - Role({1})", member.MemberID, member.RoleID);
+                    m_log.DebugFormat("[Groups]: Member({0}) - Role({1})", member.MemberID, member.RoleID);
                 }
             }
+
             return data;
         }
 
         public GroupProfileData GroupProfileRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             GroupProfileData profile = new GroupProfileData();
 
-
             GroupRecord groupInfo = m_groupData.GetGroupRecord(GetRequestingAgentID(remoteClient), groupID, null);
+
             if (groupInfo != null)
             {
                 profile.AllowPublish = groupInfo.AllowPublish;
@@ -766,6 +804,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             }
 
             GroupMembershipData memberInfo = m_groupData.GetAgentGroupMembership(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID);
+
             if (memberInfo != null)
             {
                 profile.MemberTitle = memberInfo.GroupTitle;
@@ -777,24 +816,31 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public GroupMembershipData[] GetMembershipData(UUID agentID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             return m_groupData.GetAgentGroupMemberships(UUID.Zero, agentID).ToArray();
         }
 
         public GroupMembershipData GetMembershipData(UUID groupID, UUID agentID)
         {
-            if (m_debugEnabled) 
+            if (m_debugEnabled)
+            {
                 m_log.DebugFormat(
-                    "[GROUPS]: {0} called with groupID={1}, agentID={2}",
-                    System.Reflection.MethodBase.GetCurrentMethod().Name, groupID, agentID);
+                    "[Groups]: {0} called with groupID={1}, agentID={2}", System.Reflection.MethodBase.GetCurrentMethod().Name, groupID, agentID);
+            }
 
             return m_groupData.GetAgentGroupMembership(UUID.Zero, agentID, groupID);
         }
 
         public void UpdateGroupInfo(IClientAPI remoteClient, UUID groupID, string charter, bool showInList, UUID insigniaID, int membershipFee, bool openEnrollment, bool allowPublish, bool maturePublish)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // Note: Permissions checking for modification rights is handled by the Groups Server/Service
             m_groupData.UpdateGroup(GetRequestingAgentID(remoteClient), groupID, charter, showInList, insigniaID, membershipFee, openEnrollment, allowPublish, maturePublish);
@@ -803,14 +849,20 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         public void SetGroupAcceptNotices(IClientAPI remoteClient, UUID groupID, bool acceptNotices, bool listInProfile)
         {
             // Note: Permissions checking for modification rights is handled by the Groups Server/Service
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             m_groupData.SetAgentGroupInfo(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID, acceptNotices, listInProfile);
         }
 
         public UUID CreateGroup(IClientAPI remoteClient, string name, string charter, bool showInList, UUID insigniaID, int membershipFee, bool openEnrollment, bool allowPublish, bool maturePublish)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             if (m_groupData.GetGroupRecord(GetRequestingAgentID(remoteClient), UUID.Zero, name) != null)
             {
@@ -835,15 +887,19 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             // check funds
             // is there is a money module present ?
             IMoneyModule money = scene.RequestModuleInterface<IMoneyModule>();
+
             if (money != null)
             {
                 // do the transaction, that is if the agent has got sufficient funds
-                if (!money.AmountCovered(remoteClient.AgentId, money.GroupCreationCharge)) {
+                if (!money.AmountCovered(remoteClient.AgentId, money.GroupCreationCharge))
+                {
                     remoteClient.SendCreateGroupReply(UUID.Zero, false, "You have got insufficient funds to create a group.");
                     return UUID.Zero;
                 }
+
                 money.ApplyCharge(GetRequestingAgentID(remoteClient), money.GroupCreationCharge, MoneyTransactionType.GroupCreate);
             }
+
             UUID groupID = m_groupData.CreateGroup(GetRequestingAgentID(remoteClient), name, charter, showInList, insigniaID, membershipFee, openEnrollment, allowPublish, maturePublish, GetRequestingAgentID(remoteClient));
 
             remoteClient.SendCreateGroupReply(groupID, true, "Group created successfullly");
@@ -856,7 +912,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public GroupNoticeData[] GroupNoticesListRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // ToDo: check if agent is a member of group and is allowed to see notices?
 
@@ -868,13 +927,18 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         /// </summary>
         public string GetGroupTitle(UUID avatarID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             GroupMembershipData membership = m_groupData.GetAgentActiveMembership(UUID.Zero, avatarID);
+
             if (membership != null)
             {
                 return membership.GroupTitle;
-            } 
+            }
+
             return string.Empty;
         }
 
@@ -883,21 +947,24 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         /// </summary>
         public void GroupTitleUpdate(IClientAPI remoteClient, UUID groupID, UUID titleRoleID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             m_groupData.SetAgentActiveGroupRole(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID, titleRoleID);
 
             // TODO: Not sure what all is needed here, but if the active group role change is for the group
             // the client currently has set active, then we need to do a scene presence update too
-            // if (m_groupData.GetAgentActiveMembership(GetRequestingAgentID(remoteClient)).GroupID == GroupID)
-                
             UpdateAllClientsWithGroupInfo(GetRequestingAgentID(remoteClient));
         }
 
-
         public void GroupRoleUpdate(IClientAPI remoteClient, UUID groupID, UUID roleID, string name, string description, string title, ulong powers, byte updateType)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // Security Checks are handled in the Groups Service.
 
@@ -917,8 +984,9 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                     if (m_debugEnabled)
                     {
                         GroupPowers gp = (GroupPowers)powers;
-                        m_log.DebugFormat("[GROUPS]: Role ({0}) updated with Powers ({1}) ({2})", name, powers.ToString(), gp.ToString());
+                        m_log.DebugFormat("[Groups]: Role ({0}) updated with Powers ({1}) ({2})", name, powers.ToString(), gp.ToString());
                     }
+
                     m_groupData.UpdateGroupRole(GetRequestingAgentID(remoteClient), groupID, roleID, name, description, title, powers);
                     break;
 
@@ -926,7 +994,6 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 default:
                     // No Op
                     break;
-
             }
 
             // TODO: This update really should send out updates for everyone in the role that just got changed.
@@ -935,7 +1002,11 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public void GroupRoleChanges(IClientAPI remoteClient, UUID groupID, UUID roleID, UUID memberID, uint changes)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
+            
             // Todo: Security check
 
             switch (changes)
@@ -943,15 +1014,13 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 case 0:
                     // Add
                     m_groupData.AddAgentToGroupRole(GetRequestingAgentID(remoteClient), memberID, groupID, roleID);
-
                     break;
                 case 1:
                     // Remove
                     m_groupData.RemoveAgentFromGroupRole(GetRequestingAgentID(remoteClient), memberID, groupID, roleID);
-                    
                     break;
                 default:
-                    m_log.ErrorFormat("[GROUPS]: {0} does not understand changes == {1}", System.Reflection.MethodBase.GetCurrentMethod().Name, changes);
+                    m_log.ErrorFormat("[Groups]: {0} does not understand changes == {1}", System.Reflection.MethodBase.GetCurrentMethod().Name, changes);
                     break;
             }
 
@@ -961,7 +1030,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public void GroupNoticeRequest(IClientAPI remoteClient, UUID groupNoticeID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             GroupNoticeInfo data = m_groupData.GetGroupNotice(GetRequestingAgentID(remoteClient), groupNoticeID);
 
@@ -975,7 +1047,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public GridInstantMessage CreateGroupNoticeIM(UUID agentID, UUID groupNoticeID, byte dialog)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             GridInstantMessage msg = new GridInstantMessage();
             byte[] bucket;
@@ -990,6 +1065,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             msg.RegionID = UUID.Zero.Guid;
 
             GroupNoticeInfo info = m_groupData.GetGroupNotice(agentID, groupNoticeID);
+
             if (info != null)
             {
                 msg.fromAgentID = info.GroupID.Guid;
@@ -1007,8 +1083,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                     bucket = new byte[info.BinaryBucket.Length-32];
                     bucket[0] = 1;      //Has attachment
                     bucket[1] = info.BinaryBucket[1];
-                    Array.Copy(info.BinaryBucket, 50,
-                               bucket, 18, info.BinaryBucket.Length-50);
+                    Array.Copy(info.BinaryBucket, 50, bucket, 18, info.BinaryBucket.Length-50);
                 }
                 else
                 {
@@ -1024,7 +1099,9 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             else
             {
                 if (m_debugEnabled)
-                    m_log.DebugFormat("[GROUPS]: Group Notice {0} not found, composing empty message.", groupNoticeID);
+                {
+                    m_log.DebugFormat("[Groups]: Group Notice {0} not found, composing empty message.", groupNoticeID);
+                }
 
                 msg.fromAgentID = UUID.Zero.Guid;
                 msg.timestamp = (uint)Util.UnixTimeSinceEpoch();
@@ -1038,7 +1115,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public void SendAgentGroupDataUpdate(IClientAPI remoteClient)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // Send agent information about his groups
             SendAgentGroupDataUpdate(remoteClient, GetRequestingAgentID(remoteClient));
@@ -1046,7 +1126,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public void JoinGroupRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // Should check to see if OpenEnrollment, or if there's an outstanding invitation
             m_groupData.AddAgentToGroup(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID, UUID.Zero);
@@ -1059,7 +1142,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public void LeaveGroupRequest(IClientAPI remoteClient, UUID groupID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             m_groupData.RemoveAgentFromGroup(GetRequestingAgentID(remoteClient), GetRequestingAgentID(remoteClient), groupID);
 
@@ -1079,7 +1165,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public void EjectGroupMember(IClientAPI remoteClient, UUID agentID, UUID groupID, UUID ejecteeID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // Todo: Security check?
             m_groupData.RemoveAgentFromGroup(agentID, ejecteeID, groupID);
@@ -1123,6 +1212,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             GroupRecord groupInfo = m_groupData.GetGroupRecord(agentID, groupID, null);
 
             UserAccount account = m_sceneList[0].UserAccountService.GetUserAccount(regionInfo.ScopeID, ejecteeID);
+
             if ((groupInfo == null) || (account == null))
             {
                 return;
@@ -1130,12 +1220,9 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
             // Send Message to Ejectee
             GridInstantMessage msg = new GridInstantMessage();
-            
             msg.imSessionID = UUID.Zero.Guid;
             msg.fromAgentID = agentID.Guid;
-            // msg.fromAgentID = info.GroupID;
             msg.toAgentID = ejecteeID.Guid;
-            //msg.timestamp = (uint)Util.UnixTimeSinceEpoch();
             msg.timestamp = 0;
             msg.fromAgentName = agentName;
             msg.message = string.Format("You have been ejected from '{1}' by {0}.", agentName, groupInfo.GroupName);
@@ -1154,13 +1241,13 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             // TODO:FIXME: Use a presence server of some kind to find out where the
             // client actually is, and try contacting that region directly to notify them,
             // or provide the notification via xmlrpc update queue
-
             msg = new GridInstantMessage();
             msg.imSessionID = UUID.Zero.Guid;
             msg.fromAgentID = agentID.Guid;
             msg.toAgentID = agentID.Guid;
             msg.timestamp = 0;
             msg.fromAgentName = agentName;
+
             if (account != null)
             {
                 msg.message = string.Format("{2} has been ejected from '{1}' by {0}.", agentName, groupInfo.GroupName, account.FirstName + " " + account.LastName);
@@ -1169,6 +1256,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             {
                 msg.message = string.Format("{2} has been ejected from '{1}' by {0}.", agentName, groupInfo.GroupName, "Unknown member");
             }
+
             msg.dialog = (byte)210; //interop
             msg.fromGroup = false;
             msg.offline = (byte)0;
@@ -1177,7 +1265,6 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             msg.RegionID = regionInfo.RegionID.Guid;
             msg.binaryBucket = new byte[0];
             OutgoingInstantMessage(msg, agentID);
-
 
             // SL sends out messages to everyone in the group
             // Who all should receive updates and what should they be updated with?
@@ -1191,7 +1278,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         public void InviteGroup(IClientAPI remoteClient, UUID agentID, UUID groupID, UUID invitedAgentID, UUID roleID)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             string agentName;
             RegionInfo regionInfo;
@@ -1241,15 +1331,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 if (m_msgTransferModule != null)
                 {
                     Guid inviteUUID = InviteID.Guid;
-
                     GridInstantMessage msg = new GridInstantMessage();
-
                     msg.imSessionID = inviteUUID;
-
-                    // msg.fromAgentID = agentID.Guid;
                     msg.fromAgentID = groupID.Guid;
                     msg.toAgentID = invitedAgentID.Guid;
-                    //msg.timestamp = (uint)Util.UnixTimeSinceEpoch();
                     msg.timestamp = 0;
                     msg.fromAgentName = agentName;
                     msg.message = string.Format("{0} has invited you to join a group. There is no cost to join this group.", agentName);
@@ -1260,7 +1345,6 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                     msg.Position = Vector3.Zero;
                     msg.RegionID = regionInfo.RegionID.Guid;
                     msg.binaryBucket = new byte[20];
-
                     OutgoingInstantMessage(msg, invitedAgentID);
                 }
             }
@@ -1270,7 +1354,6 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         {
             return m_groupData.FindGroups(GetRequestingAgentID(remoteClient), query);
         }
-
 
         #endregion
 
@@ -1287,6 +1370,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             foreach (Scene scene in m_sceneList)
             {
                 ScenePresence sp = scene.GetScenePresence(agentID);
+
                 if (sp != null)
                 {
                     if (!sp.IsChildAgent)
@@ -1309,7 +1393,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         /// </summary>
         private void SendGroupMembershipInfoViaCaps(IClientAPI remoteClient, UUID dataForAgentID, GroupMembershipData[] data)
         {
-            if (m_debugEnabled) m_log.InfoFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.InfoFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             OSDArray AgentData = new OSDArray(1);
             OSDMap AgentDataMap = new OSDMap(1);
@@ -1353,7 +1440,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
             if (m_debugEnabled)
             {
-                m_log.InfoFormat("[GROUPS]: {0}", OSDParser.SerializeJsonString(llDataStruct));
+                m_log.InfoFormat("[Groups]: {0}", OSDParser.SerializeJsonString(llDataStruct));
             }
 
             IEventQueue queue = remoteClient.Scene.RequestModuleInterface<IEventQueue>();
@@ -1362,26 +1449,31 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             {
                 queue.Enqueue(queue.BuildEvent("AgentGroupDataUpdate", llDataStruct), GetRequestingAgentID(remoteClient));
             }
-            
         }
 
         private void SendScenePresenceUpdate(UUID AgentID, string Title)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: Updating scene title for {0} with title: {1}", AgentID, Title);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: Updating scene title for {0} with title: {1}", AgentID, Title);
+            }
 
             ScenePresence presence = null;
 
             foreach (Scene scene in m_sceneList)
             {
                 presence = scene.GetScenePresence(AgentID);
+
                 if (presence != null)
                 {
                     if (presence.Grouptitle != Title)
                     {
                         presence.Grouptitle = Title;
 
-                        if (! presence.IsChildAgent)
+                        if (!presence.IsChildAgent)
+                        {
                             presence.SendAvatarDataToAllClients();
+                        }
                     }
                 }
             }
@@ -1392,7 +1484,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         /// </summary>
         private void UpdateAllClientsWithGroupInfo(UUID dataForClientID)
         {
-            if (m_debugEnabled) m_log.InfoFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.InfoFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // TODO: Probably isn't nessesary to update every client in every scene.
             // Need to examine client updates and do only what's nessesary.
@@ -1410,7 +1505,10 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         /// </summary>
         private void SendAgentGroupDataUpdate(IClientAPI remoteClient, UUID dataForAgentID)
         {
-            if (m_debugEnabled) m_log.InfoFormat("[GROUPS]: {0} called for {1}", System.Reflection.MethodBase.GetCurrentMethod().Name, remoteClient.Name);
+            if (m_debugEnabled)
+            {
+                m_log.InfoFormat("[Groups]: {0} called for {1}", System.Reflection.MethodBase.GetCurrentMethod().Name, remoteClient.Name);
+            }
 
             // TODO: All the client update functions need to be reexamined because most do too much and send too much stuff
 
@@ -1427,7 +1525,9 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             remoteClient.SendAvatarGroupsReply(dataForAgentID, membershipArray);
 
             if (remoteClient.AgentId == dataForAgentID)
+            {
                 remoteClient.RefreshGroupMembership();
+            }
         }
 
         /// <summary>
@@ -1469,24 +1569,28 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
             
             if (m_debugEnabled)
             {
-                m_log.InfoFormat("[GROUPS]: Get group membership information for {0} requested by {1}", dataForAgentID, requestingClient.AgentId);
+                m_log.InfoFormat("[Groups]: Get group membership information for {0} requested by {1}", dataForAgentID, requestingClient.AgentId);
+
                 foreach (GroupMembershipData membership in membershipArray)
                 {
-                    m_log.InfoFormat("[GROUPS]: {0} :: {1} - {2} - {3}", dataForAgentID, membership.GroupName, membership.GroupTitle, membership.GroupPowers);
+                    m_log.InfoFormat("[Groups]: {0} :: {1} - {2} - {3}", dataForAgentID, membership.GroupName, membership.GroupTitle, membership.GroupPowers);
                 }
             }
 
             return membershipArray;
         }
 
- 
         private void SendAgentDataUpdate(IClientAPI remoteClient, UUID dataForAgentID, UUID activeGroupID, string activeGroupName, ulong activeGroupPowers, string activeGroupTitle)
         {
-            if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.DebugFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             // TODO: All the client update functions need to be reexamined because most do too much and send too much stuff
             UserAccount account = m_sceneList[0].UserAccountService.GetUserAccount(remoteClient.Scene.RegionInfo.ScopeID, dataForAgentID);
             string firstname, lastname;
+
             if (account != null)
             {
                 firstname = account.FirstName;
@@ -1498,9 +1602,7 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
                 lastname = "Unknown";
             }
 
-            remoteClient.SendAgentDataUpdate(dataForAgentID, activeGroupID, firstname,
-                    lastname, activeGroupPowers, activeGroupName,
-                    activeGroupTitle);
+            remoteClient.SendAgentDataUpdate(dataForAgentID, activeGroupID, firstname, lastname, activeGroupPowers, activeGroupName, activeGroupTitle);
         }
 
         #endregion
@@ -1509,17 +1611,29 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
 
         private void OutgoingInstantMessage(GridInstantMessage msg, UUID msgTo)
         {
-            if (m_debugEnabled) m_log.InfoFormat("[GROUPS]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            if (m_debugEnabled)
+            {
+                m_log.InfoFormat("[Groups]: {0} called", System.Reflection.MethodBase.GetCurrentMethod().Name);
+            }
 
             IClientAPI localClient = GetActiveClient(msgTo);
+
             if (localClient != null)
             {
-                if (m_debugEnabled) m_log.InfoFormat("[GROUPS]: MsgTo ({0}) is local, delivering directly", localClient.Name);
+                if (m_debugEnabled)
+                {
+                    m_log.InfoFormat("[Groups]: MsgTo ({0}) is local, delivering directly", localClient.Name);
+                }
+
                 localClient.SendInstantMessage(msg);
             }
             else if (m_msgTransferModule != null)
             {
-                if (m_debugEnabled) m_log.InfoFormat("[GROUPS]: MsgTo ({0}) is not local, delivering via TransferModule", msgTo);
+                if (m_debugEnabled)
+                {
+                    m_log.InfoFormat("[Groups]: MsgTo ({0}) is not local, delivering via TransferModule", msgTo);
+                }
+
                 m_msgTransferModule.SendInstantMessage(msg, delegate(bool success) { if (m_debugEnabled) m_log.DebugFormat("[GROUPS]: Message Sent: {0}", success?"Succeeded":"Failed"); });
             }
         }
@@ -1528,7 +1642,6 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         {
             // Notify all group members of a chnge in group roles and/or
             // permissions
-            //
         }
 
         #endregion
@@ -1536,10 +1649,12 @@ namespace OpenSim.Region.OptionalModules.Avatar.XmlRpcGroups
         private UUID GetRequestingAgentID(IClientAPI client)
         {
             UUID requestingAgentID = UUID.Zero;
+
             if (client != null)
             {
                 requestingAgentID = client.AgentId;
             }
+
             return requestingAgentID;
         }
     }

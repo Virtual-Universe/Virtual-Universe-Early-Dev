@@ -33,7 +33,7 @@ using System.Text;
 using NUnit.Framework;
 using OpenMetaverse;
 using OpenSim.Framework;
-using OpenSIm.Services.Connectors.InstantMessage;
+using OpenSim.Services.Connectors.InstantMessage;
 using OpenSim.Services.Interfaces;
 
 namespace Robust.Tests
