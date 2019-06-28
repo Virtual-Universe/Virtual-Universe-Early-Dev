@@ -61,5 +61,5 @@ using Mono.Addins;
 //
 [assembly: AssemblyVersion("0.2.001.*")]
 
-[assembly: AddinRoot("OpenSim", OpenSim.VersionInfo.VersionNumber)]
+[assembly: AddinRoot("OpenSim", OpenSim.VersionInfo.Version)]
 [assembly: ImportAddinAssembly("OpenSim.Framework.dll")]
