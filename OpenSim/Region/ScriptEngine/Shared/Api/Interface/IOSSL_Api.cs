@@ -1,34 +1,35 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections;
 using OpenSim.Region.ScriptEngine.Interfaces;
-
 using key = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
 using rotation = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Quaternion;
 using vector = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Vector3;
@@ -264,7 +265,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         Object osParseJSONNew(string JSON);
         Hashtable osParseJSON(string JSON);
 
-        void osMessageObject(key objectUUID,string message);
+        void osMessageObject(key objectUUID, string message);
 
         void osMakeNotecard(string notecardName, LSL_Types.list contents);
 
@@ -319,13 +320,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         /// <returns>TRUE if the key belongs to an npc in the scene.  FALSE otherwise.</returns>
         LSL_Integer osIsNpc(LSL_Key npc);
 
-        key         osNpcCreate(string user, string name, vector position, string notecard);
-        key         osNpcCreate(string user, string name, vector position, string notecard, int options);
-        LSL_Key     osNpcSaveAppearance(key npc, string notecard);
-        void        osNpcLoadAppearance(key npc, string notecard);
-        vector      osNpcGetPos(key npc);
-        void        osNpcMoveTo(key npc, vector position);
-        void        osNpcMoveToTarget(key npc, vector target, int options);
+        key osNpcCreate(string user, string name, vector position, string notecard);
+        key osNpcCreate(string user, string name, vector position, string notecard, int options);
+        LSL_Key osNpcSaveAppearance(key npc, string notecard);
+        void osNpcLoadAppearance(key npc, string notecard);
+        vector osNpcGetPos(key npc);
+        void osNpcMoveTo(key npc, vector position);
+        void osNpcMoveToTarget(key npc, vector target, int options);
 
         /// <summary>
         /// Get the owner of the NPC
@@ -334,32 +335,33 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api.Interfaces
         /// <returns>
         /// The owner of the NPC for an owned NPC.  The NPC's agent id for an unowned NPC.  UUID.Zero if the key is not an npc.
         /// </returns>
-        LSL_Key     osNpcGetOwner(key npc);
+        LSL_Key osNpcGetOwner(key npc);
 
-        rotation    osNpcGetRot(key npc);
-        void        osNpcSetRot(LSL_Key npc, rotation rot);
-        void        osNpcStopMoveToTarget(LSL_Key npc);
-        void        osNpcSay(key npc, string message);
-        void        osNpcSay(key npc, int channel, string message);
-        void        osNpcShout(key npc, int channel, string message);
-        void        osNpcSit(key npc, key target, int options);
-        void        osNpcStand(LSL_Key npc);
-        void        osNpcRemove(key npc);
-        void        osNpcPlayAnimation(LSL_Key npc, string animation);
-        void        osNpcStopAnimation(LSL_Key npc, string animation);
-        void        osNpcTouch(LSL_Key npcLSL_Key, LSL_Key object_key, LSL_Integer link_num);
-        void        osNpcWhisper(key npc, int channel, string message);
+        rotation osNpcGetRot(key npc);
+        void osNpcSetRot(LSL_Key npc, rotation rot);
+        void osNpcStopMoveToTarget(LSL_Key npc);
+        void osNpcSay(key npc, string message);
+        void osNpcSay(key npc, int channel, string message);
+        void osNpcShout(key npc, int channel, string message);
+        void osNpcSit(key npc, key target, int options);
+        void osNpcStand(LSL_Key npc);
+        void osNpcRemove(key npc);
+        void osNpcPlayAnimation(LSL_Key npc, string animation);
+        void osNpcStopAnimation(LSL_Key npc, string animation);
+        void osNpcTouch(LSL_Key npcLSL_Key, LSL_Key object_key, LSL_Integer link_num);
+        void osNpcWhisper(key npc, int channel, string message);
 
-        LSL_Key     osOwnerSaveAppearance(string notecard);
-        LSL_Key     osAgentSaveAppearance(key agentId, string notecard);
+        LSL_Key osOwnerSaveAppearance(string notecard);
+        LSL_Key osAgentSaveAppearance(key agentId, string notecard);
 
+        key osGetGender(LSL_Key rawAvatarId);
         key osGetMapTexture();
         key osGetRegionMapTexture(string regionName);
         LSL_List osGetRegionStats();
         vector osGetRegionSize();
 
         int osGetSimulatorMemory();
-        void osKickAvatar(string FirstName,string SurName,string alert);
+        void osKickAvatar(string FirstName, string SurName, string alert);
         void osSetSpeed(string UUID, LSL_Float SpeedModifier);
         LSL_Float osGetHealth(string avatar);
         void osCauseHealing(string avatar, double healing);
