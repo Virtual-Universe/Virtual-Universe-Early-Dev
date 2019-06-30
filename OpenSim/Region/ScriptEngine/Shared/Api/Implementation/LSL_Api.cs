@@ -30,6 +30,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -222,8 +223,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected float m_primSafetyCoeffY = 2.414214f;
         protected float m_primSafetyCoeffZ = 1.618034f;
         protected bool m_useCastRayV3 = false;
-        protected float m_floatToleranceInCastRay = 0.000001f;
-        protected float m_floatTolerance2InCastRay = 0.0001f;
+        protected float m_floatToleranceInCastRay = 0.00001f;
+        protected float m_floatTolerance2InCastRay = 0.001f;
         protected DetailLevel m_primLodInCastRay = DetailLevel.Medium;
         protected DetailLevel m_sculptLodInCastRay = DetailLevel.Medium;
         protected DetailLevel m_meshLodInCastRay = DetailLevel.Highest;
@@ -234,6 +235,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected bool m_detectExitsInCastRay = false;
         protected bool m_filterPartsInCastRay = false;
         protected bool m_doAttachmentsInCastRay = false;
+        protected int m_msThrottleInCastRay = 200;
+        protected int m_msPerRegionInCastRay = 40;
+        protected int m_msPerAvatarInCastRay = 10;
+        protected int m_msMinInCastRay = 2;
+        protected int m_msMaxInCastRay = 40;
+        protected static List<CastRayCall> m_castRayCalls = new List<CastRayCall>();
+        protected bool m_useMeshCacheInCastRay = true;
+        protected static Dictionary<ulong, FacetedMesh> m_cachedMeshes = new Dictionary<ulong, FacetedMesh>();
 
         //An array of HTTP/1.1 headers that are not allowed to be used
         //as custom headers by llHTTPRequest.
@@ -353,6 +362,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     m_detectExitsInCastRay = lslConfig.GetBoolean("DetectExitHitsInLlCastRay", m_detectExitsInCastRay);
                     m_filterPartsInCastRay = lslConfig.GetBoolean("FilterPartsInLlCastRay", m_filterPartsInCastRay);
                     m_doAttachmentsInCastRay = lslConfig.GetBoolean("DoAttachmentsInLlCastRay", m_doAttachmentsInCastRay);
+                    m_msThrottleInCastRay = lslConfig.GetInt("ThrottleTimeInMsInLlCastRay", m_msThrottleInCastRay);
+                    m_msPerRegionInCastRay = lslConfig.GetInt("AvailableTimeInMsPerRegionInLlCastRay", m_msPerRegionInCastRay);
+                    m_msPerAvatarInCastRay = lslConfig.GetInt("AvailableTimeInMsPerAvatarInLlCastRay", m_msPerAvatarInCastRay);
+                    m_msMinInCastRay = lslConfig.GetInt("RequiredAvailableTimeInMsInLlCastRay", m_msMinInCastRay);
+                    m_msMaxInCastRay = lslConfig.GetInt("MaximumAvailableTimeInMsInLlCastRay", m_msMaxInCastRay);
+                    m_useMeshCacheInCastRay = lslConfig.GetBoolean("UseMeshCacheInLlCastRay", m_useMeshCacheInCastRay);
                 }
 
                 IConfig smtpConfig = seConfigSource.Configs["SMTP"];
@@ -3503,28 +3518,25 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             msg.fromAgentID = new Guid(m_host.UUID.ToString()); // fromAgentID.Guid;
             msg.toAgentID = new Guid(user); // toAgentID.Guid;
             msg.imSessionID = new Guid(friendTransactionID.ToString()); // This is the item we're mucking with here
-                                                                        //            m_log.Debug("[Scripting IM]: From:" + msg.fromAgentID.ToString() + " To: " + msg.toAgentID.ToString() + " Session:" + msg.imSessionID.ToString() + " Message:" + message);
-                                                                        //            m_log.Debug("[Scripting IM]: Filling Session: " + msg.imSessionID.ToString());
-            msg.timestamp = (uint)Util.UnixTimeSinceEpoch();// timestamp;
-                                                            //if (client != null)
-                                                            //{
-            msg.fromAgentName = m_host.Name;//client.FirstName + " " + client.LastName;// fromAgentName;
-            //}
-            //else
-            //{
-            //    msg.fromAgentName = "(hippos)";// Added for posterity.  This means that we can't figure out who sent it
-            //}
+            msg.timestamp = (uint)Util.UnixTimeSinceEpoch();
+            msg.fromAgentName = m_host.Name;
+
             // Cap the message length at 1024.
             if (message != null && message.Length > 1024)
+            {
                 msg.message = message.Substring(0, 1024);
+            }
             else
+            {
                 msg.message = message;
-            msg.dialog = (byte)19; // messgage from script ??? // dialog;
-            msg.fromGroup = false;// fromGroup;
-            msg.offline = (byte)0; //offline;
-            msg.ParentEstateID = 0; //ParentEstateID;
+            }
+
+            msg.dialog = (byte)19;
+            msg.fromGroup = false;
+            msg.offline = (byte)0;
+            msg.ParentEstateID = 0;
             msg.Position = new Vector3(m_host.AbsolutePosition);
-            msg.RegionID = World.RegionInfo.RegionID.Guid;//RegionID.Guid;
+            msg.RegionID = World.RegionInfo.RegionID.Guid;
 
             Vector3 pos = m_host.AbsolutePosition;
             msg.binaryBucket
@@ -3547,6 +3559,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             IEmailModule emailModule = m_ScriptEngine.World.RequestModuleInterface<IEmailModule>();
+
             if (emailModule == null)
             {
                 Error("llEmail", "Email module not configured");
@@ -4391,8 +4404,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             } while (data.Length > 254);
 
             m_host.SetText(text, av3, Util.Clip((float)alpha, 0.0f, 1.0f));
-            //m_host.ParentGroup.HasGroupChanged = true;
-            //m_host.ParentGroup.ScheduleGroupForFullUpdate();
         }
 
         public LSL_Float llWater(LSL_Vector offset)
@@ -4404,10 +4415,15 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         public void llPassTouches(int pass)
         {
             m_host.AddScriptLPS(1);
+
             if (pass != 0)
+            {
                 m_host.PassTouches = true;
+            }
             else
+            {
                 m_host.PassTouches = false;
+            }
         }
 
         public LSL_String llRequestAgentData(string id, int data)
@@ -4425,6 +4441,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 if (!m_userInfoCache.TryGetValue(uuid, out ce))
                 {
                     account = World.UserAccountService.GetUserAccount(World.RegionInfo.ScopeID, uuid);
+
                     if (account == null)
                     {
                         m_userInfoCache[uuid] = null; // Cache negative
@@ -4432,6 +4449,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     }
 
                     PresenceInfo[] pinfos = World.PresenceService.GetAgents(new string[] { uuid.ToString() });
+
                     if (pinfos != null && pinfos.Length > 0)
                     {
                         foreach (PresenceInfo p in pinfos)
@@ -4453,7 +4471,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 else
                 {
                     if (ce == null)
+                    {
                         return UUID.Zero.ToString();
+                    }
 
                     account = ce.account;
 
@@ -4461,6 +4481,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         >= LlRequestAgentDataCacheTimeoutMs)
                     {
                         PresenceInfo[] pinfos = World.PresenceService.GetAgents(new string[] { uuid.ToString() });
+
                         if (pinfos != null && pinfos.Length > 0)
                         {
                             foreach (PresenceInfo p in pinfos)
@@ -4492,9 +4513,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 case ScriptBaseClass.DATA_ONLINE:
                     if (pinfo != null && pinfo.RegionID != UUID.Zero)
+                    {
                         reply = "1";
+                    }
                     else
+                    {
                         reply = "0";
+                    }
                     break;
                 case ScriptBaseClass.DATA_NAME: // (First Last)
                     reply = account.FirstName + " " + account.LastName;
@@ -4519,9 +4544,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             UUID rq = UUID.Random();
 
-            UUID tid = AsyncCommands.
-                DataserverPlugin.RegisterRequest(m_host.LocalId,
-                                             m_item.ItemID, rq.ToString());
+            UUID tid = AsyncCommands.DataserverPlugin.RegisterRequest(m_host.LocalId, m_item.ItemID, rq.ToString());
 
             AsyncCommands.
             DataserverPlugin.DataserverReply(rq.ToString(), reply);
@@ -4538,9 +4561,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 if (item.Type == 3 && item.Name == name)
                 {
-                    UUID tid = AsyncCommands.
-                        DataserverPlugin.RegisterRequest(m_host.LocalId,
-                                                     m_item.ItemID, item.AssetID.ToString());
+                    UUID tid = AsyncCommands.DataserverPlugin.RegisterRequest(m_host.LocalId, m_item.ItemID, item.AssetID.ToString());
 
                     Vector3 region = new Vector3(World.RegionInfo.WorldLocX, World.RegionInfo.WorldLocY, 0);
 
@@ -4554,9 +4575,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             region = lm.Position + new Vector3(rx, ry, 0) - region;
 
                             string reply = region.ToString();
-                            AsyncCommands.
-                                DataserverPlugin.DataserverReply(i.ToString(),
-                                                             reply);
+                            AsyncCommands.DataserverPlugin.DataserverReply(i.ToString(), reply);
                         });
 
                     ScriptSleep(m_sleepMsOnRequestInventoryData);
@@ -4578,9 +4597,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             UUID agentId = new UUID();
+
             if (UUID.TryParse(agent, out agentId))
             {
                 ScenePresence presence = World.GetScenePresence(agentId);
+
                 if (presence != null)
                 {
                     // agent must be over the owners land
@@ -4602,6 +4623,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             if (UUID.TryParse(agent, out agentId))
             {
                 ScenePresence presence = World.GetScenePresence(agentId);
+
                 if (presence != null && presence.PresenceType != PresenceType.Npc)
                 {
                     // agent must not be a god
@@ -4879,9 +4901,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             {
                                 pushAllowed = true;
                             }
-
-                            //ParcelFlags.RestrictPushObject
-                            //pushAllowed = true;
                         }
                         else
                         {
@@ -4901,6 +4920,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 float PUSH_ATTENUATION_DISTANCE = 17f;
                 float PUSH_ATTENUATION_SCALE = 5f;
                 float distance_attenuation = 1f;
+
                 if (distance > PUSH_ATTENUATION_DISTANCE)
                 {
                     float normalized_units = 1f + (distance - PUSH_ATTENUATION_DISTANCE) / PUSH_ATTENUATION_SCALE;
@@ -4912,13 +4932,15 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     float impulse_length = applied_linear_impulse.Length();
 
                     float desired_energy = impulse_length * pusher_mass;
+
                     if (desired_energy > 0f)
+                    {
                         desired_energy += distance_term;
+                    }
 
                     float scaling_factor = 1f;
                     scaling_factor *= distance_attenuation;
                     applied_linear_impulse *= scaling_factor;
-
                 }
 
                 if (pusheeIsAvatar)
@@ -4954,6 +4976,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         public void llPassCollisions(int pass)
         {
             m_host.AddScriptLPS(1);
+
             if (pass == 0)
             {
                 m_host.PassCollisions = false;
@@ -4978,11 +5001,17 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             SceneObjectPart linkedPart;
 
             if (link == ScriptBaseClass.LINK_ROOT)
+            {
                 linkedPart = m_host.ParentGroup.RootPart;
+            }
             else if (link == ScriptBaseClass.LINK_THIS)
+            {
                 linkedPart = m_host;
+            }
             else
+            {
                 linkedPart = m_host.ParentGroup.GetLinkNumPart(link);
+            }
 
             return GetNumberOfSides(linkedPart);
         }
@@ -5007,33 +5036,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             return sides;
         }
 
-
-        /* The new / changed functions were tested with the following LSL script:
-
-        default
-        {
-            state_entry()
-            {
-                rotation rot = llEuler2Rot(<0,70,0> * DEG_TO_RAD);
-
-                llOwnerSay("to get here, we rotate over: "+ (string) llRot2Axis(rot));
-                llOwnerSay("and we rotate for: "+ (llRot2Angle(rot) * RAD_TO_DEG));
-
-                // convert back and forth between quaternion <-> vector and angle
-
-                rotation newrot = llAxisAngle2Rot(llRot2Axis(rot),llRot2Angle(rot));
-
-                llOwnerSay("Old rotation was: "+(string) rot);
-                llOwnerSay("re-converted rotation is: "+(string) newrot);
-
-                llSetRot(rot);  // to check the parameters in the prim
-            }
-        }
-        */
-
-        // Xantor 29/apr/2008
         // Returns rotation described by rotating angle radians about axis.
-        // q = cos(a/2) + i (x * sin(a/2)) + j (y * sin(a/2)) + k (z * sin(a/2))
         public LSL_Rotation llAxisAngle2Rot(LSL_Vector axis, double angle)
         {
             m_host.AddScriptLPS(1);
@@ -5060,9 +5063,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
 
             if (Math.Abs(rot.s) > 1) // normalization needed
+            {
                 rot.Normalize();
+            }
 
             double s = Math.Sqrt(1 - rot.s * rot.s);
+
             if (s < 0.001)
             {
                 return new LSL_Vector(1, 0, 0);
@@ -5070,11 +5076,15 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             else
             {
                 double invS = 1.0 / s;
-                if (rot.s < 0) invS = -invS;
+
+                if (rot.s < 0)
+                {
+                    invS = -invS;
+                }
+
                 return new LSL_Vector(rot.x * invS, rot.y * invS, rot.z * invS);
             }
         }
-
 
         // Returns the angle of a quaternion (see llRot2Axis for the axis)
         public LSL_Float llRot2Angle(LSL_Rotation rot)
@@ -5082,11 +5092,16 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
 
             if (Math.Abs(rot.s) > 1) // normalization needed
+            {
                 rot.Normalize();
+            }
 
             double angle = 2 * Math.Acos(rot.s);
+
             if (angle > Math.PI)
+            {
                 angle = 2 * Math.PI - angle;
+            }
 
             return angle;
         }
@@ -5103,7 +5118,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             return (double)Math.Asin(val);
         }
 
-        // jcochran 5/jan/2012
         public LSL_Float llAngleBetween(LSL_Rotation a, LSL_Rotation b)
         {
             m_host.AddScriptLPS(1);
@@ -5111,10 +5125,20 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             double aa = (a.x * a.x + a.y * a.y + a.z * a.z + a.s * a.s);
             double bb = (b.x * b.x + b.y * b.y + b.z * b.z + b.s * b.s);
             double aa_bb = aa * bb;
-            if (aa_bb == 0) return 0.0;
+
+            if (aa_bb == 0)
+            {
+                return 0.0;
+            }
+
             double ab = (a.x * b.x + a.y * b.y + a.z * b.z + a.s * b.s);
             double quotient = (ab * ab) / aa_bb;
-            if (quotient >= 1.0) return 0.0;
+
+            if (quotient >= 1.0)
+            {
+                return 0.0;
+            }
+
             return Math.Acos(2 * quotient - 1);
         }
 
@@ -5125,7 +5149,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             TaskInventoryItem item = m_host.Inventory.GetInventoryItem(name);
 
             if (item == null)
+            {
                 return UUID.Zero.ToString();
+            }
 
             if ((item.CurrentPermissions
                  & (uint)(PermissionMask.Copy | PermissionMask.Transfer | PermissionMask.Modify))
@@ -5142,9 +5168,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
 
             if (add != 0)
+            {
                 m_host.ParentGroup.RootPart.AllowedDrop = true;
+            }
             else
+            {
                 m_host.ParentGroup.RootPart.AllowedDrop = false;
+            }
 
             // Update the object flags
             m_host.ParentGroup.RootPart.aggregateScriptEvents();
@@ -5177,10 +5207,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             Primitive.TextureEntry tex = part.Shape.Textures;
             LSL_Vector offset = new LSL_Vector();
+
             if (face == ScriptBaseClass.ALL_SIDES)
             {
                 face = 0;
             }
+
             if (face >= 0 && face < GetNumberOfSides(part))
             {
                 offset.x = tex.GetFace((uint)face).OffsetU;
@@ -5199,10 +5231,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             m_host.AddScriptLPS(1);
             Primitive.TextureEntry tex = m_host.Shape.Textures;
             LSL_Vector scale;
+
             if (side == -1)
             {
                 side = 0;
             }
+
             scale.x = tex.GetFace((uint)side).RepeatU;
             scale.y = tex.GetFace((uint)side).RepeatV;
             scale.z = 0.0;
@@ -5218,10 +5252,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         protected LSL_Float GetTextureRot(SceneObjectPart part, int face)
         {
             Primitive.TextureEntry tex = part.Shape.Textures;
+
             if (face == -1)
             {
                 face = 0;
             }
+
             if (face >= 0 && face < GetNumberOfSides(part))
             {
                 return tex.GetFace((uint)face).Rotation;
@@ -5242,15 +5278,21 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         {
             m_host.AddScriptLPS(1);
             UUID key = new UUID();
+
             if (UUID.TryParse(id, out key))
             {
                 try
                 {
                     SceneObjectPart obj = World.GetSceneObjectPart(key);
+
                     if (obj == null)
+                    {
                         return id; // the key is for an agent so just return the key
+                    }
                     else
+                    {
                         return obj.OwnerID.ToString();
+                    }
                 }
                 catch (KeyNotFoundException)
                 {
@@ -13491,10 +13533,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                              }
 
                              string data = Encoding.UTF8.GetString(a.Data);
-                             //m_log.Debug(data);
                              NotecardCache.Cache(id, a.Data);
-                             AsyncCommands.DataserverPlugin.DataserverReply(
-                                reqIdentifier, NotecardCache.GetLine(assetID, line, m_notecardLineReadCharsMax));
+                             AsyncCommands.DataserverPlugin.DataserverReply(reqIdentifier, NotecardCache.GetLine(assetID, line, m_notecardLineReadCharsMax));
                          });
 
             ScriptSleep(m_sleepMsOnGetNotecardLine);
@@ -13504,6 +13544,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         public void SetPrimitiveParamsEx(LSL_Key prim, LSL_List rules, string originFunc)
         {
             SceneObjectPart obj = World.GetSceneObjectPart(new UUID(prim));
+
             if (obj == null)
                 return;
 
@@ -13696,8 +13737,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     radius = Math.Abs(maxZ);
                 radius = radius * 1.413f;
                 Vector3 ac = group.AbsolutePosition - rayStart;
-                //                Vector3 bc = group.AbsolutePosition - rayEnd;
-
                 double d = Math.Abs(Vector3.Mag(Vector3.Cross(ab, ac)) / Vector3.Distance(rayStart, rayEnd));
 
                 // Too far off ray, don't bother
@@ -13717,7 +13756,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
                 Vector3 b1 = group.AbsolutePosition + new Vector3(minX, minY, minZ);
                 Vector3 b2 = group.AbsolutePosition + new Vector3(maxX, maxY, maxZ);
-                //m_log.DebugFormat("[LLCASTRAY]: min<{0},{1},{2}>, max<{3},{4},{5}> = hitp<{6},{7},{8}>", b1.X,b1.Y,b1.Z,b2.X,b2.Y,b2.Z,intersection.ipoint.X,intersection.ipoint.Y,intersection.ipoint.Z);
+
                 if (!(intersection.ipoint.X >= b1.X && intersection.ipoint.X <= b2.X &&
                     intersection.ipoint.Y >= b1.Y && intersection.ipoint.Y <= b2.Y &&
                     intersection.ipoint.Z >= b1.Z && intersection.ipoint.Z <= b2.Z))
@@ -13754,7 +13793,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         min = heightfield[x, y];
                 }
             }
-
 
             // A ray extends past rayEnd, but doesn't go back before
             // rayStart. If the start is above the highest point of the ground
@@ -13834,9 +13872,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 float d = uv * uv - uu * vv;
 
                 float cs = (uv * wv - vv * wu) / d;
+
                 if (cs < 0 || cs > 1.0)
                     continue;
+
                 float ct = (uv * wu - uu * wv) / d;
+
                 if (ct < 0 || (cs + ct) > 1.0)
                     continue;
 
@@ -13904,21 +13945,22 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             bool checkNonPhysical = !((rejectTypes & ScriptBaseClass.RC_REJECT_NONPHYSICAL) == ScriptBaseClass.RC_REJECT_NONPHYSICAL);
             bool checkPhysical = !((rejectTypes & ScriptBaseClass.RC_REJECT_PHYSICAL) == ScriptBaseClass.RC_REJECT_PHYSICAL);
 
-
             if (World.SupportsRayCastFiltered())
             {
                 if (dist == 0)
                     return list;
 
                 RayFilterFlags rayfilter = RayFilterFlags.ClosestAndBackCull;
+
                 if (checkTerrain)
                     rayfilter |= RayFilterFlags.land;
-                //                if (checkAgents)
-                //                    rayfilter |= RayFilterFlags.agent;
+
                 if (checkPhysical)
                     rayfilter |= RayFilterFlags.physical;
+
                 if (checkNonPhysical)
                     rayfilter |= RayFilterFlags.nonphysical;
+
                 if (detectPhantom)
                     rayfilter |= RayFilterFlags.LSLPhantom;
 
@@ -13932,6 +13974,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
                 // get some more contacts to sort ???
                 int physcount = 4 * count;
+
                 if (physcount > 20)
                     physcount = 20;
 
@@ -13950,6 +13993,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 if (checkAgents)
                 {
                     ContactResult[] agentHits = AvatarIntersection(rayStart, rayEnd);
+
                     foreach (ContactResult r in agentHits)
                         results.Add(r);
                 }
@@ -13962,6 +14006,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 if (detectPhantom)
                 {
                     ContactResult[] objectHits = ObjectIntersection(rayStart, rayEnd, false, false, true);
+
                     foreach (ContactResult r in objectHits)
                         results.Add(r);
                 }
@@ -13971,6 +14016,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 if (checkAgents)
                 {
                     ContactResult[] agentHits = AvatarIntersection(rayStart, rayEnd);
+
                     foreach (ContactResult r in agentHits)
                         results.Add(r);
                 }
@@ -13978,6 +14024,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 if (checkPhysical || checkNonPhysical || detectPhantom)
                 {
                     ContactResult[] objectHits = ObjectIntersection(rayStart, rayEnd, checkPhysical, checkNonPhysical, detectPhantom);
+
                     for (int iter = 0; iter < objectHits.Length; iter++)
                     {
                         // Redistance the Depth because the Scene RayCaster returns distance from center to make the rezzing code simpler.
@@ -13990,6 +14037,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             if (checkTerrain)
             {
                 ContactResult? groundContact = GroundIntersection(rayStart, rayEnd);
+
                 if (groundContact != null)
                     results.Add((ContactResult)groundContact);
             }
@@ -14015,6 +14063,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 int linkNum = 0;
 
                 SceneObjectPart part = World.GetSceneObjectPart(result.ConsumerID);
+
                 // It's a prim!
                 if (part != null)
                 {
@@ -14032,7 +14081,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 else
                 {
                     ScenePresence sp = World.GetScenePresence(result.ConsumerID);
-                    /// It it a boy? a girl?
+                    
+                    // It it a boy? a girl?
                     if (sp != null)
                         itemID = sp.UUID;
                 }
@@ -14047,6 +14097,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     list.Add(new LSL_Vector(result.Normal));
 
                 values++;
+
                 if (values >= count)
                     break;
             }
@@ -14068,10 +14119,73 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         /// </summary>
         public LSL_List llCastRayV3(LSL_Vector start, LSL_Vector end, LSL_List options)
         {
-            // Initialize
             m_host.AddScriptLPS(1);
-            List<RayHit> rayHits = new List<RayHit>();
             LSL_List result = new LSL_List();
+
+            // Prepare throttle data
+            int calledMs = Environment.TickCount;
+            Stopwatch stopWatch = new Stopwatch();
+            stopWatch.Start();
+            UUID regionId = World.RegionInfo.RegionID;
+            UUID userId = UUID.Zero;
+            int msAvailable = 0;
+            
+            // Throttle per owner when attachment or "vehicle" (sat upon)
+            if (m_host.ParentGroup.IsAttachment || m_host.ParentGroup.GetSittingAvatars().Count > 0)
+            {
+                userId = m_host.OwnerID;
+                msAvailable = m_msPerAvatarInCastRay;
+            }
+            // Throttle per parcel when not attachment or vehicle
+            else
+            {
+                LandData land = World.GetLandData(m_host.GetWorldPosition());
+
+                if (land != null)
+                {
+                    msAvailable = m_msPerRegionInCastRay * land.Area / 65536;
+                }
+            }
+
+            // Clamp for "oversized" parcels on varregions
+            if (msAvailable > m_msMaxInCastRay)
+            {
+                msAvailable = m_msMaxInCastRay;
+            }
+
+            // Check throttle data
+            int fromCalledMs = calledMs - m_msThrottleInCastRay;
+
+            lock (m_castRayCalls)
+            {
+                for (int i = m_castRayCalls.Count - 1; i >= 0; i--)
+                {
+                    // Delete old calls from throttle data
+                    if (m_castRayCalls[i].CalledMs < fromCalledMs)
+                    {
+                        m_castRayCalls.RemoveAt(i);
+                    }
+                    // Use current region (in multi-region sims)
+                    else if (m_castRayCalls[i].RegionId == regionId)
+                    {
+                        // Reduce available time with recent calls
+                        if (m_castRayCalls[i].UserId == userId)
+                        {
+                            msAvailable -= m_castRayCalls[i].UsedMs;
+                        }
+                    }
+                }
+            }
+
+            // Return failure if not enough available time
+            if (msAvailable < m_msMinInCastRay)
+            {
+                result.Add(new LSL_Integer(ScriptBaseClass.RCERR_CAST_TIME_EXCEEDED));
+                return result;
+            }
+
+            // Initialize
+            List<RayHit> rayHits = new List<RayHit>();
             float tol = m_floatToleranceInCastRay;
             Vector3 pos1Ray = start;
             Vector3 pos2Ray = end;
@@ -14081,19 +14195,32 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             int dataFlags = 0;
             int maxHits = 1;
             bool detectPhantom = false;
+
             for (int i = 0; i < options.Length; i += 2)
             {
                 if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_REJECT_TYPES)
+                {
                     rejectTypes = options.GetLSLIntegerItem(i + 1);
+                }
                 else if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_DATA_FLAGS)
+                {
                     dataFlags = options.GetLSLIntegerItem(i + 1);
+                }
                 else if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_MAX_HITS)
+                {
                     maxHits = options.GetLSLIntegerItem(i + 1);
+                }
                 else if (options.GetLSLIntegerItem(i) == ScriptBaseClass.RC_DETECT_PHANTOM)
+                {
                     detectPhantom = (options.GetLSLIntegerItem(i + 1) != 0);
+                }
             }
+
             if (maxHits > m_maxHitsInCastRay)
+            {
                 maxHits = m_maxHitsInCastRay;
+            }
+
             bool rejectAgents = ((rejectTypes & ScriptBaseClass.RC_REJECT_AGENTS) != 0);
             bool rejectPhysical = ((rejectTypes & ScriptBaseClass.RC_REJECT_PHYSICAL) != 0);
             bool rejectNonphysical = ((rejectTypes & ScriptBaseClass.RC_REJECT_NONPHYSICAL) != 0);
@@ -14109,11 +14236,13 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             // Try to get a mesher and return failure if none, degenerate ray, or max 0 hits
             IRendering primMesher = null;
             List<string> renderers = RenderingLoader.ListRenderers(Util.ExecutingDirectory());
+
             if (renderers.Count < 1 || rayLength < tol || m_maxHitsInCastRay < 1)
             {
                 result.Add(new LSL_Integer(ScriptBaseClass.RCERR_UNKNOWN));
                 return result;
             }
+
             primMesher = RenderingLoader.LoadRenderer(renderers[0]);
 
             // Iterate over all objects/groups and prims/parts in region
@@ -14126,16 +14255,32 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     bool isPhantom = group.IsPhantom || group.IsVolumeDetect;
                     bool isAttachment = group.IsAttachment;
                     bool doGroup = true;
+
                     if (isPhysical && rejectPhysical)
+                    {
                         doGroup = false;
+                    }
+
                     if (isNonphysical && rejectNonphysical)
+                    {
                         doGroup = false;
+                    }
+
                     if (isPhantom && detectPhantom)
+                    {
                         doGroup = true;
+                    }
+
                     if (m_filterPartsInCastRay)
+                    {
                         doGroup = true;
+                    }
+
                     if (isAttachment && !m_doAttachmentsInCastRay)
+                    {
                         doGroup = false;
+                    }
+
                     // Parse object/group if passed filters
                     if (doGroup)
                     {
@@ -14149,14 +14294,26 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                                 isNonphysical = !isPhysical;
                                 isPhantom = ((part.Flags & PrimFlags.Phantom) != 0) || (part.VolumeDetectActive);
                                 bool doPart = true;
+
                                 if (isPhysical && rejectPhysical)
+                                {
                                     doPart = false;
+                                }
+
                                 if (isNonphysical && rejectNonphysical)
+                                {
                                     doPart = false;
+                                }
+
                                 if (isPhantom && detectPhantom)
+                                {
                                     doPart = true;
+                                }
+
                                 if (!doPart)
+                                {
                                     continue;
+                                }
                             }
 
                             // Parse prim/part and project ray if passed filters
@@ -14169,9 +14326,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
                             // Filter parts by shape bounding boxes
                             Vector3 shapeBoxMax = new Vector3(0.5f, 0.5f, 0.5f);
+
                             if (!part.Shape.SculptEntry)
+                            {
                                 shapeBoxMax = shapeBoxMax * (new Vector3(m_primSafetyCoeffX, m_primSafetyCoeffY, m_primSafetyCoeffZ));
+                            }
+
                             shapeBoxMax = shapeBoxMax + (new Vector3(tol, tol, tol));
+
                             if (RayIntersectsShapeBox(pos1RayProj, pos2RayProj, shapeBoxMax))
                             {
                                 // Prepare data needed to check for ray hits
@@ -14187,58 +14349,110 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                                 rayTrans.Position1RayProj = pos1RayProj;
                                 rayTrans.VectorRayProj = pos2RayProj - pos1RayProj;
 
-                                // Make an OMV prim to be able to mesh part
-                                Primitive omvPrim = part.Shape.ToOmvPrimitive(posPart, rotPart);
-                                byte[] sculptAsset = null;
-                                if (omvPrim.Sculpt != null)
-                                    sculptAsset = World.AssetService.GetData(omvPrim.Sculpt.SculptTexture.ToString());
-                                FacetedMesh mesh = null;
+                                // Get detail level depending on type
+                                int lod = 0;
 
-                                // When part is mesh, get mesh and check for hits
-                                if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type == SculptType.Mesh && sculptAsset != null)
+                                // Mesh detail level
+                                if (part.Shape.SculptEntry && part.Shape.SculptType == (byte)SculptType.Mesh)
                                 {
-                                    AssetMesh meshAsset = new AssetMesh(omvPrim.Sculpt.SculptTexture, sculptAsset);
-                                    FacetedMesh.TryDecodeFromAsset(omvPrim, meshAsset, m_meshLodInCastRay, out mesh);
-                                    meshAsset = null;
+                                    lod = (int)m_meshLodInCastRay;
+                                }
+                                else if (part.Shape.SculptEntry && part.Shape.SculptType == (byte)SculptType.Mesh)
+                                {
+                                    // Sculpt detail level
+                                    lod = (int)m_sculptLodInCastRay;
+                                }
+                                else if (!part.Shape.SculptEntry)
+                                {
+                                    // Shape detail level
+                                    lod = (int)m_primLodInCastRay;
                                 }
 
-                                // When part is sculpt, create mesh and check for hits
-                                // Quirk: Generated sculpt mesh is about 2.8% smaller in X and Y than visual sculpt.
-                                else if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type != SculptType.Mesh && sculptAsset != null)
+                                // Try to get cached mesh if configured
+                                ulong meshKey = 0;
+                                FacetedMesh mesh = null;
+
+                                if (m_useMeshCacheInCastRay)
                                 {
-                                    IJ2KDecoder imgDecoder = World.RequestModuleInterface<IJ2KDecoder>();
-                                    if (imgDecoder != null)
+                                    meshKey = part.Shape.GetMeshKey(Vector3.One, (float)(4 << lod));
+
+                                    lock (m_cachedMeshes)
                                     {
-                                        Image sculpt = imgDecoder.DecodeToImage(sculptAsset);
-                                        if (sculpt != null)
-                                        {
-                                            mesh = primMesher.GenerateFacetedSculptMesh(omvPrim, (Bitmap)sculpt, m_sculptLodInCastRay);
-                                            sculpt.Dispose();
-                                        }
+                                        m_cachedMeshes.TryGetValue(meshKey, out mesh);
                                     }
                                 }
 
-                                // When part is prim, create mesh and check for hits
-                                else if (omvPrim.Sculpt == null)
+                                // Create mesh if no cached mesh
+                                if (mesh == null)
                                 {
-                                    if (
-                                        omvPrim.PrimData.PathBegin == 0.0 && omvPrim.PrimData.PathEnd == 1.0 &&
-                                        omvPrim.PrimData.PathTaperX == 0.0 && omvPrim.PrimData.PathTaperY == 0.0 &&
-                                        omvPrim.PrimData.PathSkew == 0.0 &&
-                                        omvPrim.PrimData.PathTwist - omvPrim.PrimData.PathTwistBegin == 0.0
-                                    )
-                                        rayTrans.ShapeNeedsEnds = false;
-                                    mesh = primMesher.GenerateFacetedMesh(omvPrim, m_primLodInCastRay);
-                                }
+                                    // Make an OMV prim to be able to mesh part
+                                    Primitive omvPrim = part.Shape.ToOmvPrimitive(posPart, rotPart);
+                                    byte[] sculptAsset = null;
 
+                                    if (omvPrim.Sculpt != null)
+                                    {
+                                        sculptAsset = World.AssetService.GetData(omvPrim.Sculpt.SculptTexture.ToString());
+                                    }
+
+                                    // When part is mesh, get mesh
+                                    if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type == SculptType.Mesh && sculptAsset != null)
+                                    {
+                                        AssetMesh meshAsset = new AssetMesh(omvPrim.Sculpt.SculptTexture, sculptAsset);
+                                        FacetedMesh.TryDecodeFromAsset(omvPrim, meshAsset, m_meshLodInCastRay, out mesh);
+                                        meshAsset = null;
+                                    }
+
+                                    // When part is sculpt, create mesh
+                                    // Quirk: Generated sculpt mesh is about 2.8% smaller in X and Y than visual sculpt.
+                                    else if (omvPrim.Sculpt != null && omvPrim.Sculpt.Type != SculptType.Mesh && sculptAsset != null)
+                                    {
+                                        IJ2KDecoder imgDecoder = World.RequestModuleInterface<IJ2KDecoder>();
+
+                                        if (imgDecoder != null)
+                                        {
+                                            Image sculpt = imgDecoder.DecodeToImage(sculptAsset);
+
+                                            if (sculpt != null)
+                                            {
+                                                mesh = primMesher.GenerateFacetedSculptMesh(omvPrim, (Bitmap)sculpt, m_sculptLodInCastRay);
+                                                sculpt.Dispose();
+                                            }
+                                        }
+                                    }
+
+                                    // When part is shape, create mesh
+                                    else if (omvPrim.Sculpt == null)
+                                    {
+                                        if (omvPrim.PrimData.PathBegin == 0.0 && omvPrim.PrimData.PathEnd == 1.0 &&
+                                            omvPrim.PrimData.PathTaperX == 0.0 && omvPrim.PrimData.PathTaperY == 0.0 &&
+                                            omvPrim.PrimData.PathSkew == 0.0 &&
+                                            omvPrim.PrimData.PathTwist - omvPrim.PrimData.PathTwistBegin == 0.0)
+                                        {
+                                            rayTrans.ShapeNeedsEnds = false;
+                                            mesh = primMesher.GenerateFacetedMesh(omvPrim, m_primLodInCastRay);
+                                        }
+                                    }
+
+                                    // Cache mesh if configured
+                                    if (m_useMeshCacheInCastRay && mesh != null)
+                                    {
+                                        lock (m_cachedMeshes)
+                                        {
+                                            if (!m_cachedMeshes.ContainsKey(meshKey))
+                                            {
+                                                m_cachedMeshes.Add(meshKey, mesh);
+                                            }
+                                        }
+                                    }
+                                }
+                 
                                 // Check mesh for ray hits
                                 AddRayInFacetedMesh(mesh, rayTrans, ref rayHits);
                                 mesh = null;
                             }
                         }
                     }
-                }
-            );
+                });
 
             // Check avatar filter
             if (!rejectAgents)
@@ -14251,18 +14465,21 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                         Vector3 lower;
                         Vector3 upper;
                         BoundingBoxOfScenePresence(sp, out lower, out upper);
+                        
                         // Parse avatar
                         Vector3 scalePart = upper - lower;
                         Vector3 posPart = sp.AbsolutePosition;
                         Quaternion rotPart = sp.GetWorldRotation();
                         Quaternion rotPartInv = Quaternion.Inverse(rotPart);
                         posPart = posPart + (lower + upper) * 0.5f * rotPart;
+                        
                         // Project ray
                         Vector3 pos1RayProj = ((pos1Ray - posPart) * rotPartInv) / scalePart;
                         Vector3 pos2RayProj = ((pos2Ray - posPart) * rotPartInv) / scalePart;
 
                         // Filter avatars by shape bounding boxes
                         Vector3 shapeBoxMax = new Vector3(0.5f + tol, 0.5f + tol, 0.5f + tol);
+
                         if (RayIntersectsShapeBox(pos1RayProj, pos2RayProj, shapeBoxMax))
                         {
                             // Prepare data needed to check for ray hits
@@ -14278,16 +14495,46 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                             rayTrans.Position1RayProj = pos1RayProj;
                             rayTrans.VectorRayProj = pos2RayProj - pos1RayProj;
 
-                            // Make OMV prim, create and check mesh
+                            // Try to get cached mesh if configured
                             PrimitiveBaseShape prim = PrimitiveBaseShape.CreateSphere();
-                            prim.Scale = scalePart;
-                            Primitive omvPrim = prim.ToOmvPrimitive(posPart, rotPart);
-                            FacetedMesh mesh = primMesher.GenerateFacetedMesh(omvPrim, m_meshLodInCastRay);
+                            int lod = (int)m_avatarLodInCastRay;
+                            ulong meshKey = prim.GetMeshKey(Vector3.One, (float)(4 << lod));
+                            FacetedMesh mesh = null;
+
+                            if (m_useMeshCacheInCastRay)
+                            {
+                                lock (m_cachedMeshes)
+                                {
+                                    m_cachedMeshes.TryGetValue(meshKey, out mesh);
+                                }
+                            }
+
+                            // Create mesh if no cached mesh
+                            if (mesh == null)
+                            {
+                                // Make OMV prim and create mesh
+                                prim.Scale = scalePart;
+                                Primitive omvPrim = prim.ToOmvPrimitive(posPart, rotPart);
+                                mesh = primMesher.GenerateFacetedMesh(omvPrim, m_avatarLodInCastRay);
+
+                                // Cache mesh if configured
+                                if (m_useMeshCacheInCastRay && mesh != null)
+                                {
+                                    lock (m_cachedMeshes)
+                                    {
+                                        if (!m_cachedMeshes.ContainsKey(meshKey))
+                                        {
+                                            m_cachedMeshes.Add(meshKey, mesh);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Check mesh for ray hits
                             AddRayInFacetedMesh(mesh, rayTrans, ref rayHits);
                             mesh = null;
                         }
-                    }
-                );
+                    });
             }
 
             // Check terrain filter
@@ -14301,6 +14548,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 List<Tri> triangles = TrisFromHeightmapUnderRay(pos1Ray, pos2Ray, out lower, out upper);
                 lower.Z -= tol;
                 upper.Z += tol;
+
                 if ((pos1Ray.Z >= lower.Z || pos2Ray.Z >= lower.Z) && (pos1Ray.Z <= upper.Z || pos2Ray.Z <= upper.Z))
                 {
                     // Prepare data needed to check for ray hits
@@ -14330,36 +14578,57 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             {
                 int maxHitsPerType = 0;
                 UUID id = UUID.Zero;
+
                 if (t == 0)
+                {
                     maxHitsPerType = m_maxHitsPerPrimInCastRay;
+                }
                 else
+                {
                     maxHitsPerType = m_maxHitsPerObjectInCastRay;
+                }
 
                 // Handle excess hits only when needed
                 if (maxHitsPerType < m_maxHitsInCastRay)
                 {
                     // Find excess hits
                     Hashtable hits = new Hashtable();
+
                     for (int i = rayHits.Count - 1; i >= 0; i--)
                     {
                         if (t == 0)
+                        {
                             id = rayHits[i].PartId;
+                        }
                         else
+                        {
                             id = rayHits[i].GroupId;
+                        }
+
                         if (hits.ContainsKey(id))
+                        {
                             hits[id] = (int)hits[id] + 1;
+                        }
                         else
+                        {
                             hits[id] = 1;
+                        }
                     }
 
                     // Remove excess hits
                     for (int i = rayHits.Count - 1; i >= 0; i--)
                     {
                         if (t == 0)
+                        {
                             id = rayHits[i].PartId;
+                        }
                         else
+                        {
                             id = rayHits[i].GroupId;
+                        }
+
                         int hit = (int)hits[id];
+
                         if (hit > m_maxHitsPerPrimInCastRay)
                         {
                             rayHits.RemoveAt(i);
@@ -14372,22 +14641,54 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             // Parse hits into result list according to data flags
             int hitCount = rayHits.Count;
+
             if (hitCount > maxHits)
+            {
                 hitCount = maxHits;
+            }
+
             for (int i = 0; i < hitCount; i++)
             {
                 RayHit rayHit = rayHits[i];
+
                 if (getRootKey)
+                {
                     result.Add(new LSL_Key(rayHit.GroupId.ToString()));
+                }
                 else
+                {
                     result.Add(new LSL_Key(rayHit.PartId.ToString()));
+                }
+
                 result.Add(new LSL_Vector(rayHit.Position));
+
                 if (getLinkNum)
+                {
                     result.Add(new LSL_Integer(rayHit.Link));
+                }
+
                 if (getNormal)
+                {
                     result.Add(new LSL_Vector(rayHit.Normal));
+                }
             }
+
             result.Add(new LSL_Integer(hitCount));
+
+            // Add to throttle data
+            stopWatch.Stop();
+            CastRayCall castRayCall = new CastRayCall();
+            castRayCall.RegionId = regionId;
+            castRayCall.UserId = userId;
+            castRayCall.CalledMs = calledMs;
+            castRayCall.UsedMs = (int)stopWatch.ElapsedMilliseconds;
+
+            lock (m_castRayCalls)
+            {
+                m_castRayCalls.Add(castRayCall);
+            }
+
+            // Return hits
             return result;
         }
 
@@ -14422,6 +14723,17 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         }
 
         /// <summary>
+        /// Struct for llCastRay throttle data.
+        /// </summary>
+        public struct CastRayCall
+        {
+            public UUID RegionId;
+            public UUID UserId;
+            public int CalledMs;
+            public int UsedMs;
+        }
+
+        /// <summary>
         /// Helper to check if a ray intersects a shape bounding box.
         /// </summary>
         private bool RayIntersectsShapeBox(Vector3 pos1RayProj, Vector3 pos2RayProj, Vector3 shapeBoxMax)
@@ -14429,6 +14741,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             // Skip if ray can't intersect bounding box;
             Vector3 rayBoxProjMin = Vector3.Min(pos1RayProj, pos2RayProj);
             Vector3 rayBoxProjMax = Vector3.Max(pos1RayProj, pos2RayProj);
+
             if (
                 rayBoxProjMin.X > shapeBoxMax.X || rayBoxProjMin.Y > shapeBoxMax.Y || rayBoxProjMin.Z > shapeBoxMax.Z ||
                 rayBoxProjMax.X < -shapeBoxMax.X || rayBoxProjMax.Y < -shapeBoxMax.Y || rayBoxProjMax.Z < -shapeBoxMax.Z
@@ -14448,8 +14761,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 {
                     dist = ((float)sign * shapeBoxMax.X - pos1RayProj.X) / vecRayProj.X;
                     posProj = pos1RayProj + vecRayProj * dist;
+
                     if (Math.Abs(posProj.Y) <= shapeBoxMax.Y && Math.Abs(posProj.Z) <= shapeBoxMax.Z)
+                    {
                         return true;
+                    }
                 }
             }
 
@@ -14460,8 +14776,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 {
                     dist = ((float)sign * shapeBoxMax.Y - pos1RayProj.Y) / vecRayProj.Y;
                     posProj = pos1RayProj + vecRayProj * dist;
+
                     if (Math.Abs(posProj.X) <= shapeBoxMax.X && Math.Abs(posProj.Z) <= shapeBoxMax.Z)
+                    {
                         return true;
+                    }
                 }
             }
 
@@ -14472,8 +14791,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 {
                     dist = ((float)sign * shapeBoxMax.Z - pos1RayProj.Z) / vecRayProj.Z;
                     posProj = pos1RayProj + vecRayProj * dist;
+
                     if (Math.Abs(posProj.X) <= shapeBoxMax.X && Math.Abs(posProj.Y) <= shapeBoxMax.Y)
+                    {
                         return true;
+                    }
                 }
             }
 
@@ -14521,11 +14843,14 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             // Check for hit in triangle
             Vector3 posHitProj;
             Vector3 normalProj;
+
             if (HitRayInTri(triProj, rayTrans.Position1RayProj, rayTrans.VectorRayProj, out posHitProj, out normalProj))
             {
                 // Hack to circumvent ghost face bug in PrimMesher by removing hits in (ghost) face plane through shape center
                 if (Math.Abs(Vector3.Dot(posHitProj, normalProj)) < m_floatToleranceInCastRay && !rayTrans.ShapeNeedsEnds)
+                {
                     return;
+                }
 
                 // Transform hit and normal to region coordinate system
                 Vector3 posHit = rayTrans.PositionPart + (posHitProj * rayTrans.ScalePart) * rayTrans.RotationPart;
@@ -14533,12 +14858,18 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
                 // Remove duplicate hits at triangle intersections
                 float distance = Vector3.Distance(rayTrans.Position1Ray, posHit);
+
                 for (int i = rayHits.Count - 1; i >= 0; i--)
                 {
                     if (rayHits[i].PartId != rayTrans.PartId)
+                    {
                         break;
+                    }
+
                     if (Math.Abs(rayHits[i].Distance - distance) < m_floatTolerance2InCastRay)
+                    {
                         return;
+                    }
                 }
 
                 // Build result data set
@@ -14571,17 +14902,25 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
             // Skip if degenerate triangle or ray parallell with triangle plane
             float divisor = Vector3.Dot(vecRayProj, normalProj);
+
             if (Math.Abs(divisor) < tol)
+            {
                 return false;
+            }
 
             // Skip if exit and not configured to detect
             if (divisor > tol && !m_detectExitsInCastRay)
+            {
                 return false;
+            }
 
             // Skip if outside ray ends
             float distanceProj = Vector3.Dot(triProj.p1 - pos1RayProj, normalProj) / divisor;
+
             if (distanceProj < -tol || distanceProj > 1 + tol)
+            {
                 return false;
+            }
 
             // Calculate hit position in triangle
             posHitProj = pos1RayProj + vecRayProj * distanceProj;
@@ -14589,6 +14928,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             // Skip if outside triangle bounding box
             Vector3 triProjMin = Vector3.Min(Vector3.Min(triProj.p1, triProj.p2), triProj.p3);
             Vector3 triProjMax = Vector3.Max(Vector3.Max(triProj.p1, triProj.p2), triProj.p3);
+
             if (
                 posHitProj.X < triProjMin.X - tol || posHitProj.Y < triProjMin.Y - tol || posHitProj.Z < triProjMin.Z - tol ||
                 posHitProj.X > triProjMax.X + tol || posHitProj.Y > triProjMax.Y + tol || posHitProj.Z > triProjMax.Z + tol
@@ -14630,15 +14970,20 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             float xAbs = Math.Abs(vec.X);
             float yAbs = Math.Abs(vec.Y);
             bool bigX = true;
+
             if (yAbs > xAbs)
             {
                 bigX = false;
                 vec = vec / yAbs;
             }
             else if (xAbs > yAbs || xAbs > 0.0f)
+            {
                 vec = vec / xAbs;
+            }
             else
+            {
                 vec = new Vector3(1.0f, 1.0f, 0.0f);
+            }
 
             // Simplify by start parsing in lower end of lane
             if ((bigX && vec.X < 0.0f) || (!bigX && vec.Y < 0.0f))
@@ -14668,6 +15013,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 // Clip position to 1x1 rectangle border
                 xFloor = (float)Math.Floor(pos.X);
                 yFloor = (float)Math.Floor(pos.Y);
+
                 if (bigX && pos.X > xFloor)
                 {
                     pos.Y -= vec.Y * (pos.X - xFloor);
@@ -14689,12 +15035,20 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
 
                 // Add new 1x1 rectangle in lane
                 if ((bigX && xFloor != xFloorOld) || (!bigX && yFloor != yFloorOld))
+                {
                     AddTrisFromHeightmap(xFloor, yFloor, ref triangles, ref zLower, ref zUpper);
+                }
+
                 // Add last 1x1 rectangle in old lane at lane shift
                 if (bigX && yFloor != yFloorOld)
+                {
                     AddTrisFromHeightmap(xFloor, yFloorOld, ref triangles, ref zLower, ref zUpper);
+                }
+
                 if (!bigX && xFloor != xFloorOld)
+                {
                     AddTrisFromHeightmap(xFloorOld, yFloor, ref triangles, ref zLower, ref zUpper);
+                }
             }
 
             // Finalize bounding box Z
@@ -14717,6 +15071,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             int x = Util.Clamp<int>(xInt + 1, 0, World.Heightmap.Width - 1);
             int y = Util.Clamp<int>(yInt + 1, 0, World.Heightmap.Height - 1);
             Vector3 pos1 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+            
             // Adjust bounding box
             zLower = Math.Min(zLower, pos1.Z);
             zUpper = Math.Max(zUpper, pos1.Z);
@@ -14725,6 +15080,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             x = Util.Clamp<int>(xInt, 0, World.Heightmap.Width - 1);
             y = Util.Clamp<int>(yInt + 1, 0, World.Heightmap.Height - 1);
             Vector3 pos2 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+            
             // Adjust bounding box
             zLower = Math.Min(zLower, pos2.Z);
             zUpper = Math.Max(zUpper, pos2.Z);
@@ -14733,6 +15089,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             x = Util.Clamp<int>(xInt, 0, World.Heightmap.Width - 1);
             y = Util.Clamp<int>(yInt, 0, World.Heightmap.Height - 1);
             Vector3 pos3 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+            
             // Adjust bounding box
             zLower = Math.Min(zLower, pos3.Z);
             zUpper = Math.Max(zUpper, pos3.Z);
@@ -14741,6 +15098,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
             x = Util.Clamp<int>(xInt + 1, 0, World.Heightmap.Width - 1);
             y = Util.Clamp<int>(yInt, 0, World.Heightmap.Height - 1);
             Vector3 pos4 = new Vector3(x, y, (float)World.Heightmap[x, y]);
+         
             // Adjust bounding box
             zLower = Math.Min(zLower, pos4.Z);
             zUpper = Math.Max(zUpper, pos4.Z);
