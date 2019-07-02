@@ -1,34 +1,37 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using log4net;
 using log4net.Config;
 using NUnit.Framework;
@@ -54,19 +57,20 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
 
         private void Init()
         {
-            // Create an inventory that looks like this:
-            //
-            // /My Inventory
-            //   <other system folders>
-            //   /Objects
-            //      Some Object
-            //   /Notecards
-            //      Notecard 1
-            //      Notecard 2
-            //   /Test Folder
-            //      Link to notecard  -> /Notecards/Notecard 2
-            //      Link to Objects folder -> /Objects
-
+            /// <summary>
+            /// Create an inventory that looks like this:
+            ///
+            /// /My Inventory
+            ///   <other system folders>
+            ///   /Objects
+            ///      Some Object
+            ///   /Notecards
+            ///      Notecard 1
+            ///      Notecard 2
+            ///   /Test Folder
+            ///      Link to notecard  -> /Notecards/Notecard 2
+            ///      Link to Objects folder -> /Objects
+            /// </other>
             m_scene = new SceneHelpers().SetupScene();
 
             m_scene.InventoryService.CreateUserInventory(m_userID);
@@ -94,6 +98,7 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
             item.Folder = m_notecardsFolder;
             item.Name = "Test Notecard 1";
             m_scene.InventoryService.AddItem(item);
+     
             // Add another notecard
             item.ID = new UUID("20000000-0000-0000-0000-000000000002");
             item.AssetID = new UUID("a0000000-0000-0000-0000-00000000000a");
@@ -132,14 +137,14 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
 
             Init();
 
-            FetchInvDescHandler handler = new FetchInvDescHandler(m_scene.InventoryService, null);
+            FetchInvDescHandler handler = new FetchInvDescHandler(m_scene.InventoryService, null, m_scene);
             TestOSHttpRequest req = new TestOSHttpRequest();
             TestOSHttpResponse resp = new TestOSHttpResponse();
 
             string request = "<llsd><map><key>folders</key><array><map><key>fetch_folders</key><integer>1</integer><key>fetch_items</key><boolean>1</boolean><key>folder_id</key><uuid>";
             request += m_rootFolderID;
             request += "</uuid><key>owner_id</key><uuid>00000000-0000-0000-0000-000000000000</uuid><key>sort_order</key><integer>1</integer></map></array></map></llsd>";
-            
+
             string llsdresponse = handler.FetchInventoryDescendentsRequest(request, "/FETCH", string.Empty, req, resp);
 
             Assert.That(llsdresponse != null, Is.True, "Incorrect null response");
@@ -156,7 +161,7 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
         {
             TestHelpers.InMethod();
 
-            FetchInvDescHandler handler = new FetchInvDescHandler(m_scene.InventoryService, null);
+            FetchInvDescHandler handler = new FetchInvDescHandler(m_scene.InventoryService, null, m_scene);
             TestOSHttpRequest req = new TestOSHttpRequest();
             TestOSHttpResponse resp = new TestOSHttpResponse();
 
@@ -186,7 +191,7 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
         {
             TestHelpers.InMethod();
 
-            FetchInvDescHandler handler = new FetchInvDescHandler(m_scene.InventoryService, null);
+            FetchInvDescHandler handler = new FetchInvDescHandler(m_scene.InventoryService, null, m_scene);
             TestOSHttpRequest req = new TestOSHttpRequest();
             TestOSHttpResponse resp = new TestOSHttpResponse();
 
@@ -202,7 +207,7 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
 
             // Make sure that the note card link is included
             Assert.That(llsdresponse.Contains("Link to notecard"), Is.True, "Link to notecard is missing");
-            
+
             //Make sure the notecard item itself is included
             Assert.That(llsdresponse.Contains("Test Notecard 2"), Is.True, "Notecard 2 item (the source) is missing");
 
@@ -223,6 +228,43 @@ namespace OpenSim.Capabilities.Handlers.FetchInventory.Tests
             pos2 = llsdresponse.IndexOf("Link to Objects folder");
             Assert.Less(pos1, pos2, "Contents of source of folder link is after folder link");
         }
-    }
 
+        [Test]
+        public void Test_004_DuplicateFolders()
+        {
+            TestHelpers.InMethod();
+
+            FetchInvDescHandler handler = new FetchInvDescHandler(m_scene.InventoryService, null, m_scene);
+            TestOSHttpRequest req = new TestOSHttpRequest();
+            TestOSHttpResponse resp = new TestOSHttpResponse();
+
+            string request = "<llsd><map><key>folders</key><array>";
+            request += "<map><key>fetch_folders</key><integer>1</integer><key>fetch_items</key><boolean>1</boolean><key>folder_id</key><uuid>";
+            request += m_rootFolderID;
+            request += "</uuid><key>owner_id</key><uuid>00000000-0000-0000-0000-000000000000</uuid><key>sort_order</key><integer>1</integer></map>";
+            request += "<map><key>fetch_folders</key><integer>1</integer><key>fetch_items</key><boolean>1</boolean><key>folder_id</key><uuid>";
+            request += m_notecardsFolder;
+            request += "</uuid><key>owner_id</key><uuid>00000000-0000-0000-0000-000000000000</uuid><key>sort_order</key><integer>1</integer></map>";
+            request += "<map><key>fetch_folders</key><integer>1</integer><key>fetch_items</key><boolean>1</boolean><key>folder_id</key><uuid>";
+            request += m_rootFolderID;
+            request += "</uuid><key>owner_id</key><uuid>00000000-0000-0000-0000-000000000000</uuid><key>sort_order</key><integer>1</integer></map>";
+            request += "<map><key>fetch_folders</key><integer>1</integer><key>fetch_items</key><boolean>1</boolean><key>folder_id</key><uuid>";
+            request += m_notecardsFolder;
+            request += "</uuid><key>owner_id</key><uuid>00000000-0000-0000-0000-000000000000</uuid><key>sort_order</key><integer>1</integer></map>";
+            request += "</array></map></llsd>";
+
+            string llsdresponse = handler.FetchInventoryDescendentsRequest(request, "/FETCH", string.Empty, req, resp);
+            Console.WriteLine(llsdresponse);
+
+            string root_folder = "<key>folder_id</key><uuid>" + m_rootFolderID + "</uuid>";
+            string notecards_folder = "<key>folder_id</key><uuid>" + m_notecardsFolder + "</uuid>";
+
+            Assert.That(llsdresponse.Contains(root_folder), "Missing root folder");
+            Assert.That(llsdresponse.Contains(notecards_folder), "Missing notecards folder");
+            int count = Regex.Matches(llsdresponse, root_folder).Count;
+            Assert.AreEqual(1, count, "More than 1 root folder in response");
+            count = Regex.Matches(llsdresponse, notecards_folder).Count;
+            Assert.AreEqual(2, count, "More than 1 notecards folder in response"); // Notecards will also be under root, so 2
+        }
+    }
 }

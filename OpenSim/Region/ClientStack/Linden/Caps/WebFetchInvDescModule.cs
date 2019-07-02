@@ -1,29 +1,31 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections;
@@ -35,16 +37,16 @@ using Nini.Config;
 using Mono.Addins;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
+using OpenSim.Capabilities.Handlers;
 using OpenSim.Framework;
+using OpenSim.Framework.Capabilities;
 using OpenSim.Framework.Monitoring;
 using OpenSim.Framework.Servers;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
-using OpenSim.Framework.Capabilities;
 using OpenSim.Services.Interfaces;
 using Caps = OpenSim.Framework.Capabilities.Caps;
-using OpenSim.Capabilities.Handlers;
 
 namespace OpenSim.Region.ClientStack.Linden
 {
@@ -98,8 +100,7 @@ namespace OpenSim.Region.ClientStack.Linden
 
         private static Thread[] m_workerThreads = null;
 
-        private static DoubleQueue<aPollRequest> m_queue =
-                new DoubleQueue<aPollRequest>();
+        private static DoubleQueue<aPollRequest> m_queue = new DoubleQueue<aPollRequest>();
 
         #region ISharedRegionModule Members
 
@@ -113,8 +114,11 @@ namespace OpenSim.Region.ClientStack.Linden
         public void Initialize(IConfigSource source)
         {
             IConfig config = source.Configs["ClientStack.LindenCaps"];
+
             if (config == null)
+            {
                 return;
+            }
 
             m_fetchInventoryDescendents2Url = config.GetString("Cap_FetchInventoryDescendents2", string.Empty);
             m_webFetchInventoryDescendentsUrl = config.GetString("Cap_WebFetchInventoryDescendents", string.Empty);
@@ -128,7 +132,9 @@ namespace OpenSim.Region.ClientStack.Linden
         public void AddRegion(Scene s)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             Scene = s;
         }
@@ -136,7 +142,9 @@ namespace OpenSim.Region.ClientStack.Linden
         public void RemoveRegion(Scene s)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             Scene.EventManager.OnRegisterCaps -= RegisterCaps;
 
@@ -148,7 +156,9 @@ namespace OpenSim.Region.ClientStack.Linden
                 if (m_workerThreads != null)
                 {
                     foreach (Thread t in m_workerThreads)
+                    {
                         Watchdog.AbortThread(t.ManagedThreadId);
+                    }
 
                     m_workerThreads = null;
                 }
@@ -160,9 +170,12 @@ namespace OpenSim.Region.ClientStack.Linden
         public void RegionLoaded(Scene s)
         {
             if (!m_Enabled)
+            {
                 return;
+            }
 
             if (s_processedRequestsStat == null)
+            {
                 s_processedRequestsStat =
                     new Stat(
                         "ProcessedFetchInventoryRequests",
@@ -175,8 +188,10 @@ namespace OpenSim.Region.ClientStack.Linden
                         MeasuresOfInterest.AverageChangeOverTime,
                         stat => { stat.Value = ProcessedRequestsCount; },
                         StatVerbosity.Debug);
+            }
 
             if (s_queuedRequestsStat == null)
+            {
                 s_queuedRequestsStat =
                     new Stat(
                         "QueuedFetchInventoryRequests",
@@ -189,6 +204,7 @@ namespace OpenSim.Region.ClientStack.Linden
                         MeasuresOfInterest.AverageChangeOverTime,
                         stat => { stat.Value = m_queue.Count; },
                         StatVerbosity.Debug);
+            }
 
             StatsManager.RegisterStat(s_processedRequestsStat);
             StatsManager.RegisterStat(s_queuedRequestsStat);
@@ -197,11 +213,12 @@ namespace OpenSim.Region.ClientStack.Linden
             m_LibraryService = Scene.LibraryService;
 
             // We'll reuse the same handler for all requests.
-            m_webFetchHandler = new FetchInvDescHandler(m_InventoryService, m_LibraryService);
+            m_webFetchHandler = new FetchInvDescHandler(m_InventoryService, m_LibraryService, Scene);
 
             Scene.EventManager.OnRegisterCaps += RegisterCaps;
 
             int nworkers = 2; // was 2
+
             if (ProcessQueuedRequestsAsync && m_workerThreads == null)
             {
                 m_workerThreads = new Thread[nworkers];
@@ -238,8 +255,7 @@ namespace OpenSim.Region.ClientStack.Linden
         {
             private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-            private Dictionary<UUID, Hashtable> responses =
-                    new Dictionary<UUID, Hashtable>();
+            private Dictionary<UUID, Hashtable> responses = new Dictionary<UUID, Hashtable>();
 
             private WebFetchInvDescModule m_module;
 
@@ -267,9 +283,10 @@ namespace OpenSim.Region.ClientStack.Linden
                 Request = (x, y) =>
                 {
                     ScenePresence sp = m_module.Scene.GetScenePresence(Id);
+
                     if (sp == null)
                     {
-                        m_log.ErrorFormat("[INVENTORY]: Unable to find ScenePresence for {0}", Id);
+                        m_log.ErrorFormat("[Inventory]: Unable to find ScenePresence for {0}", Id);
                         return;
                     }
 
@@ -289,19 +306,20 @@ namespace OpenSim.Region.ClientStack.Linden
                     request = request.Replace("<key>fetch_folders</key><integer>1</integer>", "<key>fetch_folders</key><boolean>1</boolean>");
 
                     Hashtable hash = new Hashtable();
+
                     try
                     {
                         hash = (Hashtable)LLSD.LLSDDeserialize(Utils.StringToBytes(request));
                     }
                     catch (LLSD.LLSDParseException e)
                     {
-                        m_log.ErrorFormat("[INVENTORY]: Fetch error: {0}{1}" + e.Message, e.StackTrace);
+                        m_log.ErrorFormat("[Inventory]: Fetch error: {0}{1}" + e.Message, e.StackTrace);
                         m_log.Error("Request: " + request);
                         return;
                     }
                     catch (System.Xml.XmlException)
                     {
-                        m_log.ErrorFormat("[INVENTORY]: XML Format error");
+                        m_log.ErrorFormat("[Inventory]: XML Format error");
                     }
 
                     ArrayList foldersrequested = (ArrayList)hash["folders"];
@@ -313,31 +331,29 @@ namespace OpenSim.Region.ClientStack.Linden
                         Hashtable inventoryhash = (Hashtable)foldersrequested[i];
                         string folder = inventoryhash["folder_id"].ToString();
                         UUID folderID;
+
                         if (UUID.TryParse(folder, out folderID))
                         {
                             if (!reqinfo.folders.Contains(folderID))
                             {
-                                //TODO: Port COF handling from Avination
+                                // TODO: Port COF handling from Avination
                                 reqinfo.folders.Add(folderID);
                             }
                         }
                     }
 
                     if (highPriority)
+                    {
                         m_queue.EnqueueHigh(reqinfo);
+                    }
                     else
+                    {
                         m_queue.EnqueueLow(reqinfo);
+                    }
                 };
 
                 NoEvents = (x, y) =>
                 {
-/*
-                    lock (requests)
-                    {
-                        Hashtable request = requests.Find(id => id["RequestID"].ToString() == x.ToString());
-                        requests.Remove(request);
-                    }
-*/
                     Hashtable response = new Hashtable();
 
                     response["int_response_code"] = 500;
@@ -367,7 +383,10 @@ namespace OpenSim.Region.ClientStack.Linden
                 lock (responses)
                 {
                     if (responses.ContainsKey(requestID))
-                        m_log.WarnFormat("[FETCH INVENTORY DESCENDENTS2 MODULE]: Caught in the act of loosing responses! Please report this on mantis #7054");
+                    {
+                        m_log.WarnFormat("[Fetch Inventory Descendents2 Module]: Caught in the act of loosing responses! Please report this on mantis #7054");
+                    }
+
                     responses[requestID] = response;
                 }
 
@@ -389,9 +408,9 @@ namespace OpenSim.Region.ClientStack.Linden
             {
                 return;
             }
-            // handled by the simulator
             else if (url == "localhost")
             {
+                // Handled by the simulator
                 capUrl = "/CAPS/" + UUID.Random() + "/";
 
                 // Register this as a poll service
@@ -400,39 +419,28 @@ namespace OpenSim.Region.ClientStack.Linden
 
                 caps.RegisterPollHandler(capName, args);
             }
-            // external handler
             else
             {
+                // External handler
                 capUrl = url;
                 IExternalCapsModule handler = Scene.RequestModuleInterface<IExternalCapsModule>();
+
                 if (handler != null)
-                    handler.RegisterExternalUserCapsHandler(agentID,caps,capName,capUrl);
+                {
+                    handler.RegisterExternalUserCapsHandler(agentID, caps, capName, capUrl);
+                }
                 else
+                {
                     caps.RegisterHandler(capName, capUrl);
+                }
             }
-
-            // m_log.DebugFormat(
-            //     "[FETCH INVENTORY DESCENDENTS2 MODULE]: Registered capability {0} at {1} in region {2} for {3}",
-            //     capName, capUrl, m_scene.RegionInfo.RegionName, agentID);
         }
-
-//        private void DeregisterCaps(UUID agentID, Caps caps)
-//        {
-//            string capUrl;
-//
-//            if (m_capsDict.TryGetValue(agentID, out capUrl))
-//            {
-//                MainServer.Instance.RemoveHTTPHandler("", capUrl);
-//                m_capsDict.Remove(agentID);
-//            }
-//        }
 
         private void DoInventoryRequests()
         {
             while (true)
             {
                 Watchdog.UpdateThread();
-
                 WaitProcessQueuedInventoryRequest();
             }
         }
@@ -450,7 +458,7 @@ namespace OpenSim.Region.ClientStack.Linden
                 catch (Exception e)
                 {
                     m_log.ErrorFormat(
-                        "[INVENTORY]: Failed to process queued inventory request {0} for {1} in {2}.  Exception {3}", 
+                        "[Inventory]: Failed to process queued inventory request {0} for {1} in {2}.  Exception {3}", 
                         poolreq.reqID, poolreq.presence != null ? poolreq.presence.Name : "unknown", Scene.Name, e);
                 }
             }
