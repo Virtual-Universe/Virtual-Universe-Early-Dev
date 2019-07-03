@@ -2768,6 +2768,33 @@
     </Project>
 
     <!-- Test Clients -->
+    <Project frameworkVersion="v4_0" name="OpenSim.Tests.Clients.AssetClient" path="OpenSim/Tests/Clients/Assets" type="Exe">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../../../VirtualUniverse/bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverse" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenSim.Framework"/>
+      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="OpenSim.Services.Connectors"/>
+      <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
+
+      <Files>
+        <Match pattern="*.cs" recurse="true"/>
+      </Files>
+    </Project>
+
     <Project frameworkVersion="v4_0" name="Robust.Tests" path="OpenSim/Tests/Robust" type="Library">
       <Configuration name="Debug">
         <Options>
@@ -2792,38 +2819,11 @@
       <Reference name="OpenSim.Server.Handlers"/>
       <Reference name="OpenSim.Services.Interfaces"/>
       <Reference name="OpenSim.Services.Connectors"/>
+	  <Reference name="OpenSim.Tests.Common"/>
       <Reference name="Robust"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../VirtualUniverse/bin/"/>
-
-      <Files>
-        <Match pattern="*.cs" recurse="true"/>
-      </Files>
-    </Project>
-
-
-    <Project frameworkVersion="v4_0" name="OpenSim.Tests.Clients.AssetClient" path="OpenSim/Tests/Clients/Assets" type="Exe">
-      <Configuration name="Debug">
-        <Options>
-          <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
-        </Options>
-      </Configuration>
-      <Configuration name="Release">
-        <Options>
-          <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
-        </Options>
-      </Configuration>
-
-      <ReferencePath>../../../../VirtualUniverse/bin/</ReferencePath>
-      <Reference name="System"/>
-      <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenMetaverse" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true"/>

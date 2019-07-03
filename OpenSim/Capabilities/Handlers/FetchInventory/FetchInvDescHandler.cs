@@ -546,7 +546,7 @@ namespace OpenSim.Capabilities.Handlers
 
             // The inventory server isn't sending FolderID in the collection...
             // Must fetch it individually
-            if (contents.FolderID == UUID.Zero)
+            else if (contents.FolderID == UUID.Zero)
             {
                 InventoryFolderBase containingFolder = new InventoryFolderBase();
                 containingFolder.ID = freq.folder_id;
@@ -623,18 +623,6 @@ namespace OpenSim.Capabilities.Handlers
                         List<InventoryItemBase> links = linkedFolderContents.Items;
 
                         itemsToReturn.InsertRange(0, links);
-
-                        foreach (InventoryItemBase link in linkedFolderContents.Items)
-                        {
-                            // Take care of genuinely broken links where the target doesn't exist
-                            // HACK: Also, don't follow up links that just point to other links.  In theory this is legitimate,
-                            // but no viewer has been observed to set these up and this is the lazy way of avoiding cycles
-                            // rather than having to keep track of every folder requested in the recursion.
-                            if (link != null && link.AssetType == (int)AssetType.Link)
-                            {
-                                itemIDs.Add(link.AssetID);
-                            }
-                        }
                     }
                 }
 

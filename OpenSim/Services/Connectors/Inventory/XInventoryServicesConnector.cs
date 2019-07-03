@@ -63,7 +63,7 @@ namespace OpenSim.Services.Connectors
         private int m_requestTimeoutSecs = -1;
 
         private const double CACHE_EXPIRATION_SECONDS = 8.0;
-        private ExpiringCache<UUID, InventoryItemBase> m_ItemCache = new ExpiringCache<UUID, InventoryItemBase>();
+        private static ExpiringCache<UUID, InventoryItemBase> m_ItemCache = new ExpiringCache<UUID, InventoryItemBase>();
 
         public XInventoryServicesConnector()
         {
@@ -237,17 +237,27 @@ namespace OpenSim.Services.Connectors
                     return null;
                 }
 
-                Dictionary<string, object> folders = (Dictionary<string, object>)ret["FOLDERS"];
-                Dictionary<string, object> items = (Dictionary<string, object>)ret["ITEMS"];
+                Dictionary<string, object> folders = ret.ContainsKey("FOLDERS") ? (Dictionary<string, object>)ret["FOLDERS"] : null;
+                Dictionary<string, object> items = ret.ContainsKey("ITEMS") ? (Dictionary<string, object>)ret["ITEMS"] : null;
 
-                foreach (Object o in folders.Values) // getting the values directly, we don't care about the keys folder_i
+                if (folders != null)
                 {
-                    inventory.Folders.Add(BuildFolder((Dictionary<string, object>)o));
+                    // Getting the values directly,
+                    // We do not care about the keys folder_i
+                    foreach (Object o in folders.Values)
+                    {
+                        inventory.Folders.Add(BuildFolder((Dictionary<string, object>)o));
+                    }
                 }
 
-                foreach (Object o in items.Values) // getting the values directly, we don't care about the keys item_i
+                if (items != null)
                 {
-                    inventory.Items.Add(BuildItem((Dictionary<string, object>)o));
+                    // Getting the values directly
+                    // we do not care about the keys item_i
+                    foreach (Object o in items.Values)
+                    {
+                        inventory.Items.Add(BuildItem((Dictionary<string, object>)o));
+                    }
                 }
             }
             catch (Exception e)
@@ -617,6 +627,13 @@ namespace OpenSim.Services.Connectors
                 }
             }
 
+            // We are finished, everything was
+            // already in the cache
+            if (pending.Count == 0)
+            {
+                return itemArr;
+            }
+
             try
             {
                 Dictionary<string, object> resultSet = MakeRequest("GETMULTIPLEITEMS",
@@ -628,7 +645,14 @@ namespace OpenSim.Services.Connectors
 
                 if (!CheckReturn(resultSet))
                 {
-                    return null;
+                    if (i == 0)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return itemArr;
+                    }
                 }
 
                 // carry over index i where we left above
