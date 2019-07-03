@@ -50,6 +50,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
     public class AttachmentsModule : IAttachmentsModule, INonSharedRegionModule
     {
         #region INonSharedRegionModule
+
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public int DebugLevel { get; set; }
@@ -88,7 +89,6 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
             if (config != null)
             {
                 Enabled = config.GetBoolean("Enabled", true);
-
                 ThrottlePer100PrimsRezzed = config.GetInt("ThrottlePer100PrimsRezzed", 0);
             }
             else
@@ -281,7 +281,6 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
                 {
                     ((SceneObjectGroup)so).LocalId = 0;
                     ((SceneObjectGroup)so).RootPart.ClearUpdateSchedule();
-
                     so.SetState(ad.AttachmentObjectStates[i++], m_scene);
                     m_scene.IncomingCreateObject(Vector3.Zero, so);
                 }
@@ -319,6 +318,17 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
             }
 
             List<AvatarAttachment> attachments = sp.Appearance.GetAttachments();
+
+            // Let's get all items at once, so they get cached
+            UUID[] items = new UUID[attachments.Count];
+            int i = 0;
+
+            foreach (AvatarAttachment attach in attachments)
+            {
+                items[i++] = attach.ItemID;
+            }
+
+            m_scene.InventoryService.GetMultipleItems(sp.UUID, items);
 
             foreach (AvatarAttachment attach in attachments)
             {
@@ -923,7 +933,9 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
                         client =>
                             {
                                 if (client.AgentId != so.AttachedAvatar)
+                                {
                                     client.SendKillObject(new List<uint>() { so.LocalId });
+                                }
                             });
                 }
 
@@ -1032,7 +1044,6 @@ namespace OpenSim.Region.CoreModules.Avatar.Attachments
                 // We cannot use AbsolutePosition here because that would
                 // attempt to cross the prim as it is detached
                 so.ForEachPart(x => { x.GroupPosition = so.RootPart.AttachedPos; });
-
                 UpdateKnownItem(sp, so, scriptedState);
             }
 
