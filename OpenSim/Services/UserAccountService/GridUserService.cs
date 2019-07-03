@@ -1,54 +1,60 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using log4net;
 using Nini.Config;
+using OpenMetaverse;
 using OpenSim.Data;
-using OpenSim.Services.Interfaces;
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
+using OpenSim.Services.Interfaces;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
-
-using OpenMetaverse;
-using log4net;
 
 namespace OpenSim.Services.UserAccountService
 {
     public class GridUserService : GridUserServiceBase, IGridUserService
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static bool m_Initialized;
 
-        public GridUserService(IConfigSource config) : base(config) 
+        public GridUserService(IConfigSource config) : base(config)
         {
-            m_log.Debug("[GRID USER SERVICE]: Starting user grid service");
+            m_log.Debug("[Grid User Service]: Starting user grid service");
 
-            MainConsole.Instance.Commands.AddCommand(
+            if (!m_Initialized)
+            {
+                m_Initialized = true;
+
+                MainConsole.Instance.Commands.AddCommand(
                 "Users", false,
                 "show grid user",
                 "show grid user <ID>",
@@ -56,14 +62,15 @@ namespace OpenSim.Services.UserAccountService
                 "This is for debug purposes to see what data is found for a particular user id.",
                 HandleShowGridUser);
 
-            MainConsole.Instance.Commands.AddCommand(
-                "Users", false,
-                "show grid users online",
-                "show grid users online",
-                "Show number of grid users registered as online.", 
-                "This number may not be accurate as a region may crash or not be cleanly shutdown and leave grid users shown as online\n."
-                + "For this reason, users online for more than 5 days are not currently counted",
-                HandleShowGridUsersOnline);
+                MainConsole.Instance.Commands.AddCommand(
+                    "Users", false,
+                    "show grid users online",
+                    "show grid users online",
+                    "Show number of grid users registered as online.",
+                    "This number may not be accurate as a region may crash or not be cleanly shutdown and leave grid users shown as online\n."
+                    + "For this reason, users online for more than 5 days are not currently counted",
+                    HandleShowGridUsersOnline);
+            }
         }
 
         protected void HandleShowGridUser(string module, string[] cmdparams)
@@ -82,8 +89,10 @@ namespace OpenSim.Services.UserAccountService
 
                 cdl.AddRow("User ID", gu.UserID);
 
-                foreach (KeyValuePair<string,string> kvp in gu.Data)
+                foreach (KeyValuePair<string, string> kvp in gu.Data)
+                {
                     cdl.AddRow(kvp.Key, kvp.Value);
+                }
 
                 MainConsole.Instance.Output(cdl.ToString());
             }
@@ -93,13 +102,6 @@ namespace OpenSim.Services.UserAccountService
 
         protected void HandleShowGridUsersOnline(string module, string[] cmdparams)
         {
-//            if (cmdparams.Length != 4)
-//            {
-//                MainConsole.Instance.Output("Usage: show grid users online");
-//                return;
-//            }
-
-//            int onlineCount;
             int onlineRecentlyCount = 0;
 
             DateTime now = DateTime.UtcNow;
@@ -108,12 +110,12 @@ namespace OpenSim.Services.UserAccountService
             {
                 if (bool.Parse(gu.Data["Online"]))
                 {
-//                    onlineCount++;
-
                     int unixLoginTime = int.Parse(gu.Data["Login"]);
 
                     if ((now - Util.ToDateTime(unixLoginTime)).Days < 5)
+                    {
                         onlineRecentlyCount++;
+                    }
                 }
             }
 
@@ -123,6 +125,7 @@ namespace OpenSim.Services.UserAccountService
         private GridUserData GetGridUserData(string userID)
         {
             GridUserData d = null;
+
             if (userID.Length > 36) // it's a UUI
             {
                 d = m_Database.Get(userID);
@@ -130,15 +133,22 @@ namespace OpenSim.Services.UserAccountService
             else // it's a UUID
             {
                 GridUserData[] ds = m_Database.GetAll(userID);
+
                 if (ds == null)
+                {
                     return null;
+                }
 
                 if (ds.Length > 0)
                 {
                     d = ds[0];
                     foreach (GridUserData dd in ds)
+                    {
                         if (dd.UserID.Length > d.UserID.Length) // find the longest
+                        {
                             d = dd;
+                        }
+                    }
                 }
             }
 
@@ -150,7 +160,9 @@ namespace OpenSim.Services.UserAccountService
             GridUserData d = GetGridUserData(userID);
 
             if (d == null)
+            {
                 return null;
+            }
 
             GridUserInfo info = new GridUserInfo();
             info.UserID = d.UserID;
@@ -174,14 +186,16 @@ namespace OpenSim.Services.UserAccountService
             List<GridUserInfo> ret = new List<GridUserInfo>();
 
             foreach (string id in userIDs)
+            {
                 ret.Add(GetGridUserInfo(id));
+            }
 
             return ret.ToArray();
         }
 
         public GridUserInfo LoggedIn(string userID)
         {
-            m_log.DebugFormat("[GRID USER SERVICE]: User {0} is online", userID);
+            m_log.DebugFormat("[Grid User Service]: User {0} is online", userID);
 
             GridUserData d = GetGridUserData(userID);
 
@@ -201,7 +215,7 @@ namespace OpenSim.Services.UserAccountService
 
         public bool LoggedOut(string userID, UUID sessionID, UUID regionID, Vector3 lastPosition, Vector3 lastLookAt)
         {
-            m_log.DebugFormat("[GRID USER SERVICE]: User {0} is offline", userID);
+            m_log.DebugFormat("[Grid User Service]: User {0} is offline", userID);
 
             GridUserData d = GetGridUserData(userID);
 
@@ -239,8 +253,6 @@ namespace OpenSim.Services.UserAccountService
 
         public bool SetLastPosition(string userID, UUID sessionID, UUID regionID, Vector3 lastPosition, Vector3 lastLookAt)
         {
-//            m_log.DebugFormat("[GRID USER SERVICE]: SetLastPosition for {0}", userID);
-
             GridUserData d = GetGridUserData(userID);
 
             if (d == null)
