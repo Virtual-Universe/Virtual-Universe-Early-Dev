@@ -1,29 +1,31 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Diagnostics;
@@ -95,7 +97,9 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 for (int i = 0; i < textureIDs.Length; i++)
                 {
                     if (textureIDs[i] == UUID.Zero)
+                    {
                         textureIDs[i] = DEFAULT_TERRAIN_DETAIL[i];
+                    }
                 }
 
                 #region Texture Fetching
@@ -109,17 +113,19 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
                         // Try to fetch a cached copy of the decoded/resized version of this texture
                         asset = assetService.GetCached(cacheID.ToString());
+
                         if (asset != null)
                         {
                             try
                             {
                                 using (System.IO.MemoryStream stream = new System.IO.MemoryStream(asset.Data))
+                                {
                                     detailTexture[i] = (Bitmap)Image.FromStream(stream);
+                                }
                             }
                             catch (Exception ex)
                             {
-                                m_log.Warn("Failed to decode cached terrain texture " + cacheID +
-                                    " (textureID: " + textureIDs[i] + "): " + ex.Message);
+                                m_log.Warn("Failed to decode cached terrain texture " + cacheID + " (textureID: " + textureIDs[i] + "): " + ex.Message);
                             }
                         }
 
@@ -127,12 +133,13 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                         {
                             // Try to fetch the original JPEG2000 texture, resize if needed, and cache as PNG
                             asset = assetService.Get(textureIDs[i].ToString());
+
                             if (asset != null)
                             {
-//                                    m_log.DebugFormat(
-//                                        "[TERRAIN SPLAT]: Got cached original JPEG2000 terrain texture {0} {1}", i, asset.ID);
-
-                                try { detailTexture[i] = (Bitmap)CSJ2K.J2kImage.FromBytes(asset.Data); }
+                                try
+                                {
+                                    detailTexture[i] = (Bitmap)CSJ2K.J2kImage.FromBytes(asset.Data);
+                                }
                                 catch (Exception ex)
                                 {
                                     m_log.Warn("Failed to decode terrain texture " + asset.ID + ": " + ex.Message);
@@ -152,6 +159,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
                                 // Save the decoded and resized texture to the cache
                                 byte[] data;
+
                                 using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
                                 {
                                     detailTexture[i].Save(stream, ImageFormat.Png);
@@ -171,6 +179,7 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                                     Temporary = true,
                                     Type = (sbyte)AssetType.Unknown
                                 };
+
                                 newAsset.Metadata.ContentType = "image/png";
                                 assetService.Store(newAsset);
                             }
@@ -190,10 +199,13 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                                                             LogHeader, i);
                     // Create a solid color texture for this layer
                     detailTexture[i] = new Bitmap(256, 256, PixelFormat.Format24bppRgb);
+
                     using (Graphics gfx = Graphics.FromImage(detailTexture[i]))
                     {
                         using (SolidBrush brush = new SolidBrush(DEFAULT_TERRAIN_COLOR[i]))
+                        {
                             gfx.FillRectangle(brush, 0, 0, 256, 256);
+                        }
                     }
                 }
                 else
@@ -246,11 +258,9 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                     // Generate two frequencies of perlin noise based on our global position
                     // The magic values were taken from https://virtual-planets.org/wiki/Terrain_Splatting
                     Vector3 vec = new Vector3
-                    (
-                        ((float)regionPosition.X + (x * xFactor)) * 0.20319f,
+                    (((float)regionPosition.X + (x * xFactor)) * 0.20319f,
                         ((float)regionPosition.Y + (y * yFactor)) * 0.20319f,
-                        height * 0.25f
-                    );
+                        height * 0.25f);
 
                     float lowFreq = Perlin.noise2(vec.X * 0.222222f, vec.Y * 0.222222f) * 6.5f;
                     float highFreq = Perlin.turbulence2(vec.X, vec.Y, 2f) * 2.25f;
@@ -258,8 +268,12 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
                     // Combine the current height, generated noise, start height, and height range parameters, then scale all of it 
                     float layer = ((height + noise - startHeight) / heightRange) * 4f;
+
                     if (Single.IsNaN(layer))
+                    {
                         layer = 0f;
+                    }
+
                     layermap[x, y] = Utils.Clamp(layer, 0f, 3f);
                 }
             }
@@ -325,12 +339,18 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
                 }
 
                 for (int i = 0; i < detailTexture.Length; i++)
+                {
                     detailTexture[i].UnlockBits(datas[i]);
+                }
             }
 
             for (int i = 0; i < detailTexture.Length; i++)
+            {
                 if (detailTexture[i] != null)
+                {
                     detailTexture[i].Dispose();
+                }
+            }
 
             output.UnlockBits(outputData);
 
@@ -344,11 +364,14 @@ namespace OpenSim.Region.CoreModules.World.Warp3DMap
 
         public static Bitmap ResizeBitmap(Bitmap b, int nWidth, int nHeight)
         {
-            m_log.DebugFormat("{0} ResizeBitmap. From <{1},{2}> to <{3},{4}>",
-                                LogHeader, b.Width, b.Height, nWidth, nHeight);
+            m_log.DebugFormat("{0} ResizeBitmap. From <{1},{2}> to <{3},{4}>", LogHeader, b.Width, b.Height, nWidth, nHeight);
             Bitmap result = new Bitmap(nWidth, nHeight);
+
             using (Graphics g = Graphics.FromImage(result))
+            {
                 g.DrawImage(b, 0, 0, nWidth, nHeight);
+            }
+
             b.Dispose();
             return result;
         }

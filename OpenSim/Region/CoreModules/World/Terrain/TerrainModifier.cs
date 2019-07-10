@@ -1,33 +1,35 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
+
 using System;
 using System.Reflection;
 using log4net;
-
 using OpenSim.Region.Framework.Interfaces;
 
 namespace OpenSim.Region.CoreModules.World.Terrain
@@ -58,6 +60,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             data.bevel = String.Empty;
             data.dx = 0;
             data.dy = 0;
+
             if (args.Length < 4)
             {
                 result = "Usage: " + GetUsage();
@@ -66,12 +69,15 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             {
                 result = this.parseFloat(args[3], out data.elevation);
             }
+
             if (result == String.Empty)
             {
                 int index = 3;
-                while(++index < args.Length && result == String.Empty)
+
+                while (++index < args.Length && result == String.Empty)
                 {
                     arg = args[index];
+                
                     // check for shape
                     if (arg.StartsWith("-rec=") || arg.StartsWith("-ell="))
                     {
@@ -84,6 +90,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                             data.shape = arg.StartsWith("-ell=") ? "ellipse" : "rectangle";
                             val = arg.Substring(arg.IndexOf("=") + 1);
                             string[] coords = val.Split(new char[] {','});
+
                             if ((coords.Length < 3) || (coords.Length > 4))
                             {
                                 result = String.Format("Bad format for shape parameter {0}", arg);
@@ -91,14 +98,17 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                             else
                             {
                                 result = this.parseInt(coords[0], out data.x0);
+
                                 if (result == String.Empty)
                                 {
                                     result = this.parseInt(coords[1], out data.y0);
                                 }
+
                                 if (result == String.Empty)
                                 {
                                     result = this.parseInt(coords[2], out data.dx);
                                 }
+
                                 if (result == String.Empty)
                                 {
                                     if (coords.Length == 4)
@@ -110,6 +120,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                                         data.dy = data.dx;
                                     }
                                 }
+
                                 if (result == String.Empty)
                                 {
                                     if ((data.dx <= 0) || (data.dy <= 0))
@@ -135,6 +146,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                             data.bevel = "taper";
                             val = arg.Substring(arg.IndexOf("=") + 1);
                             result = this.parseFloat(val, out data.bevelevation);
+
                             if (result != String.Empty)
                             {
                                 result = String.Format("Bad format for taper parameter {0}", arg);
@@ -147,6 +159,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                     }
                 }
             }
+
             return result;
         }
 
@@ -154,6 +167,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
         {
             string result;
             double d;
+
             if (Double.TryParse(s, out d))
             {
                 try
@@ -172,12 +186,14 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 f = -1.0f;
                 result = String.Format("{0} is invalid", s);
             }
+
             return result;
         }
 
         protected string parseInt(String s, out int i)
         {
             string result;
+
             if (Int32.TryParse(s, out i))
             {
                 result = String.Empty;
@@ -186,6 +202,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             {
                 result = String.Format("{0} is invalid", s);
             }
+
             return result;
         }
 
@@ -196,6 +213,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             int yMax;
             int xMid;
             int yMid;
+
             if (data.shape == "ellipse")
             {
                 mask = this.ellipticalMask(data.dx, data.dy);
@@ -212,18 +230,22 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 xMid = 0;
                 yMid = 0;
             }
-//            m_log.DebugFormat("Apply {0} mask {1}x{2} @ {3},{4}", data.shape, xMax, yMax, xMid, yMid);
+
             double[,] buffer = map.GetDoubles();
             int yDim = yMax;
-            while(--yDim >= 0)
+
+            while (--yDim >= 0)
             {
                 int yPos = data.y0 + yDim - yMid;
+
                 if ((yPos >= 0) && (yPos < map.Height))
                 {
                     int xDim = xMax;
-                    while(--xDim >= 0)
+
+                    while (--xDim >= 0)
                     {
                         int xPos = data.x0 + xDim - xMid;
+
                         if ((xPos >= 0) && (xPos < map.Width) && (mask[xDim, yDim]))
                         {
                             double endElevation = this.operate(buffer, data, xPos, yPos);
@@ -241,6 +263,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             int xMax;
             int yMax;
             double factor;
+
             if (data.bevel == "taper")
             {
                 if (data.shape == "ellipse")
@@ -266,6 +289,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             {
                 factor = 0.0;
             }
+
             return factor;
         }
 
@@ -273,21 +297,24 @@ namespace OpenSim.Region.CoreModules.World.Terrain
         {
             bool[,] mask = new bool[xSize, ySize];
             int yPos = ySize;
-            while(--yPos >= 0)
+
+            while (--yPos >= 0)
             {
                 int xPos = xSize;
-                while(--xPos >= 0)
+
+                while (--xPos >= 0)
                 {
                     mask[xPos, yPos] = true;
                 }
             }
+
             return mask;
         }
 
-        /*
-         * Fast ellipse-based derivative of Bresenham algorithm.
-         *   https://web.archive.org/web/20120225095359/http://homepage.smc.edu/kennedy_john/belipse.pdf
-         */
+        /// <summary>
+        /// Fast ellipse-based derivative of Bresenham algorithm.
+        ///   https://web.archive.org/web/20120225095359/http://homepage.smc.edu/kennedy_john/belipse.pdf
+        /// </summary>
         private bool[,] ellipticalMask(int xRadius, int yRadius)
         {
             long twoASquared = 2L * xRadius * xRadius;
@@ -309,9 +336,11 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             {
                 int yUpper = yRadius + yPos;
                 int yLower = yRadius - yPos;
+                
                 // fill in the mask
                 int xNow = xPos;
-                while(xNow >= 0)
+
+                while (xNow >= 0)
                 {
                     mask[xRadius + xNow, yUpper] = true;
                     mask[xRadius - xNow, yUpper] = true;
@@ -319,10 +348,12 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                     mask[xRadius - xNow, yLower] = true;
                     --xNow;
                 }
+
                 yPos++;
                 stoppingY += twoASquared;
                 ellipseError += yChange;
                 yChange += twoASquared;
+
                 if ((2L * ellipseError + xChange) > 0L)
                 {
                     xPos--;
@@ -346,9 +377,11 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             {
                 int xUpper = xRadius + xPos;
                 int xLower = xRadius - xPos;
+                
                 // fill in the mask
                 int yNow = yPos;
-                while(yNow >= 0)
+
+                while (yNow >= 0)
                 {
                     mask[xUpper, yRadius + yNow] = true;
                     mask[xUpper, yRadius - yNow] = true;
@@ -356,10 +389,12 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                     mask[xLower, yRadius - yNow] = true;
                     --yNow;
                 }
+
                 xPos++;
                 stoppingX += twoBSquared;
                 ellipseError += xChange;
                 xChange += twoBSquared;
+
                 if ((2L * ellipseError + yChange) > 0L)
                 {
                     yPos--;
@@ -368,11 +403,8 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                     yChange += twoASquared;
                 }
             }
+
             return mask;
         }
-
-
     }
-
 }
-

@@ -1,29 +1,31 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.IO;
@@ -31,14 +33,11 @@ using System.Text;
 using System.Reflection;
 using System.Xml;
 using System.Xml.Serialization;
-
+using log4net;
+using OpenMetaverse;
 using OpenSim.Data;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
-
-using OpenMetaverse;
-
-using log4net;
 
 namespace OpenSim.Region.Framework.Scenes
 {
@@ -52,17 +51,30 @@ namespace OpenSim.Region.Framework.Scenes
 
         protected TerrainData m_terrainData;
 
-        public int Width { get { return m_terrainData.SizeX; } }  // X dimension
+        // x dimension
+        public int Width
+        {
+            get { return m_terrainData.SizeX; }
+        }
+
         // Unfortunately, for historical reasons, in this module 'Width' is X and 'Height' is Y
-        public int Height { get { return m_terrainData.SizeY; } } // Y dimension
-        public int Altitude { get { return m_terrainData.SizeZ; } } // Y dimension
+        // Y dimension
+        public int Height
+        {
+            get { return m_terrainData.SizeY; }
+        } 
+
+        // Z dimension
+        public int Altitude
+        {
+            get { return m_terrainData.SizeZ; }
+        }
 
         // Default, not-often-used builder
         public TerrainChannel()
         {
             m_terrainData = new HeightmapTerrainData((int)Constants.RegionSize, (int)Constants.RegionSize, (int)Constants.RegionHeight);
             FlatLand();
-            // PinHeadIsland();
         }
 
         // Create terrain of given size
@@ -76,10 +88,15 @@ namespace OpenSim.Region.Framework.Scenes
         public TerrainChannel(String type, int pX, int pY, int pZ)
         {
             m_terrainData = new HeightmapTerrainData(pX, pY, pZ);
+
             if (type.Equals("flat"))
+            {
                 FlatLand();
+            }
             else
+            {
                 PinHeadIsland();
+            }
         }
 
         // Create channel passed a heightmap and expected dimensions of the region.
@@ -92,11 +109,19 @@ namespace OpenSim.Region.Framework.Scenes
             m_terrainData = new HeightmapTerrainData(pSizeX, pSizeY, pAltitude);
 
             for (int xx = 0; xx < pSizeX; xx++)
+            {
                 for (int yy = 0; yy < pSizeY; yy++)
+                {
                     if (xx > hmSizeX || yy > hmSizeY)
+                    {
                         m_terrainData[xx, yy] = TerrainData.DefaultTerrainHeight;
+                    }
                     else
+                    {
                         m_terrainData[xx, yy] = (float)pM[xx, yy];
+                    }
+                }
+            }
         }
 
         public TerrainChannel(TerrainData pTerrData)
@@ -106,20 +131,16 @@ namespace OpenSim.Region.Framework.Scenes
 
         #region ITerrainChannel Members
 
-        // ITerrainChannel.MakeCopy()
         public ITerrainChannel MakeCopy()
         {
             return this.Copy();
         }
 
-        // ITerrainChannel.GetTerrainData()
         public TerrainData GetTerrainData()
         {
             return m_terrainData;
         }
 
-        // ITerrainChannel.GetFloatsSerialized()
-        // This one dimensional version is ordered so height = map[y*sizeX+x];
         // DEPRECATED: don't use this function as it does not retain the dimensions of the terrain
         //     and the caller will probably do the wrong thing if the terrain is not the legacy 256x256.
         public float[] GetFloatsSerialized()
@@ -127,12 +148,12 @@ namespace OpenSim.Region.Framework.Scenes
             return m_terrainData.GetFloatsSerialized();
         }
 
-        // ITerrainChannel.GetDoubles()
         public double[,] GetDoubles()
         {
             double[,] heights = new double[Width, Height];
 
             int idx = 0; // index into serialized array
+
             for (int ii = 0; ii < Width; ii++)
             {
                 for (int jj = 0; jj < Height; jj++)
@@ -145,54 +166,60 @@ namespace OpenSim.Region.Framework.Scenes
             return heights;
         }
 
-        // ITerrainChannel.this[x,y]
         public double this[int x, int y]
         {
-            get {
+            get
+            {
                 if (x < 0 || x >= Width || y < 0 || y >= Height)
+                {
                     return 0;
+                }
+
                 return (double)m_terrainData[x, y];
             }
             set
             {
                 if (Double.IsNaN(value) || Double.IsInfinity(value))
+                {
                     return;
+                }
 
                 m_terrainData[x, y] = (float)value;
             }
         }
 
-        // ITerrainChannel.GetHieghtAtXYZ(x, y, z)
         public float GetHeightAtXYZ(float x, float y, float z)
         {
             if (x < 0 || x >= Width || y < 0 || y >= Height)
+            {
                 return 0;
+            }
+
             return m_terrainData[(int)x, (int)y];
         }
 
-        // ITerrainChannel.Tainted()
         public bool Tainted(int x, int y)
         {
             return m_terrainData.IsTaintedAt(x, y);
         }
 
-        // ITerrainChannel.SaveToXmlString()
         public string SaveToXmlString()
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Encoding = Util.UTF8;
+
             using (StringWriter sw = new StringWriter())
             {
                 using (XmlWriter writer = XmlWriter.Create(sw, settings))
                 {
                     WriteXml(writer);
                 }
+
                 string output = sw.ToString();
                 return output;
             }
         }
 
-        // ITerrainChannel.LoadFromXmlString()
         public void LoadFromXmlString(string data)
         {
             StringReader sr = new StringReader(data);
@@ -204,7 +231,6 @@ namespace OpenSim.Region.Framework.Scenes
             sr.Close();
         }
 
-        // ITerrainChannel.Merge
         public void Merge(ITerrainChannel newTerrain, Vector3 displacement, float radianRotation, Vector2 rotationDisplacement)
         {
             m_log.DebugFormat("{0} Merge. inSize=<{1},{2}>, disp={3}, rot={4}, rotDisp={5}, outSize=<{6},{7}>", LogHeader,
@@ -218,11 +244,13 @@ namespace OpenSim.Region.Framework.Scenes
                     int dispX = (int)displacement.X;
                     int dispY = (int)displacement.Y;
                     float newHeight = (float)newTerrain[xx, yy] + displacement.Z;
+
                     if (radianRotation == 0)
                     {
                         // If no rotation, place the new height in the specified location
                         dispX += xx;
                         dispY += yy;
+
                         if (dispX >= 0 && dispX < m_terrainData.SizeX && dispY >= 0 && dispY < m_terrainData.SizeY)
                         {
                             m_terrainData[dispX, dispY] = newHeight;
@@ -244,6 +272,7 @@ namespace OpenSim.Region.Framework.Scenes
                         if (dispX >= 0 && dispX < m_terrainData.SizeX && dispY >= 0 && dispY < m_terrainData.SizeY)
                         {
                             float oldHeight = m_terrainData[dispX, dispY];
+
                             // Smooth the heights around this location if the old height is far from this one
                             for (int sxx = dispX - 2; sxx < dispX + 2; sxx++)
                             {
@@ -326,11 +355,13 @@ namespace OpenSim.Region.Framework.Scenes
         {
             float[] mapData = GetFloatsSerialized();
             byte[] buffer = new byte[mapData.Length * 4];
+
             for (int i = 0; i < mapData.Length; i++)
             {
                 byte[] value = BitConverter.GetBytes(mapData[i]);
                 Array.Copy(value, 0, buffer, (i * 4), 4);
             }
+
             XmlSerializer serializer = new XmlSerializer(typeof(byte[]));
             serializer.Serialize(xmlWriter, buffer);
         }
@@ -364,6 +395,7 @@ namespace OpenSim.Region.Framework.Scenes
             public int SizeZ;
             public float CompressionFactor;
             public int[] Map;
+
             public TerrainChannelXMLPackage(int pX, int pY, int pZ, float pCompressionFactor, int[] pMap)
             {
                 Version = 1;
@@ -378,8 +410,7 @@ namespace OpenSim.Region.Framework.Scenes
         // New terrain serialization format that includes the width and length.
         private void ToXml2(XmlWriter xmlWriter)
         {
-            TerrainChannelXMLPackage package = new TerrainChannelXMLPackage(Width, Height, Altitude, m_terrainData.CompressionFactor,
-                                            m_terrainData.GetCompressedMap());
+            TerrainChannelXMLPackage package = new TerrainChannelXMLPackage(Width, Height, Altitude, m_terrainData.CompressionFactor, m_terrainData.GetCompressedMap());
             XmlSerializer serializer = new XmlSerializer(typeof(TerrainChannelXMLPackage));
             serializer.Serialize(xmlWriter, package);
         }
@@ -402,10 +433,16 @@ namespace OpenSim.Region.Framework.Scenes
                     m_terrainData[x, y] = (float)TerrainUtil.PerlinNoise2D(x, y, 2, 0.125) * 10;
                     float spherFacA = (float)(TerrainUtil.SphericalFactor(x, y, m_terrainData.SizeX / 2.0, m_terrainData.SizeY / 2.0, 50) * 0.01d);
                     float spherFacB = (float)(TerrainUtil.SphericalFactor(x, y, m_terrainData.SizeX / 2.0, m_terrainData.SizeY / 2.0, 100) * 0.001d);
-                    if (m_terrainData[x, y]< spherFacA)
-                        m_terrainData[x, y]= spherFacA;
-                    if (m_terrainData[x, y]< spherFacB)
+
+                    if (m_terrainData[x, y] < spherFacA)
+                    {
+                        m_terrainData[x, y] = spherFacA;
+                    }
+
+                    if (m_terrainData[x, y] < spherFacB)
+                    {
                         m_terrainData[x, y] = spherFacB;
+                    }
                 }
             }
         }

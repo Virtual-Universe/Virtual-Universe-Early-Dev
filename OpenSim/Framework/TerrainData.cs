@@ -1,38 +1,38 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-
-using OpenMetaverse;
-
 using log4net;
+using OpenMetaverse;
 
 namespace OpenSim.Framework
 {
@@ -47,6 +47,7 @@ namespace OpenSim.Framework
         public const float DefaultTerrainHeight = 21f;
 
         public abstract float this[int x, int y] { get; set; }
+        
         // Someday terrain will have caves
         public abstract float this[int x, int y, int z] { get; set; }
 
@@ -94,14 +95,17 @@ namespace OpenSim.Framework
     {
         // Terrain is 'double[256,256]'
         Legacy256 = 11,
+        
         // Terrain is 'int32, int32, float[,]' where the ints are X and Y dimensions
         // The dimensions are presumed to be multiples of 16 and, more likely, multiples of 256.
         Variable2D = 22,
+        
         // Terrain is 'int32, int32, int32, int16[]' where the ints are X and Y dimensions
         //   and third int is the 'compression factor'. The heights are compressed as
         //   "int compressedHeight = (int)(height * compressionFactor);"
         // The dimensions are presumed to be multiples of 16 and, more likely, multiples of 256.
         Compressed2D = 27,
+        
         // A revision that is not listed above or any revision greater than this value is 'Legacy256'.
         RevisionHigh = 1234
     }
@@ -120,8 +124,10 @@ namespace OpenSim.Framework
         public override float this[int x, int y]
         {
             get { return FromCompressedHeight(m_heightmap[x, y]); }
-            set {
+            set
+            {
                 int newVal = ToCompressedHeight(value);
+
                 if (m_heightmap[x, y] != newVal)
                 {
                     m_heightmap[x, y] = newVal;
@@ -152,8 +158,12 @@ namespace OpenSim.Framework
         private void SetAllTaint(bool setting)
         {
             for (int ii = 0; ii < m_taint.GetLength(0); ii++)
+            {
                 for (int jj = 0; jj < m_taint.GetLength(1); jj++)
+                {
                     m_taint[ii, jj] = setting;
+                }
+            }
         }
 
         // TerrainData.ClearLand
@@ -161,13 +171,19 @@ namespace OpenSim.Framework
         {
             ClearLand(DefaultTerrainHeight);
         }
+
         // TerrainData.ClearLand(float)
         public override void ClearLand(float pHeight)
         {
             int flatHeight = ToCompressedHeight(pHeight);
+
             for (int xx = 0; xx < SizeX; xx++)
+            {
                 for (int yy = 0; yy < SizeY; yy++)
+                {
                     m_heightmap[xx, yy] = flatHeight;
+                }
+            }
         }
 
         // Return 'true' of the patch that contains these region coordinates has been modified.
@@ -178,8 +194,12 @@ namespace OpenSim.Framework
             int tx = xx / Constants.TerrainPatchSize;
             int ty = yy / Constants.TerrainPatchSize;
             bool ret =  m_taint[tx, ty];
+
             if (ret && clearOnTest)
+            {
                 m_taint[tx, ty] = false;
+            }
+            
             return ret;
         }
 
@@ -194,6 +214,7 @@ namespace OpenSim.Framework
         public override bool GetDatabaseBlob(out int DBRevisionCode, out Array blob)
         {
             bool ret = false;
+
             if (SizeX == Constants.RegionSize && SizeY == Constants.RegionSize)
             {
                 DBRevisionCode = (int)DBTerrainRevision.Legacy256;
@@ -206,6 +227,7 @@ namespace OpenSim.Framework
                 blob = ToCompressedTerrainSerialization();
                 ret = true;
             }
+
             return ret;
         }
 
@@ -219,13 +241,19 @@ namespace OpenSim.Framework
             int[] newMap = new int[SizeX * SizeY];
 
             int ind = 0;
+
             for (int xx = 0; xx < SizeX; xx++)
+            {
                 for (int yy = 0; yy < SizeY; yy++)
+                {
                     newMap[ind++] = m_heightmap[xx, yy];
+                }
+            }
 
             return newMap;
 
         }
+
         // TerrainData.Clone
         public override TerrainData Clone()
         {
@@ -244,11 +272,14 @@ namespace OpenSim.Framework
             float[] heights = new float[points];
 
             int idx = 0;
+
             for (int jj = 0; jj < SizeY; jj++)
+            {
                 for (int ii = 0; ii < SizeX; ii++)
                 {
                     heights[idx++] = FromCompressedHeight(m_heightmap[ii, jj]);
                 }
+            }
 
             return heights;
         }
@@ -257,17 +288,20 @@ namespace OpenSim.Framework
         public override double[,] GetDoubles()
         {
             double[,] ret = new double[SizeX, SizeY];
+
             for (int xx = 0; xx < SizeX; xx++)
+            {
                 for (int yy = 0; yy < SizeY; yy++)
+                {
                     ret[xx, yy] = FromCompressedHeight(m_heightmap[xx, yy]);
+                }
+            }
 
             return ret;
         }
 
-
-        // =============================================================
-
         private int[,] m_heightmap;
+
         // Remember subregions of the heightmap that has changed.
         private bool[,] m_taint;
 
@@ -294,15 +328,14 @@ namespace OpenSim.Framework
             m_compressionFactor = 100.0f;
 
             m_heightmap = new int[SizeX, SizeY];
+
             for (int ii = 0; ii < SizeX; ii++)
             {
                 for (int jj = 0; jj < SizeY; jj++)
                 {
                     m_heightmap[ii, jj] = ToCompressedHeight(pTerrain[ii, jj]);
-
                 }
             }
-            // m_log.DebugFormat("{0} new by doubles. sizeX={1}, sizeY={2}, sizeZ={3}", LogHeader, SizeX, SizeY, SizeZ);
 
             m_taint = new bool[SizeX / Constants.TerrainPatchSize, SizeY / Constants.TerrainPatchSize];
             ClearTaint();
@@ -317,7 +350,6 @@ namespace OpenSim.Framework
             m_compressionFactor = 100.0f;
             m_heightmap = new int[SizeX, SizeY];
             m_taint = new bool[SizeX / Constants.TerrainPatchSize, SizeY / Constants.TerrainPatchSize];
-            // m_log.DebugFormat("{0} new by dimensions. sizeX={1}, sizeY={2}, sizeZ={3}", LogHeader, SizeX, SizeY, SizeZ);
             ClearTaint();
             ClearLand(0f);
         }
@@ -326,10 +358,14 @@ namespace OpenSim.Framework
         {
             m_compressionFactor = pCompressionFactor;
             int ind = 0;
+
             for (int xx = 0; xx < SizeX; xx++)
+            {
                 for (int yy = 0; yy < SizeY; yy++)
+                {
                     m_heightmap[xx, yy] = cmap[ind++];
-            // m_log.DebugFormat("{0} new by compressed map. sizeX={1}, sizeY={2}, sizeZ={3}", LogHeader, SizeX, SizeY, SizeZ);
+                }
+            }
         }
 
         // Create a heighmap from a database blob
@@ -362,14 +398,20 @@ namespace OpenSim.Framework
                         for (int yy = 0; yy < Constants.RegionSize; yy++)
                         {
                             double height = this[xx, yy];
+
                             if (height == 0.0)
+                            {
                                 height = double.Epsilon;
+                            }
+
                             bw.Write(height);
                         }
                     }
                 }
+
                 ret = str.ToArray();
             }
+
             return ret;
         }
 
@@ -388,11 +430,15 @@ namespace OpenSim.Framework
                         for (int yy = 0; yy < (int)Constants.RegionSize; yy++)
                         {
                             float val = (float)br.ReadDouble();
+
                             if (xx < SizeX && yy < SizeY)
+                            {
                                 m_heightmap[xx, yy] = ToCompressedHeight(val);
+                            }
                         }
                     }
                 }
+
                 ClearTaint();
             }
         }
@@ -401,6 +447,7 @@ namespace OpenSim.Framework
         public Array ToCompressedTerrainSerialization()
         {
             Array ret = null;
+
             using (MemoryStream str = new MemoryStream((3 * sizeof(Int32)) + (SizeX * SizeY * sizeof(Int16))))
             {
                 using (BinaryWriter bw = new BinaryWriter(str))
@@ -409,14 +456,19 @@ namespace OpenSim.Framework
                     bw.Write((Int32)SizeX);
                     bw.Write((Int32)SizeY);
                     bw.Write((Int32)CompressionFactor);
+
                     for (int yy = 0; yy < SizeY; yy++)
+                    {
                         for (int xx = 0; xx < SizeX; xx++)
                         {
                             bw.Write((Int16)m_heightmap[xx, yy]);
                         }
+                    }
                 }
+
                 ret = str.ToArray();
             }
+
             return ret;
         }
 
@@ -449,11 +501,15 @@ namespace OpenSim.Framework
                         for (int xx = 0; xx < hmSizeX; xx++)
                         {
                             Int16 val = br.ReadInt16();
+
                             if (xx < SizeX && yy < SizeY)
+                            {
                                 m_heightmap[xx, yy] = val;
+                            }
                         }
                     }
                 }
+
                 ClearTaint();
 
                 m_log.InfoFormat("{0} Read compressed 2d heightmap. Heightmap size=<{1},{2}>. Region size=<{3},{4}>. CompFact={5}",

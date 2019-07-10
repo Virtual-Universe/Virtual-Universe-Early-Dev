@@ -1,36 +1,38 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.IO;
 using System.Text;
+using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
-using OpenSim.Framework;
 
 namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
 {
@@ -48,9 +50,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             FileInfo file = new FileInfo(filename);
             FileStream s = file.Open(FileMode.Open, FileAccess.Read);
             ITerrainChannel retval = LoadStream(s);
-
             s.Close();
-
             return retval;
         }
 
@@ -71,6 +71,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             while (eof == false)
             {
                 string tmp = Encoding.ASCII.GetString(bs.ReadBytes(4));
+
                 switch (tmp)
                 {
                     case "SIZE":
@@ -122,6 +123,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                                 // Read a strip and continue
                                 retval[x, y] = baseHeight + bs.ReadInt16() * (double)heightScale / 65536.0;
                             }
+                
                             // record that we wrote it
                             currFileXOffset++;
 
@@ -133,6 +135,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                                 bs.ReadBytes(sectionWidth * 2); // 2 bytes = short
                                 currFileXOffset++;
                             }
+                            
                             //eat the last additional point
                             bs.ReadInt16();
                         }
@@ -162,13 +165,14 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             BinaryReader bs = new BinaryReader(s);
 
             bool eof = false;
+
             if (Encoding.ASCII.GetString(bs.ReadBytes(16)) == "TERRAGENTERRAIN ")
             {
-
                 // Terragen file
                 while (eof == false)
                 {
                     string tmp = Encoding.ASCII.GetString(bs.ReadBytes(4));
+
                     switch (tmp)
                     {
                         case "SIZE":
@@ -190,6 +194,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                             retval = new TerrainChannel(w, h);
                             double heightScale = (double)bs.ReadInt16() / 65536.0;
                             double baseHeight = (double)bs.ReadInt16();
+
                             for (int y = 0; y < h; y++)
                             {
                                 for (int x = 0; x < w; x++)
@@ -204,6 +209,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                     }
                 }
             }
+
             bs.Close();
             return retval;
         }
@@ -213,7 +219,6 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             FileInfo file = new FileInfo(filename);
             FileStream s = file.Open(FileMode.Create, FileAccess.Write);
             SaveStream(s, map);
-
             s.Close();
         }
 
@@ -221,7 +226,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
         {
             BinaryWriter bs = new BinaryWriter(stream);
 
-            //find the max and min heights on the map
+            // find the max and min heights on the map
             double heightMax = map[0,0];
             double heightMin = map[0,0];
 
@@ -229,11 +234,17 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             {
                 for (int x = 0; x < map.Width; x++)
                 {
-                    double current = map[x,y];
+                    double current = map[x, y];
+
                     if (heightMax < current)
+                    {
                         heightMax = current;
+                    }
+
                     if (heightMin > current)
+                    {
                         heightMin = current;
+                    }
                 }
             }
 
@@ -243,7 +254,9 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
 
             // if we are completely flat add 1cm range to avoid NaN divisions
             if (horizontalScale < 0.01d)
+            {
                 horizontalScale = 0.01d;
+            }
 
             Encoding enc = Encoding.ASCII;
 
@@ -286,9 +299,13 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
 
                     // clamp rounding issues
                     if (elevation > Int16.MaxValue)
+                    {
                         elevation = Int16.MaxValue;
+                    }
                     else if (elevation < Int16.MinValue)
+                    {
                         elevation = Int16.MinValue;
+                    }
 
                     bs.Write(Convert.ToInt16(elevation));
                 }
@@ -305,10 +322,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             get { return ".ter"; }
         }
 
-        public virtual void SaveFile(ITerrainChannel m_channel, string filename,
-                             int offsetX, int offsetY,
-                             int fileWidth, int fileHeight,
-                             int regionSizeX, int regionSizeY)
+        public virtual void SaveFile(ITerrainChannel m_channel, string filename, int offsetX, int offsetY, int fileWidth, int fileHeight, int regionSizeX, int regionSizeY)
         {
             throw new System.Exception("Not Implemented");
         }
@@ -320,7 +334,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             return "Terragen";
         }
 
-        //Returns true if this extension is supported for terrain save-tile
+        // Returns true if this extension is supported for terrain save-tile
         public bool SupportsTileSave()
         {
             return false;
@@ -335,18 +349,20 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
         private byte[] ToLittleEndian( float number)
         {
             byte[] retVal = BitConverter.GetBytes(number);
+
             if (BitConverter.IsLittleEndian == false)
             {
                 byte[] tmp = new byte[4];
+
                 for (int i = 3; i >= 0; i--)
                 {
                     tmp[i] = retVal[3 - i];
                 }
-                retVal = tmp;
 
+                retVal = tmp;
             }
+
             return retVal ;
         }
-
     }
 }

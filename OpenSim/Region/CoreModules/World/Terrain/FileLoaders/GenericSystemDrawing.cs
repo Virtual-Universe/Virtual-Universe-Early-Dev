@@ -1,29 +1,31 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Drawing;
@@ -60,7 +62,9 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
         public virtual ITerrainChannel LoadFile(string filename)
         {
             using (Bitmap b = new Bitmap(filename))
+            {
                 return LoadBitmap(b);
+            }
         }
 
         public virtual ITerrainChannel LoadFile(string filename, int offsetX, int offsetY, int fileWidth, int fileHeight, int w, int h)
@@ -84,7 +88,9 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
         public virtual ITerrainChannel LoadStream(Stream stream)
         {
             using (Bitmap b = new Bitmap(stream))
+            {
                 return LoadBitmap(b);
+            }
         }
 
         protected virtual ITerrainChannel LoadBitmap(Bitmap bitmap)
@@ -92,9 +98,11 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             ITerrainChannel retval = new TerrainChannel(bitmap.Width, bitmap.Height);
 
             int x;
+
             for (x = 0; x < bitmap.Width; x++)
             {
                 int y;
+
                 for (y = 0; y < bitmap.Height; y++)
                 {
                     retval[x, y] = bitmap.GetPixel(x, bitmap.Height - y - 1).GetBrightness() * 128;
@@ -112,7 +120,6 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
         public virtual void SaveFile(string filename, ITerrainChannel map)
         {
             Bitmap colours = CreateGrayscaleBitmapFromMap(map);
-
             colours.Save(filename, ImageFormat.Png);
         }
 
@@ -124,7 +131,6 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
         public virtual void SaveStream(Stream stream, ITerrainChannel map)
         {
             Bitmap colours = CreateGrayscaleBitmapFromMap(map);
-
             colours.Save(stream, ImageFormat.Png);
         }
 
@@ -148,6 +154,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                 {
                     File.Copy(filename, tempName, true);
                     existingBitmap = new Bitmap(tempName);
+
                     if (existingBitmap.Width != fileWidth * regionSizeX || existingBitmap.Height != fileHeight * regionSizeY)
                     {
                         // old file, let's overwrite it
@@ -162,28 +169,40 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                 {
                     newBitmap = new Bitmap(fileWidth * regionSizeX, fileHeight * regionSizeY);
                 }
-    
+
                 thisBitmap = CreateGrayscaleBitmapFromMap(m_channel);
-    //            Console.WriteLine("offsetX=" + offsetX + " offsetY=" + offsetY);
+
                 for (int x = 0; x < regionSizeX; x++)
+                {
                     for (int y = 0; y < regionSizeY; y++)
+                    {
                         newBitmap.SetPixel(x + offsetX * regionSizeX, y + (fileHeight - 1 - offsetY) * regionSizeY, thisBitmap.GetPixel(x, y));
-    
+                    }
+                }
+
                 Save(newBitmap, filename);
             }
             finally
             {
                 if (existingBitmap != null)
+                {
                     existingBitmap.Dispose();
+                }
 
                 if (thisBitmap != null)
+                {
                     thisBitmap.Dispose();
+                }
 
                 if (newBitmap != null)
+                {
                     newBitmap.Dispose();
+                }
 
                 if (File.Exists(tempName))
+                {
                     File.Delete(tempName);
+                }
             }
         }
 
@@ -199,7 +218,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             return "SYS.DRAWING";
         }
 
-        //Returns true if this extension is supported for terrain save-tile
+        // Returns true if this extension is supported for terrain save-tile
         public virtual bool SupportsTileSave()
         {
             return false;
@@ -218,6 +237,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
             const int pallete = 256;
 
             Color[] grays = new Color[pallete];
+
             for (int i = 0; i < grays.Length; i++)
             {
                 grays[i] = Color.FromArgb(i, i, i);
@@ -228,15 +248,20 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                 for (int x = 0; x < map.Width; x++)
                 {
                     // 512 is the largest possible height before colours clamp
-                    int colorindex = (int) (Math.Max(Math.Min(1.0, map[x, y] / 128.0), 0.0) * (pallete - 1));
+                    int colorindex = (int)(Math.Max(Math.Min(1.0, map[x, y] / 128.0), 0.0) * (pallete - 1));
 
                     // Handle error conditions
                     if (colorindex > pallete - 1 || colorindex < 0)
+                    {
                         bmp.SetPixel(x, map.Height - y - 1, Color.Red);
+                    }
                     else
+                    {
                         bmp.SetPixel(x, map.Height - y - 1, grays[colorindex]);
+                    }
                 }
             }
+
             return bmp;
         }
 
@@ -270,15 +295,20 @@ namespace OpenSim.Region.CoreModules.World.Terrain.FileLoaders
                 for (int x = 0; x < map.Width; x++)
                 {
                     // 512 is the largest possible height before colours clamp
-                    int colorindex = (int) (Math.Max(Math.Min(1.0, map[x, y] / 512.0), 0.0) * (pallete - 1));
+                    int colorindex = (int)(Math.Max(Math.Min(1.0, map[x, y] / 512.0), 0.0) * (pallete - 1));
 
                     // Handle error conditions
                     if (colorindex > pallete - 1 || colorindex < 0)
+                    {
                         bmp.SetPixel(x, map.Height - y - 1, Color.Red);
+                    }
                     else
+                    {
                         bmp.SetPixel(x, map.Height - y - 1, colours[colorindex]);
+                    }
                 }
             }
+
             return bmp;
         }
     }
