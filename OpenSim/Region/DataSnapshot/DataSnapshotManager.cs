@@ -44,8 +44,8 @@ using OpenSim.Region.DataSnapshot.Interfaces;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 
-[assembly: Addin("DataSnapshot", OpenSim.VersionInfo.Version)]
-[assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.Version)]
+[assembly: Addin("DataSnapshot", OpenSim.VersionInfo.VersionNumber)]
+[assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.VersionNumber)]
 
 namespace OpenSim.Region.DataSnapshot
 {

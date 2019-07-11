@@ -32,5 +32,5 @@ using Mono.Addins;
 //
 [assembly: AssemblyVersion("0.2.001.*")]
 
-[assembly: Addin("OpenSim.RegionModules.RegionCombinerModule", OpenSim.VersionInfo.Version)]
-[assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.Version)]
+[assembly: Addin("OpenSim.RegionModules.RegionCombinerModule", OpenSim.VersionInfo.VersionNumber)]
+[assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.VersionNumber)]
