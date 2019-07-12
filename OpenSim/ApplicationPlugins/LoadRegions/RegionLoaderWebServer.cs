@@ -1,29 +1,31 @@
-﻿/*
- * Copyright (c) Contributors, https://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Virtual Universe Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.IO;
@@ -33,7 +35,7 @@ using System.Xml;
 using log4net;
 using Nini.Config;
 
-namespace OpenSim.Framework.RegionLoader.Web
+namespace OpenSim.ApplicationPlugins.LoadRegions
 {
     public class RegionLoaderWebServer : IRegionLoader
     {
@@ -50,7 +52,7 @@ namespace OpenSim.Framework.RegionLoader.Web
         {
             if (m_configSource == null)
             {
-                m_log.Error("[WEBLOADER]: Unable to load configuration source!");
+                m_log.Error("[Web Loader]: Unable to load configuration source!");
                 return null;
             }
             else
@@ -61,7 +63,7 @@ namespace OpenSim.Framework.RegionLoader.Web
 
                 if (url == String.Empty)
                 {
-                    m_log.Error("[WEBLOADER]: Unable to load webserver URL - URL was empty.");
+                    m_log.Error("[Web Loader]: Unable to load webserver URL - URL was empty.");
                     return null;
                 }
                 else
@@ -69,8 +71,8 @@ namespace OpenSim.Framework.RegionLoader.Web
                     RegionInfo[] regionInfos = new RegionInfo[] {};
                     int regionCount = 0;
                     HttpWebRequest webRequest = (HttpWebRequest) WebRequest.Create(url);
-                    webRequest.Timeout = 30000; //30 Second Timeout
-                    m_log.DebugFormat("[WEBLOADER]: Sending download request to {0}", url);
+                    webRequest.Timeout = 30000; // 30 Second Timeout
+                    m_log.DebugFormat("[Web Loader]: Sending download request to {0}", url);
 
                     try
                     {
@@ -78,13 +80,14 @@ namespace OpenSim.Framework.RegionLoader.Web
 
                         using (HttpWebResponse webResponse = (HttpWebResponse) webRequest.GetResponse())
                         {
-                            m_log.Debug("[WEBLOADER]: Downloading region information...");
+                            m_log.Debug("[Web Loader]: Downloading region information...");
 
                             using (Stream s = webResponse.GetResponseStream())
                             {
                                 using (StreamReader reader = new StreamReader(s))
                                 {
                                     string tempStr = reader.ReadLine();
+
                                     while (tempStr != null)
                                     {
                                         xmlSource = xmlSource + tempStr;
@@ -94,10 +97,10 @@ namespace OpenSim.Framework.RegionLoader.Web
                             }
                         }
 
-                        m_log.Debug("[WEBLOADER]: Done downloading region information from server. Total Bytes: " +
-                                    xmlSource.Length);
+                        m_log.Debug("[Web Loader]: Done downloading region information from server. Total Bytes: " + xmlSource.Length);
                         XmlDocument xmlDoc = new XmlDocument();
                         xmlDoc.LoadXml(xmlSource);
+
                         if (xmlDoc.FirstChild.Name == "Nini")
                         {
                             regionCount = xmlDoc.FirstChild.ChildNodes.Count;
@@ -106,11 +109,11 @@ namespace OpenSim.Framework.RegionLoader.Web
                             {
                                 regionInfos = new RegionInfo[regionCount];
                                 int i;
+
                                 for (i = 0; i < xmlDoc.FirstChild.ChildNodes.Count; i++)
                                 {
                                     m_log.Debug(xmlDoc.FirstChild.ChildNodes[i].OuterXml);
-                                    regionInfos[i] =
-                                        new RegionInfo("REGION CONFIG #" + (i + 1), xmlDoc.FirstChild.ChildNodes[i],false,m_configSource);
+                                    regionInfos[i] = new RegionInfo("REGION CONFIG #" + (i + 1), xmlDoc.FirstChild.ChildNodes[i],false,m_configSource);
                                 }
                             }
                         }
@@ -122,7 +125,9 @@ namespace OpenSim.Framework.RegionLoader.Web
                             if (response.StatusCode == HttpStatusCode.NotFound)
                             {
                                 if (!allowRegionless)
+                                {
                                     throw ex;
+                                }
                             }
                             else
                             {
@@ -137,7 +142,7 @@ namespace OpenSim.Framework.RegionLoader.Web
                     }
                     else
                     {
-                        m_log.Error("[WEBLOADER]: No region configs were available.");
+                        m_log.Error("[Web Loader]: No region configs were available.");
                         return null;
                     }
                 }
