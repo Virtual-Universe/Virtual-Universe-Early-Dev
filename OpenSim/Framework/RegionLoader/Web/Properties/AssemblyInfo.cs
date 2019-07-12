@@ -1,17 +1,16 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Mono.Addins;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OpenSim.ApplicationPlugins.RemoteController")]
+[assembly: AssemblyTitle("OpenSim.Framework.RegionLoader.Web")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://virtual-planets.org")]
 [assembly: AssemblyProduct("OpenSim")]
-[assembly: AssemblyCopyright("Copyright OpenSimulator developers ©  2012")]
+[assembly: AssemblyCopyright("OpenSimulator developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -21,7 +20,7 @@ using Mono.Addins;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("efec6e69-fc4a-4e21-86e6-4a261c12d4db")]
+[assembly: Guid("985afff8-e7ed-4056-acce-39abf7a43d33")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,5 +31,3 @@ using Mono.Addins;
 //
 [assembly: AssemblyVersion("0.2.001.*")]
 
-[assembly: Addin("OpenSim.ApplicationPlugins.RemoteController", OpenSim.VersionInfo.VersionNumber)]
-[assembly: AddinDependency("OpenSim", OpenSim.VersionInfo.VersionNumber)]
