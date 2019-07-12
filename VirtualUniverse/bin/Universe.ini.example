@@ -1163,16 +1163,25 @@
 
 
 [UserProfiles]
-  ;# {ProfileServiceURL} {} {Set url to UserProfilesService} {}
-  ;; Set the value of the url to your UserProfilesService
-  ;; If un-set / "" the module is disabled
-  ;; ProfileServiceURL = ${Const|BaseURL}:${Const|PublicPort}
+    ;# {ProfileServiceURL} {} {Set url to UserProfilesService} {}
+    ;; Set the value of the url to your UserProfilesService
+    ;; If un-set / "" the module is disabled
+    ;; ProfileServiceURL = ${Const|BaseURL}:${Const|PublicPort}
 
 [XBakes]
-  ;# {URL} {} {Set URL for Baked texture service} {}
-  ;; Sets the URL for the baked texture ROBUST service.
-  ;; Disabled when unset.
-  ;; URL = ${Const|BaseURL}:${Const|PrivatePort}
+    ;# {URL} {} {Set URL for Baked texture service} {}
+    ;; Sets the URL for the baked texture ROBUST service.
+    ;; Disabled when unset.
+    ;URL = ${Const|BaseURL}:${Const|PrivatePort}
+
+[GodNames]
+    ;; The Gods module will allow the ability to highlight
+    ;; god names in the viewer.  If you want to use this
+    ;; module then uncomment and customize appropriately.
+    ;Enabled = false
+    ;FullNames = "Test User, Foo Bar"
+    ;Surnames = "Kryztlsk"
+
 
 [Architecture]
     ;# {Include-Architecture} {} {Choose one of the following architectures} {config-include/Standalone.ini config-include/StandaloneHypergrid.ini config-include/Grid.ini config-include/GridHypergrid.ini config-include/SimianGrid.ini config-include/HyperSimianGrid.ini} config-include/Standalone.ini
