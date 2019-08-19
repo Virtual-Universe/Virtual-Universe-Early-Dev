@@ -19,7 +19,7 @@ While you should not run a production grid using the code in the Virtual-Univers
 
 ## Security Scans
 
-Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a53f3b60757f463bb0fcca9253d1812d)](https://www.codacy.com/app/emperorstarfinder_2/Virtual-Universe-Early-Dev?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Virtual-Universe/Virtual-Universe-Early-Dev&amp;utm_campaign=Badge_Grade)()]
+Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a53f3b60757f463bb0fcca9253d1812d)](https://www.codacy.com/app/emperorstarfinder_2/Virtual-Universe-Early-Dev?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Virtual-Universe/Virtual-Universe-Early-Dev&amp;utm_campaign=Badge_Grade)
 
 ## Build Tools Status
 
