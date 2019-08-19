@@ -1,5 +1,5 @@
 # Virtual-Universe-Early-Dev
-Virtual-Universe-Earlty-Dev is the early development stage repository of Virtual Universe Open Source Project Arm.  When something is committed to this repository it does not mean it is final and there is no guarantee it will make it to a stable release right away if at all.  Likewise the code in this repository is considered very unstable and only the faint of heart should use this code for testing purposes only.  Please do not use this repository to run a production level grid.  
+Virtual-Universe-Early-Dev is the early development stage repository of Virtual Universe Open Source Project Arm.  When something is committed to this repository it does not mean it is final and there is no guarantee it will make it to a stable release right away if at all.  Likewise the code in this repository is considered very unstable and only the faint of heart should use this code for testing purposes only.  Please do not use this repository to run a production level grid.  
 
 # Virtual Universe Open Source Project Arm Ownership
 The owner of the Virtual Universe Open Source Project Arm is Virtual World Research Inc.
