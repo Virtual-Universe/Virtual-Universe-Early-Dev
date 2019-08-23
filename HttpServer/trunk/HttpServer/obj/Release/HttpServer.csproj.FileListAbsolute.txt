@@ -1,0 +1,11 @@
+D:\nani-opensim\opensim-libs-c0ec818\HttpServer\trunk\HttpServer\bin\Release\HttpServer_OpenSim.dll
+D:\nani-opensim\opensim-libs-c0ec818\HttpServer\trunk\HttpServer\bin\Release\HttpServer_OpenSim.pdb
+D:\nani-opensim\opensim-libs-c0ec818\HttpServer\trunk\HttpServer\obj\Release\HttpServer.csprojAssemblyReference.cache
+D:\nani-opensim\opensim-libs-c0ec818\HttpServer\trunk\HttpServer\obj\Release\HttpServer.csproj.CoreCompileInputs.cache
+D:\nani-opensim\opensim-libs-c0ec818\HttpServer\trunk\HttpServer\obj\Release\HttpServer_OpenSim.dll
+D:\nani-opensim\opensim-libs-c0ec818\HttpServer\trunk\HttpServer\obj\Release\HttpServer_OpenSim.pdb
+D:\nani-opensim\opensim-0.9.0.1\HttpServer\trunk\HttpServer\bin\Release\HttpServer_OpenSim.dll
+D:\nani-opensim\opensim-0.9.0.1\HttpServer\trunk\HttpServer\bin\Release\HttpServer_OpenSim.pdb
+D:\nani-opensim\opensim-0.9.0.1\HttpServer\trunk\HttpServer\obj\Release\HttpServer.csproj.CoreCompileInputs.cache
+D:\nani-opensim\opensim-0.9.0.1\HttpServer\trunk\HttpServer\obj\Release\HttpServer_OpenSim.dll
+D:\nani-opensim\opensim-0.9.0.1\HttpServer\trunk\HttpServer\obj\Release\HttpServer_OpenSim.pdb
