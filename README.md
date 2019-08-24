@@ -21,6 +21,11 @@ While you should not run a production grid using the code in the Virtual-Univers
 
 Codacy: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/d42e0f1576464dc6bf0cb37c29a52abc)](https://www.codacy.com/app/Virtual-World-Research-Inc/Virtual-Universe-Early-Dev?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Virtual-Universe/Virtual-Universe-Early-Dev&amp;utm_campaign=Badge_Grade)
 
+Coverity: <a href="https://scan.coverity.com/projects/virtual-universe-virtual-universe-early-dev">
+  <img alt="Coverity Scan Build Status"
+       src="https://scan.coverity.com/projects/19064/badge.svg"/>
+</a>
+
 ## Build Tools Status
 
 AppVeyor:
