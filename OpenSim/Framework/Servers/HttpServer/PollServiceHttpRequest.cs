@@ -1,5 +1,4 @@
-﻿/* 17 September 2018
- * 
+﻿/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -48,15 +47,16 @@ namespace OpenSim.Framework.Servers.HttpServer
         public readonly UUID RequestID;
         public int  contextHash;
 
+/*
         private void GenContextHash()
         {
+
             Random rnd = new Random();
             contextHash = 0;
             if (Request.Headers["remote_addr"] != null)
                 contextHash = (Request.Headers["remote_addr"]).GetHashCode() << 16;
             else
                 contextHash = rnd.Next() << 16;
-
             if (Request.Headers["remote_port"] != null)
             {
                 string[] strPorts = Request.Headers["remote_port"].Split(new char[] { ',' });
@@ -64,8 +64,9 @@ namespace OpenSim.Framework.Servers.HttpServer
             }
             else
                 contextHash += rnd.Next() & 0xffff;
-        }
 
+        }
+*/
         public PollServiceHttpRequest(
             PollServiceEventArgs pPollServiceArgs, IHttpClientContext pHttpContext, IHttpRequest pRequest)
         {
@@ -74,86 +75,186 @@ namespace OpenSim.Framework.Servers.HttpServer
             Request = pRequest;
             RequestTime = System.Environment.TickCount;
             RequestID = UUID.Random();
-            GenContextHash();
+//            GenContextHash();
+            contextHash = HttpContext.contextID;
         }
 
-        internal void DoHTTPGruntWork(BaseHttpServer server, Hashtable responsedata)
+        internal void DoHTTPGruntWork(Hashtable responsedata)
         {
-            OSHttpResponse response
-                = new OSHttpResponse(new HttpResponse(HttpContext, Request), HttpContext);
-
-            byte[] buffer = server.DoHTTPGruntWork(responsedata, response);
-
             if (Request.Body.CanRead)
                 Request.Body.Dispose();
 
-            response.SendChunked = false;
-            response.ContentLength64 = buffer.Length;
-            response.ContentEncoding = Encoding.UTF8;
-            response.ReuseContext = false;
+            OSHttpResponse response
+                = new OSHttpResponse(new HttpResponse(HttpContext, Request));
+
+            if (responsedata == null)
+            {
+                SendNoContentError(response);
+                return;
+            }
+
+            int responsecode = 200;
+            string responseString = String.Empty;
+            string contentType;
+            byte[] buffer = null;
+            int rangeStart = 0;
+            int rangeLen = -1;
 
             try
             {
-                response.OutputStream.Write(buffer, 0, buffer.Length);
-                response.OutputStream.Flush();
-                response.Send();
-                buffer = null;
+                //m_log.Info("[BASE HTTP SERVER]: Doing HTTP Grunt work with response");
+                if(responsedata["int_response_code"] != null)
+                    responsecode = (int)responsedata["int_response_code"];
+
+                if (responsedata["bin_response_data"] != null)
+                {
+                    buffer = (byte[])responsedata["bin_response_data"];
+                    responsedata["bin_response_data"] = null;
+
+                    if (responsedata["bin_start"] != null)
+                        rangeStart = (int)responsedata["bin_start"];
+
+                    if (responsedata["int_bytes"] != null)
+                        rangeLen = (int)responsedata["int_bytes"];
+                }
+                else
+                    responseString = (string)responsedata["str_response_string"];
+
+                contentType = (string)responsedata["content_type"];
+                if (responseString == null)
+                    responseString = String.Empty;
             }
-            catch (System.Net.Sockets.SocketException ex)
+            catch
             {
-                // This is "connection reset by peer", meaning the
-                // requesting server has given up. They need to
-                // fix their timeouts. We don't want to spam the
-                // log with this.
+                SendNoContentError(response);
+                return;
+            }
+
+            if (responsedata.ContainsKey("error_status_text"))
+                response.StatusDescription = (string)responsedata["error_status_text"];
+
+            if (responsedata.ContainsKey("http_protocol_version"))
+                response.ProtocolVersion = (string)responsedata["http_protocol_version"];
+
+            if (responsedata.ContainsKey("keepalive"))
+                response.KeepAlive = (bool)responsedata["keepalive"];
+
+            // Cross-Origin Resource Sharing with simple requests
+            if (responsedata.ContainsKey("access_control_allow_origin"))
+                response.AddHeader("Access-Control-Allow-Origin", (string)responsedata["access_control_allow_origin"]);
+
+            response.StatusCode = responsecode;
+
+            if (responsecode == (int)OSHttpStatusCode.RedirectMovedPermanently)
+            {
+                response.RedirectLocation = (string)responsedata["str_redirect_location"];
+            }
+
+            if (string.IsNullOrEmpty(contentType))
+                response.AddHeader("Content-Type", "text/html");
+            else
+                response.AddHeader("Content-Type", contentType);
+
+            if (responsedata.ContainsKey("headers"))
+            {
+                Hashtable headerdata = (Hashtable)responsedata["headers"];
+
+                foreach (string header in headerdata.Keys)
+                    response.AddHeader(header, headerdata[header].ToString());
+            }
+
+            if(buffer == null)
+            {
+                if (!(contentType.Contains("image")
+                    || contentType.Contains("x-shockwave-flash")
+                    || contentType.Contains("application/x-oar")
+                    || contentType.Contains("application/vnd.ll.mesh")))
+                {
+                    // Text
+                    buffer = Encoding.UTF8.GetBytes(responseString);
+                }
+                else
+                {
+                    // Binary!
+                    buffer = Convert.FromBase64String(responseString);
+                }
+                response.ContentEncoding = Encoding.UTF8;
+            }
+
+            if (rangeStart < 0 || rangeStart > buffer.Length)
+                rangeStart = 0;
+
+            if (rangeLen < 0)
+                rangeLen = buffer.Length;
+            else if (rangeLen + rangeStart > buffer.Length)
+                rangeLen = buffer.Length - rangeStart;
+
+            response.ContentLength64 = rangeLen;
+
+            try
+            {
+                if(rangeLen > 0)
+                {
+                    response.RawBufferStart = rangeStart;
+                    response.RawBufferLen = rangeLen;
+                    response.RawBuffer = buffer;
+                    //response.OutputStream.Write(buffer, rangeStart, rangeLen);
+                }
+
+                buffer = null;
+
+                response.Send();
+                response.RawBuffer = null;
             }
             catch (Exception ex)
             {
-                m_log.Warn("[POLL SERVICE WORKER THREAD]: Error ", ex);
+                if(ex is System.Net.Sockets.SocketException)
+                {
+                    // only mute connection reset by peer so we are not totally blind for now
+                    if(((System.Net.Sockets.SocketException)ex).SocketErrorCode != System.Net.Sockets.SocketError.ConnectionReset)
+                         m_log.Warn("[POLL SERVICE WORKER THREAD]: Error ", ex);
+                }
+                else
+                    m_log.Warn("[POLL SERVICE WORKER THREAD]: Error ", ex);
             }
 
             PollServiceArgs.RequestsHandled++;
         }
 
-        internal void DoHTTPstop(BaseHttpServer server)
+        internal void SendNoContentError(OSHttpResponse response)
         {
-            OSHttpResponse response
-                = new OSHttpResponse(new HttpResponse(HttpContext, Request), HttpContext);
-
-            if (Request.Body.CanRead)
-                Request.Body.Dispose();
-
-            response.SendChunked = false;
             response.ContentLength64 = 0;
             response.ContentEncoding = Encoding.UTF8;
-            response.ReuseContext = false;
+            response.StatusCode = 500;
+
+            try
+            {
+                response.Send();
+            }
+            catch { }
+            return;
+        }
+
+        internal void DoHTTPstop()
+        {
+            OSHttpResponse response
+                = new OSHttpResponse(new HttpResponse(HttpContext, Request));
+
+            if(Request.Body.CanRead)
+                Request.Body.Dispose();
+
+            response.ContentLength64 = 0;
+            response.ContentEncoding = Encoding.UTF8;
             response.KeepAlive = false;
-            response.SendChunked = false;
             response.StatusCode = 503;
 
             try
             {
-                response.OutputStream.Flush();
                 response.Send();
             }
-            catch (Exception e)
+            catch
             {
             }
-        }
-    }
-
-    class PollServiceHttpRequestComparer : IEqualityComparer<PollServiceHttpRequest>
-    {
-        public bool Equals(PollServiceHttpRequest b1, PollServiceHttpRequest b2)
-        {
-            if (b1.contextHash != b2.contextHash)
-                return false;
-            bool b = Object.ReferenceEquals(b1.HttpContext, b2.HttpContext);
-            return b;
-        }
-
-        public int GetHashCode(PollServiceHttpRequest b2)
-        {
-            return (int)b2.contextHash;
         }
     }
 }

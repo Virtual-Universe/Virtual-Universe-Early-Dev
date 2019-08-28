@@ -1,5 +1,4 @@
-/* 14 January 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -174,7 +173,7 @@ namespace OpenSim.Framework
             {
                 if (m_array == null)
                 {
-                    if (m_dict.Count == 0)
+                    if(m_dict.Count == 0)
                         return new TValue[0];
                     m_array = new TValue[m_dict.Count];
                     m_dict.Values.CopyTo(m_array, 0);

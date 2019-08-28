@@ -67,6 +67,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         private readonly Vector3 m_startPos;
         private UUID m_uuid = UUID.Random();
         private readonly Scene m_scene;
+        private readonly UUID m_scopeID;
         private readonly UUID m_ownerID;
         private UUID m_hostGroupID;
         private string m_profileAbout = "";
@@ -82,6 +83,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             m_startPos = position;
             m_uuid = UUID.Random();
             m_scene = scene;
+            m_scopeID = scene.RegionInfo.ScopeID;
             m_ownerID = ownerID;
             SenseAsAgent = senseAsAgent;
             m_hostGroupID = UUID.Zero;
@@ -121,6 +123,11 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public IScene Scene
         {
             get { return m_scene; }
+        }
+
+        public UUID ScopeId
+        {
+            get { return m_scopeID; }
         }
 
         public int PingTimeMS { get { return 0; } }
@@ -541,6 +548,8 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public event GodlikeMessage onGodlikeMessage;
         public event GodUpdateRegionInfoUpdate OnGodUpdateRegionInfoUpdate;
         public event GenericCall2 OnUpdateThrottles;
+        public event AgentFOV OnAgentFOV;
+
 #pragma warning restore 67
 
         #endregion
@@ -559,6 +568,8 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             get { return m_startPos; }
             set { }
         }
+
+        public float StartFar { get; set; }
 
         public virtual UUID AgentId
         {
@@ -646,6 +657,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         public virtual int NextAnimationSequenceNumber
         {
             get { return 1; }
+            set { }
         }
 
         public virtual void SendWearables(AvatarWearable[] wearables, int serial)
@@ -662,10 +674,6 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         }
 
         public virtual void Kick(string message)
-        {
-        }
-
-        public virtual void SendStartPingCheck(byte seq)
         {
         }
 
@@ -739,14 +747,11 @@ namespace OpenSim.Region.OptionalModules.World.NPC
             return false;
         }
 
-        public virtual void SendLayerData(float[] map)
+        public virtual void SendLayerData()
         {
         }
 
-        public virtual void SendLayerData(int px, int py, float[] map)
-        {
-        }
-        public virtual void SendLayerData(int px, int py, float[] map, bool track)
+        public void SendLayerData(int[] map)
         {
         }
 
@@ -870,9 +875,11 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void SendXferPacket(ulong xferID, uint packet, byte[] data, bool isTaskInventory)
+        public virtual void SendXferPacket(ulong xferID, uint packet,
+                byte[] XferData, int XferDataOffset, int XferDatapktLen, bool isTaskInventory)
         {
         }
+
         public virtual void SendAbortXferPacket(ulong xferID)
         {
 
@@ -928,7 +935,7 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         {
         }
 
-        public virtual void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args)
+        public virtual void SendRegionHandshake()
         {
             if (OnRegionHandShakeReply != null)
             {
@@ -1384,6 +1391,11 @@ namespace OpenSim.Region.OptionalModules.World.NPC
         }
 
         public int GetAgentThrottleSilent(int throttle)
+        {
+            return 0;
+        }
+
+        public uint GetViewerCaps()
         {
             return 0;
         }

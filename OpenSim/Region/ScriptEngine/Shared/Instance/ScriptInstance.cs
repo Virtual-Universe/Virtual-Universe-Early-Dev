@@ -490,6 +490,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
         {
             ReleaseControls();
             AsyncCommandManager.RemoveScript(Engine, LocalID, ItemID);
+            SceneObjectPart part = Engine.World.GetSceneObjectPart(LocalID);
+            if (part != null)
+                part.RemoveScriptEvents(ItemID);
         }
 
         public void RemoveState()
@@ -699,7 +702,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
             // If min event delay is set then ignore any events untill the time has expired
             // This currently only allows 1 event of any type in the given time period.
             // This may need extending to allow for a time for each individual event type.
-            if (m_eventDelayTicks != 0)
+            if (m_eventDelayTicks != 0 && 
+                    data.EventName != "state" && data.EventName != "state_entry" && data.EventName != "state_exit"
+                    && data.EventName != "run_time_permissions" && data.EventName != "http_request" && data.EventName != "link_message")
             {
                 if (DateTime.Now.Ticks < m_nextEventTimeTicks)
                     return;
@@ -771,7 +776,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
         /// <returns></returns>
         public object EventProcessor()
         {
-            EventParams data = null;
             // We check here as the thread stopping this instance from running may itself hold the m_Script lock.
             if (!Running)
                 return 0;
@@ -930,6 +934,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
                                     string text = e.InnerException.Message +
                                                 "(script: " + ScriptName +
                                                 " event: " + data.EventName +
+                                                " primID:" + Part.UUID.ToString() +
                                                 " at " + Part.AbsolutePosition + ")";
                                     if (text.Length > 1000)
                                         text = text.Substring(0, 1000);
@@ -938,7 +943,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
                                                            Part.AbsolutePosition,
                                                            Part.Name, Part.UUID, false);
                                     m_log.Debug(string.Format(
-                                        "[SCRIPT INSTANCE]: {0} (at event {1}, part {2} {3} at {4} in {5}",
+                                        "[SCRIPT ERROR]: {0} (at event {1}, part {2} {3} at {4} in {5}",
                                         e.InnerException.Message,
                                         data.EventName,
                                         PrimName,
@@ -962,7 +967,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Instance
 
 
                                     m_log.Debug(string.Format(
-                                        "[SCRIPT INSTANCE]: Runtime error in script {0} (event {1}), part {2} {3} at {4} in {5} ",
+                                        "[SCRIPT ERROR]: Runtime error in script {0} (event {1}), part {2} {3} at {4} in {5} ",
                                         ScriptName,
                                         data.EventName,
                                         PrimName,

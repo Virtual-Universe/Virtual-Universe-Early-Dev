@@ -1,5 +1,4 @@
-/* 21 August 2018
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -107,11 +106,6 @@ namespace OpenSim.Data.MySQL
         /// <remarks>On failure : throw an exception and attempt to reconnect to database</remarks>
         override public AssetBase GetAsset(UUID assetID)
         {
-            return GetAsset(assetID.ToString());
-        }
-
-        public AssetBase GetAsset(string assetID)
-        {
             AssetBase asset = null;
 
             using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
@@ -122,7 +116,7 @@ namespace OpenSim.Data.MySQL
                     "SELECT name, description, assetType, local, temporary, asset_flags, CreatorID, data FROM assets WHERE id=?id",
                     dbcon))
                 {
-                    cmd.Parameters.AddWithValue("?id", assetID);
+                    cmd.Parameters.AddWithValue("?id", assetID.ToString());
 
                     try
                     {
@@ -251,28 +245,6 @@ namespace OpenSim.Data.MySQL
             }
         }
 
-        public bool AssetExists(string uuid)
-        {
-            bool result = false;
-            string sql = "SELECT id FROM assets WHERE id='"+uuid+"'";
-
-            using (MySqlConnection dbcon = new MySqlConnection(m_connectionString))
-            {
-                dbcon.Open();
-                using (MySqlCommand cmd = new MySqlCommand(sql, dbcon))
-                {
-                    using (MySqlDataReader dbReader = cmd.ExecuteReader())
-                    {
-                         result = dbReader.HasRows;
-                    }
-                }
-                dbcon.Close();
-            }
-            return result;
-        }
-
-
-
         /// <summary>
         /// Check if the assets exist in the database.
         /// </summary>
@@ -280,11 +252,6 @@ namespace OpenSim.Data.MySQL
         /// <returns>For each asset: true if it exists, false otherwise</returns>
         public override bool[] AssetsExist(UUID[] uuids)
         {
-            if (uuids.Length == 1)
-            {
-                return new bool[1] { AssetExists(uuids[0].ToString()) };
-            }
-
             if (uuids.Length == 0)
                 return new bool[0];
 

@@ -1,5 +1,4 @@
-/* 7 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -50,7 +49,7 @@ namespace OpenSim.Framework
         // use only one serializer to give the runtime a chance to
         // optimize it (it won't do that if you use a new instance
         // every time)
-        private static readonly XmlSerializer serializer = new XmlSerializer(typeof(LandData));
+        private static XmlSerializer serializer = new XmlSerializer(typeof(LandData));
 
         private Vector3 _AABBMax = new Vector3();
         private Vector3 _AABBMin = new Vector3();

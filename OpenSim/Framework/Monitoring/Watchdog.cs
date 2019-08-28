@@ -1,5 +1,4 @@
-/* 10 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -144,6 +143,8 @@ namespace OpenSim.Framework.Monitoring
             get { return m_enabled; }
             set
             {
+                //                m_log.DebugFormat("[MEMORY WATCHDOG]: Setting MemoryWatchdog.Enabled to {0}", value);
+
                 if (value == m_enabled)
                     return;
 
@@ -181,33 +182,26 @@ namespace OpenSim.Framework.Monitoring
 
         public static void Stop()
         {
-            if (m_threads == null)
+            if(m_threads == null)
                 return;
 
             lock(m_threads)
             {
-                m_enabled = false;
-                try
+                m_enabled = false;            
+                if(m_watchdogTimer != null)
                 {
-                    if (m_watchdogTimer != null)
-                    {
-                        m_watchdogTimer.Dispose();
-                        m_watchdogTimer = null;
-                    }
-                }
-                catch
-                {
+                    m_watchdogTimer.Dispose();
                     m_watchdogTimer = null;
                 }
                 
                 foreach(ThreadWatchdogInfo twi in m_threads.Values)
                 {
-                    try
-                    {
-                        if (twi.Thread.IsAlive)
-                            twi.Thread.Abort();
-                    }
-                    catch { }
+                    Thread t = twi.Thread;
+                    // m_log.DebugFormat(
+                    //    "[WATCHDOG]: Stop: Removing thread {0}, ID {1}", twi.Thread.Name, twi.Thread.ManagedThreadId);
+
+                    if(t.IsAlive)
+                        t.Abort();
                 }
                 m_threads.Clear();
             }
@@ -226,7 +220,7 @@ namespace OpenSim.Framework.Monitoring
                     "[WATCHDOG]: Started tracking thread {0}, ID {1}", name, info.Thread.ManagedThreadId);
 
             lock (m_threads)
-                  m_threads.Add(info.Thread.ManagedThreadId, info);
+                m_threads.Add(info.Thread.ManagedThreadId, info);
         }
 
         /// <summary>
@@ -247,65 +241,70 @@ namespace OpenSim.Framework.Monitoring
         /// </returns>
         public static bool RemoveThread(bool log = true)
         {
-            lock (m_threads)
-                  return RemoveThread(Thread.CurrentThread.ManagedThreadId, log);
+            return RemoveThread(Thread.CurrentThread.ManagedThreadId, log);
         }
 
-        // Call this function only from inside lock (m_threads)
         private static bool RemoveThread(int threadID, bool log = true)
         {
-            ThreadWatchdogInfo twi;
-            if (m_threads.TryGetValue(threadID, out twi))
-            {
-                if (log)
-                    m_log.DebugFormat(
-                        "[WATCHDOG]: Removing thread {0}, ID {1}", twi.Thread.Name, twi.Thread.ManagedThreadId);
-
-                twi.Cleanup();
-                m_threads.Remove(threadID);
-                return true;
-            }
-
-            m_log.WarnFormat(
-                    "[WATCHDOG]: Requested to remove thread with ID {0} but this is not being monitored", threadID);
-            return false;            
-        }
-
-        public static bool AbortThread(int threadID)
-        {
-            ThreadWatchdogInfo twi;
             lock (m_threads)
             {
+                ThreadWatchdogInfo twi;
                 if (m_threads.TryGetValue(threadID, out twi))
                 {
-                    try
-                    {
-                        twi.Thread.Abort();
-                    }
-                    catch { }
+                    if (log)
+                        m_log.DebugFormat(
+                            "[WATCHDOG]: Removing thread {0}, ID {1}", twi.Thread.Name, twi.Thread.ManagedThreadId);
 
                     twi.Cleanup();
                     m_threads.Remove(threadID);
                     return true;
                 }
+                else
+                {
+                    m_log.WarnFormat(
+                        "[WATCHDOG]: Requested to remove thread with ID {0} but this is not being monitored", threadID);
+                    return false;
+                }
             }
-            return false;
+        }
+
+        public static bool AbortThread(int threadID)
+        {
+            lock (m_threads)
+            {
+                if (m_threads.ContainsKey(threadID))
+                {
+                    ThreadWatchdogInfo twi = m_threads[threadID];
+                    twi.Thread.Abort();
+                    RemoveThread(threadID);
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
 
         private static void UpdateThread(int threadID)
         {
+            ThreadWatchdogInfo threadInfo;
+
             // Although TryGetValue is not a thread safe operation, we use a try/catch here instead
             // of a lock for speed. Adding/removing threads is a very rare operation compared to
             // UpdateThread(), and a single UpdateThread() failure here and there won't break
             // anything
-
-            ThreadWatchdogInfo twi;
             try
             {
-                if (m_threads.TryGetValue(threadID, out twi))
+                if (m_threads.TryGetValue(threadID, out threadInfo))
                 {
-                    twi.LastTick = Environment.TickCount & Int32.MaxValue;
-                    twi.IsTimedOut = false;
+                    threadInfo.LastTick = Environment.TickCount & Int32.MaxValue;
+                    threadInfo.IsTimedOut = false;
+                }
+                else
+                {
+                    m_log.WarnFormat("[WATCHDOG]: Asked to update thread {0} which is not being monitored", threadID);
                 }
             }
             catch { }
@@ -329,10 +328,10 @@ namespace OpenSim.Framework.Monitoring
         {
             lock (m_threads)
             {
-                ThreadWatchdogInfo twi;
-                if (m_threads.TryGetValue(Thread.CurrentThread.ManagedThreadId, out twi))
-                    return twi;
+                if (m_threads.ContainsKey(Thread.CurrentThread.ManagedThreadId))
+                    return m_threads[Thread.CurrentThread.ManagedThreadId];
             }
+
             return null;
         }
 
@@ -343,11 +342,15 @@ namespace OpenSim.Framework.Monitoring
         /// <param name="e"></param>
         private static void WatchdogTimerElapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (!m_enabled)
+            if(!m_enabled)
                 return;
-
             int now = Environment.TickCount & Int32.MaxValue;
             int msElapsed = now - LastWatchdogThreadTick;
+
+            if (msElapsed > WATCHDOG_INTERVAL_MS * 2)
+                m_log.WarnFormat(
+                    "[WATCHDOG]: {0} ms since Watchdog last ran.  Interval should be approximately {1} ms",
+                    msElapsed, WATCHDOG_INTERVAL_MS);
 
             LastWatchdogThreadTick = Environment.TickCount & Int32.MaxValue;
 
@@ -355,58 +358,54 @@ namespace OpenSim.Framework.Monitoring
 
             if (callback != null)
             {
-                NSimpleChain<ThreadWatchdogInfo> callbackInfos = new NSimpleChain<ThreadWatchdogInfo>();
-                NSimpleChain<ThreadWatchdogInfo> threadsToRemove = new NSimpleChain<ThreadWatchdogInfo>();
+                List<ThreadWatchdogInfo> callbackInfos = null;
+                List<ThreadWatchdogInfo> threadsToRemove = null;
 
                 const ThreadState thgone = ThreadState.Stopped;
 
                 lock (m_threads)
                 {
-                    foreach (ThreadWatchdogInfo threadInfo in m_threads.Values)
+                    foreach(ThreadWatchdogInfo threadInfo in m_threads.Values)
                     {
-                        if (!m_enabled)
+                        if(!m_enabled)
                             return;
-
-                        if ((threadInfo.Thread.ThreadState & thgone) != 0)
+                        if((threadInfo.Thread.ThreadState & thgone) != 0)
                         {
-                            threadsToRemove.Enqueue(threadInfo);
+                            if(threadsToRemove == null)
+                                threadsToRemove = new List<ThreadWatchdogInfo>();
+
+                            threadsToRemove.Add(threadInfo);
+/*
+                            if(callbackInfos == null)
+                                callbackInfos = new List<ThreadWatchdogInfo>();
+
+                            callbackInfos.Add(threadInfo);
+*/
                         }
-                        else if (!threadInfo.IsTimedOut && now - threadInfo.LastTick >= threadInfo.Timeout)
+                        else if(!threadInfo.IsTimedOut && now - threadInfo.LastTick >= threadInfo.Timeout)
                         {
                             threadInfo.IsTimedOut = true;
 
-                            if (threadInfo.AlarmIfTimeout)
+                            if(threadInfo.AlarmIfTimeout)
                             {
+                                if(callbackInfos == null)
+                                    callbackInfos = new List<ThreadWatchdogInfo>();
+
                                 // Send a copy of the watchdog info to prevent race conditions where the watchdog
                                 // thread updates the monitoring info after an alarm has been sent out.
-                                callbackInfos.Enqueue(new ThreadWatchdogInfo(threadInfo));
+                                callbackInfos.Add(new ThreadWatchdogInfo(threadInfo));
                             }
                         }
                     }
 
-                    ThreadWatchdogInfo twi;
-                    while (threadsToRemove.Dequeue( out twi ))
-                    {
-                        try
-                        {
-                            twi.Cleanup();
-                            m_threads.Remove(twi.Thread.ManagedThreadId);
-                        }
-                        catch { }
-                    }
-                    threadsToRemove = null;
+                    if(threadsToRemove != null)
+                        foreach(ThreadWatchdogInfo twi in threadsToRemove)
+                            RemoveThread(twi.Thread.ManagedThreadId);
                 }
 
-                ThreadWatchdogInfo callbackInfo;
-                while (callbackInfos.Dequeue(out callbackInfo))
-                {
-                    try
-                    {
+                if(callbackInfos != null)
+                    foreach (ThreadWatchdogInfo callbackInfo in callbackInfos)
                         callback(callbackInfo);
-                    }
-                    catch { }
-                }
-                callbackInfos = null;
             }
 
             if (MemoryWatchdog.Enabled)

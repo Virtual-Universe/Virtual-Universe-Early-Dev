@@ -54,7 +54,8 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         protected Scene m_scene;
         protected List<SceneObjectGroup> primsOverMe = new List<SceneObjectGroup>();
-        protected Dictionary<uint, UUID> m_listTransactions = new Dictionary<uint, UUID>();
+        private Dictionary<uint, UUID> m_listTransactions = new Dictionary<uint, UUID>();
+        private object m_listTransactionsLock = new object();
 
         protected ExpiringCache<UUID, bool> m_groupMemberCache = new ExpiringCache<UUID, bool>();
         protected TimeSpan m_groupMemberCacheTimeout = TimeSpan.FromSeconds(30);  // cache invalidation after 30 seconds
@@ -633,7 +634,7 @@ namespace OpenSim.Region.CoreModules.World.Land
 
         public bool CanBeOnThisLand(UUID avatar, float posHeight)
         {
-            if (posHeight < LandChannel.BAN_LINE_SAFETY_HEIGHT && IsBannedFromLand(avatar))
+            if (posHeight < m_scene.LandChannel.BanLineSafeHeight && IsBannedFromLand(avatar))
             {
                 return false;
             }
@@ -869,66 +870,61 @@ namespace OpenSim.Region.CoreModules.World.Land
             }
         }
 
-        public void UpdateAccessList(uint flags, UUID transactionID,
-                int sequenceID, int sections,
-                List<LandAccessEntry> entries,
-                IClientAPI remote_client)
+        public void UpdateAccessList(uint flags, UUID transactionID, List<LandAccessEntry> entries)
         {
-            LandData newData = LandData.Copy();
+            if((flags & 0x03) == 0)
+                return; // we only have access and ban
 
-            if ((!m_listTransactions.ContainsKey(flags)) ||
-                    m_listTransactions[flags] != transactionID)
+            flags &=0x03 ;
+            // get a work copy of lists
+            List<LandAccessEntry> parcelAccessList = new List<LandAccessEntry>(LandData.ParcelAccessList);
+
+            // first packet on a transaction clears before adding
+            // we need to this way because viewer protocol does not seem reliable
+            lock (m_listTransactionsLock)
             {
-                m_listTransactions[flags] = transactionID;
-
-                List<LandAccessEntry> toRemove =
-                        new List<LandAccessEntry>();
-
-                foreach (LandAccessEntry entry in newData.ParcelAccessList)
+                if ((!m_listTransactions.ContainsKey(flags)) ||
+                                    m_listTransactions[flags] != transactionID)
                 {
-                    if (entry.Flags == (AccessList)flags)
-                        toRemove.Add(entry);
-                }
+                    m_listTransactions[flags] = transactionID;
+                    List<LandAccessEntry> toRemove = new List<LandAccessEntry>();
+                    foreach (LandAccessEntry entry in parcelAccessList)
+                    {
+                        if (((uint)entry.Flags & flags) != 0)
+                            toRemove.Add(entry);
+                    }
+                    foreach (LandAccessEntry entry in toRemove)
+                        parcelAccessList.Remove(entry);
 
-                foreach (LandAccessEntry entry in toRemove)
-                {
-                    newData.ParcelAccessList.Remove(entry);
-                }
-
-                // Checked here because this will always be the first
-                // and only packet in a transaction
-                if (entries.Count == 1 && entries[0].AgentID == UUID.Zero)
-                {
-                    m_scene.LandChannel.UpdateLandObject(LandData.LocalID, newData);
-
-                    return;
+                    // a delete all command ?
+                    if (entries.Count == 1 && entries[0].AgentID == UUID.Zero)
+                    {
+                        LandData.ParcelAccessList = parcelAccessList;
+                        if ((flags & (uint)AccessList.Access) != 0)
+                            LandData.Flags &= ~(uint)ParcelFlags.UseAccessList;
+                        if ((flags & (uint)AccessList.Ban) != 0)
+                            LandData.Flags &= ~(uint)ParcelFlags.UseBanList;
+                        m_listTransactions.Remove(flags);
+                        return;
+                    }
                 }
             }
 
             foreach (LandAccessEntry entry in entries)
             {
-                LandAccessEntry temp =
-                        new LandAccessEntry();
-
+                LandAccessEntry temp = new LandAccessEntry();
                 temp.AgentID = entry.AgentID;
                 temp.Expires = entry.Expires;
                 temp.Flags = (AccessList)flags;
 
-                newData.ParcelAccessList.Add(temp);
+                parcelAccessList.Add(temp);
             }
 
-            // update use lists flags
-            // rights already checked or we wont be here
-            uint parcelflags = newData.Flags;
-
-            if((flags & (uint)AccessList.Access) != 0)
-                    parcelflags |= (uint)ParcelFlags.UseAccessList;
-            if((flags & (uint)AccessList.Ban) != 0)
-                parcelflags |= (uint)ParcelFlags.UseBanList;
-
-            newData.Flags = parcelflags;
-
-            m_scene.LandChannel.UpdateLandObject(LandData.LocalID, newData);
+            LandData.ParcelAccessList = parcelAccessList;
+            if ((flags & (uint)AccessList.Access) != 0)
+                LandData.Flags |= (uint)ParcelFlags.UseAccessList;
+            if ((flags & (uint)AccessList.Ban) != 0)
+                LandData.Flags |= (uint)ParcelFlags.UseBanList;
         }
 
         #endregion
@@ -998,7 +994,7 @@ namespace OpenSim.Region.CoreModules.World.Land
                         }
                         else
                         {
-                            // keeping previus odd average
+                            // keeping previous odd average
                             avgx = (avgx * tempArea + x) / (tempArea + 1);
                             avgy = (avgy * tempArea + y) / (tempArea + 1);
                         }
@@ -1149,9 +1145,7 @@ namespace OpenSim.Region.CoreModules.World.Land
         public bool[,] MergeLandBitmaps(bool[,] bitmap_base, bool[,] bitmap_add)
         {
             if (bitmap_base.GetLength(0) != bitmap_add.GetLength(0)
-                    || bitmap_base.GetLength(1) != bitmap_add.GetLength(1)
-                    || bitmap_add.Rank != 2
-                    || bitmap_base.Rank != 2)
+                    || bitmap_base.GetLength(1) != bitmap_add.GetLength(1))
             {
                 throw new Exception(
                     String.Format("{0} MergeLandBitmaps. merging maps not same size. baseSizeXY=<{1},{2}>, addSizeXY=<{3},{4}>",
@@ -1159,15 +1153,11 @@ namespace OpenSim.Region.CoreModules.World.Land
                 );
             }
 
-            int x, y;
-            for (y = 0; y < bitmap_base.GetLength(1); y++)
+            for (int x = 0; x < bitmap_add.GetLength(0); x++)
             {
-                for (x = 0; x < bitmap_add.GetLength(0); x++)
+                for (int y = 0; y < bitmap_base.GetLength(1); y++)
                 {
-                    if (bitmap_add[x, y])
-                    {
-                        bitmap_base[x, y] = true;
-                    }
+                    bitmap_base[x, y] |= bitmap_add[x, y];
                 }
             }
             return bitmap_base;
@@ -1361,9 +1351,9 @@ namespace OpenSim.Region.CoreModules.World.Land
             int maxX = 0;
             int maxY = 0;
 
-            for (int y = 0; y < baseY; y++)
+            for (int x = 0; x < baseX; x++)
             {
-                for (int x = 0; x < baseX; x++)
+                for (int y = 0; y < baseY; y++)
                 {
                     if (bitmap_new[x, y]) bitmap_base[x, y] = false;
                     if (bitmap_base[x, y])
@@ -1396,9 +1386,9 @@ namespace OpenSim.Region.CoreModules.World.Land
             byte[] tempConvertArr = new byte[LandBitmap.GetLength(0) * LandBitmap.GetLength(1) / 8];
 
             int tempByte = 0;
-            int i, byteNum = 0;
+            int byteNum = 0;
             int mask = 1;
-            i = 0;
+
             for (int y = 0; y < LandBitmap.GetLength(1); y++)
             {
                 for (int x = 0; x < LandBitmap.GetLength(0); x++)
@@ -1460,9 +1450,9 @@ namespace OpenSim.Region.CoreModules.World.Land
             for (int i = 0; i < bitmapLen; i++)
             {
                 tempByte = LandData.Bitmap[i];
-                for (int bitNum = 0; bitNum < 8; bitNum++)
+                for (int bitmask = 0x01; bitmask < 0x100; bitmask = bitmask << 1)
                 {
-                    bool bit = Convert.ToBoolean(Convert.ToByte(tempByte >> bitNum) & (byte) 1);
+                    bool bit = (tempByte & bitmask) == bitmask;
                     try
                     {
                         tempConvertMap[x, y] = bit;
@@ -1851,7 +1841,7 @@ namespace OpenSim.Region.CoreModules.World.Land
                     UUID lgid = LandData.GlobalID;
                     m_scene.ForEachRootScenePresence(delegate(ScenePresence sp)
                     {
-                        if(sp.IsNPC || sp.IsLoggingIn || sp.IsDeleted || sp.currentParcelUUID != lgid)
+                        if(sp.IsNPC || sp.IsDeleted || sp.currentParcelUUID != lgid)
                             return;
                         cur += (now - sp.ParcelDwellTickMS);
                         sp.ParcelDwellTickMS = now;

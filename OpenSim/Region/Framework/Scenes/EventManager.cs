@@ -1,5 +1,4 @@
-/* 27 January 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -540,7 +539,7 @@ namespace OpenSim.Region.Framework.Scenes
         /// <see cref="SceneObjectPart.TriggerScriptChangedEvent"/>
         /// </remarks>
         public event ScriptChangedEvent OnScriptChangedEvent;
-        public delegate void ScriptChangedEvent(uint localID, uint change);
+        public delegate void ScriptChangedEvent(uint localID, uint change, object data);
 
         public delegate void ScriptControlEvent(UUID item, UUID avatarID, uint held, uint changed);
 
@@ -1186,7 +1185,7 @@ namespace OpenSim.Region.Framework.Scenes
             }
         }
 
-        public void TriggerOnScriptChangedEvent(uint localID, uint change)
+        public void TriggerOnScriptChangedEvent(uint localID, uint change, object parameter = null)
         {
             ScriptChangedEvent handlerScriptChangedEvent = OnScriptChangedEvent;
             if (handlerScriptChangedEvent != null)
@@ -1195,7 +1194,7 @@ namespace OpenSim.Region.Framework.Scenes
                 {
                     try
                     {
-                        d(localID, change);
+                        d(localID, change, parameter);
                     }
                     catch (Exception e)
                     {
@@ -1352,6 +1351,7 @@ namespace OpenSim.Region.Framework.Scenes
                     }
                 }
             }
+
         }
 
         public void TriggerOnNewPresence(ScenePresence presence)
@@ -1384,7 +1384,9 @@ namespace OpenSim.Region.Framework.Scenes
                 {
                     try
                     {
+//                        m_log.ErrorFormat("[EVENT MANAGER]: OnRemovePresenceDelegate: {0}",d.Target.ToString());
                         d(agentId);
+//                        m_log.ErrorFormat("[EVENT MANAGER]: OnRemovePresenceDelegate done ");
                     }
                     catch (Exception e)
                     {
@@ -2122,7 +2124,10 @@ namespace OpenSim.Region.Framework.Scenes
                 {
                     try
                     {
+//                        m_log.ErrorFormat("[EVENT MANAGER]: TriggerClientClosed: {0}", d.Target.ToString());
                         d(ClientID, scene);
+//                        m_log.ErrorFormat("[EVENT MANAGER]: TriggerClientClosed done ");
+
                     }
                     catch (Exception e)
                     {
@@ -2520,13 +2525,11 @@ namespace OpenSim.Region.Framework.Scenes
             ChatFromWorldEvent handlerChatFromWorld = OnChatFromWorld;
             if (handlerChatFromWorld != null)
             {
-                System.Threading.Tasks.Parallel.ForEach<Delegate>(
-                handlerChatFromWorld.GetInvocationList(),
-                (d) =>
+                foreach (ChatFromWorldEvent d in handlerChatFromWorld.GetInvocationList())
                 {
                     try
                     {
-                        ((ChatFromWorldEvent)d)(sender, chat);
+                        d(sender, chat);
                     }
                     catch (Exception e)
                     {
@@ -2534,7 +2537,7 @@ namespace OpenSim.Region.Framework.Scenes
                             "[EVENT MANAGER]: Delegate for TriggerOnChatFromWorld failed - continuing.  {0} {1}",
                             e.Message, e.StackTrace);
                     }
-                });
+                }
             }
         }
 
@@ -2543,13 +2546,11 @@ namespace OpenSim.Region.Framework.Scenes
             ChatFromClientEvent handlerChatFromClient = OnChatFromClient;
             if (handlerChatFromClient != null)
             {
-                System.Threading.Tasks.Parallel.ForEach<Delegate>(
-                handlerChatFromClient.GetInvocationList(),
-                (d) =>
+                foreach (ChatFromClientEvent d in handlerChatFromClient.GetInvocationList())
                 {
                     try
                     {
-                        ((ChatFromClientEvent)d)(sender, chat);
+                        d(sender, chat);
                     }
                     catch (Exception e)
                     {
@@ -2557,7 +2558,7 @@ namespace OpenSim.Region.Framework.Scenes
                             "[EVENT MANAGER]: Delegate for TriggerOnChatFromClient failed - continuing.  {0} {1}",
                             e.Message, e.StackTrace);
                     }
-                });
+                }
             }
         }
 
@@ -2569,13 +2570,11 @@ namespace OpenSim.Region.Framework.Scenes
             ChatToClientsEvent handler = OnChatToClients;
             if (handler != null)
             {
-                System.Threading.Tasks.Parallel.ForEach<Delegate>(
-                handler.GetInvocationList(),
-                (d) =>
+                foreach (ChatToClientsEvent d in handler.GetInvocationList())
                 {
                     try
                     {
-                        ((ChatToClientsEvent)d)(senderID, receiverIDs, message, type, fromPos, fromName, src, level);
+                        d(senderID, receiverIDs, message, type, fromPos, fromName, src, level);
                     }
                     catch (Exception e)
                     {
@@ -2583,7 +2582,7 @@ namespace OpenSim.Region.Framework.Scenes
                             "[EVENT MANAGER]: Delegate for TriggerOnChatToClients failed - continuing.  {0} {1}",
                             e.Message, e.StackTrace);
                     }
-                });
+                }
             }
         }
 

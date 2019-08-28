@@ -1,5 +1,4 @@
-﻿/* 12 March 2019
- * 
+﻿/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -43,7 +42,7 @@ namespace OpenSim.Services.Interfaces
         string GetUserUUI(UUID uuid);
         bool GetUserUUI(UUID userID, out string uui);
         string GetUserServerURL(UUID uuid, string serverType);
-        Dictionary<UUID,string> GetUsersNames(string[] ids);
+        Dictionary<UUID,string> GetUsersNames(string[] ids, UUID scopeID);
 
         /// <summary>
         /// Get user ID by the given name.
@@ -93,18 +92,7 @@ namespace OpenSim.Services.Interfaces
         /// <param name="firstName"></param>
         /// <param name="profileURL"></param>
         void AddUser(UUID uuid, string firstName, string lastName, string homeURL);
-
+        bool RemoveUser(UUID uuid);
         bool IsLocalGridUser(UUID uuid);
-
-        /// <summary>
-        /// Add a user and make sure it is requested from the local or remote grid when needed.
-        /// </summary>
-        /// <remarks>
-        /// If an account is found for the UUID, then the names in this will be used rather than any information
-        /// extracted from creatorData.
-        /// </remarks>
-        /// <param name="uuid"></param>
-        /// <param name="creatorData">The creator data for this user.</param>
-        void TriggerAddUser(UUID uuid, string CreatorData);
     }
 }

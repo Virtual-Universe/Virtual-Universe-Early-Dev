@@ -93,7 +93,6 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
                             m_log.Debug("[WEBLOADER]: Done downloading region information from server. Total Bytes: " +
                                         xmlSource.Length);
                             XmlDocument xmlDoc = new XmlDocument();
-                            xmlDoc.XmlResolver = null;
                             xmlDoc.LoadXml(xmlSource);
                             if (xmlDoc.FirstChild.Name == "Nini")
                             {
@@ -123,7 +122,7 @@ namespace OpenSim.ApplicationPlugins.LoadRegions
                                 throw ex;
                         }
 
-                        if (regionCount > 0 | allowRegionless)
+                        if (regionCount > 0 || allowRegionless)
                             return regionInfos;
 
                         m_log.Debug("[WEBLOADER]: Request yielded no regions.");

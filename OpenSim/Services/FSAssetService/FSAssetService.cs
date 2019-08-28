@@ -1,5 +1,4 @@
-/* 28 February 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -53,7 +52,6 @@ namespace OpenSim.Services.FSAssetService
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         static System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
-        static SHA256CryptoServiceProvider SHA256 = new SHA256CryptoServiceProvider();
 
         static byte[] ToCString(string s)
         {
@@ -327,27 +325,11 @@ namespace OpenSim.Services.FSAssetService
                             {
                                 byte[] data = File.ReadAllBytes(files[i]);
 
-                                bool zipped = false;
-                                using (FileStream fs = new FileStream(diskFile + ".gz", FileMode.Create))
+                                using (GZipStream gz = new GZipStream(new FileStream(diskFile + ".gz", FileMode.Create), CompressionMode.Compress))
                                 {
-                                    if (fs != null)
-                                    {
-                                        using (GZipStream gz = new GZipStream(fs, CompressionMode.Compress))
-                                        {
-                                            gz.Write(data, 0, data.Length);
-                                            fs.Flush(true);
-                                            gz.Close();
-                                            zipped = true;
-                                        }
-                                    }
+                                    gz.Write(data, 0, data.Length);
                                 }
-
-                                // No use deleting a file we could not zip.
-                                // Better to leave the unzipped version so we can use it for cache Get requests.
-                                if (zipped) 
-                                {
-                                    File.Delete(files[i]);
-                                }
+                                File.Delete(files[i]);
 
                                 //File.Move(files[i], diskFile);
                             }
@@ -374,7 +356,9 @@ namespace OpenSim.Services.FSAssetService
 
         string GetSHA256Hash(byte[] data)
         {
-            byte[] hash = SHA256.ComputeHash(data);
+            byte[] hash;
+            using (SHA256CryptoServiceProvider SHA256 = new SHA256CryptoServiceProvider())
+                hash = SHA256.ComputeHash(data);
 
             return BitConverter.ToString(hash).Replace("-", String.Empty);
         }
@@ -506,7 +490,6 @@ namespace OpenSim.Services.FSAssetService
                         {
                             string xml = ExternalRepresentationUtils.SanitizeXml(Utils.BytesToString(asset.Data));
                             asset.Data = Utils.StringToBytes(xml);
-                            xml = null;
                         }
                         return asset;
                     }
@@ -527,7 +510,6 @@ namespace OpenSim.Services.FSAssetService
                 {
                     string xml = ExternalRepresentationUtils.SanitizeXml(Utils.BytesToString(newAsset.Data));
                     newAsset.Data = Utils.StringToBytes(xml);
-                    xml = null;
                 }
 
                 return newAsset;
@@ -589,38 +571,30 @@ namespace OpenSim.Services.FSAssetService
             {
                 try
                 {
-                    using (FileStream fs = new FileStream(diskFile + ".gz", FileMode.Open, FileAccess.Read))
+                    using (GZipStream gz = new GZipStream(new FileStream(diskFile + ".gz", FileMode.Open, FileAccess.Read), CompressionMode.Decompress))
                     {
-                        using (GZipStream gz = new GZipStream(fs, CompressionMode.Decompress))
+                        using (MemoryStream ms = new MemoryStream())
                         {
-                            using (MemoryStream ms = new MemoryStream())
+                            byte[] data = new byte[32768];
+                            int bytesRead;
+
+                            do
                             {
-                                byte[] data = new byte[32768];
-                                int bytesRead;
+                                bytesRead = gz.Read(data, 0, 32768);
+                                if (bytesRead > 0)
+                                    ms.Write(data, 0, bytesRead);
+                            } while (bytesRead > 0);
 
-                                do
-                                {
-                                    bytesRead = gz.Read(data, 0, 32768);
-                                    if (bytesRead > 0)
-                                        ms.Write(data, 0, bytesRead);
-                                } while (bytesRead > 0);
-
-                                data = null;
-                                fs.Flush(true);
-                                gz.Close();
-                                return ms.ToArray();
-                            }
+                            return ms.ToArray();
                         }
                     }
                 }
                 catch (Exception)
                 {
-                    // Do not exit here, instead go look for the not yet zipped version of the file.
+                    return new Byte[0];
                 }
             }
-
-            // Third try.
-            if (File.Exists(diskFile))
+            else if (File.Exists(diskFile))
             {
                 try
                 {
@@ -646,6 +620,24 @@ namespace OpenSim.Services.FSAssetService
             int tickCount = Environment.TickCount;
             string hash = GetSHA256Hash(asset.Data);
 
+            if (asset.Name.Length > AssetBase.MAX_ASSET_NAME)
+            {
+                string assetName = asset.Name.Substring(0, AssetBase.MAX_ASSET_NAME);
+                m_log.WarnFormat(
+                    "[FSASSETS]: Name '{0}' for asset {1} truncated from {2} to {3} characters on add",
+                    asset.Name, asset.ID, asset.Name.Length, assetName.Length);
+                asset.Name = assetName;
+            }
+
+            if (asset.Description.Length > AssetBase.MAX_ASSET_DESC)
+            {
+                string assetDescription = asset.Description.Substring(0, AssetBase.MAX_ASSET_DESC);
+                m_log.WarnFormat(
+                    "[FSASSETS]: Description '{0}' for asset {1} truncated from {2} to {3} characters on add",
+                    asset.Description, asset.ID, asset.Description.Length, assetDescription.Length);
+                asset.Description = assetDescription;
+            }
+
             if (!AssetExists(hash))
             {
                 string tempFile = Path.Combine(Path.Combine(m_SpoolDirectory, "spool"), hash + ".asset");
@@ -659,27 +651,15 @@ namespace OpenSim.Services.FSAssetService
                     {
                         string xml = ExternalRepresentationUtils.SanitizeXml(Utils.BytesToString(asset.Data));
                         asset.Data = Utils.StringToBytes(xml);
-                        xml = null;
                     }
 
-                    try
-                    {
-                        using (FileStream fs = File.Create(tempFile))
-                        {                            
-                            fs.Write(asset.Data, 0, asset.Data.Length);
-                            fs.Flush(true);
-                            fs.Close();
-                        }
+                    FileStream fs = File.Create(tempFile);
 
-                        File.Move(tempFile, finalFile);
-                    }
-                    catch
-                    {
-                        if (asset.Metadata.Type == -2)
-                            return asset.ID;
+                    fs.Write(asset.Data, 0, asset.Data.Length);
 
-                        return UUID.Zero.ToString();
-                    }
+                    fs.Close();
+
+                    File.Move(tempFile, finalFile);
                 }
             }
 

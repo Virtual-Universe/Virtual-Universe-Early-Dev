@@ -182,10 +182,8 @@ namespace OpenSim.Framework
     public delegate void ParcelAccessListRequest(
         UUID agentID, UUID sessionID, uint flags, int sequenceID, int landLocalID, IClientAPI remote_client);
 
-    public delegate void ParcelAccessListUpdateRequest(UUID agentID, uint flags,
-                    int landLocalID, UUID transactionID, int sequenceID,
-                    int sections, List<LandAccessEntry> entries,
-                    IClientAPI remote_client);
+    public delegate void ParcelAccessListUpdateRequest(UUID agentID, uint flags, UUID transactionID,
+                    int landLocalID, List<LandAccessEntry> entries, IClientAPI remote_client);
 
     public delegate void ParcelPropertiesRequest(
         int start_x, int start_y, int end_x, int end_y, int sequence_id, bool snap_selection, IClientAPI remote_client);
@@ -392,7 +390,7 @@ namespace OpenSim.Framework
         IClientAPI remoteClient, UUID invoice, UUID senderID, bool scripted, bool collisionEvents, bool physics);
 
     public delegate void EstateTeleportOneUserHomeRequest(
-        IClientAPI remoteClient, UUID invoice, UUID senderID, UUID prey);
+        IClientAPI remoteClient, UUID invoice, UUID senderID, UUID prey, bool kill);
 
     public delegate void EstateTeleportAllUsersHomeRequest(IClientAPI remoteClient, UUID invoice, UUID senderID);
 
@@ -443,7 +441,7 @@ namespace OpenSim.Framework
     public delegate void DeclineCallingCard(IClientAPI remoteClient, UUID transactionID);
 
     public delegate void SoundTrigger(
-        UUID soundId, UUID ownerid, UUID objid, UUID parentid, double Gain, Vector3 Position, UInt64 Handle, float radius);
+        UUID soundId, UUID ownerid, UUID objid, UUID parentid, double Gain, Vector3 Position, UInt64 Handle);
 
     public delegate void StartLure(byte lureType, string message, UUID targetID, IClientAPI client);
     public delegate void TeleportLureRequest(UUID lureID, uint teleportFlags, IClientAPI client);
@@ -589,7 +587,6 @@ namespace OpenSim.Framework
     {
         private ISceneEntity m_entity;
         private PrimUpdateFlags m_flags;
-        private int m_updateTime;
 
         public ISceneEntity Entity
         {
@@ -599,41 +596,42 @@ namespace OpenSim.Framework
         public PrimUpdateFlags Flags
         {
             get { return m_flags; }
+            set { m_flags = value; }
         }
 
-        public int UpdateTime
+        public virtual void Update()
         {
-            get { return m_updateTime; }
+            // we are on the new one
+            if (m_flags.HasFlag(PrimUpdateFlags.CancelKill))
+            {
+                if (m_flags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                    m_flags = PrimUpdateFlags.UpdateProbe;
+                else
+                    m_flags = PrimUpdateFlags.FullUpdatewithAnim;
+            }
         }
 
         public virtual void Update(EntityUpdate oldupdate)
         {
             // we are on the new one
             PrimUpdateFlags updateFlags = oldupdate.Flags;
-            if(m_flags.HasFlag(PrimUpdateFlags.CancelKill))
-                m_flags = PrimUpdateFlags.FullUpdate;
-            else if(updateFlags.HasFlag(PrimUpdateFlags.Kill))
-                return;
-            else // kill case will just merge in
+            if (updateFlags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                updateFlags &= ~PrimUpdateFlags.UpdateProbe;
+            if (m_flags.HasFlag(PrimUpdateFlags.CancelKill))
+            {
+                if(m_flags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                    m_flags = PrimUpdateFlags.UpdateProbe;
+                else
+                    m_flags = PrimUpdateFlags.FullUpdatewithAnim;
+            }
+            else
                 m_flags |= updateFlags;
-
-            // Use the older of the updates as the updateTime
-            if (Util.EnvironmentTickCountCompare(UpdateTime, oldupdate.UpdateTime) > 0)
-                m_updateTime = oldupdate.UpdateTime;
         }
 
         public EntityUpdate(ISceneEntity entity, PrimUpdateFlags flags)
         {
             m_entity = entity;
             m_flags = flags;
-            m_updateTime = Util.EnvironmentTickCount();
-        }
-
-        public EntityUpdate(ISceneEntity entity, PrimUpdateFlags flags, Int32 updateTime)
-        {
-            m_entity = entity;
-            m_flags = flags;
-            m_updateTime = updateTime;
         }
     }
 
@@ -684,10 +682,17 @@ namespace OpenSim.Framework
         Particles = 1 << 19,
         ExtraData = 1 << 20,
         Sound = 1 << 21,
-        Joint = 1 << 22,
-        FullUpdate =    0x0fffffff,
-        SendInTransit = 0x20000000, 
-        CancelKill =    0x4fffffff, // 1 << 30 
+
+        TerseUpdate = Position | Rotation | Velocity | Acceleration | AngularVelocity,
+        FullUpdate =    0x00ffffff,
+
+        Animations = 1 << 24,
+
+        FullUpdatewithAnim = FullUpdate | Animations,
+
+        UpdateProbe   = 0x10000000, // 1 << 28
+        SendInTransit = 0x20000000, // 1 << 29
+        CancelKill =    0x40000000, // 1 << 30 
         Kill =          0x80000000 // 1 << 31
     }
 
@@ -703,9 +708,11 @@ namespace OpenSim.Framework
     public interface IClientAPI
     {
         Vector3 StartPos { get; set; }
+        float StartFar { get; set; }
 
         UUID AgentId { get; }
 
+        UUID ScopeId { get; }
         /// <summary>
         /// The scene agent for this client.  This will only be set if the client has an agent in a scene (i.e. if it
         /// is connected).
@@ -738,9 +745,6 @@ namespace OpenSim.Framework
 
         List<uint> SelectedObjects { get; }
 
-        // [Obsolete("LLClientView Specific - Replace with ???")]
-        int NextAnimationSequenceNumber { get; }
-
         /// <summary>
         /// Returns the full name of the agent/avatar represented by this client
         /// </summary>
@@ -766,6 +770,8 @@ namespace OpenSim.Framework
         bool IsLoggingOut { get; set; }
 
         bool SendLogoutPacketWhenClosing { set; }
+
+        int NextAnimationSequenceNumber {get; set;}
 
         // [Obsolete("LLClientView Specific - Circuits are unique to LLClientView")]
         uint CircuitCode { get; }
@@ -1105,8 +1111,6 @@ namespace OpenSim.Framework
 
         void SendCachedTextureResponse(ISceneEntity avatar, int serial, List<CachedTextureResponseArg> cachedTextures);
 
-        void SendStartPingCheck(byte seq);
-
         /// <summary>
         /// Tell the client that an object has been deleted
         /// </summary>
@@ -1116,7 +1120,7 @@ namespace OpenSim.Framework
 //        void SendPartFullUpdate(ISceneEntity ent, uint? parentID);
 
         void SendAnimations(UUID[] animID, int[] seqs, UUID sourceAgentId, UUID[] objectIDs);
-        void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args);
+        void SendRegionHandshake();
 
         /// <summary>
         /// Send chat to the viewer.
@@ -1140,8 +1144,8 @@ namespace OpenSim.Framework
 
         bool CanSendLayerData();
 
-        void SendLayerData(float[] map);
-        void SendLayerData(int px, int py, float[] map);
+        void SendLayerData();
+        void SendLayerData(int[] map);
 
         void SendWindData(int version, Vector2[] windSpeeds);
         void SendCloudData(int version, float[] cloudCover);
@@ -1232,7 +1236,8 @@ namespace OpenSim.Framework
         /// <param name="node"></param>
         void SendBulkUpdateInventory(InventoryNodeBase node);
 
-        void SendXferPacket(ulong xferID, uint packet, byte[] data, bool isTaskInventory);
+        void SendXferPacket(ulong xferID, uint packet,
+                byte[] XferData, int XferDataOffset, int XferDatapktLen, bool isTaskInventory);
 
         void SendAbortXferPacket(ulong xferID);
 
@@ -1510,5 +1515,6 @@ namespace OpenSim.Framework
         void SendAgentTerseUpdate(ISceneEntity presence);
 
         void SendPlacesReply(UUID queryID, UUID transactionID, PlacesReplyData[] data);
+        uint GetViewerCaps();
     }
 }

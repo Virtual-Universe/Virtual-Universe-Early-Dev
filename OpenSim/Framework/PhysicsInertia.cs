@@ -1,5 +1,4 @@
-﻿/* 7 May 2019
- * 
+﻿/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -194,10 +193,7 @@ namespace OpenSim.Framework
             using(MemoryStream ms = new MemoryStream(enc.GetBytes(text)))
                 using(XmlTextReader xreader = new XmlTextReader(ms))
                 {
-                    xreader.ProhibitDtd = true; // seems Mono only likes this old property for now
-              //    xreader.DtdProcessing = DtdProcessing.Prohibit;
-
-                v = new PhysicsInertiaData();
+                    v = new PhysicsInertiaData();
                     v.FromXml2(xreader, out error);
                 }
 

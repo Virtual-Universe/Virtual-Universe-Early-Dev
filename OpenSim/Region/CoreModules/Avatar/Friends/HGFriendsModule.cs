@@ -1,5 +1,4 @@
-/* 15 February 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -163,14 +162,17 @@ namespace OpenSim.Region.CoreModules.Avatar.Friends
 
         protected override bool CacheFriends(IClientAPI client)
         {
-            /*
+//            m_log.DebugFormat("[HGFRIENDS MODULE]: Entered CacheFriends for {0}", client.Name);
+
             if (base.CacheFriends(client))
             {
                 UUID agentID = client.AgentId;
-
                 // we do this only for the root agent
                 if (m_Friends[agentID].Refcount == 1)
                 {
+                    IUserManagement uMan = m_Scenes[0].RequestModuleInterface<IUserManagement>();
+                    if(uMan == null)
+                        return true;
                     // We need to preload the user management cache with the names
                     // of foreign friends, just like we do with SOPs' creators
                     foreach (FriendInfo finfo in m_Friends[agentID].Friends)
@@ -183,56 +185,53 @@ namespace OpenSim.Region.CoreModules.Avatar.Friends
                                 string url = string.Empty, first = string.Empty, last = string.Empty, tmp = string.Empty;
                                 if (Util.ParseUniversalUserIdentifier(finfo.Friend, out id, out url, out first, out last, out tmp))
                                 {
-                                    IUserManagement uMan = m_Scenes[0].RequestModuleInterface<IUserManagement>();
+//                                    m_log.DebugFormat("[HGFRIENDS MODULE]: caching {0}", finfo.Friend);
                                     uMan.AddUser(id, url + ";" + first + " " + last);
                                 }
                             }
                         }
                     }
+
+//                    m_log.DebugFormat("[HGFRIENDS MODULE]: Exiting CacheFriends for {0} since detected root agent", client.Name);
                     return true;
                 }
             }
-            return false;
-            */
 
-            // HG names will now be preloaded in the base version.
-            return base.CacheFriends(client);
+//            m_log.DebugFormat("[HGFRIENDS MODULE]: Exiting CacheFriends for {0} since detected not root agent", client.Name);
+            return false;
         }
 
         public override bool SendFriendsOnlineIfNeeded(IClientAPI client)
         {
+//            m_log.DebugFormat("[HGFRIENDS MODULE]: Entering SendFriendsOnlineIfNeeded for {0}", client.Name);
+
             if (base.SendFriendsOnlineIfNeeded(client))
             {
-                Util.FireAndForget(
-                     delegate
-                     {
-                         try
-                         {
-                             AgentCircuitData aCircuit = ((Scene)client.Scene).AuthenticateHandler.GetAgentCircuitData(client.AgentId);
-                             if (aCircuit != null && (aCircuit.teleportFlags & (uint)Constants.TeleportFlags.ViaHGLogin) != 0)
-                             {
-                                 UserAccount account = m_Scenes[0].UserAccountService.GetUserAccount(client.Scene.RegionInfo.ScopeID, client.AgentId);
-                                 if (account == null) // foreign
-                                 {
-                                     FriendInfo[] friends = GetFriendsFromCache(client.AgentId);
-                                     foreach (FriendInfo f in friends)
-                                     {
-                                         int rights = f.TheirFlags;
-                                         if (rights != -1)
-                                             client.SendChangeUserRights(new UUID(f.Friend), client.AgentId, rights);
-                                     }
-                                 }
-                             }
-                         }
-                         catch { }
-                     }, null, "HGFriendsModule.SendFriendsOnlineIfNeeded"
-                );
+                AgentCircuitData aCircuit = ((Scene)client.Scene).AuthenticateHandler.GetAgentCircuitData(client.AgentId);
+                if (aCircuit != null && (aCircuit.teleportFlags & (uint)Constants.TeleportFlags.ViaHGLogin) != 0)
+                {
+                    UserAccount account = m_Scenes[0].UserAccountService.GetUserAccount(client.Scene.RegionInfo.ScopeID, client.AgentId);
+                    if (account == null) // foreign
+                    {
+                        FriendInfo[] friends = GetFriendsFromCache(client.AgentId);
+                        foreach (FriendInfo f in friends)
+                        {
+                            int rights = f.TheirFlags;
+                            if(rights != -1 )
+                                client.SendChangeUserRights(new UUID(f.Friend), client.AgentId, rights);
+                        }
+                    }
+                }
             }
+
+//            m_log.DebugFormat("[HGFRIENDS MODULE]: Exiting SendFriendsOnlineIfNeeded for {0}", client.Name);
             return false;
         }
 
         protected override void GetOnlineFriends(UUID userID, List<string> friendList, /*collector*/ List<UUID> online)
         {
+//            m_log.DebugFormat("[HGFRIENDS MODULE]: Entering GetOnlineFriends for {0}", userID);
+
             List<string> fList = new List<string>();
             foreach (string s in friendList)
             {
@@ -253,6 +252,8 @@ namespace OpenSim.Region.CoreModules.Avatar.Friends
                 if (UUID.TryParse(pi.UserID, out presenceID))
                     online.Add(presenceID);
             }
+
+//            m_log.DebugFormat("[HGFRIENDS MODULE]: Exiting GetOnlineFriends for {0}", userID);
         }
 
         protected override void StatusNotify(List<FriendInfo> friendList, UUID userID, bool online)
@@ -370,7 +371,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Friends
             {
                 // Note that this is calling a different interface than base; this one calls with a string param!
                 finfos = FriendsService.GetFriends(client.AgentId.ToString());
-            //    m_log.DebugFormat("[HGFRIENDS MODULE]: Fetched {0} local friends for visitor {1}", finfos.Length, client.AgentId.ToString());
+                m_log.DebugFormat("[HGFRIENDS MODULE]: Fetched {0} local friends for visitor {1}", finfos.Length, client.AgentId.ToString());
             }
 
             //            m_log.DebugFormat("[HGFRIENDS MODULE]: Exiting GetFriendsFromService for {0}", client.Name);

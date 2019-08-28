@@ -1,5 +1,4 @@
-/* 2 Jun 2018
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -141,7 +140,7 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
                 // Illegal to try and update an agent that's not actually in transit.
                 if (!m_agentsInTransit.ContainsKey(id))
                 {
-                    if (newState != AgentTransferState.Cancelling && newState != AgentTransferState.Aborting)                    
+                    if (newState != AgentTransferState.Cancelling && newState != AgentTransferState.Aborting)
                         failureMessage = string.Format(
                                 "Agent with ID {0} is not registered as in transit in {1}",
                                 id, m_mod.Scene.RegionInfo.RegionName);
@@ -283,23 +282,22 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
             if (!m_mod.WaitForAgentArrivedAtDestination)
                 return true;
 
-            AgentTransferState? currentState = null;
             lock (m_agentsInTransit)
             {
-                currentState = GetAgentTransferState(id);
-            }
+                AgentTransferState? currentState = GetAgentTransferState(id);
 
-            if (currentState == null)
-                throw new Exception(
+                if (currentState == null)
+                    throw new Exception(
                         string.Format(
                             "Asked to wait for destination callback for agent with ID {0} in {1} but agent is not in transit",
                             id, m_mod.Scene.RegionInfo.RegionName));
 
-            if (currentState != AgentTransferState.Transferring && currentState != AgentTransferState.ReceivedAtDestination)
-                throw new Exception(
+                if (currentState != AgentTransferState.Transferring && currentState != AgentTransferState.ReceivedAtDestination)
+                    throw new Exception(
                         string.Format(
                             "Asked to wait for destination callback for agent with ID {0} in {1} but agent is in state {2}",
                             id, m_mod.Scene.RegionInfo.RegionName, currentState));
+            }
 
             int count = 400;
 
@@ -310,24 +308,11 @@ namespace OpenSim.Region.CoreModules.Framework.EntityTransfer
             {
                 lock (m_agentsInTransit)
                 {
-                    try
-                    {
-                        currentState = m_agentsInTransit[id];
-                    }
-                    catch
-                    {
-                        return false;
-                    }
+                    if (m_agentsInTransit[id] == AgentTransferState.ReceivedAtDestination)
+                        break;
                 }
 
-                if (currentState == AgentTransferState.ReceivedAtDestination)
-                    return true;
-
-                if (currentState == AgentTransferState.Cancelling
-                 || currentState == AgentTransferState.Aborting
-                 || currentState != AgentTransferState.Transferring)
-                    return false;
-
+//                m_log.Debug("  >>> Waiting... " + count);
                 Thread.Sleep(100);
             }
 

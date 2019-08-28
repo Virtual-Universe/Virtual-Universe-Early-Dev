@@ -1,5 +1,4 @@
-/* 6 January 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -96,6 +95,7 @@ namespace OpenSim.Services.Connectors
             sendData["METHOD"] = "getagentprefs";
             sendData["UserID"] = principalID;
             string reqString = ServerUtils.BuildQueryString(sendData);
+            // m_log.DebugFormat("[AGENT PREFS CONNECTOR]: queryString = {0}", reqString);
 
             try
             {
@@ -147,6 +147,7 @@ namespace OpenSim.Services.Connectors
 
             string uri = String.Concat(m_ServerURI, "/agentprefs");
             string reqString = ServerUtils.BuildQueryString(sendData);
+            // m_log.DebugFormat("[AGENT PREFS CONNECTOR]: queryString = {0}", reqString);
 
             try
             {
@@ -157,12 +158,16 @@ namespace OpenSim.Services.Connectors
 
                     if (replyData.ContainsKey("result"))
                     {
-                        return replyData["result"].ToString().ToLower() == "success";
+                        if (replyData["result"].ToString().ToLower() == "success")
+                            return true;
+                        else
+                            return false;
                     }
                     else
                     {
                         m_log.DebugFormat("[AGENT PREFERENCES CONNECTOR]: StoreAgentPreferences reply data does not contain result field");
                     }
+
                 }
                 else
                     m_log.DebugFormat("[AGENT PREFERENCES CONNECTOR]: StoreAgentPreferences received empty reply");

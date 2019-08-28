@@ -1,5 +1,4 @@
-/* 7 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -103,7 +102,9 @@ namespace OpenSim.Server.Handlers.Asset
 
                     if (metadata != null)
                     {
-                        result = ServerUtils.SerializeResult(osXmlSerializer<AssetMetadata>.ForType, metadata);
+                        XmlSerializer xs =
+                                new XmlSerializer(typeof(AssetMetadata));
+                        result = ServerUtils.SerializeResult(xs, metadata);
 
                         httpResponse.StatusCode = (int)HttpStatusCode.OK;
                         httpResponse.ContentType =
@@ -115,7 +116,6 @@ namespace OpenSim.Server.Handlers.Asset
                         httpResponse.ContentType = "text/plain";
                         result = new byte[0];
                     }
-                    metadata = null; // Release the memory.
                 }
                 else
                 {
@@ -134,7 +134,8 @@ namespace OpenSim.Server.Handlers.Asset
 
                 if (asset != null)
                 {
-                    result = ServerUtils.SerializeResult(osXmlSerializer<AssetBase>.ForType, asset);
+                    XmlSerializer xs = new XmlSerializer(typeof(AssetBase));
+                    result = ServerUtils.SerializeResult(xs, asset);
 
                     httpResponse.StatusCode = (int)HttpStatusCode.OK;
                     httpResponse.ContentType =
@@ -146,8 +147,6 @@ namespace OpenSim.Server.Handlers.Asset
                     httpResponse.ContentType = "text/plain";
                     result = new byte[0];
                 }
-
-                asset = null; // Release the memory
             }
             else
             {
@@ -167,8 +166,6 @@ namespace OpenSim.Server.Handlers.Asset
                 httpResponse.AddHeader("Location", rurl);
                 m_log.DebugFormat("[ASSET GET HANDLER]: Asset not found, redirecting to {0} ({1})", rurl, httpResponse.StatusCode);
             }
-
-            GC.Collect();
             return result;
         }
     }

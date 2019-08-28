@@ -1,5 +1,4 @@
-/* 1 January 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -70,10 +69,10 @@ namespace OpenSim.Capabilities.Handlers
                 = new RestHTTPHandler(
                     "GET",
                     "/CAPS/" + UUID.Random(),
-                    httpMethod => gmeshHandler.ProcessGetMesh(httpMethod),
+                    httpMethod => gmeshHandler.ProcessGetMesh(httpMethod, UUID.Zero, null),
                     "GetMesh",
                     null);
-            server.AddStreamHandler(reqHandler);
+            server.AddStreamHandler(reqHandler); ;
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Reflection;
 using log4net;
 using Nini.Config;
 using Mono.Addins;
-using OdeAPI;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.Framework.Interfaces;
@@ -53,18 +52,17 @@ namespace OpenSim.Region.PhysicsModule.ubOde
                     if (Util.IsWindows())
                         Util.LoadArchSpecificWindowsDll("ode.dll");
 
-                    d.InitODE();
+                    SafeNativeMethods.InitODE();
 
-                    string ode_config = d.GetConfiguration();
-                    if (ode_config != null && ode_config != "")
+                    string ode_config = SafeNativeMethods.GetConfiguration();
+                    if (ode_config == null || ode_config == "" || !ode_config.Contains("ODE_OPENSIM"))
                     {
-                        m_log.InfoFormat("[ubODE] ode library configuration: {0}", ode_config);
-
-                        if (ode_config.Contains("ODE_OPENSIM"))
-                        {
-                            OSOdeLib = true;
-                        }
+                        m_log.Error("[ubODE] Native ode library version not supported");
+                        m_Enabled = false;
+                        return;
                     }
+                    m_log.InfoFormat("[ubODE] ode library configuration: {0}", ode_config);
+                    OSOdeLib = true;
                 }
             }
         }

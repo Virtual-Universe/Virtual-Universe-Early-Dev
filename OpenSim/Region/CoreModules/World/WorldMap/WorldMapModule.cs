@@ -1,5 +1,4 @@
-/* 19 October 2018
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -28,8 +27,8 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -69,7 +68,6 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
         private static readonly string DEFAULT_WORLD_MAP_EXPORT_PATH = "exportmap.jpg";
         private static readonly UUID STOP_UUID = UUID.Random();
 
-        // private OpenSim.Framework.BlockingQueue<MapRequestState> requests = new OpenSim.Framework.BlockingQueue<MapRequestState>();
         private BlockingCollection<MapRequestState> requests = new BlockingCollection<MapRequestState>();
 
         private ManualResetEvent m_mapBlockRequestEvent = new ManualResetEvent(false);
@@ -90,10 +88,14 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
         private List<UUID> m_rootAgents = new List<UUID>();
         private volatile bool threadrunning = false;
         // expire time for the blacklists in seconds
-        private double expireBlackListTime = 600.0; // 10 minutes
+        protected double expireBlackListTime = 600.0; // 10 minutes
         // expire mapItems responses time in seconds. Throttles requests to regions that do answer
         private const double expireResponsesTime = 120.0; // 2 minutes ?
         //private int CacheRegionsDistance = 256;
+
+        protected bool m_exportPrintScale = false; // prints the scale of map in meters on exported map
+        protected bool m_exportPrintRegionName = false; // prints the region name exported map
+        protected bool m_showNPCs = true;
 
         #region INonSharedRegionModule Members
         public virtual void Initialise(IConfigSource config)
@@ -105,6 +107,13 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                 m_Enabled = true;
 
             expireBlackListTime = (double)Util.GetConfigVarFromSections<int>(config, "BlacklistTimeout", configSections, 10 * 60);
+
+            m_exportPrintScale =
+                Util.GetConfigVarFromSections<bool>(config, "ExportMapAddScale", configSections, m_exportPrintScale);
+            m_exportPrintRegionName =
+                Util.GetConfigVarFromSections<bool>(config, "ExportMapAddRegionName", configSections, m_exportPrintRegionName);
+            m_showNPCs =
+                Util.GetConfigVarFromSections<bool>(config, "ShowNPCs", configSections, m_showNPCs);
         }
 
         public virtual void AddRegion(Scene scene)
@@ -179,6 +188,19 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
             regionimage = regionimage.Replace("-", "");
             m_log.Info("[WORLD MAP]: JPEG Map location: " + m_scene.RegionInfo.ServerURI + "index.php?method=" + regionimage);
 
+/*
+            MainServer.Instance.AddHTTPHandler(regionimage,
+                new GenericHTTPDOSProtector(OnHTTPGetMapImage, OnHTTPThrottled, new BasicDosProtectorOptions()
+                {
+                    AllowXForwardedFor = false,
+                    ForgetTimeSpan = TimeSpan.FromMinutes(2),
+                    MaxRequestsInTimeframe = 4,
+                    ReportingName = "MAPDOSPROTECTOR",
+                    RequestTimeSpan = TimeSpan.FromSeconds(10),
+                    ThrottledAction = BasicDOSProtector.ThrottleAction.DoThrottledMethod
+                }).Process);
+*/
+
             MainServer.Instance.AddHTTPHandler(regionimage, OnHTTPGetMapImage);
             MainServer.Instance.AddLLSDHandler(
                 "/MAP/MapItems/" + m_scene.RegionInfo.RegionHandle.ToString(), HandleRemoteMapItemRequest);
@@ -216,6 +238,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
 
         public void OnRegisterCaps(UUID agentID, Caps caps)
         {
+            //m_log.DebugFormat("[WORLD MAP]: OnRegisterCaps: agentID {0} caps {1}", agentID, caps);
             string capspath =  "/CAPS/" + UUID.Random();
             caps.RegisterHandler(
                 "MapLayer",
@@ -244,6 +267,9 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
 
             //try
             //
+            //m_log.DebugFormat("[MAPLAYER]: path: {0}, param: {1}, agent:{2}",
+            //                  path, param, agentID.ToString());
+
             // There is a major hack going on in this method. The viewer doesn't request
             // map blocks (RequestMapBlocks) above 2048. That means that if we don't hack,
             // grids above that cell don't have a map at all. So, here's the hack: we wait
@@ -315,6 +341,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
         /// <returns></returns>
         public LLSDMapLayerResponse GetMapLayer(LLSDMapRequest mapReq)
         {
+            // m_log.DebugFormat("[WORLD MAP]: MapLayer Request in region: {0}", m_scene.RegionInfo.RegionName);
             LLSDMapLayerResponse mapResponse = new LLSDMapLayerResponse();
             mapResponse.LayerData.Array.Add(GetOSDMapLayerResponse());
             return mapResponse;
@@ -378,20 +405,14 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
             if (threadrunning) return;
             threadrunning = true;
 
+            //            m_log.Debug("[WORLD MAP]: Starting remote MapItem request thread");
 
             WorkManager.StartThread(
                 process,
-                string.Format("MapItemRequestThread ({0})", m_scene.RegionInfo.RegionName),
-                ThreadPriority.BelowNormal,
-                true,
-                false);
-
+                string.Format("MapItemRequestThread ({0})", m_scene.RegionInfo.RegionName));
             WorkManager.StartThread(
                 MapBlockSendThread,
-                string.Format("MapBlockSendThread ({0})", m_scene.RegionInfo.RegionName),
-                ThreadPriority.BelowNormal,
-                true,
-                false);
+                string.Format("MapBlockSendThread ({0})", m_scene.RegionInfo.RegionName));
         }
 
         /// <summary>
@@ -458,7 +479,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
             // viewers only ask for green dots to each region now
             // except at login with regionhandle 0
             // possible on some other rare ocasions
-            // use previus hack of sending all items with the green dots
+            // use previous hack of sending all items with the green dots
 
             bool adultRegion;
             if (regionhandle == 0)
@@ -469,7 +490,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                         // Service 6 right now (MAP_ITEM_AGENTS_LOCATION; green dots)
 
                         int tc = Environment.TickCount;
-                        if (m_scene.GetRootAgentCount() <= 1)
+                        if (m_scene.GetRootAgentCount() <= 1) //own position is not sent
                         {
                             mapitem = new mapItemReply(
                                         xstart + 1,
@@ -483,9 +504,12 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                         {
                             m_scene.ForEachRootScenePresence(delegate (ScenePresence sp)
                             {
-                            // Don't send a green dot for yourself
-                            if (sp.UUID != remoteClient.AgentId)
+                                // Don't send a green dot for yourself
+                                if (sp.UUID != remoteClient.AgentId)
                                 {
+                                    if (sp.PresenceType == PresenceType.Npc && !m_showNPCs)
+                                        return;
+
                                     mapitem = new mapItemReply(
                                         xstart + (uint)sp.AbsolutePosition.X,
                                         ystart + (uint)sp.AbsolutePosition.Y,
@@ -593,7 +617,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                 // Service 6 right now (MAP_ITEM_AGENTS_LOCATION; green dots)
 
                 int tc = Environment.TickCount;
-                if (m_scene.GetRootAgentCount() <= 1)
+                if (m_scene.GetRootAgentCount() <= 1) // own is not sent
                 {
                     mapitem = new mapItemReply(
                                 xstart + 1,
@@ -610,6 +634,9 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                         // Don't send a green dot for yourself
                         if (sp.UUID != remoteClient.AgentId)
                         {
+                            if (!m_showNPCs && sp.PresenceType == PresenceType.Npc)
+                                return;
+
                             mapitem = new mapItemReply(
                                 xstart + (uint)sp.AbsolutePosition.X,
                                 ystart + (uint)sp.AbsolutePosition.Y,
@@ -704,10 +731,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                     av = null;
                     st = null;
 
-                    if (!requests.TryTake(out st, 4500))
-                    {
-                        st = null;
-                    }
+                    requests.TryTake(out st, 4500);
                     Watchdog.UpdateThread();
 
                     if (st == null || st.agentID == UUID.Zero)
@@ -782,7 +806,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                         }
                         else
                         {
-                            // request still being processed, enqueue it back
+                            // request still beeing processed, enqueue it back
                             requests.Add(st);
                             if (requests.Count < 3)
                                 Thread.Sleep(100);
@@ -923,6 +947,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                 mapitemsrequest.ContentLength = buffer.Length;   //Count bytes to send
                 using (Stream os = mapitemsrequest.GetRequestStream())
                     os.Write(buffer, 0, buffer.Length);         //Send it
+              //m_log.DebugFormat("[WORLD MAP]: Getting MapItems from {0}", httpserver);
             }
             catch (WebException ex)
             {
@@ -1018,6 +1043,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                         if (responseMap.ContainsKey(itfs.ToString()))
                         {
                             List<mapItemReply> returnitems = new List<mapItemReply>();
+//                            OSDArray itemarray = (OSDArray)responseMap[itemtype.ToString()];
                             OSDArray itemarray = (OSDArray)responseMap[itfs.ToString()];
                             for (int i = 0; i < itemarray.Count; i++)
                             {
@@ -1031,6 +1057,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                                 mi.name = mapitem["Name"].AsString();
                                 returnitems.Add(mi);
                             }
+//                            av.ControllingClient.SendMapItemReply(returnitems.ToArray(), itemtype, flags);
                             av.ControllingClient.SendMapItemReply(returnitems.ToArray(), itfs, flags);
                         }
                     }
@@ -1049,6 +1076,8 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
         /// <param name="maxY"></param>
         public void RequestMapBlocks(IClientAPI remoteClient, int minX, int minY, int maxX, int maxY, uint flag)
         {
+//            m_log.DebugFormat("[WoldMapModule] RequestMapBlocks {0}={1}={2}={3} {4}", minX, minY, maxX, maxY, flag);
+
             GetAndSendBlocks(remoteClient, minX, minY, maxX, maxY, flag);
         }
 
@@ -1100,6 +1129,8 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                         spamBlocked.Remove(k);
                     }
                 }
+
+//                m_log.DebugFormat("[WoldMapModule] RequestMapBlocks {0}={1}={2}={3} {4}", minX, minY, maxX, maxY, flag);
 
                 MapBlockRequestData req = new MapBlockRequestData();
 
@@ -1161,6 +1192,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                             return;
 
                         GetAndSendBlocksInternal(req.client, req.minX, req.minY, req.maxX, req.maxY, req.flags);
+                        Watchdog.UpdateThread();
                     }
 
                     thisRunData.Clear();
@@ -1379,53 +1411,127 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
             m_log.InfoFormat(
                 "[WORLD MAP]: Exporting world map for {0} to {1}", m_scene.RegionInfo.RegionName, exportPath);
 
-            List<MapBlockData> mapBlocks = new List<MapBlockData>();
-            List<GridRegion> regions = m_scene.GridService.GetRegionRange(m_scene.RegionInfo.ScopeID,
-                    (int)Util.RegionToWorldLoc(m_scene.RegionInfo.RegionLocX - 9),
-                    (int)Util.RegionToWorldLoc(m_scene.RegionInfo.RegionLocX + 9),
-                    (int)Util.RegionToWorldLoc(m_scene.RegionInfo.RegionLocY - 9),
-                    (int)Util.RegionToWorldLoc(m_scene.RegionInfo.RegionLocY + 9));
-            List<AssetBase> textures = new List<AssetBase>();
-            List<Image> bitImages = new List<Image>();
+            // assumed this is 1m less than next grid line
+            int regionsView = (int)m_scene.MaxRegionViewDistance;
+            
+            string regionName = m_scene.RegionInfo.RegionName;
+            ulong regionHandle = m_scene.RegionInfo.RegionHandle;
 
-            foreach (GridRegion r in regions)
-            {
-                MapBlockData mapBlock = new MapBlockData();
-                MapBlockFromGridRegion(mapBlock, r, 0);
-                AssetBase texAsset = m_scene.AssetService.Get(mapBlock.MapImageId.ToString());
+            int regionSizeX = (int)m_scene.RegionInfo.RegionSizeX;
+            int regionSizeY = (int)m_scene.RegionInfo.RegionSizeY;
 
-                if (texAsset != null)
-                {
-                    textures.Add(texAsset);
-                }
-            }
+            int regionX = (int)m_scene.RegionInfo.WorldLocX;
+            int regionY = (int)m_scene.RegionInfo.WorldLocY;
 
-            foreach (AssetBase asset in textures)
-            {
-                ManagedImage managedImage;
-                Image image;
+            int startX = regionX - regionsView;
+            int startY = regionY - regionsView;
 
-                if (OpenJPEG.DecodeToImage(asset.Data, out managedImage, out image))
-                    bitImages.Add(image);
-            }
+            int endX = regionX + regionSizeX + regionsView;
+            int endY = regionY + regionSizeY + regionsView;
 
-            Bitmap mapTexture = new Bitmap(2560, 2560);
-            Graphics g = Graphics.FromImage(mapTexture);
+            int spanX = endX - startX + 2;
+            int spanY = endY - startY + 2;
+
+            Bitmap mapTexture = new Bitmap(spanX, spanY);
+            ImageAttributes gatrib = new ImageAttributes();
+            gatrib.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+
+            Graphics g = Graphics.FromImage(mapTexture);           
+            g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+
             SolidBrush sea = new SolidBrush(Color.DarkBlue);
-            g.FillRectangle(sea, 0, 0, 2560, 2560);
+            g.FillRectangle(sea, 0, 0, spanX, spanY);
+            sea.Dispose();
 
-            for (int i = 0; i < mapBlocks.Count; i++)
+            Font drawFont = new Font("Arial", 32);
+            SolidBrush drawBrush = new SolidBrush(Color.White);
+
+            List<GridRegion> regions = m_scene.GridService.GetRegionRange(m_scene.RegionInfo.ScopeID,
+                    startX, startY, endX, endY);
+
+            startX--;
+            startY--;
+
+            bool doneLocal = false;
+            string filename = "MAP-" + m_scene.RegionInfo.RegionID.ToString() + ".png";
+            try
             {
-                ushort x = (ushort)((mapBlocks[i].X - m_scene.RegionInfo.RegionLocX) + 10);
-                ushort y = (ushort)((mapBlocks[i].Y - m_scene.RegionInfo.RegionLocY) + 10);
-                g.DrawImage(bitImages[i], (x * 128), 2560 - (y * 128), 128, 128); // y origin is top
+                using(Image localMap = Bitmap.FromFile(filename))
+                {
+                    int x = regionX - startX;
+                    int y = regionY - startY;
+                    int sx = regionSizeX;
+                    int sy = regionSizeY;
+                    // y origin is top
+                    g.DrawImage(localMap,new Rectangle(x, spanY - y - sy, sx, sy),
+                                0, 0, localMap.Width, localMap.Height, GraphicsUnit.Pixel, gatrib);
+
+                    if(m_exportPrintRegionName)
+                    {
+                        SizeF stringSize = g.MeasureString(regionName, drawFont);
+                        g.DrawString(regionName, drawFont, drawBrush, x + 30, spanY - y - 30 - stringSize.Height);
+                    }
+                }
+                doneLocal = true;
             }
+            catch {}
+
+            if(regions.Count > 0)
+            {
+                ManagedImage managedImage = null;
+                Image image = null;
+
+                foreach(GridRegion r in regions)
+                {
+                    if(r.TerrainImage == UUID.Zero)
+                        continue;
+
+                    if(doneLocal && r.RegionHandle == regionHandle)
+                        continue;
+
+                    AssetBase texAsset = m_scene.AssetService.Get(r.TerrainImage.ToString());
+                    if(texAsset == null)
+                        continue;
+
+                    if(OpenJPEG.DecodeToImage(texAsset.Data, out managedImage, out image))
+                    {
+                        int x = r.RegionLocX - startX;
+                        int y = r.RegionLocY - startY;
+                        int sx = r.RegionSizeX;
+                        int sy = r.RegionSizeY;
+                        // y origin is top
+                        g.DrawImage(image,new Rectangle(x, spanY - y - sy, sx, sy),
+                                0, 0, image.Width, image.Height, GraphicsUnit.Pixel, gatrib);
+
+                        if(m_exportPrintRegionName && r.RegionHandle == regionHandle)
+                        {
+                            SizeF stringSize = g.MeasureString(r.RegionName, drawFont);
+                            g.DrawString(r.RegionName, drawFont, drawBrush, x + 30, spanY - y - 30 - stringSize.Height);
+                        }
+                    }
+                }
+
+                if(image != null)
+                    image.Dispose();
+
+            }
+
+            if(m_exportPrintScale)
+            {
+                String drawString = string.Format("{0}m x {1}m", spanX, spanY);
+                g.DrawString(drawString, drawFont, drawBrush, 30, 30);
+            }
+
+            drawBrush.Dispose();
+            drawFont.Dispose();
+            gatrib.Dispose();
+            g.Dispose();
 
             mapTexture.Save(exportPath, ImageFormat.Jpeg);
-
-            g.Dispose();
             mapTexture.Dispose();
-            sea.Dispose();
 
             m_log.InfoFormat(
                 "[WORLD MAP]: Successfully exported world map for {0} to {1}",
@@ -1439,7 +1545,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
             if (consoleScene != null && consoleScene != m_scene)
                 return;
 
-            GenerateMaptile();
+            m_scene.RegenerateMaptileAndReregister(this, null);
         }
 
         public OSD HandleRemoteMapItemRequest(string path, OSD request, string endpoint)
@@ -1472,6 +1578,8 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                 OSDArray responsearr = new OSDArray(); // Don't preallocate. MT (m_scene.GetRootAgentCount());
                 m_scene.ForEachRootScenePresence(delegate (ScenePresence sp)
                 {
+                    if (!m_showNPCs && sp.IsNPC)
+                        return;
                     OSDMap responsemapdata = new OSDMap();
                     responsemapdata["X"] = OSD.FromInteger((int)(xstart + sp.AbsolutePosition.X));
                     responsemapdata["Y"] = OSD.FromInteger((int)(ystart + sp.AbsolutePosition.Y));
@@ -1616,11 +1724,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                         if(mb > Constants.RegionSize && mb > 0)
                         {
                             float scale = (float)Constants.RegionSize/(float)mb;
-                            Size newsize = new Size();
-                            newsize.Width = (int)(bx * scale);
-                            newsize.Height = (int)(by * scale);
-
-                            using(Bitmap scaledbmp = new Bitmap(mapbmp,newsize))
+                            using(Bitmap scaledbmp = Util.ResizeImageSolid(mapbmp, (int)(bx * scale), (int)(by * scale)))
                                 data = OpenJPEG.EncodeFromImage(scaledbmp, true);
                         }
                         else
@@ -1805,7 +1909,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
 
                 try
                 {
-                    return OpenJPEG.EncodeFromImage(overlay, true);
+                    return OpenJPEG.EncodeFromImage(overlay, false);
                 }
                 catch (Exception e)
                 {

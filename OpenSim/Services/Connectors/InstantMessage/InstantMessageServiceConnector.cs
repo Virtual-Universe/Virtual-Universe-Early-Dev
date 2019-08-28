@@ -1,5 +1,4 @@
-﻿/* 6 january 2019
- * 
+﻿/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -61,12 +60,23 @@ namespace OpenSim.Services.Connectors.InstantMessage
             XmlRpcRequest GridReq = new XmlRpcRequest("grid_instant_message", SendParams);
             try
             {
+
                 XmlRpcResponse GridResp = GridReq.Send(url, 10000);
+
                 Hashtable responseData = (Hashtable)GridResp.Value;
 
                 if (responseData.ContainsKey("success"))
                 {
-                    return (string)responseData["success"] == "TRUE";
+                    if ((string)responseData["success"] == "TRUE")
+                    {
+                        //m_log.DebugFormat("[XXX] Success");
+                        return true;
+                    }
+                    else
+                    {
+                        //m_log.DebugFormat("[XXX] Fail");
+                        return false;
+                    }
                 }
                 else
                 {

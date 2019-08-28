@@ -1,5 +1,4 @@
-/* 18 April 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -26,7 +25,6 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using HttpServer;
 using System.Collections;
 using System.IO;
 
@@ -83,23 +81,11 @@ namespace OpenSim.Framework.Servers.HttpServer
 
     public interface IStreamHandler : IRequestHandler
     {
-        void Handle(string path, Stream request, Stream response, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse);
+        void Handle(string path, Stream request, Stream response, IOSHttpRequest httpReqbuest, IOSHttpResponse httpResponse);
     }
 
     public interface IGenericHTTPHandler : IRequestHandler
     {
         Hashtable Handle(string path, Hashtable request);
     }
-
-    public interface IDirectHttpHandler : IRequestHandler // Nani added this one.
-    {
-        void Handle(string path, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse);
-    }
-
-    public interface IDirectServiceHttpHandler : IRequestHandler // Nani added this one.
-    {
-        void Handle(IHttpClientContext context, IHttpRequest request);
-    }
-
-
 }

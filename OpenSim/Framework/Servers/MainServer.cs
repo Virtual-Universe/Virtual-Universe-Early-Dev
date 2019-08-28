@@ -42,6 +42,7 @@ namespace OpenSim.Framework.Servers
 //        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private static BaseHttpServer instance = null;
+        private static BaseHttpServer unsecureinstance = null;
         private static Dictionary<uint, BaseHttpServer> m_Servers = new Dictionary<uint, BaseHttpServer>();
 
         /// <summary>
@@ -86,10 +87,26 @@ namespace OpenSim.Framework.Servers
             set
             {
                 lock (m_Servers)
+                {
                     if (!m_Servers.ContainsValue(value))
                         throw new Exception("HTTP server must already have been registered to be set as the main instance");
 
-                instance = value;
+                    instance = value;
+                }
+            }
+        }
+
+        public static BaseHttpServer UnSecureInstance
+        {
+            get { return unsecureinstance; }
+
+            set
+            {
+                lock (m_Servers)
+                    if (!m_Servers.ContainsValue(value))
+                        throw new Exception("HTTP server must already have been registered to be set as the main instance");
+
+                unsecureinstance = value;
             }
         }
 
@@ -175,35 +192,35 @@ namespace OpenSim.Framework.Servers
 
                 if (!int.TryParse(rawNewDebug, out newDebug))
                 {
-                    MainConsole.Instance.OutputFormat("{0} is not a valid debug level", rawNewDebug);
+                    MainConsole.Instance.Output("{0} is not a valid debug level", null, rawNewDebug);
                     return;
                 }
 
                 if (newDebug < 0 || newDebug > 6)
                 {
-                    MainConsole.Instance.OutputFormat("{0} is outside the valid debug level range of 0..6", newDebug);
+                    MainConsole.Instance.Output("{0} is outside the valid debug level range of 0..6", null, newDebug);
                     return;
                 }
 
                 if (allReqs || inReqs)
                 {
                     MainServer.DebugLevel = newDebug;
-                    MainConsole.Instance.OutputFormat("IN debug level set to {0}", newDebug);
+                    MainConsole.Instance.Output("IN debug level set to {0}", null, newDebug);
                 }
 
                 if (allReqs || outReqs)
                 {
                     WebUtil.DebugLevel = newDebug;
-                    MainConsole.Instance.OutputFormat("OUT debug level set to {0}", newDebug);
+                    MainConsole.Instance.Output("OUT debug level set to {0}", null, newDebug);
                 }
             }
             else
             {
                 if (allReqs || inReqs)
-                    MainConsole.Instance.OutputFormat("Current IN debug level is {0}", MainServer.DebugLevel);
+                    MainConsole.Instance.Output("Current IN debug level is {0}", null, DebugLevel);
 
                 if (allReqs || outReqs)
-                    MainConsole.Instance.OutputFormat("Current OUT debug level is {0}", WebUtil.DebugLevel);
+                    MainConsole.Instance.Output("Current OUT debug level is {0}", null, WebUtil.DebugLevel);
             }
         }
 
@@ -360,10 +377,9 @@ namespace OpenSim.Framework.Servers
             {
                 foreach (BaseHttpServer httpServer in m_Servers.Values)
                 {
-                    httpServer.Stop();
+                    httpServer.Stop(true);
                 }
             }
         }
-
     }
 }

@@ -1,5 +1,4 @@
-/* 5 May 2019 @ EXPERIMENTAL
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -65,10 +64,13 @@ namespace OpenSim.Server.Handlers.Asset
 
         protected override byte[] ProcessRequest(string path, Stream request, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
+            XmlSerializer xs;
+
             string[] ids;
             try
             {
-                ids = (string[])osXmlSerializer<string[]>.ForType.Deserialize(request);
+                xs = new XmlSerializer(typeof(string[]));
+                ids = (string[])xs.Deserialize(request);
             }
             catch (Exception)
             {
@@ -77,9 +79,9 @@ namespace OpenSim.Server.Handlers.Asset
             }
 
             bool[] exist = m_AssetService.AssetsExist(ids);
-            ids = null;
 
-            return ServerUtils.SerializeResult(osXmlSerializer<bool[]>.ForType, exist);
+            xs = new XmlSerializer(typeof(bool[]));
+            return ServerUtils.SerializeResult(xs, exist);
         }
     }
 }

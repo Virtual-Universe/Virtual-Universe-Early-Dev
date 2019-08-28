@@ -1,5 +1,4 @@
-/* 7 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -66,9 +65,11 @@ namespace OpenSim.Server.Handlers.Asset
                 IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
             AssetBase asset;
+            XmlSerializer xs = new XmlSerializer(typeof(AssetBase));
+
             try
             {
-                asset = (AssetBase)osXmlSerializer<AssetBase>.ForType.Deserialize(request);
+                asset = (AssetBase)xs.Deserialize(request);
             }
             catch (Exception)
             {
@@ -77,18 +78,20 @@ namespace OpenSim.Server.Handlers.Asset
             }
 
             string[] p = SplitParams(path);
-            if (p.Length > 0 && asset != null)
+            if (p.Length > 0)
             {
                 string id = p[0];
                 bool result = m_AssetService.UpdateContent(id, asset.Data);
 
-                return ServerUtils.SerializeResult(osXmlSerializer<bool>.ForType, result);
+                xs = new XmlSerializer(typeof(bool));
+                return ServerUtils.SerializeResult(xs, result);
             }
             else
             {
                 string id = m_AssetService.Store(asset);
 
-                return ServerUtils.SerializeResult(osXmlSerializer<string>.ForType, id);
+                xs = new XmlSerializer(typeof(string));
+                return ServerUtils.SerializeResult(xs, id);
             }
         }
     }

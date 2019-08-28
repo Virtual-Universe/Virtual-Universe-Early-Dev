@@ -1,5 +1,4 @@
-/* 7 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -29,7 +28,6 @@
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
-using OpenSim.Framework;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {
@@ -56,16 +54,16 @@ namespace OpenSim.Framework.Servers.HttpServer
             TRequest deserial;
             using (XmlTextReader xmlReader = new XmlTextReader(request))
             {
-                xmlReader.ProhibitDtd = true; // seems Mono only likes this old property for now
-             //   xmlReader.DtdProcessing = DtdProcessing.Prohibit;
-                deserial = (TRequest)osXmlSerializer<TRequest>.ForType.Deserialize(xmlReader);
+                XmlSerializer deserializer = new XmlSerializer(typeof (TRequest));
+                deserial = (TRequest) deserializer.Deserialize(xmlReader);
             }
 
             TResponse response = m_method(deserial);
 
             using (XmlWriter xmlWriter = XmlTextWriter.Create(responseStream))
             {
-                osXmlSerializer<TResponse>.ForType.Serialize(xmlWriter, response);
+                XmlSerializer serializer = new XmlSerializer(typeof (TResponse));
+                serializer.Serialize(xmlWriter, response);
             }
         }
     }

@@ -1,5 +1,4 @@
-/* 25 Januray 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -78,6 +77,10 @@ namespace OpenSim.Region.Framework.Scenes
             args.From = fromName;
             //args.
 
+//            m_log.DebugFormat(
+//                "[SCENE]: Sending message {0} on channel {1}, type {2} from {3}, broadcast {4}",
+//                args.Message.Replace("\n", "\\n"), args.Channel, args.Type, fromName, broadcast);
+
             if (broadcast)
                 EventManager.TriggerOnChatBroadcast(this, args);
             else
@@ -150,10 +153,23 @@ namespace OpenSim.Region.Framework.Scenes
         /// <param name="remoteClient"></param>
         public void RequestPrim(uint primLocalID, IClientAPI remoteClient)
         {
-            SceneObjectGroup sog = GetGroupByPrim(primLocalID);
+            SceneObjectPart part = GetSceneObjectPart(primLocalID);
+            if (part != null)
+            {
+                SceneObjectGroup sog = part.ParentGroup;
+                if(!sog.IsDeleted)
+                {
+                    PrimUpdateFlags update = PrimUpdateFlags.FullUpdate;
+                    if (sog.RootPart.Shape.MeshFlagEntry)
+                        update = PrimUpdateFlags.FullUpdatewithAnim;
+                    part.SendUpdate(remoteClient, update);
+                }
+            }
 
-            if (sog != null)
-                sog.SendFullUpdateToClient(remoteClient);
+            //SceneObjectGroup sog = GetGroupByPrim(primLocalID);
+
+            //if (sog != null)
+            //sog.SendFullAnimUpdateToClient(remoteClient);
         }
 
         /// <summary>
@@ -325,7 +341,7 @@ namespace OpenSim.Region.Framework.Scenes
             if(group == null || group.IsDeleted)
                 return;
 
-            if (Permissions.CanMoveObject(group, remoteClient))// && PermissionsMngr.)
+            if (Permissions.CanMoveObject(group, remoteClient))
             {
                 group.GrabMovement(objectID, offset, pos, remoteClient);
             }
@@ -343,16 +359,13 @@ namespace OpenSim.Region.Framework.Scenes
             Vector3 grabOffset = pos - part.AbsolutePosition;
             // If the touched prim handles touches, deliver it
             if ((part.ScriptEvents & scriptEvents.touch) != 0)
-//                EventManager.TriggerObjectGrabbing(part.LocalId, 0, part.OffsetPosition, remoteClient, surfaceArg);
                 EventManager.TriggerObjectGrabbing(part.LocalId, 0, grabOffset, remoteClient, surfaceArg);
+
             // Deliver to the root prim if the touched prim doesn't handle touches
             // or if we're meant to pass on touches anyway.
             if (((part.ScriptEvents & scriptEvents.touch) == 0) ||
                 (part.PassTouches && (part.LocalId != group.RootPart.LocalId)))
-            {
-//                EventManager.TriggerObjectGrabbing(group.RootPart.LocalId, part.LocalId, part.OffsetPosition, remoteClient, surfaceArg);
                 EventManager.TriggerObjectGrabbing(group.RootPart.LocalId, part.LocalId, grabOffset, remoteClient, surfaceArg);
-            }
         }
 
         public virtual void ProcessObjectDeGrab(uint localID, IClientAPI remoteClient, List<SurfaceTouchEventArgs> surfaceArgs)
@@ -474,7 +487,7 @@ namespace OpenSim.Region.Framework.Scenes
                     if (sp.ControllingClient.AgentId != remoteClient.AgentId)
                     {
                         if (!discardableEffects ||
-                            (discardableEffects && ShouldSendDiscardableEffect(remoteClient, sp)))
+                           (discardableEffects && ShouldSendDiscardableEffect(remoteClient, sp)))
                         {
                             //m_log.DebugFormat("[YYY]: Sending to {0}", sp.UUID);
                             sp.ControllingClient.SendViewerEffect(effectBlockArray);
@@ -487,7 +500,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         private bool ShouldSendDiscardableEffect(IClientAPI thisClient, ScenePresence other)
         {
-            return Vector3.Distance(other.CameraPosition, thisClient.SceneAgent.AbsolutePosition) < 10;
+            return Vector3.DistanceSquared(other.CameraPosition, thisClient.SceneAgent.AbsolutePosition) < 100;
         }
 
         private class DescendentsRequestData
@@ -516,6 +529,10 @@ namespace OpenSim.Region.Framework.Scenes
         public void HandleFetchInventoryDescendents(IClientAPI remoteClient, UUID folderID, UUID ownerID,
                                                     bool fetchFolders, bool fetchItems, int sortOrder)
         {
+//            m_log.DebugFormat(
+//                "[USER INVENTORY]: HandleFetchInventoryDescendents() for {0}, folder={1}, fetchFolders={2}, fetchItems={3}, sortOrder={4}",
+//                remoteClient.Name, folderID, fetchFolders, fetchItems, sortOrder);
+
             if (folderID == UUID.Zero)
                 return;
 
@@ -542,11 +559,12 @@ namespace OpenSim.Region.Framework.Scenes
                 {
                     m_descendentsRequestProcessing = true;
 
-					// We're going to send the reply async, because there may be
-					// an enormous quantity of packets -- basically the entire inventory!
-					// We don't want to block the client thread while all that is happening.
-					SendInventoryDelegate d = SendInventoryAsync;
-					d.BeginInvoke(remoteClient, folderID, ownerID, fetchFolders, fetchItems, sortOrder, SendInventoryComplete, d);
+                    // We're going to send the reply async, because there may be
+                    // an enormous quantity of packets -- basically the entire inventory!
+                    // We don't want to block the client thread while all that is happening.
+                    SendInventoryDelegate d = SendInventoryAsync;
+                    d.BeginInvoke(remoteClient, folderID, ownerID, fetchFolders, fetchItems, sortOrder, SendInventoryComplete, d);
+
                     return;
                 }
 
@@ -576,7 +594,7 @@ namespace OpenSim.Region.Framework.Scenes
                     string.Format(
                         "[AGENT INVENTORY]: Error in SendInventoryAsync() for {0} with folder ID {1}.  Exception  ", e, folderID));
             }
-            Thread.Sleep(50);
+            Thread.Sleep(20);
         }
 
         void SendInventoryComplete(IAsyncResult iar)
@@ -636,6 +654,9 @@ namespace OpenSim.Region.Framework.Scenes
         public void HandleUpdateInventoryFolder(IClientAPI remoteClient, UUID folderID, ushort type, string name,
                                                 UUID parentID)
         {
+//            m_log.DebugFormat(
+//                "[AGENT INVENTORY]: Updating inventory folder {0} {1} for {2} {3}", folderID, name, remoteClient.Name, remoteClient.AgentId);
+
             InventoryFolderBase folder = InventoryService.GetFolder(remoteClient.AgentId, folderID);
             if (folder != null)
             {
@@ -692,7 +713,7 @@ namespace OpenSim.Region.Framework.Scenes
         {
             InventoryFolderBase folder = new InventoryFolderBase(folderID, userID);
 
-            try
+           try
             {
                 if (InventoryService.PurgeFolder(folder))
                     m_log.DebugFormat("[AGENT INVENTORY]: folder {0} purged successfully", folderID);

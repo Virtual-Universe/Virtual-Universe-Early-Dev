@@ -1,5 +1,4 @@
-/* 10 January 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -49,8 +48,8 @@ namespace OpenSim.Region.ClientStack.Linden
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "MeshUploadFlagModule")]
     public class MeshUploadFlagModule : INonSharedRegionModule
     {
-        //        private static readonly ILog m_log =
-        //            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+//        private static readonly ILog m_log =
+//            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// Is this module enabled?
@@ -127,18 +126,18 @@ namespace OpenSim.Region.ClientStack.Linden
 
         private Hashtable MeshUploadFlag(Hashtable mDhttpMethod, UUID agentID)
         {
-            //            m_log.DebugFormat("[MESH UPLOAD FLAG MODULE]: MeshUploadFlag request");
+//            m_log.DebugFormat("[MESH UPLOAD FLAG MODULE]: MeshUploadFlag request");
 
             OSDMap data = new OSDMap();
-            //    	    ScenePresence sp = m_scene.GetScenePresence(m_agentID);
-            //    	    data["username"] = sp.Firstname + "." + sp.Lastname;
-            //    	    data["display_name_next_update"] = new OSDDate(DateTime.Now);
-            //    	    data["legacy_first_name"] = sp.Firstname;
+//    	    ScenePresence sp = m_scene.GetScenePresence(m_agentID);
+//    	    data["username"] = sp.Firstname + "." + sp.Lastname;
+//    	    data["display_name_next_update"] = new OSDDate(DateTime.Now);
+//    	    data["legacy_first_name"] = sp.Firstname;
             data["mesh_upload_status"] = "valid";
-            //    	    data["display_name"] = sp.Firstname + " " + sp.Lastname;
-            //    	    data["legacy_last_name"] = sp.Lastname;
-            //    	    data["id"] = m_agentID;
-            //    	    data["is_display_name_default"] = true;
+//    	    data["display_name"] = sp.Firstname + " " + sp.Lastname;
+//    	    data["legacy_last_name"] = sp.Lastname;
+//    	    data["id"] = m_agentID;
+//    	    data["is_display_name_default"] = true;
 
             //Send back data
             Hashtable responsedata = new Hashtable();

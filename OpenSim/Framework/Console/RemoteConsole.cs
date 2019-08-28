@@ -1,5 +1,4 @@
-/* 10 January 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -47,6 +46,8 @@ namespace OpenSim.Framework.Console
     //
     public class RemoteConsole : CommandConsole
     {
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
         // Connection specific data, indexed by a session ID
         // we create when a client connects.
         protected class ConsoleConnection
@@ -154,7 +155,7 @@ namespace OpenSim.Framework.Console
             m_expireTimer.Start();
         }
 
-        public void ReadConfig(IConfigSource config)
+        public override void ReadConfig(IConfigSource config)
         {
             m_Config = config;
 
@@ -189,13 +190,19 @@ namespace OpenSim.Framework.Console
             m_Server.AddHTTPHandler("/SessionCommand/", HandleHttpSessionCommand);
         }
 
-        public override void Output(string text, string level)
+        public override void Output(string format, string level = null, params object[] components)
         {
-            Output(text, level, false, false, false);
+            if (components.Length == 0)
+                Output(format, level, false, false, false);
+            else
+                Output(String.Format(format, components), level, false, false, false);
         }
 
         protected void Output(string text, string level, bool isPrompt, bool isCommand, bool isInput)
         {
+            if (level == null)
+                level = String.Empty;
+
             // Increment the line number. It was 0 and they start at 1
             // so we need to pre-increment.
             m_lineNumber++;
@@ -227,12 +234,6 @@ namespace OpenSim.Framework.Console
 
             // Also display it for debugging.
             System.Console.WriteLine(text.Trim());
-        }
-
-        public override void Output(string text)
-        {
-            // Output plain (non-logging style) text.
-            Output(text, String.Empty, false, false, false);
         }
 
         public override string ReadLine(string p, bool isCommand, bool e)
@@ -404,7 +405,7 @@ namespace OpenSim.Framework.Console
             string uri = "/ReadResponses/" + sessionID.ToString() + "/";
 
             m_Server.AddPollServiceHTTPHandler(
-                uri, new PollServiceEventArgs(null, uri, HasEvents, GetEvents, NoEvents, null, sessionID, 25000)); // 25 secs timeout
+                uri, new PollServiceEventArgs(null, uri, HasEvents, GetEvents, NoEvents, null, sessionID,25000)); // 25 secs timeout
 
             // Our reply is an XML document.
             // TODO: Change this to Linq.Xml
@@ -688,7 +689,6 @@ namespace OpenSim.Framework.Console
             result["int_response_code"] = 200;
             result["content_type"] = "application/xml";
             result["keepalive"] = false;
-            result["reusecontext"] = false;
             result = CheckOrigin(result);
 
             return result;
@@ -714,7 +714,6 @@ namespace OpenSim.Framework.Console
             result["int_response_code"] = 200;
             result["content_type"] = "text/xml";
             result["keepalive"] = false;
-            result["reusecontext"] = false;
             result = CheckOrigin(result);
 
             return result;

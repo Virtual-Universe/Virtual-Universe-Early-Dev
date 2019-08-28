@@ -26,6 +26,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
@@ -86,29 +87,28 @@ namespace OpenSim.Services.UserAccountService
 
             m_CreateDefaultAvatarEntries = userConfig.GetBoolean("CreateDefaultAvatarEntries", false);
 
-                //  create a system grid god account
-            UserAccount ggod = GetUserAccount(UUID.Zero, UUID_GRID_GOD);
-            if(ggod == null)
-            {
-                UserAccountData d = new UserAccountData();
-
-                d.FirstName = "GRID";
-                d.LastName = "SERVICES";
-                d.PrincipalID = UUID_GRID_GOD;
-                d.ScopeID = UUID.Zero;
-                d.Data = new Dictionary<string, string>();
-                d.Data["Email"] = string.Empty;
-                d.Data["Created"] = Util.UnixTimeSinceEpoch().ToString();
-                d.Data["UserLevel"] = "240";
-                d.Data["UserFlags"] = "0";
-                d.Data["ServiceURLs"] = string.Empty;
-
-                m_Database.Store(d);
-            }
-
             if (m_RootInstance == null)
             {
                 m_RootInstance = this;
+
+                //  create a system grid god account
+                UserAccount ggod = GetUserAccount(UUID.Zero, UUID_GRID_GOD);
+                if(ggod == null)
+                {
+                    UserAccountData d = new UserAccountData();
+                    d.FirstName = "GRID";
+                    d.LastName = "SERVICES";
+                    d.PrincipalID = UUID_GRID_GOD;
+                    d.ScopeID = UUID.Zero;
+                    d.Data = new Dictionary<string, string>();
+                    d.Data["Email"] = string.Empty;
+                    d.Data["Created"] = Util.UnixTimeSinceEpoch().ToString();
+                    d.Data["UserLevel"] = "240";
+                    d.Data["UserFlags"] = "0";
+                    d.Data["ServiceURLs"] = string.Empty;
+
+                    m_Database.Store(d);
+                }
 
                 // In case there are several instances of this class in the same process,
                 // the console commands are only registered for the root instance
@@ -293,15 +293,8 @@ namespace OpenSim.Services.UserAccountService
 
         public List<UserAccount> GetUserAccounts(UUID scopeID, List<string> IDs)
         {
-            // do it one at a time db access should be fast, so no need to break its api
-            List<UserAccount> accs = new List<UserAccount>();
-            UUID uuid = UUID.Zero;
-            foreach(string id in IDs)
-            {
-                if (UUID.TryParse(id, out uuid) && uuid != UUID.Zero)
-                    accs.Add(GetUserAccount(scopeID, uuid));
-            }
-            return accs;
+            UserAccountData[] ret = m_Database.GetUsersWhere(scopeID, "PrincipalID in ('" + String.Join("', '", IDs) + "')");
+            return new List<UserAccount>(ret.Select((x) => MakeUserAccount(x)));
         }
 
         public void InvalidateCache(UUID userID)
@@ -389,36 +382,38 @@ namespace OpenSim.Services.UserAccountService
             string rawPrincipalId;
             string model;
 
-            List<char> excluded = new List<char>(new char[]{' '});
-
+           // List<char> excluded = new List<char>(new char[]{' '});
+            List<char> excluded = new List<char>(new char[]{' ', '@', '.', ':' }); //Protect user names from using valid HG identifiers.
             if (cmdparams.Length < 3)
-                firstName = MainConsole.Instance.CmdPrompt("First name", "Default", excluded);
+                firstName = MainConsole.Instance.Prompt("First name", "Default", excluded);
             else firstName = cmdparams[2];
 
             if (cmdparams.Length < 4)
-                lastName = MainConsole.Instance.CmdPrompt("Last name", "User", excluded);
+                lastName = MainConsole.Instance.Prompt("Last name", "User", excluded);
             else lastName = cmdparams[3];
 
             if (cmdparams.Length < 5)
-                password = MainConsole.Instance.PasswdPrompt("Password");
+                password = MainConsole.Instance.Prompt("Password", null, null, false);
             else password = cmdparams[4];
 
             if (cmdparams.Length < 6)
-                email = MainConsole.Instance.CmdPrompt("Email", "");
+                email = MainConsole.Instance.Prompt("Email", "");
             else email = cmdparams[5];
 
             if (cmdparams.Length < 7)
-                rawPrincipalId = MainConsole.Instance.CmdPrompt("User ID", UUID.Random().ToString());
+                rawPrincipalId = MainConsole.Instance.Prompt("User ID (enter for random)", "");
             else
                 rawPrincipalId = cmdparams[6];
 
             if (cmdparams.Length < 8)
-                model = MainConsole.Instance.CmdPrompt("Model name","");
+                model = MainConsole.Instance.Prompt("Model name","");
             else
                 model = cmdparams[7];
 
             UUID principalId = UUID.Zero;
-            if (!UUID.TryParse(rawPrincipalId, out principalId))
+            if(String.IsNullOrWhiteSpace(rawPrincipalId))
+                principalId = UUID.Random();
+            else if (!UUID.TryParse(rawPrincipalId, out principalId))
                 throw new Exception(string.Format("ID {0} is not a valid UUID", rawPrincipalId));
 
             CreateUser(UUID.Zero, principalId, firstName, lastName, password, email, model);
@@ -439,19 +434,19 @@ namespace OpenSim.Services.UserAccountService
 
             if (ua == null)
             {
-                MainConsole.Instance.OutputFormat("No user named {0} {1}", firstName, lastName);
+                MainConsole.Instance.Output("No user named {0} {1}", null, firstName, lastName);
                 return;
             }
 
-            MainConsole.Instance.OutputFormat("Name:    {0}", ua.Name);
-            MainConsole.Instance.OutputFormat("ID:      {0}", ua.PrincipalID);
-            MainConsole.Instance.OutputFormat("Title:   {0}", ua.UserTitle);
-            MainConsole.Instance.OutputFormat("E-mail:  {0}", ua.Email);
-            MainConsole.Instance.OutputFormat("Created: {0}", Utils.UnixTimeToDateTime(ua.Created));
-            MainConsole.Instance.OutputFormat("Level:   {0}", ua.UserLevel);
-            MainConsole.Instance.OutputFormat("Flags:   {0}", ua.UserFlags);
+            MainConsole.Instance.Output("Name:    {0}", null, ua.Name);
+            MainConsole.Instance.Output("ID:      {0}", null, ua.PrincipalID);
+            MainConsole.Instance.Output("Title:   {0}", null, ua.UserTitle);
+            MainConsole.Instance.Output("E-mail:  {0}", null, ua.Email);
+            MainConsole.Instance.Output("Created: {0}", null, Utils.UnixTimeToDateTime(ua.Created));
+            MainConsole.Instance.Output("Level:   {0}", null, ua.UserLevel);
+            MainConsole.Instance.Output("Flags:   {0}", null, ua.UserFlags);
             foreach (KeyValuePair<string, Object> kvp in ua.ServiceURLs)
-                MainConsole.Instance.OutputFormat("{0}: {1}", kvp.Key, kvp.Value);
+                MainConsole.Instance.Output("{0}: {1}", null, kvp.Key, kvp.Value);
         }
 
         protected void HandleResetUserPassword(string module, string[] cmdparams)
@@ -461,21 +456,21 @@ namespace OpenSim.Services.UserAccountService
             string newPassword;
 
             if (cmdparams.Length < 4)
-                firstName = MainConsole.Instance.CmdPrompt("First name");
+                firstName = MainConsole.Instance.Prompt("First name");
             else firstName = cmdparams[3];
 
             if (cmdparams.Length < 5)
-                lastName = MainConsole.Instance.CmdPrompt("Last name");
+                lastName = MainConsole.Instance.Prompt("Last name");
             else lastName = cmdparams[4];
 
             if (cmdparams.Length < 6)
-                newPassword = MainConsole.Instance.PasswdPrompt("New password");
+                newPassword = MainConsole.Instance.Prompt("New password", null, null, false);
             else newPassword = cmdparams[5];
 
             UserAccount account = GetUserAccount(UUID.Zero, firstName, lastName);
             if (account == null)
             {
-                MainConsole.Instance.OutputFormat("No such user as {0} {1}", firstName, lastName);
+                MainConsole.Instance.Output("No such user as {0} {1}", null, firstName, lastName);
                 return;
             }
 
@@ -484,9 +479,9 @@ namespace OpenSim.Services.UserAccountService
                 success = m_AuthenticationService.SetPassword(account.PrincipalID, newPassword);
 
             if (!success)
-                MainConsole.Instance.OutputFormat("Unable to reset password for account {0} {1}.", firstName, lastName);
+                MainConsole.Instance.Output("Unable to reset password for account {0} {1}.", null, firstName, lastName);
             else
-                MainConsole.Instance.OutputFormat("Password reset for user {0} {1}", firstName, lastName);
+                MainConsole.Instance.Output("Password reset for user {0} {1}", null, firstName, lastName);
         }
 
         protected void HandleResetUserEmail(string module, string[] cmdparams)
@@ -496,21 +491,21 @@ namespace OpenSim.Services.UserAccountService
             string newEmail;
 
             if (cmdparams.Length < 4)
-                firstName = MainConsole.Instance.CmdPrompt("First name");
+                firstName = MainConsole.Instance.Prompt("First name");
             else firstName = cmdparams[3];
 
             if (cmdparams.Length < 5)
-                lastName = MainConsole.Instance.CmdPrompt("Last name");
+                lastName = MainConsole.Instance.Prompt("Last name");
             else lastName = cmdparams[4];
 
             if (cmdparams.Length < 6)
-                newEmail = MainConsole.Instance.PasswdPrompt("New Email");
+                newEmail = MainConsole.Instance.Prompt("New Email");
             else newEmail = cmdparams[5];
 
             UserAccount account = GetUserAccount(UUID.Zero, firstName, lastName);
             if (account == null)
             {
-                MainConsole.Instance.OutputFormat("No such user as {0} {1}", firstName, lastName);
+                MainConsole.Instance.Output("No such user as {0} {1}", null, firstName, lastName);
                 return;
             }
 
@@ -520,9 +515,9 @@ namespace OpenSim.Services.UserAccountService
 
             success = StoreUserAccount(account);
             if (!success)
-                MainConsole.Instance.OutputFormat("Unable to set Email for account {0} {1}.", firstName, lastName);
+                MainConsole.Instance.Output("Unable to set Email for account {0} {1}.", null, firstName, lastName);
             else
-                MainConsole.Instance.OutputFormat("User Email set for user {0} {1} to {2}", firstName, lastName, account.Email);
+                MainConsole.Instance.Output("User Email set for user {0} {1} to {2}", null, firstName, lastName, account.Email);
         }
 
 
@@ -534,25 +529,25 @@ namespace OpenSim.Services.UserAccountService
             int level;
 
             if (cmdparams.Length < 4)
-                firstName = MainConsole.Instance.CmdPrompt("First name");
+                firstName = MainConsole.Instance.Prompt("First name");
             else firstName = cmdparams[3];
 
             if (cmdparams.Length < 5)
-                lastName = MainConsole.Instance.CmdPrompt("Last name");
+                lastName = MainConsole.Instance.Prompt("Last name");
             else lastName = cmdparams[4];
 
             UserAccount account = GetUserAccount(UUID.Zero, firstName, lastName);
             if (account == null) {
-                MainConsole.Instance.OutputFormat("No such user");
+                MainConsole.Instance.Output("No such user");
                 return;
             }
 
             if (cmdparams.Length < 6)
-                rawLevel = MainConsole.Instance.CmdPrompt("User level");
+                rawLevel = MainConsole.Instance.Prompt("User level");
             else rawLevel = cmdparams[5];
 
             if(int.TryParse(rawLevel, out level) == false) {
-                MainConsole.Instance.OutputFormat("Invalid user level");
+                MainConsole.Instance.Output("Invalid user level");
                 return;
             }
 
@@ -560,9 +555,9 @@ namespace OpenSim.Services.UserAccountService
 
             bool success = StoreUserAccount(account);
             if (!success)
-                MainConsole.Instance.OutputFormat("Unable to set user level for account {0} {1}.", firstName, lastName);
+                MainConsole.Instance.Output("Unable to set user level for account {0} {1}.", null, firstName, lastName);
             else
-                MainConsole.Instance.OutputFormat("User level set for user {0} {1} to {2}", firstName, lastName, level);
+                MainConsole.Instance.Output("User level set for user {0} {1} to {2}", null, firstName, lastName, level);
         }
 
         #endregion
@@ -847,19 +842,24 @@ namespace OpenSim.Services.UserAccountService
         /// </summary>
         private void CopyWearablesAndAttachments(UUID destination, UUID source, AvatarAppearance avatarAppearance)
         {
+
+            AvatarWearable[] wearables = avatarAppearance.Wearables;
+            if(wearables.Length == 0)
+                throw new Exception("Model does not have wearables");
+
             // Get Clothing folder of receiver
             InventoryFolderBase destinationFolder = m_InventoryService.GetFolderForType(destination, FolderType.Clothing);
+
+            if (destinationFolder == null)
+                throw new Exception("Cannot locate new clothing folder(s)");
+
             // Get Current Outfit folder
             InventoryFolderBase currentOutfitFolder = m_InventoryService.GetFolderForType(destination, FolderType.CurrentOutfit);
 
-            if (destinationFolder == null)
-                throw new Exception("Cannot locate folder(s)");
-
-            // Missing destination folder? This should *never* be the case
+            // wrong destination folder type?  create new
             if (destinationFolder.Type != (short)FolderType.Clothing)
             {
                 destinationFolder = new InventoryFolderBase();
-
                 destinationFolder.ID       = UUID.Random();
                 destinationFolder.Name     = "Clothing";
                 destinationFolder.Owner    = destination;
@@ -867,67 +867,86 @@ namespace OpenSim.Services.UserAccountService
                 destinationFolder.ParentID = m_InventoryService.GetRootFolder(destination).ID;
                 destinationFolder.Version  = 1;
                 m_InventoryService.AddFolder(destinationFolder);     // store base record
-                m_log.ErrorFormat("[USER ACCOUNT SERVICE]: Created folder for destination {0}", source);
+                m_log.ErrorFormat("[USER ACCOUNT SERVICE]: Created folder for destination {0} Clothing", source);
             }
 
             // Wearables
-            AvatarWearable[] wearables = avatarAppearance.Wearables;
-            AvatarWearable wearable;
+            AvatarWearable basewearable;
+            WearableItem wearable;
 
+            AvatarWearable newbasewearable = new AvatarWearable();
+            // copy wearables creating new inventory entries
             for (int i = 0; i < wearables.Length; i++)
             {
-                wearable = wearables[i];
-                m_log.DebugFormat("[XXX]: Getting item {0} from avie {1}", wearable[0].ItemID, source);
-                if (wearable[0].ItemID != UUID.Zero)
+                basewearable = wearables[i];
+                if(basewearable == null || basewearable.Count == 0)
+                    continue;
+
+                newbasewearable.Clear();
+                for(int j = 0; j < basewearable.Count; j++)
                 {
-                    // Get inventory item and copy it
-                    InventoryItemBase item = m_InventoryService.GetItem(source, wearable[0].ItemID);
-
-                    if (item != null)
+                    wearable = basewearable[j];
+                    if (wearable.ItemID != UUID.Zero)
                     {
-                        InventoryItemBase destinationItem = new InventoryItemBase(UUID.Random(), destination);
-                        destinationItem.Name = item.Name;
-                        destinationItem.Owner = destination;
-                        destinationItem.Description = item.Description;
-                        destinationItem.InvType = item.InvType;
-                        destinationItem.CreatorId = item.CreatorId;
-                        destinationItem.CreatorData = item.CreatorData;
-                        destinationItem.NextPermissions = item.NextPermissions;
-                        destinationItem.CurrentPermissions = item.CurrentPermissions;
-                        destinationItem.BasePermissions = item.BasePermissions;
-                        destinationItem.EveryOnePermissions = item.EveryOnePermissions;
-                        destinationItem.GroupPermissions = item.GroupPermissions;
-                        destinationItem.AssetType = item.AssetType;
-                        destinationItem.AssetID = item.AssetID;
-                        destinationItem.GroupID = item.GroupID;
-                        destinationItem.GroupOwned = item.GroupOwned;
-                        destinationItem.SalePrice = item.SalePrice;
-                        destinationItem.SaleType = item.SaleType;
-                        destinationItem.Flags = item.Flags;
-                        destinationItem.CreationDate = item.CreationDate;
-                        destinationItem.Folder = destinationFolder.ID;
-                        ApplyNextOwnerPermissions(destinationItem);
+                        m_log.DebugFormat("[XXX]: Getting item {0} from avie {1} for {2} {3}",
+                            wearable.ItemID, source, i, j);
+                        // Get inventory item and copy it
+                        InventoryItemBase item = m_InventoryService.GetItem(source, wearable.ItemID);
 
-                        m_InventoryService.AddItem(destinationItem);
-                        m_log.DebugFormat("[USER ACCOUNT SERVICE]: Added item {0} to folder {1}", destinationItem.ID, destinationFolder.ID);
+                        if(item != null && item.AssetType == (int)AssetType.Link)
+                        {
+                            if(item.AssetID == UUID.Zero )
+                                item = null;
+                            else
+                              item = m_InventoryService.GetItem(source, item.AssetID);
+                        }
 
-                        // Wear item
-                        AvatarWearable newWearable = new AvatarWearable();
-                        newWearable.Wear(destinationItem.ID, wearable[0].AssetID);
-                        avatarAppearance.SetWearable(i, newWearable);
+                        if (item != null)
+                        {
+                            InventoryItemBase destinationItem = new InventoryItemBase(UUID.Random(), destination);
+                            destinationItem.Name = item.Name;
+                            destinationItem.Owner = destination;
+                            destinationItem.Description = item.Description;
+                            destinationItem.InvType = item.InvType;
+                            destinationItem.CreatorId = item.CreatorId;
+                            destinationItem.CreatorData = item.CreatorData;
+                            destinationItem.NextPermissions = item.NextPermissions;
+                            destinationItem.CurrentPermissions = item.CurrentPermissions;
+                            destinationItem.BasePermissions = item.BasePermissions;
+                            destinationItem.EveryOnePermissions = item.EveryOnePermissions;
+                            destinationItem.GroupPermissions = item.GroupPermissions;
+                            destinationItem.AssetType = item.AssetType;
+                            destinationItem.AssetID = item.AssetID;
+                            destinationItem.GroupID = item.GroupID;
+                            destinationItem.GroupOwned = item.GroupOwned;
+                            destinationItem.SalePrice = item.SalePrice;
+                            destinationItem.SaleType = item.SaleType;
+                            destinationItem.Flags = item.Flags;
+                            destinationItem.CreationDate = item.CreationDate;
+                            destinationItem.Folder = destinationFolder.ID;
+                            ApplyNextOwnerPermissions(destinationItem);
 
-                        // Add to Current Outfit
-                        CreateCurrentOutfitLink((int)InventoryType.Wearable, item.Flags, item.Name, destinationItem.ID, destination, currentOutfitFolder.ID);
-                    }
-                    else
-                    {
-                        m_log.WarnFormat("[USER ACCOUNT SERVICE]: Error transferring {0} to folder {1}", wearable[0].ItemID, destinationFolder.ID);
+                            m_InventoryService.AddItem(destinationItem);
+                            m_log.DebugFormat("[USER ACCOUNT SERVICE]: Added item {0} to folder {1}", destinationItem.ID, destinationFolder.ID);
+
+                            // Wear item
+                            newbasewearable.Add(destinationItem.ID,wearable.AssetID);
+
+                            // Add to Current Outfit
+                            CreateCurrentOutfitLink((int)InventoryType.Wearable, item.Flags, item.Name, destinationItem.ID, destination, currentOutfitFolder.ID);
+                        }
+                        else
+                        {
+                            m_log.WarnFormat("[USER ACCOUNT SERVICE]: Error transferring {0} to folder {1}", wearable.ItemID, destinationFolder.ID);
+                        }
                     }
                 }
+                avatarAppearance.SetWearable(i, newbasewearable);
             }
 
             // Attachments
             List<AvatarAttachment> attachments = avatarAppearance.GetAttachments();
+            avatarAppearance.ClearAttachments();
 
             foreach (AvatarAttachment attachment in attachments)
             {

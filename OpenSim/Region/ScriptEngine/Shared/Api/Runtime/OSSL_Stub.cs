@@ -1,5 +1,4 @@
-/* 30 September 2018
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -117,6 +116,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             return m_OSSL_Functions.osGetWindParam(plugin, param);
         }
 
+        public LSL_Integer osGetParcelDwell(vector pos)
+        {
+            return m_OSSL_Functions.osGetParcelDwell(pos);
+        }
+
         public void osParcelJoin(vector pos1, vector pos2)
         {
             m_OSSL_Functions.osParcelJoin(pos1,pos2);
@@ -135,11 +139,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
         public void osParcelSetDetails(vector pos, LSL_List rules)
         {
             m_OSSL_Functions.osParcelSetDetails(pos,rules);
-        }
-
-        public double osList2Double(LSL_Types.list src, int index)
-        {
-            return m_OSSL_Functions.osList2Double(src, index);
         }
 
         public string osSetDynamicTextureURL(string dynamicID, string contentType, string url, string extraParams,
@@ -226,6 +225,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             m_OSSL_Functions.osRegionNotice(msg);
         }
 
+        public void osRegionNotice(LSL_Key agentID, string msg)
+        {
+            m_OSSL_Functions.osRegionNotice(agentID, msg);
+        }
+
         public bool osConsoleCommand(string Command)
         {
             return m_OSSL_Functions.osConsoleCommand(Command);
@@ -247,6 +251,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
         }
 
         // Teleport Functions
+
+        public void osLocalTeleportAgent(LSL_Key agent, vector position, vector velocity, vector lookat, LSL_Integer flags)
+        {
+            m_OSSL_Functions.osLocalTeleportAgent(agent, position, velocity, lookat, flags);
+        }
 
         public void osTeleportAgent(string agent, string regionName, vector position, vector lookat)
         {
@@ -290,12 +299,12 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
 
         // Animation Functions
 
-        public void osAvatarPlayAnimation(string avatar, string animation)
+        public void osAvatarPlayAnimation(LSL_Key avatar, string animation)
         {
             m_OSSL_Functions.osAvatarPlayAnimation(avatar, animation);
         }
 
-        public void osAvatarStopAnimation(string avatar, string animation)
+        public void osAvatarStopAnimation(LSL_Key avatar, string animation)
         {
             m_OSSL_Functions.osAvatarStopAnimation(avatar, animation);
         }
@@ -475,16 +484,6 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
         public string osGetSimulatorVersion()
         {
            return m_OSSL_Functions.osGetSimulatorVersion();
-        }
-
-        public Hashtable osParseJSON(string JSON)
-        {
-            return m_OSSL_Functions.osParseJSON(JSON);
-        }
-
-        public Object osParseJSONNew(string JSON)
-        {
-            return m_OSSL_Functions.osParseJSONNew(JSON);
         }
 
         public void osMessageObject(key objectUUID,string message)
@@ -694,6 +693,10 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             m_OSSL_Functions.osNpcSay(npc, channel, message);
         }
 
+        public void osNpcSayTo(LSL_Key npc, LSL_Key target, int channel, string msg)
+        {
+            m_OSSL_Functions.osNpcSayTo(npc, target, channel, msg);
+        }
 
         public void osNpcShout(key npc, int channel, string message)
         {
@@ -942,9 +945,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             return m_OSSL_Functions.osGetMapTexture();
         }
 
-        public key osGetRegionMapTexture(string regionName)
+        public key osGetRegionMapTexture(string regionNameOrID)
         {
-            return m_OSSL_Functions.osGetRegionMapTexture(regionName);
+            return m_OSSL_Functions.osGetRegionMapTexture(regionNameOrID);
         }
 
         public LSL_List osGetRegionStats()
@@ -972,42 +975,52 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             return m_OSSL_Functions.osGetSimulatorMemoryKB();
         }
 
-        public void osKickAvatar(string FirstName,string SurName,string alert)
+        public void osKickAvatar(string FirstName, string SurName, string alert)
         {
             m_OSSL_Functions.osKickAvatar(FirstName, SurName, alert);
+        }
+
+        public void osKickAvatar(LSL_Key agentId, string alert)
+        {
+            m_OSSL_Functions.osKickAvatar(agentId, alert);
         }
 
         public void osSetSpeed(string UUID, LSL_Float SpeedModifier)
         {
             m_OSSL_Functions.osSetSpeed(UUID, SpeedModifier);
         }
+        
+        public void osSetOwnerSpeed(LSL_Float SpeedModifier)
+        {
+            m_OSSL_Functions.osSetOwnerSpeed(SpeedModifier);
+        }
 
-        public LSL_Float osGetHealth(string avatar)
+        public LSL_Float osGetHealth(key avatar)
         {
             return m_OSSL_Functions.osGetHealth(avatar);
         }
 
-        public void osCauseDamage(string avatar, double damage)
+        public void osCauseDamage(key avatar, LSL_Float damage)
         {
             m_OSSL_Functions.osCauseDamage(avatar, damage);
         }
 
-        public void osCauseHealing(string avatar, double healing)
+        public void osCauseHealing(key avatar, LSL_Float healing)
         {
             m_OSSL_Functions.osCauseHealing(avatar, healing);
         }
 
-        public void osSetHealth(string avatar, double health)
+        public void osSetHealth(key avatar, LSL_Float health)
         {
             m_OSSL_Functions.osSetHealth(avatar, health);
         }
 
-        public void osSetHealRate(string avatar, double health)
+        public void osSetHealRate(key avatar, LSL_Float health)
         {
             m_OSSL_Functions.osSetHealRate(avatar, health);
         }
 
-        public LSL_Float osGetHealRate(string avatar)
+        public LSL_Float osGetHealRate(key avatar)
         {
             return m_OSSL_Functions.osGetHealRate(avatar);
         }
@@ -1032,14 +1045,19 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             m_OSSL_Functions.osSetPrimitiveParams(prim, rules);
         }
 
-        public void osSetProjectionParams(bool projection, LSL_Key texture, double fov, double focus, double amb)
+        public void osSetProjectionParams(LSL_Integer projection, LSL_Key texture, double fov, double focus, double amb)
         {
             m_OSSL_Functions.osSetProjectionParams(projection, texture, fov, focus, amb);
         }
 
-        public void osSetProjectionParams(LSL_Key prim, bool projection, LSL_Key texture, double fov, double focus, double amb)
+        public void osSetProjectionParams(LSL_Key prim, LSL_Integer projection, LSL_Key texture, double fov, double focus, double amb)
         {
             m_OSSL_Functions.osSetProjectionParams(prim, projection, texture, fov, focus, amb);
+        }
+
+        public void osSetProjectionParams(LSL_Integer linknumber, LSL_Integer projection, LSL_Key texture, LSL_Float fov, LSL_Float focus, LSL_Float amb)
+        {
+            m_OSSL_Functions.osSetProjectionParams(linknumber, projection, texture, fov, focus, amb);
         }
 
         public LSL_List osGetAvatarList()
@@ -1052,14 +1070,9 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             return m_OSSL_Functions.osGetNPCList();
         }
 
-        public LSL_String osUnixTimeToTimestamp(long time)
+        public LSL_String osUnixTimeToTimestamp(LSL_Integer time)
         {
             return m_OSSL_Functions.osUnixTimeToTimestamp(time);
-        }
-
-        public LSL_String osGetInventoryDesc(string item)
-        {
-            return m_OSSL_Functions.osGetInventoryDesc(item);
         }
 
         public LSL_Integer osInviteToGroup(LSL_Key agentId)
@@ -1197,29 +1210,202 @@ namespace OpenSim.Region.ScriptEngine.Shared.ScriptBase
             return m_OSSL_Functions.osGetLinkNumber(name);
         }
 
-        public LSL_Key osGetBakedTexture(LSL_Key user, int bake)
+        public LSL_Float osRound(LSL_Float value, LSL_Integer digits)
         {
-            return m_OSSL_Functions.osGetBakedTexture(user, bake);
+            return m_OSSL_Functions.osRound(value, digits);
         }
 
-        public LSL_Key osGetBakedTexture(LSL_Key user, int bake, LSL_String texturename)
+        public LSL_Float osVecMagSquare(vector a)
         {
-            return m_OSSL_Functions.osGetBakedTexture(user, bake, texturename);
+            return m_OSSL_Functions.osVecMagSquare(a);
         }
 
-        public LSL_Key osGetBakedTexture(LSL_Key user, int bake, bool saveininventory)
+        public LSL_Float osVecDistSquare(vector a, vector b)
         {
-            return m_OSSL_Functions.osGetBakedTexture(user, bake, saveininventory);
+            return m_OSSL_Functions.osVecDistSquare(a, b);
         }
 
-        public LSL_Key osGetBakedTexture(LSL_Key user, int bake, bool saveininventory, LSL_String texturename)
+        public LSL_Float osAngleBetween(vector a, vector b)
         {
-            return m_OSSL_Functions.osGetBakedTexture(user, bake, saveininventory, texturename);
+            return m_OSSL_Functions.osAngleBetween(a, b);
         }
 
-        public void osShortSit(LSL_Key user)
+        public void osAdjustSoundVolume(LSL_Integer linknum, LSL_Float volume)
         {
-            m_OSSL_Functions.osShortSit(user);
+            m_OSSL_Functions.osAdjustSoundVolume(linknum, volume);
         }
+
+        public void osSetSoundRadius(LSL_Integer linknum, LSL_Float radius)
+        {
+            m_OSSL_Functions.osSetSoundRadius(linknum, radius);
+        }
+
+        public void osPlaySound(LSL_Integer linknum, LSL_String sound, LSL_Float volume)
+        {
+            m_OSSL_Functions.osPlaySound(linknum, sound, volume);
+        }
+
+        public void osLoopSound(LSL_Integer linknum, LSL_String sound, LSL_Float volume)
+        {
+            m_OSSL_Functions.osLoopSound(linknum, sound, volume);
+        }
+
+        public void osLoopSoundMaster(LSL_Integer linknum, LSL_String sound, LSL_Float volume)
+        {
+            m_OSSL_Functions.osLoopSoundMaster(linknum, sound, volume);
+        }
+
+        public void osLoopSoundSlave(LSL_Integer linknum, LSL_String sound, LSL_Float volume)
+        {
+            m_OSSL_Functions.osLoopSoundSlave(linknum, sound, volume);
+        }
+
+        public void osPlaySoundSlave(LSL_Integer linknum, LSL_String sound, LSL_Float volume)
+        {
+            m_OSSL_Functions.osPlaySoundSlave(linknum, sound, volume);
+        }
+
+        public void osTriggerSound(LSL_Integer linknum, LSL_String sound, LSL_Float volume)
+        {
+            m_OSSL_Functions.osTriggerSound(linknum, sound, volume);
+        }
+
+        public void osTriggerSoundLimited(LSL_Integer linknum, LSL_String sound, LSL_Float volume,
+                 vector top_north_east, vector bottom_south_west)
+        {
+            m_OSSL_Functions.osTriggerSoundLimited(linknum, sound, volume,
+                                            top_north_east, bottom_south_west);
+        }
+
+        public void osStopSound(LSL_Integer linknum)
+        {
+            m_OSSL_Functions.osStopSound(linknum);
+        }
+
+        public void osPreloadSound(LSL_Integer linknum, LSL_String sound)
+        {
+            m_OSSL_Functions.osPreloadSound(linknum, sound);
+        }
+
+        public LSL_String osDetectedCountry(LSL_Integer number)
+        {
+            return m_OSSL_Functions.osDetectedCountry(number);
+        }
+
+        public LSL_String osGetAgentCountry(LSL_Key agentId)
+        {
+            return m_OSSL_Functions.osGetAgentCountry(agentId);
+        }
+
+        public LSL_String osStringSubString(LSL_String src, LSL_Integer offset)
+        {
+            return m_OSSL_Functions.osStringSubString(src, offset);
+        }
+
+        public LSL_String osStringSubString(LSL_String src, LSL_Integer offset, LSL_Integer length)
+        {
+            return m_OSSL_Functions.osStringSubString(src, offset, length);
+        }
+
+        public LSL_Integer osStringStartsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringStartsWith(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringEndsWith(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringEndsWith(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringIndexOf(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringIndexOf(LSL_String src, LSL_String value, LSL_Integer offset, LSL_Integer count, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringIndexOf(src, value, offset, count, ignorecase);
+        }
+
+        public LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringLastIndexOf(src, value, ignorecase);
+        }
+
+        public LSL_Integer osStringLastIndexOf(LSL_String src, LSL_String value, LSL_Integer offset, LSL_Integer count, LSL_Integer ignorecase)
+        {
+            return m_OSSL_Functions.osStringLastIndexOf(src, value, offset, count, ignorecase);
+        }
+
+        public LSL_String osStringRemove(LSL_String src, LSL_Integer offset, LSL_Integer count)
+        {
+            return m_OSSL_Functions.osStringRemove(src, offset, count);
+        }
+
+        public LSL_String osStringReplace(LSL_String src, LSL_String oldvalue, LSL_String newvalue)
+        {
+            return m_OSSL_Functions.osStringReplace(src, oldvalue, newvalue);
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b)
+        {
+            return m_OSSL_Functions.osApproxEquals(a, b);
+        }
+
+        public LSL_Integer osApproxEquals(LSL_Float a, LSL_Float b, LSL_Float margin)
+        {
+            return m_OSSL_Functions.osApproxEquals(a, b, margin);
+        }
+
+        public LSL_Integer osApproxEquals(vector va, vector vb)
+        {
+            return m_OSSL_Functions.osApproxEquals(va, vb);
+        }
+
+        public LSL_Integer osApproxEquals(vector va, vector vb, LSL_Float margin)
+        {
+            return m_OSSL_Functions.osApproxEquals(va, vb, margin);
+        }
+
+        public LSL_Integer osApproxEquals(rotation ra, rotation rb)
+        {
+            return m_OSSL_Functions.osApproxEquals(ra, rb);
+        }
+
+        public LSL_Integer osApproxEquals(rotation ra, rotation rb, LSL_Float margin)
+        {
+            return m_OSSL_Functions.osApproxEquals(ra, rb, margin);
+        }
+
+        public LSL_Key osGetInventoryLastOwner(LSL_String itemNameOrId)
+        {
+            return m_OSSL_Functions.osGetInventoryLastOwner(itemNameOrId);
+        }
+
+        public LSL_Key osGetInventoryItemKey(LSL_String name)
+        {
+            return m_OSSL_Functions.osGetInventoryItemKey(name);
+        }
+
+        public LSL_String osGetInventoryName(LSL_Key itemId)
+        {
+            return m_OSSL_Functions.osGetInventoryName(itemId);
+        }
+
+        public LSL_String osGetInventoryDesc(LSL_String itemNameOrId)
+        {
+            return m_OSSL_Functions.osGetInventoryDesc(itemNameOrId);
+        }
+
+        public LSL_Key osGetLastChangedEventKey()
+        {
+            return m_OSSL_Functions.osGetLastChangedEventKey();
+        }
+
+        public LSL_Float osGetPSTWallclock()
+        {
+            return m_OSSL_Functions.osGetPSTWallclock();
+        }
+
     }
 }

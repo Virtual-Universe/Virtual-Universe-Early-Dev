@@ -1,5 +1,4 @@
-/* 7 March 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -182,7 +181,7 @@ namespace OpenSim.Region.Framework.Scenes
         private float m_timeDilation;
         private int m_fps;
 
-        private int m_statsFlag = 0;
+        private object m_statsLock = new object();
         private object m_statsFrameLock = new object();
 
         /// <summary>
@@ -257,7 +256,7 @@ namespace OpenSim.Region.Framework.Scenes
 
         private IEstateModule estateModule;
 
-        public SimStatsReporter(Scene scene)
+         public SimStatsReporter(Scene scene)
         {
             m_scene = scene;
 
@@ -339,8 +338,8 @@ namespace OpenSim.Region.Framework.Scenes
                 return;
 
             // dont do it if if still been done
-            // Set the flag.
-            if (0 == Interlocked.CompareExchange( ref m_statsFlag, 1, 0))
+
+            if(Monitor.TryEnter(m_statsLock))
             {
                 // m_log.Debug("Firing Stats Heart Beat");
 
@@ -557,7 +556,7 @@ namespace OpenSim.Region.Framework.Scenes
                 sb[27].StatID = (uint)Stats.PhysicsLodTasks;
                 sb[27].StatValue = 0;
 
-                sb[28].StatID = (uint)Stats.ScriptEps; // we actuall have this, but not messing array order AGAIN
+                sb[28].StatID = (uint)Stats.ScriptEps; // we actually have this, but not messing array order AGAIN
                 sb[28].StatValue = (float)Math.Round(m_scriptEventsPerSecond * updateTimeFactor);
 
                 sb[29].StatID = (uint)Stats.SimAIStepTimeMS;
@@ -591,6 +590,7 @@ namespace OpenSim.Region.Framework.Scenes
                 {
                     lastReportedSimStats[i] = sb[i].StatValue;
                 }
+
 
                 // add extra stats for internal use
 
@@ -662,9 +662,7 @@ namespace OpenSim.Region.Framework.Scenes
 
 //                LastReportedObjectUpdates = m_objectUpdates / m_statsUpdateFactor;
                 ResetValues();
-
-                // Release the flag.
-                Interlocked.Exchange(ref m_statsFlag, 0);
+                Monitor.Exit(m_statsLock);
             }
         }
 

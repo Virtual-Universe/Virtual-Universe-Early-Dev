@@ -125,7 +125,6 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
                 using (Font myFont = new Font(fontName, fontSize))
                 {
                     SizeF stringSize = new SizeF();
-
                     // XXX: This lock may be unnecessary.
                     lock (m_graph)
                     {
@@ -354,26 +353,23 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
                 // under lock.
                 lock (this)
                 {
+
+                    if (alpha == 256 && bgColor.A != 255)
+                        alpha = bgColor.A;
+
                     if (alpha == 256)
                     {
                         bitmap = new Bitmap(width, height, PixelFormat.Format32bppRgb);
                         graph = Graphics.FromImage(bitmap);
-                        using (SolidBrush bgFillBrush = new SolidBrush(bgColor))
-                        {
-                            graph.FillRectangle(bgFillBrush, 0, 0, width, height);
-                        }
-                    }                   
+                        graph.Clear(bgColor);
+                    }
                     else
                     {
+                        Color newbg = Color.FromArgb(alpha, bgColor);
                         bitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
                         graph = Graphics.FromImage(bitmap);
-                        Color newbg = Color.FromArgb(alpha,bgColor);
-                        using (SolidBrush bgFillBrush = new SolidBrush(newbg))
-                        {
-                            graph.FillRectangle(bgFillBrush, 0, 0, width, height);
-                        }
+                        graph.Clear(newbg);
                     }
-
                     GDIDraw(data, graph, altDataDelim, out reuseable);
                 }
 
@@ -389,7 +385,7 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
 
                 try
                 {
-                    imageJ2000 = OpenJPEG.EncodeFromImage(bitmap, true);
+                    imageJ2000 = OpenJPEG.EncodeFromImage(bitmap, false);
                 }
                 catch (Exception e)
                 {
@@ -507,10 +503,24 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
 
                 foreach (string line in GetLines(data, dataDelim))
                 {
-                    string nextLine = line.Trim();
+                    string nextLine = line.TrimStart();
 
 //                    m_log.DebugFormat("[VECTOR RENDER MODULE]: Processing line '{0}'", nextLine);
 
+                    if (nextLine.StartsWith("Text") && nextLine.Length > 5)
+                    {
+                        int start = 4;
+                        if (nextLine[4] == ' ')
+                            start++;
+                        if (start < nextLine.Length)
+                        {
+                            nextLine = nextLine.Substring(start);
+                            graph.DrawString(nextLine, myFont, myBrush, startPoint);
+                        }
+                        continue;
+                    }
+
+                    nextLine = nextLine.TrimEnd();
                     if (nextLine.StartsWith("ResetTransf"))
                     {
                         graph.ResetTransform();
@@ -554,12 +564,6 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
                         graph.DrawLine(drawPen, startPoint, endPoint);
                         startPoint.X = endPoint.X;
                         startPoint.Y = endPoint.Y;
-                    }
-                    else if (nextLine.StartsWith("Text"))
-                    {
-                        nextLine = nextLine.Remove(0, 4);
-                        nextLine = nextLine.Trim();
-                        graph.DrawString(nextLine, myFont, myBrush, startPoint);
                     }
                     else if (nextLine.StartsWith("Image"))
                     {
@@ -663,58 +667,38 @@ namespace OpenSim.Region.CoreModules.Scripting.VectorRender
                     }
                     else if (nextLine.StartsWith("FontProp"))
                     {
+                        FontStyle myFontStyle = myFont.Style;
+
                         nextLine = nextLine.Remove(0, 8);
                         nextLine = nextLine.Trim();
 
                         string[] fprops = nextLine.Split(partsDelimiter);
                         foreach (string prop in fprops)
                         {
-
                             switch (prop)
                             {
                                 case "B":
-                                    if (!(myFont.Bold))
-                                    {
-                                        Font newFont = new Font(myFont, myFont.Style | FontStyle.Bold);
-                                        myFont.Dispose();
-                                        myFont = newFont;
-                                    }
+                                    myFontStyle |= FontStyle.Bold;
                                     break;
                                 case "I":
-                                    if (!(myFont.Italic))
-                                    {
-                                        Font newFont = new Font(myFont, myFont.Style | FontStyle.Italic);
-                                        myFont.Dispose();
-                                        myFont = newFont;
-                                    }
+                                    myFontStyle |= FontStyle.Italic;
                                     break;
                                 case "U":
-                                    if (!(myFont.Underline))
-                                    {
-                                        Font newFont = new Font(myFont, myFont.Style | FontStyle.Underline);
-                                        myFont.Dispose();
-                                        myFont = newFont;
-                                    }
+                                    myFontStyle |= FontStyle.Underline;
                                     break;
                                 case "S":
-                                    if (!(myFont.Strikeout))
-                                    {
-                                        Font newFont = new Font(myFont, myFont.Style | FontStyle.Strikeout);
-                                        myFont.Dispose();
-                                        myFont = newFont;
-                                    }
+                                    myFontStyle |= FontStyle.Strikeout;
                                     break;
-                                case "R":
-                                    // We need to place this newFont inside its own context so that the .NET compiler
-                                    // doesn't complain about a redefinition of an existing newFont, even though there is none
-                                    // The mono compiler doesn't produce this error.
-                                    {
-                                        Font newFont = new Font(myFont, FontStyle.Regular);
-                                        myFont.Dispose();
-                                        myFont = newFont;
-                                    }
+                                case "R":   //This special case resets all font properties
+                                    myFontStyle = FontStyle.Regular;
                                     break;
                             }
+                        }
+                        if (myFontStyle != myFont.Style)
+                        {
+                            Font newFont = new Font(myFont, myFontStyle);
+                            myFont.Dispose();
+                            myFont = newFont;
                         }
                     }
                     else if (nextLine.StartsWith("FontName"))

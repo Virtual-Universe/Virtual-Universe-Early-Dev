@@ -1,5 +1,4 @@
-/* 28 March 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -28,8 +27,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
-using OpenSim.Framework;
+using OpenMetaverse;
+
+//using System.Reflection;
+//using log4net;
 
 namespace OpenSim.Region.ClientStack.LindenUDP
 {
@@ -65,11 +68,12 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         /// <summary>Holds the actual unacked packet data, sorted by sequence number</summary>
         private Dictionary<uint, OutgoingPacket> m_packets = new Dictionary<uint, OutgoingPacket>();
         /// <summary>Holds packets that need to be added to the unacknowledged list</summary>
-        private NSingleReaderCountlessQueue<OutgoingPacket> m_pendingAdds = new NSingleReaderCountlessQueue<OutgoingPacket>();
+        private LocklessQueue<OutgoingPacket> m_pendingAdds = new LocklessQueue<OutgoingPacket>();
         /// <summary>Holds information about pending acknowledgements</summary>
-        private NSingleReaderCountlessQueue<PendingAck> m_pendingAcknowledgements = new NSingleReaderCountlessQueue<PendingAck>();
+        private LocklessQueue<PendingAck> m_pendingAcknowledgements = new LocklessQueue<PendingAck>();
         /// <summary>Holds information about pending removals</summary>
-        private NSingleReaderCountlessQueue<uint> m_pendingRemoves = new NSingleReaderCountlessQueue<uint>();
+        private LocklessQueue<uint> m_pendingRemoves = new LocklessQueue<uint>();
+
 
         public void Clear()
         {
@@ -174,6 +178,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                 }
             }
 
+            // if (expiredPackets != null)
+            //     m_log.DebugFormat("[UNACKED PACKET COLLECTION]: Found {0} expired packets on timeout of {1}", expiredPackets.Count, timeoutMS);
+
             return expiredPackets;
         }
 
@@ -181,13 +188,15 @@ namespace OpenSim.Region.ClientStack.LindenUDP
         {
             // Process all the pending adds
             OutgoingPacket pendingAdd;
-            while (m_pendingAdds.Dequeue(out pendingAdd))
+            while (m_pendingAdds.TryDequeue(out pendingAdd))
+            {
                 if (pendingAdd != null)
                     m_packets[pendingAdd.SequenceNumber] = pendingAdd;
+            }
 
             // Process all the pending removes, including updating statistics and round-trip times
             PendingAck pendingAcknowledgement;
-            while (m_pendingAcknowledgements.Dequeue(out pendingAcknowledgement))
+            while (m_pendingAcknowledgements.TryDequeue(out pendingAcknowledgement))
             {
                 //m_log.DebugFormat("[UNACKED PACKET COLLECTION]: Processing ack {0}", pendingAcknowledgement.SequenceNumber);
                 OutgoingPacket ackedPacket;
@@ -197,26 +206,31 @@ namespace OpenSim.Region.ClientStack.LindenUDP
                     {
                         m_packets.Remove(pendingAcknowledgement.SequenceNumber);
 
-                        // As with other network applications, assume that an acknowledged packet is an
-                        // indication that the network can handle a little more load, speed up the transmission
-                        ackedPacket.Client.FlowThrottle.AcknowledgePackets(1);
-
                         // Update stats
                         Interlocked.Add(ref ackedPacket.Client.UnackedBytes, -ackedPacket.Buffer.DataLength);
 
-                        if (!pendingAcknowledgement.FromResend)
-                        {
-                            // Calculate the round-trip time for this packet and its ACK
-                            int rtt = pendingAcknowledgement.RemoveTime - ackedPacket.TickCount;
-                            if (rtt > 0)
-                                ackedPacket.Client.UpdateRoundTrip(rtt);
-                        }
+                        ackedPacket.Client.FreeUDPBuffer(ackedPacket.Buffer);
+                        ackedPacket.Buffer = null;
+
+                        // As with other network applications, assume that an acknowledged packet is an
+                        // indication that the network can handle a little more load, speed up the transmission
+                        ackedPacket.Client.FlowThrottle.AcknowledgePackets(1);
                     }
+                    else
+                    {
+                        // m_log.WarnFormat("[UNACKED PACKET COLLECTION]: found null packet for sequence number {0} to ack",
+                        //                  pendingAcknowledgement.SequenceNumber);
+                    }
+                }
+                else
+                {
+                    // m_log.WarnFormat("[UNACKED PACKET COLLECTION]: Could not find packet with sequence number {0} to ack",
+                    //                  pendingAcknowledgement.SequenceNumber);
                 }
             }
 
             uint pendingRemove;
-            while(m_pendingRemoves.Dequeue(out pendingRemove))
+            while(m_pendingRemoves.TryDequeue(out pendingRemove))
             {
                 OutgoingPacket removedPacket;
                 if (m_packets.TryGetValue(pendingRemove, out removedPacket))
@@ -227,6 +241,9 @@ namespace OpenSim.Region.ClientStack.LindenUDP
 
                         // Update stats
                         Interlocked.Add(ref removedPacket.Client.UnackedBytes, -removedPacket.Buffer.DataLength);
+
+                        removedPacket.Client.FreeUDPBuffer(removedPacket.Buffer);
+                        removedPacket.Buffer = null;
                     }
                 }
             }

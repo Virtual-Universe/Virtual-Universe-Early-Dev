@@ -1,5 +1,4 @@
-/* 19 October
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -48,7 +47,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
 
         Scene m_scene = null; // only need one for communication with GridService
         List<Scene> m_scenes = new List<Scene>();
-        HashSet<UUID> m_Clients; // Useed to be a list but a HashSet is a fraction faster.
+        List<UUID> m_Clients;
 
         IWorldMapModule m_WorldMap;
         IWorldMapModule WorldMap
@@ -76,7 +75,8 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
 
             m_scenes.Add(scene);
             scene.EventManager.OnNewClient += OnNewClient;
-            m_Clients = new HashSet<UUID>();
+            m_Clients = new List<UUID>();
+
         }
 
         public void RemoveRegion(Scene scene)
@@ -121,9 +121,11 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
         private void OnMapNameRequestHandler(IClientAPI remoteClient, string mapName, uint flags)
         {
             lock (m_Clients)
-            { 
-                if (!m_Clients.Add(remoteClient.AgentId))
-                    return; // Add() return false when the client is already in the set.
+            {
+                if (m_Clients.Contains(remoteClient.AgentId))
+                    return;
+
+                m_Clients.Add(remoteClient.AgentId);
             }
 
             OnMapNameRequest(remoteClient, mapName, flags);
@@ -223,7 +225,7 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                 finally
                 {
                     lock (m_Clients)
-                          m_Clients.Remove(remoteClient.AgentId);
+                        m_Clients.Remove(remoteClient.AgentId);
                 }
             });
         }
@@ -242,5 +244,14 @@ namespace OpenSim.Region.CoreModules.World.WorldMap
                 data.Y = 0;
                 blocks.Add(data);
         }
+//        private Scene GetClientScene(IClientAPI client)
+//        {
+//            foreach (Scene s in m_scenes)
+//            {
+//                if (client.Scene.RegionInfo.RegionHandle == s.RegionInfo.RegionHandle)
+//                    return s;
+//            }
+//            return m_scene;
+//        }
     }
 }

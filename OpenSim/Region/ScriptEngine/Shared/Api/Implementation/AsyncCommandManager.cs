@@ -176,7 +176,7 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 if (cmdHandlerThread == null)
                 {
                     cmdHandlerThread = WorkManager.StartThread(
-                        CmdHandlerThreadLoop, "AsyncLSLCmdHandlerThread", ThreadPriority.Normal, true, true);
+                        CmdHandlerThreadLoop, "AsyncLSLCmdHandlerThread");
                 }
             }
         }
@@ -221,7 +221,8 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
         /// </summary>
         private static void CmdHandlerThreadLoop()
         {
-            while (true)
+            bool running = true;
+            while (running)
             {
                 try
                 {
@@ -230,7 +231,11 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                     DoOneCmdHandlerPass();
                     Watchdog.UpdateThread();
                 }
-                catch ( System.Threading.ThreadAbortException) { }
+                catch ( System.Threading.ThreadAbortException)
+                {
+                    Thread.ResetAbort();
+                    running = false;
+                }
                 catch (Exception e)
                 {
                     m_log.Error("[ASYNC COMMAND MANAGER]: Exception in command handler pass: ", e);
@@ -284,22 +289,24 @@ namespace OpenSim.Region.ScriptEngine.Shared.Api
                 // Remove from: Timers
                 m_Timer[engine].UnSetTimerEvents(localID, itemID);
 
-                // Remove from: HttpRequest
-                IHttpRequestModule iHttpReq = engine.World.RequestModuleInterface<IHttpRequestModule>();
-                if (iHttpReq != null)
-                    iHttpReq.StopHttpRequest(localID, itemID);
-
-                IWorldComm comms = engine.World.RequestModuleInterface<IWorldComm>();
-                if (comms != null)
-                    comms.DeleteListener(itemID);
-
-                IXMLRPC xmlrpc = engine.World.RequestModuleInterface<IXMLRPC>();
-                if (xmlrpc != null)
+                if(engine.World != null)
                 {
-                    xmlrpc.DeleteChannels(itemID);
-                    xmlrpc.CancelSRDRequests(itemID);
-                }
+                    // Remove from: HttpRequest
+                    IHttpRequestModule iHttpReq = engine.World.RequestModuleInterface<IHttpRequestModule>();
+                    if (iHttpReq != null)
+                        iHttpReq.StopHttpRequest(localID, itemID);
 
+                    IWorldComm comms = engine.World.RequestModuleInterface<IWorldComm>();
+                    if (comms != null)
+                        comms.DeleteListener(itemID);
+
+                    IXMLRPC xmlrpc = engine.World.RequestModuleInterface<IXMLRPC>();
+                    if (xmlrpc != null)
+                    {
+                        xmlrpc.DeleteChannels(itemID);
+                        xmlrpc.CancelSRDRequests(itemID);
+                    }
+                }
                 // Remove Sensors
                 m_SensorRepeat[engine].UnSetSenseRepeaterEvents(localID, itemID);
             }

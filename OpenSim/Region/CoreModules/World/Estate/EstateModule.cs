@@ -204,7 +204,7 @@ namespace OpenSim.Region.CoreModules.World.Estate
                 m_EstateConnector.SendEstateMessage(estateID, FromID, FromName, Message);
         }
 
-        private void OnEstateTeleportOneUserHomeRequest(IClientAPI client, UUID invoice, UUID senderID, UUID prey)
+        private void OnEstateTeleportOneUserHomeRequest(IClientAPI client, UUID invoice, UUID senderID, UUID prey, bool kick)
         {
             if (prey == UUID.Zero)
                 return;
@@ -225,12 +225,21 @@ namespace OpenSim.Region.CoreModules.World.Estate
                     continue;
 
                 ScenePresence p = scene.GetScenePresence(prey);
-                if (p != null && !p.IsChildAgent )
+                if (p != null && !p.IsChildAgent && !p.IsDeleted && !p.IsInTransit)
                 {
-                    if(!p.IsDeleted && !p.IsInTransit)
+                    if (kick)
+                    {
+                        p.ControllingClient.Kick("You have been kicked out");
+                        s.CloseAgent(p.UUID, false);
+                    }
+                    else
                     {
                         p.ControllingClient.SendTeleportStart(16);
-                        scene.TeleportClientHome(prey, p.ControllingClient);
+                        if (!s.TeleportClientHome(prey, client))
+                        {
+                            p.ControllingClient.Kick("You were teleported home by the region owner, but the TP failed");
+                            s.CloseAgent(p.UUID, false);
+                        }
                     }
                     return;
                 }
@@ -256,13 +265,19 @@ namespace OpenSim.Region.CoreModules.World.Estate
                 if (s.RegionInfo.EstateSettings.EstateID != estateID)
                     continue;
 
-                scene.ForEachScenePresence(delegate(ScenePresence p) {
-                    if (p != null && !p.IsChildAgent)
+                scene.ForEachScenePresence(delegate(ScenePresence p)
                     {
-                        p.ControllingClient.SendTeleportStart(16);
-                        scene.TeleportClientHome(p.ControllingClient.AgentId, p.ControllingClient);
-                    }
-                });
+                        if (p != null && !p.IsChildAgent && !p.IsDeleted && !p.IsInTransit)
+                        {
+                            p.ControllingClient.SendTeleportStart(16);
+                            scene.TeleportClientHome(p.ControllingClient.AgentId, client);
+                            if (!s.TeleportClientHome(p.ControllingClient.AgentId, client))
+                            {
+                                p.ControllingClient.Kick("You were teleported home by the region owner, but the TP failed - you have been logged out.");
+                                s.CloseAgent(p.UUID, false);
+                            }
+                        }
+                    });
             }
 
             m_EstateConnector.SendTeleportHomeAllUsers(estateID);

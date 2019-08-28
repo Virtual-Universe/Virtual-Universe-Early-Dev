@@ -1,5 +1,4 @@
-﻿/* 21 January 2019
- * 
+﻿/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -159,18 +158,7 @@ namespace OpenSim.Region.Framework.Scenes
             SpecularMapID = other.SpecularMapID;
         }
 
-        public FaceMaterial(UUID pID, OSDMap mat)
-        {
-            ID = pID;
-            init_FaceMaterial(mat);
-        }
-
         public FaceMaterial(OSDMap mat)
-        {
-            init_FaceMaterial(mat);
-        }
-
-        public void init_FaceMaterial(OSDMap mat)
         {
             if (mat == null)
                 return;

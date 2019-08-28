@@ -30,6 +30,7 @@ using System.Collections;
 using System.IO;
 using System.Reflection;
 using System.Xml;
+using OpenMetaverse;
 
 namespace OpenSim.Framework.Capabilities
 {
@@ -40,17 +41,32 @@ namespace OpenSim.Framework.Capabilities
 
         public static string SerialiseLLSDReply(object obj)
         {
-            StringWriter sw = new StringWriter();
-            XmlTextWriter writer = new XmlTextWriter(sw);
-            writer.Formatting = Formatting.None;
-            writer.WriteStartElement(String.Empty, "llsd", String.Empty);
-            SerializeOSDType(writer, obj);
-            writer.WriteEndElement();
-            writer.Close();
-
+            using(StringWriter sw = new StringWriter())
+            using(XmlTextWriter writer = new XmlTextWriter(sw))
+            {
+                writer.Formatting = Formatting.None;
+                writer.WriteStartElement(String.Empty, "llsd", String.Empty);
+                SerializeOSDType(writer, obj);
+                writer.WriteEndElement();
+                writer.Flush();
             //m_log.DebugFormat("[LLSD Helpers]: Generated serialized LLSD reply {0}", sw.ToString());
 
-            return sw.ToString();
+                return sw.ToString();
+            }
+        }
+
+        public static string SerialiseLLSDReplyNoHeader(object obj)
+        {
+            using(StringWriter sw = new StringWriter())
+            using(XmlTextWriter writer = new XmlTextWriter(sw))
+            {
+                writer.Formatting = Formatting.None;
+                SerializeOSDType(writer, obj);
+                writer.Flush();
+            //m_log.DebugFormat("[LLSD Helpers]: Generated serialized LLSD reply {0}", sw.ToString());
+
+                return sw.ToString();
+            }
         }
 
         private static void SerializeOSDType(XmlTextWriter writer, object obj)
@@ -160,7 +176,18 @@ namespace OpenSim.Framework.Capabilities
                                 else if(enumerator.Value is Boolean && field.FieldType == typeof(int) )
                                 {
                                     int i = (bool)enumerator.Value ? 1 : 0;
-                                    field.SetValue(obj, (object)i);
+                                    field.SetValue(obj, i);
+                                }
+                                else if(field.FieldType == typeof(bool) &&  enumerator.Value is int)
+                                {
+                                    bool b = (int)enumerator.Value != 0;
+                                    field.SetValue(obj, b);
+                                }
+                                else if(field.FieldType == typeof(UUID) &&  enumerator.Value is string)
+                                {
+                                    UUID u;
+                                    UUID.TryParse((string)enumerator.Value, out u);
+                                    field.SetValue(obj, u);
                                 }
                                 else
                                 {

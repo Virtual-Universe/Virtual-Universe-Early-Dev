@@ -1,5 +1,4 @@
-﻿/* 6 March 2019
- * 
+﻿/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -717,10 +716,9 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
         const int MAX_LOCK_WAIT = 10000; // milliseconds
 
         /// <summary>For thread safety</summary>
-        private object syncRoot = new object();
-
+        object syncRoot = new object();
         /// <summary>For thread safety</summary>
-        private int isPurgingFlag = 0;
+        object isPurging = new object();
 
         Dictionary<UUID, RegionInfoForScope> InfobyScope = new Dictionary<UUID, RegionInfoForScope>();
         private System.Timers.Timer timer = new System.Timers.Timer(CACHE_PURGE_TIME);
@@ -963,44 +961,38 @@ namespace OpenSim.Region.CoreModules.ServiceConnectorsOut.Grid
             // Only let one thread purge at once - a buildup could cause a crash
             // This could cause the purge to be delayed while there are lots of read/write ops
             // happening on the cache
-            // Set the flag.
-            if (0 == Interlocked.CompareExchange(ref isPurgingFlag, 1, 0))
+            if (!Monitor.TryEnter(isPurging))
+                return;
+
+            DateTime now = DateTime.UtcNow;
+
+            try
             {
+                // If we fail to acquire a lock on the synchronization root after MAX_LOCK_WAIT, skip this purge cycle
+                if (!Monitor.TryEnter(syncRoot, MAX_LOCK_WAIT))
+                    return;
                 try
                 {
-                    DateTime now = DateTime.UtcNow;
+                    List<UUID> expiredscopes = new List<UUID>();
 
-                    // If we fail to acquire a lock on the synchronization root after
-                    // MAX_LOCK_WAIT, skip this purge cycle
-                    if (!Monitor.TryEnter(syncRoot, MAX_LOCK_WAIT))
-                        return;
-                    try
+                    foreach (KeyValuePair<UUID, RegionInfoForScope> kvp in InfobyScope)
                     {
-                        List<UUID> expiredscopes = new List<UUID>();
+                        if (kvp.Value.expire(now) == 0)
+                            expiredscopes.Add(kvp.Key);
+                    }
 
-                        foreach (KeyValuePair<UUID, RegionInfoForScope> kvp in InfobyScope)
+                    if (expiredscopes.Count > 0)
+                    {
+                        foreach (UUID sid in expiredscopes)
                         {
-                            if (kvp.Value.expire(now) == 0)
-                                expiredscopes.Add(kvp.Key);
-                        }
-
-                        if (expiredscopes.Count > 0)
-                        {
-                            foreach (UUID sid in expiredscopes)
-                            {
-                                InfobyScope[sid] = null;
-                                InfobyScope.Remove(sid);
-                            }
+                            InfobyScope[sid] = null;
+                            InfobyScope.Remove(sid);
                         }
                     }
-                    finally { Monitor.Exit(syncRoot); }
                 }
-                finally
-                {
-                    // Release the flag.
-                    Interlocked.Exchange( ref isPurgingFlag, 0 );
-                }
+                finally { Monitor.Exit(syncRoot); }
             }
+            finally { Monitor.Exit(isPurging); }
         }
     }
 }

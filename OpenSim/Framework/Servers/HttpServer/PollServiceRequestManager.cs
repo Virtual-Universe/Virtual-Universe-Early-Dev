@@ -1,5 +1,4 @@
-﻿/* 6 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -28,13 +27,13 @@
 
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Reflection;
 using log4net;
 using OpenSim.Framework.Monitoring;
 using Amib.Threading;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {
@@ -42,21 +41,9 @@ namespace OpenSim.Framework.Servers.HttpServer
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly BaseHttpServer m_server;
-
-        // By making these data structures static we prevent the loss of any requests but also centralize
-        // the flow of requests for all scenes (regions) on this simulator and force it to go through one
-        // potential bottle neck. However that should noy be an issue as there is only one httpserver.
-        private static PollServiceHttpRequestComparer preqCp = new PollServiceHttpRequestComparer();
-        
-        private static Dictionary<PollServiceHttpRequest, NSimpleChain<PollServiceHttpRequest>> m_bycontext =
-                   new Dictionary<PollServiceHttpRequest, NSimpleChain<PollServiceHttpRequest>>(preqCp);
-
-        private static NConcurrentQueue<PollServiceHttpRequest> m_requests = 
-                   new NConcurrentQueue<PollServiceHttpRequest>();
-
-        private static NSimpleChain<PollServiceHttpRequest> m_retryRequests = 
-                   new NSimpleChain<PollServiceHttpRequest>();
+        private Dictionary<int, Queue<PollServiceHttpRequest>> m_bycontext;
+        private BlockingCollection<PollServiceHttpRequest> m_requests = new BlockingCollection<PollServiceHttpRequest>();
+        private ConcurrentQueue<PollServiceHttpRequest> m_retryRequests = new ConcurrentQueue<PollServiceHttpRequest>();
 
         private uint m_WorkerThreadCount = 0;
         private Thread[] m_workerThreads;
@@ -67,25 +54,28 @@ namespace OpenSim.Framework.Servers.HttpServer
         private SmartThreadPool m_threadPool;
 
         public PollServiceRequestManager(
-            BaseHttpServer pSrv, bool performResponsesAsync, uint pWorkerThreadCount, int pTimeout)
+            bool performResponsesAsync, uint pWorkerThreadCount, int pTimeout)
         {
-            m_server = pSrv;
             m_WorkerThreadCount = pWorkerThreadCount;
             m_workerThreads = new Thread[m_WorkerThreadCount];
 
+            m_bycontext = new Dictionary<int, Queue<PollServiceHttpRequest>>(256);
+
             STPStartInfo startInfo = new STPStartInfo();
             startInfo.IdleTimeout = 30000;
-            startInfo.MaxWorkerThreads = 32;
+            startInfo.MaxWorkerThreads = 20;
             startInfo.MinWorkerThreads = 1;
             startInfo.ThreadPriority = ThreadPriority.Normal;
             startInfo.StartSuspended = true;
             startInfo.ThreadPoolName = "PoolService";
 
-            m_threadPool = new SmartThreadPool(startInfo);           
+            m_threadPool = new SmartThreadPool(startInfo);
         }
 
         public void Start()
         {
+            if(m_running)
+                return;
             m_running = true;
             m_threadPool.Start();
             //startup worker threads
@@ -94,7 +84,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                 m_workerThreads[i]
                     = WorkManager.StartThread(
                         PoolWorkerJob,
-                        string.Format("PollServiceWorkerThread {0}:{1}", i, m_server.Port),
+                        string.Format("PollServiceWorkerThread {0}", i),
                         ThreadPriority.Normal,
                         true,
                         false,
@@ -102,245 +92,230 @@ namespace OpenSim.Framework.Servers.HttpServer
                         int.MaxValue);
             }
 
-            try
-            {
-                // Just one single thread (per avatar), 
-                m_retrysThread = new Thread(this.CheckRetries);
-                m_retrysThread.Priority = ThreadPriority.Normal;
-                m_retrysThread.IsBackground = true;
-                m_retrysThread.Start();
-            }
-            catch { }
+            m_retrysThread = WorkManager.StartThread(
+                this.CheckRetries,
+                string.Format("PollServiceWatcherThread"),
+                ThreadPriority.Normal,
+                true,
+                true,
+                null,
+                1000 * 60 * 10);
         }
 
-        private static void ReQueueEvent(PollServiceHttpRequest req)
+        private void ReQueueEvent(PollServiceHttpRequest req)
         {
-            try
-            {
-                lock (m_retryRequests)
-                      m_retryRequests.Enqueue(req);
-            }
-            catch { }
+            if (m_running)
+                m_retryRequests.Enqueue(req);
         }
 
-        public static void Enqueue(PollServiceHttpRequest req)
+        public void Enqueue(PollServiceHttpRequest req)
         {
+            Queue<PollServiceHttpRequest> ctxQeueue;
+            int rhash = req.contextHash;
             lock (m_bycontext)
             {
-                NSimpleChain<PollServiceHttpRequest> ctxQeueue;
-                if (m_bycontext.TryGetValue(req, out ctxQeueue))
+                if (m_bycontext.TryGetValue(rhash, out ctxQeueue))
                 {
                     ctxQeueue.Enqueue(req);
                 }
                 else
                 {
-                    ctxQeueue = new NSimpleChain<PollServiceHttpRequest>();
-                    m_bycontext[req] = ctxQeueue;
+                    ctxQeueue = new Queue<PollServiceHttpRequest>();
+                    m_bycontext[rhash] = ctxQeueue;
                     EnqueueInt(req);
                 }
             }
         }
 
-        public static void byContextDequeue(PollServiceHttpRequest req)
+        public void byContextDequeue(PollServiceHttpRequest req)
         {
-            NSimpleChain<PollServiceHttpRequest> ctxQeueue;
+            Queue<PollServiceHttpRequest> ctxQeueue;
+            int rhash = req.contextHash;
             lock (m_bycontext)
             {
-                if (m_bycontext.TryGetValue(req, out ctxQeueue))
+                if (m_bycontext.TryGetValue(rhash, out ctxQeueue))
                 {
-                    PollServiceHttpRequest newreq;
-                    if (ctxQeueue.Dequeue(out newreq))
+                    if (ctxQeueue.Count > 0)
                     {
+                        PollServiceHttpRequest newreq = ctxQeueue.Dequeue();
                         EnqueueInt(newreq);
                     }
                     else
                     {
-                        m_bycontext.Remove(req);
+                        m_bycontext.Remove(rhash);
                     }
                 }
             }
         }
 
-        public static void EnqueueInt(PollServiceHttpRequest req)
+        public void DropByContext(PollServiceHttpRequest req)
         {
-            try
+            Queue<PollServiceHttpRequest> ctxQeueue;
+            int rhash = req.contextHash;
+            lock (m_bycontext)
             {
-                m_requests.Enqueue(req);
+                if (m_bycontext.TryGetValue(rhash, out ctxQeueue))
+                {
+                    ctxQeueue.Clear();
+                    m_bycontext.Remove(rhash);
+                }
             }
-            catch { }
+        }
+
+        public void EnqueueInt(PollServiceHttpRequest req)
+        {
+            if (m_running)
+                m_requests.Add(req);
         }
 
         private void CheckRetries()
         {
+            PollServiceHttpRequest preq;
             while (m_running)
             {
-                try
-                {
-                    Thread.Sleep(100); // Sleep 0.1 sec
-
-                    // Deal with the retries.
-                    int n = 0;
-                    while (m_running)
-                    {
-                        PollServiceHttpRequest req;
-                        lock (m_retryRequests)
-                        {
-                            if (!m_retryRequests.Dequeue(out req))
-                                break;
-                        }
-
-                        EnqueueInt(req);
-
-                        n++;
-                        if (n == 10)
-                        {
-                            n = 0;
-                            Thread.Yield();
-                        }
-                    }
-                }
-                catch { }
+                Thread.Sleep(100);
+                Watchdog.UpdateThread();
+                while (m_running && m_retryRequests.TryDequeue(out preq))
+                    m_requests.Add(preq);
             }
         }
 
         public void Stop()
         {
+            if(!m_running)
+                return;
+
             m_running = false;
-            m_requests.CancelWait();
 
             Thread.Sleep(100); // let the world move
 
             foreach (Thread t in m_workerThreads)
                 Watchdog.AbortThread(t.ManagedThreadId);
 
-            try
-            {
-                m_retrysThread.Abort();
-                m_retrysThread = null;
-            } catch { }
-
             m_threadPool.Shutdown();
 
             // any entry in m_bycontext should have a active request on the other queues
             // so just delete contents to easy GC
-            foreach (NSimpleChain<PollServiceHttpRequest> qu in m_bycontext.Values)
+            foreach (Queue<PollServiceHttpRequest> qu in m_bycontext.Values)
+                qu.Clear();
+            m_bycontext.Clear();
+
+            PollServiceHttpRequest req;
+            try
             {
-                try
-                {
-                    qu.Clear();
-                }
-                catch { }
+                while(m_retryRequests.TryDequeue(out req))
+                    req.DoHTTPstop();
+            }
+            catch
+            {
             }
 
             try
             {
-                m_bycontext.Clear();
+                while(m_requests.TryTake(out req, 0))
+                    req.DoHTTPstop();
             }
-            catch { }
-
-            try
+            catch
             {
-                // Deal with the retries.
-				PollServiceHttpRequest req;
-				while (m_retryRequests.Dequeue(out req))
-                {
-                    try
-                    {
-                        req.DoHTTPstop(m_server);
-                    }
-                    catch { }
-                }
-            }
-            catch { }
-
-            // Just to make sure. We cancel a 2nd time.
-            m_requests.CancelWait();
-
-            PollServiceHttpRequest wreq;
-			while (m_requests.Dequeue(out wreq))
-            {
-                try
-                {
-                    wreq.DoHTTPstop(m_server);
-                } catch { }
             }
 
-            try
-            {
-                m_requests.Clear();
-            }
-            catch { }
+            m_requests.Dispose();
+
         }
 
         // work threads
 
-        private void HandleRequest(PollServiceHttpRequest req)
+        private void PoolWorkerJob()
         {
-            try
+            PollServiceHttpRequest req;
+            while (m_running)
             {
-                if (req.PollServiceArgs.HasEvents(req.RequestID, req.PollServiceArgs.Id))
+                try
                 {
-                    m_threadPool.QueueWorkItem(x =>
+                    req = null;
+                    if (!m_requests.TryTake(out req, 4500) || req == null)
                     {
-                        try
+                        Watchdog.UpdateThread();
+                        continue;
+                    }
+
+                    Watchdog.UpdateThread();
+
+                    if (!req.HttpContext.CanSend())
+                    {
+                        req.PollServiceArgs.Drop(req.RequestID, req.PollServiceArgs.Id);
+                        byContextDequeue(req);
+                        continue;
+                    }
+
+                    if (req.HttpContext.IsSending())
+                    {
+                        if ((Environment.TickCount - req.RequestTime) > req.PollServiceArgs.TimeOutms)
                         {
-                            req.DoHTTPGruntWork(m_server, 
-                                req.PollServiceArgs.GetEvents(req.RequestID, 
-                                                              req.PollServiceArgs.Id));
-                        }
-                        catch { }
-                        finally
-                        {
+                            req.PollServiceArgs.Drop(req.RequestID, req.PollServiceArgs.Id);
                             byContextDequeue(req);
                         }
-                        return null;
-                    }, null);
-                }
-                else
-                {
-                    if ((Environment.TickCount - req.RequestTime) > req.PollServiceArgs.TimeOutms)
+                        else
+                            ReQueueEvent(req);
+                        continue;
+                    }
+
+                    if (req.PollServiceArgs.HasEvents(req.RequestID, req.PollServiceArgs.Id))
                     {
+                        PollServiceHttpRequest nreq = req;
                         m_threadPool.QueueWorkItem(x =>
                         {
                             try
                             {
-                                req.DoHTTPGruntWork(m_server,
-                                    req.PollServiceArgs.NoEvents(req.RequestID, req.PollServiceArgs.Id));
+                                Hashtable responsedata = nreq.PollServiceArgs.GetEvents(nreq.RequestID, nreq.PollServiceArgs.Id);
+                                nreq.DoHTTPGruntWork(responsedata);
                             }
-                            catch { }  // Ignore it, no need to reply
+                            catch (ObjectDisposedException) { }
                             finally
                             {
-                                byContextDequeue(req);
+                                byContextDequeue(nreq);
+                                nreq = null;
                             }
                             return null;
                         }, null);
                     }
                     else
                     {
-                        ReQueueEvent(req); // Send it to the retry queue.
+                        if ((Environment.TickCount - req.RequestTime) > req.PollServiceArgs.TimeOutms)
+                        {
+                            PollServiceHttpRequest nreq = req;
+                            m_threadPool.QueueWorkItem(x =>
+                            {
+                                try
+                                {
+                                    nreq.DoHTTPGruntWork(nreq.PollServiceArgs.NoEvents(nreq.RequestID, nreq.PollServiceArgs.Id));
+                                }
+                                catch (ObjectDisposedException) { }
+                                finally
+                                {
+                                    byContextDequeue(nreq);
+                                    nreq = null;
+                                }
+                                return null;
+                            }, null);
+                        }
+                        else
+                        {
+                            ReQueueEvent(req);
+                        }
                     }
                 }
-            }
-            catch (Exception e)
-            {
-                m_log.ErrorFormat("Exception in poll service thread: " + e.ToString());
-            }
-        }
-
-        private void PoolWorkerJob()
-        {
-            while (m_running)
-            {
-                try
+                catch (ThreadAbortException)
                 {
-                    PollServiceHttpRequest req = null;
-                    while (m_running && m_requests.TryDequeue( out req ) && req != null)
-                    {
-                        if (m_running)
-                            HandleRequest(req);
-                    }
+                    Thread.ResetAbort();
+                    // Shouldn't set this to 'false', the normal shutdown should cause things to exit
+                    // but robust is still not normal neither is mono
+                    m_running = false;
                 }
-                catch { }
+                catch (Exception e)
+                {
+                    m_log.ErrorFormat("Exception in poll service thread: " + e.ToString());
+                }
             }
         }
     }

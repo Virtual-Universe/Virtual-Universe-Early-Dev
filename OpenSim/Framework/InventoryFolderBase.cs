@@ -1,5 +1,4 @@
-/* 25 febr 2018
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -53,7 +52,7 @@ namespace OpenSim.Framework
         /// because of the changes clients have with inventory from
         /// time to time (1.19.1 caused us some fits there).
         /// </summary>
-        private int _version; // used to be ushort, changed it to int.
+        private ushort _version;
 
         public virtual UUID ParentID
         {
@@ -67,7 +66,7 @@ namespace OpenSim.Framework
             set { _type = value; }
         }
 
-        public virtual int Version
+        public virtual ushort Version
         {
             get { return _version; }
             set { _version = value; }
@@ -94,7 +93,7 @@ namespace OpenSim.Framework
         }
 
         public InventoryFolderBase(
-            UUID id, string name, UUID owner, short type, UUID parent, int version) : this(id, name, owner, parent)
+            UUID id, string name, UUID owner, short type, UUID parent, ushort version) : this(id, name, owner, parent)
         {
             Type = type;
             Version = version;

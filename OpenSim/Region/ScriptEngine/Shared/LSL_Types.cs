@@ -84,16 +84,26 @@ namespace OpenSim.Region.ScriptEngine.Shared
             {
                 str = str.Replace('<', ' ');
                 str = str.Replace('>', ' ');
-                string[] tmps = str.Split(new Char[] { ',', '<', '>' });
+                string[] tmps = str.Split(new Char[] {','});
                 if (tmps.Length < 3)
                 {
-                    x=y=z=0;
+                    z = y = x = 0;
                     return;
                 }
-                bool res;
-                res = Double.TryParse(tmps[0], NumberStyles.Float, Culture.NumberFormatInfo, out x);
-                res = res & Double.TryParse(tmps[1], NumberStyles.Float, Culture.NumberFormatInfo, out y);
-                res = res & Double.TryParse(tmps[2], NumberStyles.Float, Culture.NumberFormatInfo, out z);
+                if (!Double.TryParse(tmps[0], NumberStyles.Float, Culture.NumberFormatInfo, out x))
+                {
+                    z = y = 0;
+                    return;
+                }
+                if (!Double.TryParse(tmps[1], NumberStyles.Float, Culture.NumberFormatInfo, out y))
+                {
+                    z = x = 0;
+                    return;
+                }
+                if (!Double.TryParse(tmps[2], NumberStyles.Float, Culture.NumberFormatInfo, out z))
+                {
+                    y = x = 0;
+                }
             }
 
             #endregion
@@ -270,13 +280,15 @@ namespace OpenSim.Region.ScriptEngine.Shared
             // Vector-Rotation Math
             public static Vector3 operator *(Vector3 v, Quaternion r)
             {
-                Quaternion vq = new Quaternion(v.x, v.y, v.z, 0);
-                Quaternion nq = new Quaternion(-r.x, -r.y, -r.z, r.s);
+                double rx = r.s * v.x + r.y * v.z - r.z * v.y;
+                double ry = r.s * v.y + r.z * v.x - r.x * v.z;
+                double rz = r.s * v.z + r.x * v.y - r.y * v.x;
 
-                // adapted for operator * computing "b * a"
-                Quaternion result = nq * (vq * r);
+                v.x += 2.0f * (rz * r.y - ry * r.z);
+                v.y += 2.0f * (rx * r.z - rz * r.x);
+                v.z += 2.0f * (ry * r.x - rx * r.y);
 
-                return new Vector3(result.x, result.y, result.z);
+                return v;
             }
 
             public static Vector3 operator /(Vector3 v, Quaternion r)
@@ -302,6 +314,11 @@ namespace OpenSim.Region.ScriptEngine.Shared
                     v1.z * v2.x - v1.x * v2.z,
                     v1.x * v2.y - v1.y * v2.x
                     );
+            }
+
+            public static double MagSquare(Vector3 v)
+            {
+                return v.x * v.x + v.y * v.y + v.z * v.z;
             }
 
             public static double Mag(Vector3 v)
@@ -357,19 +374,31 @@ namespace OpenSim.Region.ScriptEngine.Shared
             {
                 str = str.Replace('<', ' ');
                 str = str.Replace('>', ' ');
-                string[] tmps = str.Split(new Char[] { ',', '<', '>' });
-                if (tmps.Length < 4)
+                string[] tmps = str.Split(new Char[] {','});
+                if (tmps.Length < 4 ||
+                    !Double.TryParse(tmps[3], NumberStyles.Float, Culture.NumberFormatInfo, out s))
                 {
-                    x=y=z=s=0;
+                    z = y = x = 0;
+                    s = 1;
                     return;
                 }
-                bool res;
-                res = Double.TryParse(tmps[0], NumberStyles.Float, Culture.NumberFormatInfo, out x);
-                res = res & Double.TryParse(tmps[1], NumberStyles.Float, Culture.NumberFormatInfo, out y);
-                res = res & Double.TryParse(tmps[2], NumberStyles.Float, Culture.NumberFormatInfo, out z);
-                res = res & Double.TryParse(tmps[3], NumberStyles.Float, Culture.NumberFormatInfo, out s);
-                if (s == 0 && x == 0 && y == 0 && z == 0)
+                if (!Double.TryParse(tmps[0], NumberStyles.Float, Culture.NumberFormatInfo, out x))
+                {
+                    z = y = 0;
                     s = 1;
+                    return;
+                }
+                if (!Double.TryParse(tmps[1], NumberStyles.Float, Culture.NumberFormatInfo, out y))
+                {
+                    z = x = 0;
+                    s = 1;
+                    return;
+                }
+                if (!Double.TryParse(tmps[2], NumberStyles.Float, Culture.NumberFormatInfo, out z))
+                {
+                    y = x = 0;
+                    s = 1;
+                }
             }
 
             public Quaternion(OMV_Quaternion rot)
@@ -385,8 +414,8 @@ namespace OpenSim.Region.ScriptEngine.Shared
             #region Methods
             public Quaternion Normalize()
             {
-                double length = Math.Sqrt(x * x + y * y + z * z + s * s);
-                if (length < float.Epsilon)
+                double lengthsq = x * x + y * y + z * z + s * s;
+                if (lengthsq < float.Epsilon)
                 {
                     x = 0;
                     y = 0;
@@ -396,7 +425,7 @@ namespace OpenSim.Region.ScriptEngine.Shared
                 else
                 {
 
-                    double invLength = 1.0 / length;
+                    double invLength = 1.0 / Math.Sqrt(lengthsq);
                     x *= invLength;
                     y *= invLength;
                     z *= invLength;
@@ -443,14 +472,14 @@ namespace OpenSim.Region.ScriptEngine.Shared
 
             public static explicit operator string(Quaternion r)
             {
-                string s=String.Format(Culture.FormatProvider,"<{0:0.000000}, {1:0.000000}, {2:0.000000}, {3:0.000000}>", r.x, r.y, r.z, r.s);
-                return s;
+                string st=String.Format(Culture.FormatProvider,"<{0:0.000000}, {1:0.000000}, {2:0.000000}, {3:0.000000}>", r.x, r.y, r.z, r.s);
+                return st;
             }
 
             public static explicit operator LSLString(Quaternion r)
             {
-                string s=String.Format(Culture.FormatProvider,"<{0:0.000000}, {1:0.000000}, {2:0.000000}, {3:0.000000}>", r.x, r.y, r.z, r.s);
-                return new LSLString(s);
+                string st=String.Format(Culture.FormatProvider,"<{0:0.000000}, {1:0.000000}, {2:0.000000}, {3:0.000000}>", r.x, r.y, r.z, r.s);
+                return new LSLString(st);
             }
 
             public static explicit operator Quaternion(string s)
@@ -467,7 +496,8 @@ namespace OpenSim.Region.ScriptEngine.Shared
             {
                 // LSL quaternions can normalize to 0, normal Quaternions can't.
                 if (rot.s == 0 && rot.x == 0 && rot.y == 0 && rot.z == 0)
-                    rot.z = 1; // ZERO_ROTATION = 0,0,0,1
+                    return OMV_Quaternion.Identity; // ZERO_ROTATION = 0,0,0,1
+
                 OMV_Quaternion omvrot = new OMV_Quaternion((float)rot.x, (float)rot.y, (float)rot.z, (float)rot.s);
                 omvrot.Normalize();
                 return omvrot;
@@ -503,7 +533,12 @@ namespace OpenSim.Region.ScriptEngine.Shared
 
             public static Quaternion operator /(Quaternion a, Quaternion b)
             {
-                b.s = -b.s;
+                // assume normalized
+                // if not, sl seems to not normalize either
+                b.x = -b.x;
+                b.y = -b.y;
+                b.z = -b.z;
+
                 return a * b;
             }
 
@@ -577,6 +612,8 @@ namespace OpenSim.Region.ScriptEngine.Shared
                             size += 8;
                         else if (o is double)
                             size += 16;
+                        else if (o is list)
+                            size += ((list)o).Size;
                         else
                             throw new Exception("Unknown type in List.Size: " + o.GetType().ToString());
                     }

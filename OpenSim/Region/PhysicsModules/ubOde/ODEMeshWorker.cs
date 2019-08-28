@@ -2,22 +2,11 @@
  * AJLDuarte 2012
  */
 
-/*
- * LaNani Sundara 2018: changed to using BlockingCollection and a CancelationToken.
- * 
-*/
-
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using OpenSim.Framework;
 using OpenSim.Region.PhysicsModules.SharedBase;
-using OdeAPI;
 using log4net;
 using Nini.Config;
 using OpenMetaverse;
@@ -85,12 +74,8 @@ namespace OpenSim.Region.PhysicsModule.ubOde
         public float MeshSculptphysicalLOD = 32;
         public float MinSizeToMeshmerize = 0.1f;
 
-        // private OpenSim.Framework.BlockingQueue<ODEPhysRepData> workQueue = new OpenSim.Framework.BlockingQueue<ODEPhysRepData>();
         private BlockingCollection<ODEPhysRepData> workQueue = new BlockingCollection<ODEPhysRepData>();
         private bool m_running;
-
-        private CancellationTokenSource m_tokenSource = null;
-        private CancellationToken m_cancelToken;
 
         private Thread m_thread;
 
@@ -99,9 +84,6 @@ namespace OpenSim.Region.PhysicsModule.ubOde
             m_scene = pScene;
             m_log = pLog;
             m_mesher = pMesher;
-
-            m_tokenSource = new CancellationTokenSource();
-            m_cancelToken = m_tokenSource.Token;
 
             if (pConfig != null)
             {
@@ -119,41 +101,31 @@ namespace OpenSim.Region.PhysicsModule.ubOde
         private void DoWork()
         {
             m_mesher.ExpireFileCache();
+            ODEPhysRepData nextRep;
 
             while(m_running)
             {
-                try
+                workQueue.TryTake(out nextRep, -1);
+                if(!m_running)
+                    return;
+                if (nextRep == null)
+                    continue;
+                if (m_scene.haveActor(nextRep.actor))
                 {
-                    ODEPhysRepData nextRep = null;
-                    if (workQueue.TryTake(out nextRep,
-                                          -1, // -1 = INIFINITE
-                                          m_cancelToken) &&
-                                          m_running &&
-                                          nextRep != null)
+                    switch (nextRep.comand)
                     {
-                        if (m_scene.haveActor(nextRep.actor))
-                        {
-                            switch (nextRep.comand)
-                            {
-                                case meshWorkerCmnds.changefull:
-                                case meshWorkerCmnds.changeshapetype:
-                                case meshWorkerCmnds.changesize:
-                                    GetMesh(nextRep);
-                                    if (CreateActorPhysRep(nextRep) && m_scene.haveActor(nextRep.actor))
-                                        m_scene.AddChange(nextRep.actor, changes.PhysRepData, nextRep);
-                                    break;
-                                case meshWorkerCmnds.getmesh:
-                                    DoRepDataGetMesh(nextRep);
-                                    break;
-                            }
-                        }
+                        case meshWorkerCmnds.changefull:
+                        case meshWorkerCmnds.changeshapetype:
+                        case meshWorkerCmnds.changesize:
+                            GetMesh(nextRep);
+                            if (CreateActorPhysRep(nextRep) && m_scene.haveActor(nextRep.actor))
+                                m_scene.AddChange(nextRep.actor, changes.PhysRepData, nextRep);
+                            break;
+                        case meshWorkerCmnds.getmesh:
+                            DoRepDataGetMesh(nextRep);
+                            break;
                     }
                 }
-                catch (OperationCanceledException)
-                {
-                    return;
-                }
-                catch { }
             }
         }
 
@@ -161,19 +133,12 @@ namespace OpenSim.Region.PhysicsModule.ubOde
         {
             try
             {
-                m_running = false;
-                m_tokenSource.Cancel();
-                Thread.Sleep(50);
-                workQueue.Dispose();
-                m_tokenSource.Dispose();
-            }
-            catch { }
-
-            try
-            {
                 m_thread.Abort();
+ //               workQueue.Dispose();
             }
-            catch { }
+            catch
+            {
+            }
         }
 
         public void ChangeActorPhysRep(PhysicsActor actor, PrimitiveBaseShape pbs,

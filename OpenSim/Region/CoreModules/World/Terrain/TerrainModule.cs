@@ -1,5 +1,4 @@
-/* 16 July 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -98,10 +97,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
         private String m_InitialTerrain = "pinhead-island";
 
         // If true, send terrain patch updates to clients based on their view distance
-        private bool m_sendTerrainUpdatesByViewDistance = false;
-
-        // Can be used to adjust the max number of chunks being send. value 0 turns it off.
-        private int m_sendTerrainMaxViewDistance = 0; 
+        private bool m_sendTerrainUpdatesByViewDistance = true;
 
         // Class to keep the per client collection of terrain patches that must be sent.
         // A patch is set to 'true' meaning it should be sent to the client. Once the
@@ -124,7 +120,6 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 // Initially, send all patches to the client
                 SetAll(true);
             }
-
             // Returns 'true' if there are any patches marked for sending
             public bool HasUpdates()
             {
@@ -226,9 +221,6 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 m_sendTerrainUpdatesByViewDistance =
                     terrainConfig.GetBoolean(
                         "SendTerrainUpdatesByViewDistance",m_sendTerrainUpdatesByViewDistance);
-                m_sendTerrainMaxViewDistance =
-                    terrainConfig.GetInt(
-                        "SendTerrainMaxViewDistance", m_sendTerrainMaxViewDistance);
             }
         }
 
@@ -600,7 +592,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             else
             {
                 // The traditional way is to call into the protocol stack to send them all.
-                pClient.SendLayerData(new float[10]);
+                pClient.SendLayerData();
             }
         }
 
@@ -799,8 +791,9 @@ namespace OpenSim.Region.CoreModules.World.Terrain
 
             if (offsetX < 0 || offsetX >= fileWidth || offsetY < 0 || offsetY >= fileHeight)
             {
-                MainConsole.Instance.OutputFormat(
+                MainConsole.Instance.Output(
                     "ERROR: file width + minimum X tile and file height + minimum Y tile must incorporate the current region at ({0},{1}).  File width {2} from {3} and file height {4} from {5} does not.",
+                    null,
                     m_scene.RegionInfo.RegionLocX, m_scene.RegionInfo.RegionLocY, fileWidth, fileStartX, fileHeight, fileStartY);
 
                 return;
@@ -818,8 +811,9 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                                               (int)m_scene.RegionInfo.RegionSizeX,
                                               (int)m_scene.RegionInfo.RegionSizeY);
 
-                        MainConsole.Instance.OutputFormat(
+                        MainConsole.Instance.Output(
                             "Saved terrain from ({0},{1}) to ({2},{3}) from {4} to {5}",
+                            null,
                             fileStartX, fileStartY, fileStartX + fileWidth - 1, fileStartY + fileHeight - 1,
                             m_scene.RegionInfo.RegionName, filename);
                     }
@@ -828,8 +822,9 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 }
             }
 
-            MainConsole.Instance.OutputFormat(
+            MainConsole.Instance.Output(
                 "ERROR: Could not save terrain from {0} to {1}.  Valid file extensions are {2}",
+                null,
                 m_scene.RegionInfo.RegionName, filename, m_supportFileExtensionsForTileSave);
         }
 
@@ -847,48 +842,40 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 EventManager_TerrainCheckUpdatesAsync);
         }
 
-        private int TerrainCheckUpdatesFlag = 0;
+        object TerrainCheckUpdatesLock = new object();
 
         private void EventManager_TerrainCheckUpdatesAsync(object o)
         {
             // dont overlap execution
-            // Set the flag.
-            if(0 == Interlocked.CompareExchange( ref TerrainCheckUpdatesFlag, 1, 0))
+            if(Monitor.TryEnter(TerrainCheckUpdatesLock))
             {
-                try
-                {
-                    // this needs fixing
-                    TerrainData terrData = m_channel.GetTerrainData();
+                // this needs fixing
+                TerrainData terrData = m_channel.GetTerrainData();
 
-                    bool shouldTaint = false;
-                    for (int x = 0; x < terrData.SizeX; x += Constants.TerrainPatchSize)
+                bool shouldTaint = false;
+                for (int x = 0; x < terrData.SizeX; x += Constants.TerrainPatchSize)
+                {
+                    for (int y = 0; y < terrData.SizeY; y += Constants.TerrainPatchSize)
                     {
-                        for (int y = 0; y < terrData.SizeY; y += Constants.TerrainPatchSize)
+                        if (terrData.IsTaintedAt(x, y,true))
                         {
-                            if (terrData.IsTaintedAt(x, y, true))
-                            {
-                                // Found a patch that was modified. Push this flag into the clients.
-                                SendToClients(terrData, x, y);
-                                shouldTaint = true;
-                            }
+                            // Found a patch that was modified. Push this flag into the clients.
+                            SendToClients(terrData, x, y);
+                            shouldTaint = true;
                         }
                     }
-
-                    // This event also causes changes to be sent to the clients
-                    CheckSendingPatchesToClients();
-
-                    // If things changes, generate some events
-                    if (shouldTaint)
-                    {
-                        m_scene.EventManager.TriggerTerrainTainted();
-                        m_tainted = true;
-                    }
                 }
-                finally
+
+                // This event also causes changes to be sent to the clients
+                CheckSendingPatchesToClients();
+
+                // If things changes, generate some events
+                if (shouldTaint)
                 {
-                    // Release the flag.
-                    Interlocked.Exchange(ref TerrainCheckUpdatesFlag, 0);
+                    m_scene.EventManager.TriggerTerrainTainted();
+                    m_tainted = true;
                 }
+                Monitor.Exit(TerrainCheckUpdatesLock);
             }
         }
 
@@ -1082,13 +1069,11 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 // Legacy update sending where the update is sent out as soon as noticed
                 // We know the actual terrain data that is passed is ignored so this passes a dummy heightmap.
                 //float[] heightMap = terrData.GetFloatsSerialized();
-                float[] heightMap = new float[10];
+                int[] map = new int[]{ x / Constants.TerrainPatchSize, y / Constants.TerrainPatchSize };
                 m_scene.ForEachClient(
                     delegate (IClientAPI controller)
                     {
-                        controller.SendLayerData(x / Constants.TerrainPatchSize,
-                                                 y / Constants.TerrainPatchSize,
-                                                 heightMap);
+                        controller.SendLayerData(map);
                     }
                 );
             }
@@ -1147,14 +1132,14 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                                 }
                                 */
 
-                                float[] patchPieces = new float[toSend.Count * 2];
+                                int[] patchPieces = new int[toSend.Count * 2];
                                 int pieceIndex = 0;
                                 foreach (PatchesToSend pts in toSend)
                                 {
                                     patchPieces[pieceIndex++] = pts.PatchX;
                                     patchPieces[pieceIndex++] = pts.PatchY;
                                 }
-                                pups.Presence.ControllingClient.SendLayerData(-toSend.Count, 0, patchPieces);
+                                pups.Presence.ControllingClient.SendLayerData(patchPieces);
                             }
                             if (pups.sendAll && toSend.Count < 1024)
                                 SendAllModifiedPatchs(pups);
@@ -1165,7 +1150,6 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 }
             }
         }
-
         private void SendAllModifiedPatchs(PatchUpdates pups)
         {
             if (!pups.sendAll) // sanity
@@ -1223,16 +1207,14 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             npatchs = patchs.Count;
             if (npatchs > 0)
             {
-                int[] xPieces = new int[npatchs];
-                int[] yPieces = new int[npatchs];
-                float[] patchPieces = new float[npatchs * 2];
+                int[] patchPieces = new int[npatchs * 2];
                 int pieceIndex = 0;
                 foreach (PatchesToSend pts in patchs)
                 {
                     patchPieces[pieceIndex++] = pts.PatchX;
                     patchPieces[pieceIndex++] = pts.PatchY;
                 }
-                pups.Presence.ControllingClient.SendLayerData(-npatchs, 0, patchPieces);
+                pups.Presence.ControllingClient.SendLayerData(patchPieces);
             }
         }
 
@@ -1255,12 +1237,6 @@ namespace OpenSim.Region.CoreModules.World.Terrain
                 return ret;
 
             int DrawDistance = (int)presence.DrawDistance;
-
-            if (m_sendTerrainMaxViewDistance > 0)
-            {
-                if (DrawDistance > m_sendTerrainMaxViewDistance)
-                    DrawDistance = m_sendTerrainMaxViewDistance;
-            }
 
             DrawDistance = DrawDistance / Constants.TerrainPatchSize;
 
@@ -1480,8 +1456,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
         {
             //m_log.Debug("Terrain packet unacked, resending patch: " + patchX + " , " + patchY);
             // SendLayerData does not use the heightmap parameter. This kludge is so as to not change IClientAPI.
-            float[] heightMap = new float[10];
-            client.SendLayerData(patchX, patchY, heightMap);
+            client.SendLayerData(new int[]{patchX, patchY});
         }
 
         private void StoreUndoState()
@@ -1566,7 +1541,7 @@ namespace OpenSim.Region.CoreModules.World.Terrain
             }
             else
             {
-                MainConsole.Instance.OutputFormat("ERROR: Unrecognised direction {0} - need x or y", direction);
+                MainConsole.Instance.Output("ERROR: Unrecognised direction {0} - need x or y", null, direction);
             }
         }
 
@@ -1731,8 +1706,8 @@ namespace OpenSim.Region.CoreModules.World.Terrain
 
             double avg = sum / (m_channel.Height * m_channel.Width);
 
-            MainConsole.Instance.OutputFormat("Channel {0}x{1}", m_channel.Width, m_channel.Height);
-            MainConsole.Instance.OutputFormat("max/min/avg/sum: {0}/{1}/{2}/{3}", max, min, avg, sum);
+            MainConsole.Instance.Output("Channel {0}x{1}", null, m_channel.Width, m_channel.Height);
+            MainConsole.Instance.Output("max/min/avg/sum: {0}/{1}/{2}/{3}", null, max, min, avg, sum);
         }
 
         private void InterfaceEnableExperimentalBrushes(Object[] args)

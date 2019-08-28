@@ -147,23 +147,15 @@ namespace OpenSim.Server.Base
                 consoleType = startupConfig.GetString("console", consoleType);
 
             if (consoleType == "basic")
-            {
                 MainConsole.Instance = new CommandConsole(prompt);
-            }
             else if (consoleType == "rest")
-            {
                 MainConsole.Instance = new RemoteConsole(prompt);
-                ((RemoteConsole)MainConsole.Instance).ReadConfig(Config);
-            }
             else if (consoleType == "mock")
-            {
                 MainConsole.Instance = new MockConsole();
-            }
             else if (consoleType == "local")
-            {
                 MainConsole.Instance = new LocalConsole(prompt, startupConfig);
-            }
 
+            MainConsole.Instance.ReadConfig(Config);
             m_console = MainConsole.Instance;
 
             if (logConfig != null)
@@ -250,6 +242,8 @@ namespace OpenSim.Server.Base
                 }
             }
 
+            MainServer.Stop();
+
             MemoryWatchdog.Enabled = false;
             Watchdog.Enabled = false;
             WorkManager.Stop();
@@ -260,6 +254,8 @@ namespace OpenSim.Server.Base
 
         protected override void ShutdownSpecific()
         {
+            if(!m_Running)
+                return;
             m_Running = false;
             m_log.Info("[CONSOLE] Quitting");
 

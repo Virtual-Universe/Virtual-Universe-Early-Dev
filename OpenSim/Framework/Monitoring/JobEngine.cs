@@ -1,5 +1,4 @@
-/* 4 April 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -27,9 +26,11 @@
  */
 
 using System;
+using System.Collections.Concurrent;
 using System.Reflection;
 using System.Threading;
 using log4net;
+using OpenSim.Framework;
 
 namespace OpenSim.Framework.Monitoring
 {
@@ -39,6 +40,8 @@ namespace OpenSim.Framework.Monitoring
 
         public int LogLevel { get; set; }
 
+        private object JobLock = new object();
+
         public string Name { get; private set; }
 
         public string LoggingName { get; private set; }
@@ -46,9 +49,7 @@ namespace OpenSim.Framework.Monitoring
         /// <summary>
         /// Is this engine running?
         /// </summary>
-        private volatile bool m_isrunning = false;
-        public bool IsRunning { get { return m_isrunning; }
-                        private set { m_isrunning = value; } }
+        public bool IsRunning { get; private set; }
 
         /// <summary>
         /// The current job that the engine is running.
@@ -76,50 +77,63 @@ namespace OpenSim.Framework.Monitoring
         /// This is flipped to false once queue max has been exceeded and back to true when it falls below max, in
         /// order to avoid spamming the log with lots of warnings.
         /// </remarks>
-        private NSingleReaderConcurrentQueue<Job> m_jobQueue = new NSingleReaderConcurrentQueue<Job>();
-        private int m_BoundedCapacity = 5000;
+        private bool m_warnOverMaxQueue = true;
 
-		private WaitCallback m_process = null;
-        
+        private BlockingCollection<Job> m_jobQueue = new BlockingCollection<Job>(5000);
+
+        private CancellationTokenSource m_cancelSource;
+
         private int m_timeout = -1;
 
-        private int m_threadFlag = 0;
-        private object m_syncLock = new object();
+        private bool m_threadRunnig = false;
 
-		public JobEngine(string name, string loggingName, int timeout = -1)
+        public JobEngine(string name, string loggingName, int timeout = -1)
         {
             Name = name;
             LoggingName = loggingName;
             m_timeout = timeout;
-            m_isrunning = true;
             RequestProcessTimeoutOnStop = 5000;
-
-			if (m_timeout > 0)
-			{
-				m_process = ProcessRequests;
-			}
-			else
-			{
-				m_process = ProcessRequestsInfinite;
-			}
-		}
+        }
 
         public void Start()
         {
-            m_isrunning = true;
-            // Grab the flag.
-            if (0 == Interlocked.CompareExchange(ref m_threadFlag, 1, 0))
-            { 
-                 WorkManager.RunInThreadPool(m_process, null, Name, false);
+            lock (JobLock)
+            {
+                if (IsRunning)
+                    return;
+
+                IsRunning = true;
+
+                m_cancelSource = new CancellationTokenSource();
+                WorkManager.RunInThreadPool(ProcessRequests, null, Name, false);
+                m_threadRunnig = true;
             }
         }
 
         public void Stop()
         {
-            m_isrunning = false;
-            m_jobQueue.CancelWait();
-            // Release the flag.
-            Interlocked.Exchange(ref m_threadFlag, 0);
+            lock (JobLock)
+            {
+                try
+                {
+                    if (!IsRunning)
+                        return;
+
+                    m_log.DebugFormat("[JobEngine] Stopping {0}", Name);
+
+                    IsRunning = false;
+                    if(m_threadRunnig)
+                    {
+                        m_cancelSource.Cancel();
+                        m_threadRunnig = false;
+                    }
+                }
+                finally
+                {
+                    if(m_cancelSource != null)
+                        m_cancelSource.Dispose();
+                }
+            }
         }
 
         /// <summary>
@@ -147,8 +161,9 @@ namespace OpenSim.Framework.Monitoring
         /// </remarks>
         public Job RemoveNextJob()
         {
-			Job nextJob;
-			m_jobQueue.Dequeue(out nextJob);
+            Job nextJob;
+            m_jobQueue.TryTake(out nextJob);
+
             return nextJob;
         }
 
@@ -175,80 +190,84 @@ namespace OpenSim.Framework.Monitoring
         /// </param>
         public bool QueueJob(Job job)
         {
-			if (m_isrunning)
-			{
-                // Grab the flag.
-                if (0 == Interlocked.CompareExchange(ref m_threadFlag, 1, 0))
+            lock(JobLock)
+            {
+                if(!IsRunning)
+                    return false;
+                
+                if(!m_threadRunnig)
                 {
-                    WorkManager.RunInThreadPool(m_process, null, Name, false);
+                     WorkManager.RunInThreadPool(ProcessRequests, null, Name, false);
+                     m_threadRunnig = true;
                 }
+            }
 
-                if (m_jobQueue.Count < m_BoundedCapacity)
-				{
-					m_jobQueue.Enqueue(job);
-					return true;
-				}
-			}
-            return false;
+            if (m_jobQueue.Count < m_jobQueue.BoundedCapacity)
+            {
+                m_jobQueue.Add(job);
+
+                if (!m_warnOverMaxQueue)
+                    m_warnOverMaxQueue = true;
+
+                return true;
+            }
+            else
+            {
+                if (m_warnOverMaxQueue)
+                {
+                    m_log.WarnFormat(
+                        "[{0}]: Job queue at maximum capacity, not recording job from {1} in {2}",
+                        LoggingName, job.Name, Name);
+
+                    m_warnOverMaxQueue = false;
+                }
+                return false;
+            }
         }
 
-		private void ProcessRequests(Object o)
+        private void ProcessRequests(Object o)
         {
-            while (m_isrunning)
+            while(IsRunning)
             {
                 try
                 {
-                    if (!m_jobQueue.TryDequeue(out m_currentJob, m_timeout))
+                    if(!m_jobQueue.TryTake(out m_currentJob, m_timeout, m_cancelSource.Token))
                     {
-                        // Release the flag.
-                        Interlocked.Exchange(ref m_threadFlag, 0);
-                        return;
-                    }					
+                        lock(JobLock)
+                            m_threadRunnig = false;
+                        break;
+                    }
                 }
-                catch 
+                catch(ObjectDisposedException)
+                {
+                    m_log.DebugFormat("[JobEngine] {0} stopping ignoring {1} jobs in queue",
+                        Name,m_jobQueue.Count);
+                    break;
+                }
+                catch(OperationCanceledException)
                 {
                     break;
                 }
+
+                if(LogLevel >= 1)
+                    m_log.DebugFormat("[{0}]: Processing job {1}",LoggingName,m_currentJob.Name);
 
                 try
                 {
                     m_currentJob.Action();
                 }
-                catch { }
+                catch(Exception e)
+                {
+                    m_log.Error(
+                        string.Format(
+                        "[{0}]: Job {1} failed, continuing.  Exception  ",LoggingName,m_currentJob.Name),e);
+                }
+
+                if(LogLevel >= 1)
+                    m_log.DebugFormat("[{0}]: Processed job {1}",LoggingName,m_currentJob.Name);
 
                 m_currentJob = null;
             }
-
-            Thread.Sleep(RequestProcessTimeoutOnStop);
-        }
-
-        private void ProcessRequestsInfinite(Object o)
-        {
-            while (m_isrunning)
-            {
-                try
-                {
-                    if (!m_jobQueue.TryDequeue(out m_currentJob))
-                    {
-                        // Release the flag.
-                        Interlocked.Exchange(ref m_threadFlag, 0);
-                        return;
-                    }
-                }
-                catch
-                {
-                    break;
-                }
-
-                try
-                {
-                    m_currentJob.Action();
-                }
-                catch { }
-                m_currentJob = null;
-			}
-
-            Thread.Sleep(RequestProcessTimeoutOnStop);
         }
 
         public class Job

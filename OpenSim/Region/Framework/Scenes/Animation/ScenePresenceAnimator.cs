@@ -1,5 +1,4 @@
-﻿/* 12 March 2019
- * 
+﻿/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -27,11 +26,15 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using log4net;
 using OpenMetaverse;
 using OpenSim.Framework;
+using OpenSim.Region.Framework.Interfaces;
+using OpenSim.Region.Framework.Scenes;
 using OpenSim.Region.PhysicsModules.SharedBase;
 
 namespace OpenSim.Region.Framework.Scenes.Animation
@@ -49,8 +52,6 @@ namespace OpenSim.Region.Framework.Scenes.Animation
         }
         protected AnimationSet m_animations = new AnimationSet();
 
-        //private ManualResetEvent m_signal = new ManualResetEvent(false);
-
         /// <value>
         /// The current movement animation
         /// </value>
@@ -62,14 +63,14 @@ namespace OpenSim.Region.Framework.Scenes.Animation
 
         public bool m_jumping = false;
 
+        //        private int m_landing = 0;
+
         /// <summary>
         /// Is the avatar falling?
         /// </summary>
         public bool Falling { get; private set; }
 
         private float m_lastFallVelocity;
-
-        private int m_sendFollowUpFlag = 0;
 
         /// <value>
         /// The scene presence that this animator applies to
@@ -79,53 +80,7 @@ namespace OpenSim.Region.Framework.Scenes.Animation
         public ScenePresenceAnimator(ScenePresence sp)
         {
             m_scenePresence = sp;
-            CurrentMovementAnimation = "STAND"; //  "CROUCH"; wtf why start with crouch?
-
-            if (m_scenePresence.IsChildAgent)
-                return;
-        }
-
-        public void SendAnimPackWithFollowUp()
-        {
-            SendAnimPack();
-            m_scenePresence.TriggerScenePresenceUpdated();
-
-            // Eventhough the animator should just belong to one presence, one thread,
-            // we do not want it to create multiple extra threads to send a follow up
-            // of the animation pack to the client. One follow up thread at a time!
-            // We set a flag and then create the follow up thread.
-            if (0 == Interlocked.CompareExchange(ref m_sendFollowUpFlag, 1, 0))
-            {
-                Util.FireAndForget(
-                     delegate
-                     {
-                         try
-                         {
-                             UUID id = m_scenePresence.UUID;
-                             Scene scene = m_scenePresence.Scene;
-
-                             Thread.Sleep(5000);
-
-                             // Release the flag.
-                             Interlocked.Exchange(ref m_sendFollowUpFlag, 0);
-
-                             // Check if the avatar is still in the scene.
-                             ScenePresence p;
-                             if (scene.TryGetScenePresence(id, out p))
-                             {
-                                 // Send the animations to this client.
-                                 SendAnimPackToClient(p.ControllingClient);
-
-                                 p.TriggerScenePresenceUpdated();
-                             }
-                         }
-                         catch
-                         {
-                             // Release the flag just in case.
-                             Interlocked.Exchange(ref m_sendFollowUpFlag, 0);
-                         }
-                     }, null, "", false);
-            }
+            CurrentMovementAnimation = "CROUCH";
         }
 
         public void AddAnimation(UUID animID, UUID objectID)
@@ -133,6 +88,7 @@ namespace OpenSim.Region.Framework.Scenes.Animation
             if (m_scenePresence.IsChildAgent)
                 return;
 
+            //            m_log.DebugFormat("[SCENE PRESENCE ANIMATOR]: Adding animation {0} for {1}", animID, m_scenePresence.Name);
             if (m_scenePresence.Scene.DebugAnimations)
                 m_log.DebugFormat(
                     "[SCENE PRESENCE ANIMATOR]: Adding animation {0} {1} for {2}",
@@ -140,7 +96,8 @@ namespace OpenSim.Region.Framework.Scenes.Animation
 
             if (m_animations.Add(animID, m_scenePresence.ControllingClient.NextAnimationSequenceNumber, objectID))
             {
-                SendAnimPackWithFollowUp();
+                SendAnimPack();
+                m_scenePresence.TriggerScenePresenceUpdated();
             }
         }
 
@@ -155,6 +112,8 @@ namespace OpenSim.Region.Framework.Scenes.Animation
             UUID animID = DefaultAvatarAnimations.GetDefaultAnimation(name.ToUpper());
             if (animID == UUID.Zero)
                 return;
+
+            //            m_log.DebugFormat("[SCENE PRESENCE ANIMATOR]: Adding animation {0} {1} for {2}", animID, name, m_scenePresence.Name);
 
             AddAnimation(animID, objectID);
         }
@@ -179,7 +138,8 @@ namespace OpenSim.Region.Framework.Scenes.Animation
 
             if (m_animations.Remove(animID, allowNoDefault))
             {
-                SendAnimPackWithFollowUp();
+                SendAnimPack();
+                m_scenePresence.TriggerScenePresenceUpdated();
             }
         }
 
@@ -195,11 +155,8 @@ namespace OpenSim.Region.Framework.Scenes.Animation
                 else
                     m_animations.Remove(animID, false);
             }
-
             if (sendPack)
-            {
-                SendAnimPackWithFollowUp();
-            }
+                SendAnimPack();
         }
 
         // Called from scripts
@@ -237,11 +194,17 @@ namespace OpenSim.Region.Framework.Scenes.Animation
         /// <returns>'true' if the animation was updated</returns>
         ///
 
+
+
         public bool TrySetMovementAnimation(string anim)
         {
             bool ret = false;
             if (!m_scenePresence.IsChildAgent)
             {
+//                m_log.DebugFormat(
+//                    "[SCENE PRESENCE ANIMATOR]: Setting movement animation {0} for {1}",
+//                    anim, m_scenePresence.Name);
+
                 if (aoSitGndAnim != UUID.Zero)
                 {
                     avnChangeAnim(aoSitGndAnim, false, true);
@@ -274,9 +237,12 @@ namespace OpenSim.Region.Framework.Scenes.Animation
                     if (anim == "SIT" || anim == "SITGROUND")
                         anim = m_scenePresence.sitAnimation;
 
-                    if (m_animations.TrySetDefaultAnimation(
-                    anim, m_scenePresence.ControllingClient.NextAnimationSequenceNumber, m_scenePresence.UUID))
+                    if (m_animations.TrySetDefaultAnimation(anim, m_scenePresence.ControllingClient.NextAnimationSequenceNumber, m_scenePresence.UUID))
                     {
+//                    m_log.DebugFormat(
+//                        "[SCENE PRESENCE ANIMATOR]: Updating movement animation to {0} for {1}",
+//                        anim, m_scenePresence.Name);
+
                         // 16384 is CHANGED_ANIMATION
                         m_scenePresence.SendScriptEventToAttachments("changed", new Object[] { (int)Changed.ANIMATION });
                         SendAnimPack();
@@ -597,6 +563,8 @@ namespace OpenSim.Region.Framework.Scenes.Animation
         /// <returns>'true' if the animation was changed</returns>
         public bool UpdateMovementAnimations()
         {
+            //            m_log.DebugFormat("[SCENE PRESENCE ANIMATOR]: Updating movement animations for {0}", m_scenePresence.Name);
+
             bool ret = false;
             lock (m_animations)
             {
@@ -604,6 +572,10 @@ namespace OpenSim.Region.Framework.Scenes.Animation
                 if (CurrentMovementAnimation != newMovementAnimation)
                 {
                     CurrentMovementAnimation = newMovementAnimation;
+
+//                    m_log.DebugFormat(
+//                        "[SCENE PRESENCE ANIMATOR]: Determined animation {0} for {1} in UpdateMovementAnimations()",
+//                        CurrentMovementAnimation, m_scenePresence.Name);
 
                     // Only set it if it's actually changed, give a script
                     // a chance to stop a default animation
@@ -633,155 +605,158 @@ namespace OpenSim.Region.Framework.Scenes.Animation
 
         public UUID[] GetAnimationArray()
         {
-            return m_animations.GetAnimIDsArray();
+            UUID[] animIDs;
+            int[] sequenceNums;
+            UUID[] objectIDs;
+            m_animations.GetArrays(out animIDs, out sequenceNums, out objectIDs);
+            return animIDs;
         }
 
-/*
-        public BinBVHAnimation GenerateRandomAnimation() // never called.
+        public BinBVHAnimation GenerateRandomAnimation()
         {
             int rnditerations = 3;
             BinBVHAnimation anim = new BinBVHAnimation();
+            List<string> parts = new List<string>();
 
-            string[] strjoints = new string[] {
             /// Torso and Head
-            "mPelvis",
-            "mTorso",
-            "mChest",
-            "mNeck",
-            "mHead",
-            "mSkull",
-            "mEyeRight",
-            "mEyeLeft",
+            parts.Add("mPelvis");
+            parts.Add("mTorso");
+            parts.Add("mChest");
+            parts.Add("mNeck");
+            parts.Add("mHead");
+            parts.Add("mSkull");
+            parts.Add("mEyeRight");
+            parts.Add("mEyeLeft");
             /// Arms
-            "mCollarLeft",
-            "mShoulderLeft",
-            "mElbowLeft",
-            "mWristLeft",
-            "mCollarRight",
-            "mShoulderRight",
-            "mElbowRight",
-            "mWristRight",
+            parts.Add("mCollarLeft");
+            parts.Add("mShoulderLeft");
+            parts.Add("mElbowLeft");
+            parts.Add("mWristLeft");
+            parts.Add("mCollarRight");
+            parts.Add("mShoulderRight");
+            parts.Add("mElbowRight");
+            parts.Add("mWristRight");
             /// Legs
-            "mHipLeft",
-            "mKneeLeft",
-            "mAnkleLeft",
-            "mFootLeft",
-            "mToeLeft",
-            "mHipRight",
-            "mKneeRight",
-            "mAnkleRight",
-            "mFootRight",
-            "mToeRight",
+            parts.Add("mHipLeft");
+            parts.Add("mKneeLeft");
+            parts.Add("mAnkleLeft");
+            parts.Add("mFootLeft");
+            parts.Add("mToeLeft");
+            parts.Add("mHipRight");
+            parts.Add("mKneeRight");
+            parts.Add("mAnkleRight");
+            parts.Add("mFootRight");
+            parts.Add("mToeRight");
             ///Hands
-            "mHandThumb1Left",
-            "mHandThumb1Right",
-            "mHandThumb2Left",
-            "mHandThumb2Right",
-            "mHandThumb3Left",
-            "mHandThumb3Right",
-            "mHandIndex1Left",
-            "mHandIndex1Right",
-            "mHandIndex2Left",
-            "mHandIndex2Right",
-            "mHandIndex3Left",
-            "mHandIndex3Right",
-            "mHandMiddle1Left",
-            "mHandMiddle1Right",
-            "mHandMiddle2Left",
-            "mHandMiddle2Right",
-            "mHandMiddle3Left",
-            "mHandMiddle3Right",
-            "mHandRing1Left",
-            "mHandRing1Right",
-            "mHandRing2Left",
-            "mHandRing2Right",
-            "mHandRing3Left",
-            "mHandRing3Right",
-            "mHandPinky1Left",
-            "mHandPinky1Right",
-            "mHandPinky2Left",
-            "mHandPinky2Right",
-            "mHandPinky3Left",
-            "mHandPinky3Right",
+            parts.Add("mHandThumb1Left");
+            parts.Add("mHandThumb1Right");
+            parts.Add("mHandThumb2Left");
+            parts.Add("mHandThumb2Right");
+            parts.Add("mHandThumb3Left");
+            parts.Add("mHandThumb3Right");
+            parts.Add("mHandIndex1Left");
+            parts.Add("mHandIndex1Right");
+            parts.Add("mHandIndex2Left");
+            parts.Add("mHandIndex2Right");
+            parts.Add("mHandIndex3Left");
+            parts.Add("mHandIndex3Right");
+            parts.Add("mHandMiddle1Left");
+            parts.Add("mHandMiddle1Right");
+            parts.Add("mHandMiddle2Left");
+            parts.Add("mHandMiddle2Right");
+            parts.Add("mHandMiddle3Left");
+            parts.Add("mHandMiddle3Right");
+            parts.Add("mHandRing1Left");
+            parts.Add("mHandRing1Right");
+            parts.Add("mHandRing2Left");
+            parts.Add("mHandRing2Right");
+            parts.Add("mHandRing3Left");
+            parts.Add("mHandRing3Right");
+            parts.Add("mHandPinky1Left");
+            parts.Add("mHandPinky1Right");
+            parts.Add("mHandPinky2Left");
+            parts.Add("mHandPinky2Right");
+            parts.Add("mHandPinky3Left");
+            parts.Add("mHandPinky3Right");
             ///Face
-            "mFaceForeheadLeft",
-            "mFaceForeheadCenter",
-            "mFaceForeheadRight",
-            "mFaceEyebrowOuterLeft",
-            "mFaceEyebrowCenterLeft",
-            "mFaceEyebrowInnerLeft",
-            "mFaceEyebrowOuterRight",
-            "mFaceEyebrowCenterRight",
-            "mFaceEyebrowInnerRight",
-            "mFaceEyeLidUpperLeft",
-            "mFaceEyeLidLowerLeft",
-            "mFaceEyeLidUpperRight",
-            "mFaceEyeLidLowerRight",
-            "mFaceEyeAltLeft",
-            "mFaceEyeAltRight",
-            "mFaceEyecornerInnerLeft",
-            "mFaceEyecornerInnerRight",
-            "mFaceEar1Left",
-            "mFaceEar2Left",
-            "mFaceEar1Right",
-            "mFaceEar2Right",
-            "mFaceNoseLeft",
-            "mFaceNoseCenter",
-            "mFaceNoseRight",
-            "mFaceNoseBase",
-            "mFaceNoseBridge",
-            "mFaceCheekUpperInnerLeft",
-            "mFaceCheekUpperOuterLeft",
-            "mFaceCheekUpperInnerRight",
-            "mFaceCheekUpperOuterRight",
-            "mFaceJaw",
-            "mFaceLipUpperLeft",
-            "mFaceLipUpperCenter",
-            "mFaceLipUpperRight",
-            "mFaceLipCornerLeft",
-            "mFaceLipCornerRight",
-            "mFaceTongueBase",
-            "mFaceTongueTip",
-            "mFaceLipLowerLeft",
-            "mFaceLipLowerCenter",
-            "mFaceLipLowerRight",
-            "mFaceTeethLower",
-            "mFaceTeethUpper",
-            "mFaceChin",
+            parts.Add("mFaceForeheadLeft");
+            parts.Add("mFaceForeheadCenter");
+            parts.Add("mFaceForeheadRight");
+            parts.Add("mFaceEyebrowOuterLeft");
+            parts.Add("mFaceEyebrowCenterLeft");
+            parts.Add("mFaceEyebrowInnerLeft");
+            parts.Add("mFaceEyebrowOuterRight");
+            parts.Add("mFaceEyebrowCenterRight");
+            parts.Add("mFaceEyebrowInnerRight");
+            parts.Add("mFaceEyeLidUpperLeft");
+            parts.Add("mFaceEyeLidLowerLeft");
+            parts.Add("mFaceEyeLidUpperRight");
+            parts.Add("mFaceEyeLidLowerRight");
+            parts.Add("mFaceEyeAltLeft");
+            parts.Add("mFaceEyeAltRight");
+            parts.Add("mFaceEyecornerInnerLeft");
+            parts.Add("mFaceEyecornerInnerRight");
+            parts.Add("mFaceEar1Left");
+            parts.Add("mFaceEar2Left");
+            parts.Add("mFaceEar1Right");
+            parts.Add("mFaceEar2Right");
+            parts.Add("mFaceNoseLeft");
+            parts.Add("mFaceNoseCenter");
+            parts.Add("mFaceNoseRight");
+            parts.Add("mFaceNoseBase");
+            parts.Add("mFaceNoseBridge");
+            parts.Add("mFaceCheekUpperInnerLeft");
+            parts.Add("mFaceCheekUpperOuterLeft");
+            parts.Add("mFaceCheekUpperInnerRight");
+            parts.Add("mFaceCheekUpperOuterRight");
+            parts.Add("mFaceJaw");
+            parts.Add("mFaceLipUpperLeft");
+            parts.Add("mFaceLipUpperCenter");
+            parts.Add("mFaceLipUpperRight");
+            parts.Add("mFaceLipCornerLeft");
+            parts.Add("mFaceLipCornerRight");
+            parts.Add("mFaceTongueBase");
+            parts.Add("mFaceTongueTip");
+            parts.Add("mFaceLipLowerLeft");
+            parts.Add("mFaceLipLowerCenter");
+            parts.Add("mFaceLipLowerRight");
+            parts.Add("mFaceTeethLower");
+            parts.Add("mFaceTeethUpper");
+            parts.Add("mFaceChin");
             ///Spine
-            "mSpine1",
-            "mSpine2",
-            "mSpine3",
-            "mSpine4",
+            parts.Add("mSpine1");
+            parts.Add("mSpine2");
+            parts.Add("mSpine3");
+            parts.Add("mSpine4");
             ///Wings
-            "mWingsRoot",
-            "mWing1Left",
-            "mWing2Left",
-            "mWing3Left",
-            "mWing4Left",
-            "mWing1Right",
-            "mWing2Right",
-            "mWing3Right",
-            "mWing4Right",
-            "mWing4FanRight",
-            "mWing4FanLeft",
+            parts.Add("mWingsRoot");
+            parts.Add("mWing1Left");
+            parts.Add("mWing2Left");
+            parts.Add("mWing3Left");
+            parts.Add("mWing4Left");
+            parts.Add("mWing1Right");
+            parts.Add("mWing2Right");
+            parts.Add("mWing3Right");
+            parts.Add("mWing4Right");
+            parts.Add("mWing4FanRight");
+            parts.Add("mWing4FanLeft");
             ///Hind Limbs
-            "mHindLimbsRoot",
-            "mHindLimb1Left",
-            "mHindLimb2Left",
-            "mHindLimb3Left",
-            "mHindLimb4Left",
-            "mHindLimb1Right",
-            "mHindLimb2Right",
-            "mHindLimb3Right",
-            "mHindLimb4Right",
+            parts.Add("mHindLimbsRoot");
+            parts.Add("mHindLimb1Left");
+            parts.Add("mHindLimb2Left");
+            parts.Add("mHindLimb3Left");
+            parts.Add("mHindLimb4Left");
+            parts.Add("mHindLimb1Right");
+            parts.Add("mHindLimb2Right");
+            parts.Add("mHindLimb3Right");
+            parts.Add("mHindLimb4Right");
             ///Tail
-            "mTail1",
-            "mTail2",
-            "mTail3",
-            "mTail4",
-            "mTail5",
-            "mTail6" };
+            parts.Add("mTail1");
+            parts.Add("mTail2");
+            parts.Add("mTail3");
+            parts.Add("mTail4");
+            parts.Add("mTail5");
+            parts.Add("mTail6");
 
             anim.HandPose = 1;
             anim.InPoint = 0;
@@ -792,12 +767,13 @@ namespace OpenSim.Region.Framework.Scenes.Animation
             anim.ExpressionName = "afraid";
             anim.EaseInTime = 0;
             anim.EaseOutTime = 0;
-            
+
+            string[] strjoints = parts.ToArray();
             anim.Joints = new binBVHJoint[strjoints.Length];
             for (int j = 0; j < strjoints.Length; j++)
             {
                 anim.Joints[j] = new binBVHJoint();
-                anim.Joints[j].Name = m_strjoints[j];
+                anim.Joints[j].Name = strjoints[j];
                 anim.Joints[j].Priority = 7;
                 anim.Joints[j].positionkeys = new binBVHJointKey[rnditerations];
                 anim.Joints[j].rotationkeys = new binBVHJointKey[rnditerations];
@@ -828,7 +804,6 @@ namespace OpenSim.Region.Framework.Scenes.Animation
             AddAnimation(Animasset.FullID, m_scenePresence.UUID);
             return anim;
         }
-*/
 
         /// <summary>
         ///
@@ -869,6 +844,8 @@ namespace OpenSim.Region.Framework.Scenes.Animation
         /// </summary>
         public void SendAnimPack()
         {
+            //m_log.Debug("Sending animation pack to all");
+
             if (m_scenePresence.IsChildAgent)
                 return;
 
@@ -878,6 +855,7 @@ namespace OpenSim.Region.Framework.Scenes.Animation
 
             m_animations.GetArrays(out animIDs, out sequenceNums, out objectIDs);
 
+            //            SendAnimPack(animIDs, sequenceNums, objectIDs);
             m_scenePresence.SendAnimPack(animIDs, sequenceNums, objectIDs);
         }
 

@@ -1,5 +1,4 @@
-/* 25 May 2018
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -38,123 +37,74 @@ namespace OpenSim.Region.Framework.Scenes
 {
     public class EntityManager
     {
-        protected readonly Dictionary<UUID, EntityBase> m_entities_U = new Dictionary<UUID, EntityBase>();
-        protected readonly Dictionary<uint, EntityBase> m_entities_L = new Dictionary<uint, EntityBase>();
+//        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        protected readonly Object m_syncLock = new Object();
+        private readonly DoubleDictionaryThreadAbortSafe<UUID, uint, EntityBase> m_entities
+            = new DoubleDictionaryThreadAbortSafe<UUID, uint, EntityBase>();
 
         public int Count
         {
-            get
-            {
-                lock (m_syncLock)
-                      return m_entities_U.Count;
-            }
+            get { return m_entities.Count; }
         }
 
         public void Add(EntityBase entity)
         {
-            lock (m_syncLock)
-            {
-                m_entities_U[entity.UUID] = entity;
-                m_entities_L[entity.LocalId] = entity;
-            }
+            m_entities.Add(entity.UUID, entity.LocalId, entity);
         }
 
         public void Clear()
         {
-            lock (m_syncLock)
-            {
-                 m_entities_U.Clear();
-                 m_entities_L.Clear();
-            }
+            m_entities.Clear();
         }
 
         public bool ContainsKey(UUID id)
         {
-            try
-            {
-                return m_entities_U.ContainsKey(id);
-            }
-            catch
-            {
-                return false;
-            }
+            return m_entities.ContainsKey(id);
         }
 
         public bool ContainsKey(uint localID)
         {
-            try
-            {
-                return m_entities_L.ContainsKey(localID);
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-
-        private void RemoveEntity(UUID id, uint localID)
-        {
-            m_entities_L.Remove(localID);
-            m_entities_U.Remove(id);
+            return m_entities.ContainsKey(localID);
         }
 
         public bool Remove(uint localID)
         {
-            EntityBase entity;
-            lock (m_syncLock)
-            {
-                if (m_entities_L.TryGetValue(localID, out entity))
-                {
-                    RemoveEntity(entity.UUID, localID);
-                    return true;
-                }
-            }
-            return false;
+            return m_entities.Remove(localID);
         }
 
         public bool Remove(UUID id)
         {
-            EntityBase entity;
-            lock (m_syncLock)
-            {
-                if (m_entities_U.TryGetValue(id, out entity))
-                {
-                    RemoveEntity(id, entity.LocalId);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public EntityBase[] GetEntities()
-        {
-            EntityBase[] tmpArray;
-            lock (m_syncLock)
-            {
-                tmpArray  = new EntityBase[m_entities_U.Count];
-                m_entities_U.Values.CopyTo(tmpArray, 0);
-            }
-            return tmpArray;
+            return m_entities.Remove(id);
         }
 
         public EntityBase[] GetAllByType<T>()
         {
-            EntityBase[] tmpArray = GetEntities();
+            List<EntityBase> tmp = new List<EntityBase>();
 
-            List<EntityBase> tmpList = new List<EntityBase>();
-            // benchmarking shows for is slightly faster than foreach.
-            for (int i = 0; i < tmpArray.Length; i++)
-            {
-                if (tmpArray[i] is T)
+            ForEach(
+                delegate(EntityBase entity)
                 {
-                    tmpList.Add(tmpArray[i]);
+                    if (entity is T)
+                        tmp.Add(entity);
                 }
-            }
+            );
 
-            return tmpList.ToArray();
+            return tmp.ToArray();
+        }
+
+        public EntityBase[] GetEntities()
+        {
+            return m_entities.GetArray();
+        }
+
+        public void ForEach(Action<EntityBase> action)
+        {
+            m_entities.ForEach(action);
+        }
+
+        public EntityBase Find(Predicate<EntityBase> predicate)
+        {
+            return m_entities.FindValue(predicate);
         }
 
         public EntityBase this[UUID id]
@@ -162,7 +112,7 @@ namespace OpenSim.Region.Framework.Scenes
             get
             {
                 EntityBase entity;
-                TryGetValue(id, out entity);
+                m_entities.TryGetValue(id, out entity);
                 return entity;
             }
             set
@@ -176,7 +126,7 @@ namespace OpenSim.Region.Framework.Scenes
             get
             {
                 EntityBase entity;
-                TryGetValue(localID, out entity);
+                m_entities.TryGetValue(localID, out entity);
                 return entity;
             }
             set
@@ -187,22 +137,12 @@ namespace OpenSim.Region.Framework.Scenes
 
         public bool TryGetValue(UUID key, out EntityBase obj)
         {
-            try { return m_entities_U.TryGetValue(key, out obj); }
-            catch (Exception)
-            {
-                obj = null;
-                return false;
-            }
+            return m_entities.TryGetValue(key, out obj);
         }
 
         public bool TryGetValue(uint key, out EntityBase obj)
         {
-            try { return m_entities_L.TryGetValue(key, out obj); }
-            catch (Exception)
-            {
-                obj = null;
-                return false;
-            }
+            return m_entities.TryGetValue(key, out obj);
         }
     }
 }

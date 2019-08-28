@@ -1,5 +1,4 @@
-/* 7 March 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -49,10 +48,16 @@ namespace OpenSim.Framework
     public class TaskInventoryDictionary : Dictionary<UUID, TaskInventoryItem>,
                                            ICloneable, IXmlSerializable
     {
-        private static readonly XmlSerializer tiiSerializer = new XmlSerializer(typeof (TaskInventoryItem));
+        // private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private static XmlSerializer tiiSerializer = new XmlSerializer(typeof (TaskInventoryItem));
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private Thread LockedByThread;
+//        private string WriterStack;
+
+//        private Dictionary<Thread, string> ReadLockers =
+//                new Dictionary<Thread, string>();
 
         /// <value>
         /// An advanced lock for inventory data
@@ -100,26 +105,73 @@ namespace OpenSim.Framework
                 if (m_itemLock.RecursiveReadCount > 0)
                 {
                     m_log.Error("[TaskInventoryDictionary] Recursive read lock requested. This should not happen and means something needs to be fixed. For now though, it's safe to continue.");
+                    try
+                    {
+                        // That call stack is useful for end users only. RealProgrammers need a full dump. Commented.
+                        // StackTrace stackTrace = new StackTrace();           // get call stack
+                        // StackFrame[] stackFrames = stackTrace.GetFrames();  // get method calls (frames)
+                        //
+                        // // write call stack method names
+                        // foreach (StackFrame stackFrame in stackFrames)
+                        // {
+                        //     m_log.Error("[SceneObjectGroup.m_parts]  "+(stackFrame.GetMethod().Name));   // write method name
+                        // }
+
+                        // The below is far more useful
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("My call stack:\n" + Environment.StackTrace);
+//                        System.Console.WriteLine("------------------------------------------");
+//                        foreach (KeyValuePair<Thread, string> kvp in ReadLockers)
+//                        {
+//                            System.Console.WriteLine("Locker name {0} call stack:\n" + kvp.Value, kvp.Key.Name);
+//                            System.Console.WriteLine("------------------------------------------");
+//                        }
+                    }
+                    catch
+                    {}
                     m_itemLock.ExitReadLock();
                 }
                 if (m_itemLock.RecursiveWriteCount > 0)
                 {
                     m_log.Error("[TaskInventoryDictionary] Recursive write lock requested. This should not happen and means something needs to be fixed.");
+//                    try
+//                    {
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("My call stack:\n" + Environment.StackTrace);
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("Locker's call stack:\n" + WriterStack);
+//                        System.Console.WriteLine("------------------------------------------");
+//                    }
+//                    catch
+//                    {}
                     m_itemLock.ExitWriteLock();
                 }
 
                 while (!m_itemLock.TryEnterReadLock(60000))
                 {
                     m_log.Error("Thread lock detected while trying to aquire READ lock in TaskInventoryDictionary. Locked by thread " + LockedByThread.Name + ". I'm going to try to solve the thread lock automatically to preserve region stability, but this needs to be fixed.");
-                    m_itemLock = new System.Threading.ReaderWriterLockSlim();
+                    //if (m_itemLock.IsWriteLockHeld)
+                    //{
+                        m_itemLock = new System.Threading.ReaderWriterLockSlim();
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("My call stack:\n" + Environment.StackTrace);
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("Locker's call stack:\n" + WriterStack);
+//                        System.Console.WriteLine("------------------------------------------");
+//                        LockedByThread = null;
+//                        ReadLockers.Clear();
+                    //}
                 }
+//                ReadLockers[Thread.CurrentThread] = Environment.StackTrace;
             }
             else
             {
-                if (m_itemLock.RecursiveReadCount > 0)
+                if (m_itemLock.RecursiveReadCount>0)
                 {
                     m_itemLock.ExitReadLock();
                 }
+//                if (m_itemLock.RecursiveReadCount == 0)
+//                    ReadLockers.Remove(Thread.CurrentThread);
             }
         }
 
@@ -142,21 +194,35 @@ namespace OpenSim.Framework
 
                     m_itemLock.ExitWriteLock();
                 }
-
                 while (!m_itemLock.TryEnterWriteLock(60000))
                 {
                     if (m_itemLock.IsWriteLockHeld)
                     {
                         m_log.Error("Thread lock detected while trying to aquire WRITE lock in TaskInventoryDictionary. Locked by thread " + LockedByThread.Name + ". I'm going to try to solve the thread lock automatically to preserve region stability, but this needs to be fixed.");
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("My call stack:\n" + Environment.StackTrace);
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("Locker's call stack:\n" + WriterStack);
+//                        System.Console.WriteLine("------------------------------------------");
                     }
                     else
                     {
                         m_log.Error("Thread lock detected while trying to aquire WRITE lock in TaskInventoryDictionary. Locked by a reader. I'm going to try to solve the thread lock automatically to preserve region stability, but this needs to be fixed.");
+//                        System.Console.WriteLine("------------------------------------------");
+//                        System.Console.WriteLine("My call stack:\n" + Environment.StackTrace);
+//                        System.Console.WriteLine("------------------------------------------");
+//                        foreach (KeyValuePair<Thread, string> kvp in ReadLockers)
+//                        {
+//                            System.Console.WriteLine("Locker name {0} call stack:\n" + kvp.Value, kvp.Key.Name);
+//                            System.Console.WriteLine("------------------------------------------");
+//                        }
                     }
                     m_itemLock = new System.Threading.ReaderWriterLockSlim();
+//                    ReadLockers.Clear();
                 }
 
                 LockedByThread = Thread.CurrentThread;
+//                WriterStack = Environment.StackTrace;
             }
             else
             {
@@ -193,6 +259,9 @@ namespace OpenSim.Framework
         //   at System.String.Substring (Int32 startIndex, Int32 length) [0x00088] in /build/buildd/mono-1.2.4/mcs/class/corlib/System/String.cs:381
         //   at System.Xml.Serialization.TypeTranslator.GetTypeData (System.Type runtimeType, System.String xmlDataType) [0x001f6] in /build/buildd/mono-1.2.4/mcs/class/System.XML/System.Xml.Serialization/TypeTranslator.cs:217
         // ...
+//        private static XmlSerializer tiiSerializer
+//            = new XmlSerializer(typeof(Dictionary<UUID, TaskInventoryItem>.ValueCollection));
+
         // see IXmlSerializable
 
         #region IXmlSerializable Members
@@ -205,6 +274,8 @@ namespace OpenSim.Framework
         // see IXmlSerializable
         public void ReadXml(XmlReader reader)
         {
+            // m_log.DebugFormat("[TASK INVENTORY]: ReadXml current node before actions, {0}", reader.Name);
+
             if (!reader.IsEmptyElement)
             {
                 reader.Read();
@@ -213,12 +284,21 @@ namespace OpenSim.Framework
                     TaskInventoryItem item = (TaskInventoryItem) tiiSerializer.Deserialize(reader);
                     Add(item.ItemID, item);
 
+                    //m_log.DebugFormat("[TASK INVENTORY]: Instanted prim item {0}, {1} from xml", item.Name, item.ItemID);
                 }
+
+               // m_log.DebugFormat("[TASK INVENTORY]: Instantiated {0} prim items in total from xml", Count);
             }
+            // else
+            // {
+            //     m_log.DebugFormat("[TASK INVENTORY]: Skipping empty element {0}", reader.Name);
+            // }
 
             // For some .net implementations, this last read is necessary so that we advance beyond the end tag
             // of the element wrapping this object so that the rest of the serialization can complete normally.
             reader.Read();
+
+            // m_log.DebugFormat("[TASK INVENTORY]: ReadXml current node after actions, {0}", reader.Name);
         }
 
         // see IXmlSerializable
@@ -231,6 +311,8 @@ namespace OpenSim.Framework
                     tiiSerializer.Serialize(writer, item);
                 }
             }
+
+            //tiiSerializer.Serialize(writer, Values);
         }
 
         #endregion

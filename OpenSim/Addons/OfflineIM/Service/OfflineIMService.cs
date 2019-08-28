@@ -1,5 +1,4 @@
-/* 7 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -50,12 +49,13 @@ namespace OpenSim.OfflineIM
 //        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private const int MAX_IM = 25;
 
-        private static readonly XmlSerializer m_serializer = new XmlSerializer(typeof(GridInstantMessage));
+        private XmlSerializer m_serializer;
         private static bool m_Initialized = false;
 
         public OfflineIMService(IConfigSource config)
             : base(config)
         {
+            m_serializer = new XmlSerializer(typeof(GridInstantMessage));
             if (!m_Initialized)
             {
                 m_Database.DeleteOld();
@@ -111,7 +111,6 @@ namespace OpenSim.OfflineIM
                     m_serializer.Serialize(writer, im);
                     writer.Flush();
                 }
-                settings = null;
 
                 imXml = Util.UTF8NoBomEncoding.GetString(mstream.ToArray());
             }

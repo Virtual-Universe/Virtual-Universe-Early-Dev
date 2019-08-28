@@ -1,5 +1,4 @@
-/* 7 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -34,7 +33,6 @@ using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
-using System.Net.Security;
 using System.Reflection;
 using System.Text;
 using System.Web;
@@ -44,9 +42,9 @@ using System.Xml.Linq;
 using log4net;
 using Nwc.XmlRpc;
 using OpenMetaverse.StructuredData;
+using OpenSim.Framework.ServiceAuth;
 using XMLResponseHelper = OpenSim.Framework.SynchronousRestObjectRequester.XMLResponseHelper;
 
-using OpenSim.Framework.ServiceAuth;
 
 namespace OpenSim.Framework
 {
@@ -178,7 +176,7 @@ namespace OpenSim.Framework
             LogOutgoingDetail(string.Format("RESPONSE {0}: ", reqnum), input);
         }
 
-        public static OSDMap ServiceOSDRequest(string url, OSDMap data, string method, int timeout, bool compressed, bool rpc)
+        public static OSDMap ServiceOSDRequest(string url, OSDMap data, string method, int timeout, bool compressed, bool rpc, bool keepalive = false)
         {
             int reqnum = RequestNumber++;
 
@@ -199,7 +197,7 @@ namespace OpenSim.Framework
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
                 request.Method = method;
                 request.Timeout = timeout;
-                request.KeepAlive = false;
+                request.KeepAlive = keepalive;
                 request.MaximumAutomaticRedirections = 10;
                 request.ReadWriteTimeout = timeout / 2;
                 request.Headers[OSHeaderRequestID] = reqnum.ToString();
@@ -722,7 +720,7 @@ namespace OpenSim.Framework
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-         /// <summary>
+        /// <summary>
         /// Perform an asynchronous REST request.
         /// </summary>
         /// <param name="verb">GET or POST</param>
@@ -776,6 +774,8 @@ namespace OpenSim.Framework
             int tickdata = 0;
             int tickdiff = 0;
 
+            Type type = typeof(TRequest);
+
             WebRequest request = WebRequest.Create(requestUrl);
             HttpWebRequest ht = (HttpWebRequest)request;
 
@@ -801,12 +801,13 @@ namespace OpenSim.Framework
 
                     XmlWriterSettings settings = new XmlWriterSettings();
                     settings.Encoding = Encoding.UTF8;
+
                     using (XmlWriter writer = XmlWriter.Create(buffer, settings))
                     {
-                        osXmlSerializer<TRequest>.ForType.Serialize(writer, obj);
+                        XmlSerializer serializer = new XmlSerializer(type);
+                        serializer.Serialize(writer, obj);
                         writer.Flush();
                     }
-                    settings = null;
 
                     int length = (int)buffer.Length;
                     request.ContentLength = length;
@@ -1169,6 +1170,7 @@ namespace OpenSim.Framework
             int tickstart = Util.EnvironmentTickCount();
             int tickdata = 0;
 
+            Type type = typeof(TRequest);
             TResponse deserial = default(TResponse);
 
             WebRequest request = WebRequest.Create(requestUrl);
@@ -1199,7 +1201,8 @@ namespace OpenSim.Framework
 
                     using (XmlWriter writer = XmlWriter.Create(buffer, settings))
                     {
-                        osXmlSerializer<TRequest>.ForType.Serialize(writer, obj);
+                        XmlSerializer serializer = new XmlSerializer(type);
+                        serializer.Serialize(writer, obj);
                         writer.Flush();
                     }
 
@@ -1329,17 +1332,43 @@ namespace OpenSim.Framework
         {
             public static TResponse LogAndDeserialize<TRequest, TResponse>(int reqnum, Stream respStream, long contentLength)
             {
-                XmlSerializer deserializer = osXmlSerializer<TResponse>.ForType;
-
+                XmlSerializer deserializer = new XmlSerializer(typeof(TResponse));
                 if (WebUtil.DebugLevel >= 5)
                 {
-                    byte[] data = new byte[contentLength];
-                    Util.ReadStream(respStream, data);
+                    const int blockLength = 4096;
+                    byte[] dataBuffer = new byte[blockLength];
+                    int curcount;
+                    using (MemoryStream ms = new MemoryStream(4 * blockLength))
+                    {
+                        if(contentLength == -1)
+                        {
+                            while (true)
+                            {
+                                curcount = respStream.Read(dataBuffer, 0, blockLength);
+                                if (curcount <= 0)
+                                    break;
+                                ms.Write(dataBuffer, 0, curcount);
+                            }
+                        }
+                        else
+                        {
+                            int remaining = (int)contentLength;
+                            while (remaining > 0)
+                            {
+                                curcount = respStream.Read(dataBuffer, 0, remaining);
+                                if (curcount <= 0)
+                                    throw new EndOfStreamException(String.Format("End of stream reached with {0} bytes left to read", remaining));
+                                ms.Write(dataBuffer, 0, curcount);
+                                remaining -= curcount;
+                            }
+                        }
 
-                    WebUtil.LogResponseDetail(reqnum, System.Text.Encoding.UTF8.GetString(data));
+                        dataBuffer = ms.ToArray();
+                        WebUtil.LogResponseDetail(reqnum, System.Text.Encoding.UTF8.GetString(dataBuffer));
 
-                    using (MemoryStream temp = new MemoryStream(data))
-                        return (TResponse)deserializer.Deserialize(temp);
+                        ms.Position = 0;
+                        return (TResponse)deserializer.Deserialize(ms);
+                    }
                 }
                 else
                 {
@@ -1423,6 +1452,5 @@ namespace OpenSim.Framework
                 }
             }
         }
-
     }
 }

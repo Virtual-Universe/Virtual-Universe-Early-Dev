@@ -189,7 +189,7 @@ namespace OpenSim.Data.MySQL
                                     "AttachedPosY, AttachedPosZ, " +
                                     "PhysicsShapeType, Density, GravityModifier, " +
                                     "Friction, Restitution, Vehicle, PhysInertia, DynAttrs, " +
-                                    "RotationAxisLocks" +
+                                    "RotationAxisLocks, sopanims" +
                                     ") values (" + "?UUID, " +
                                     "?CreationDate, ?Name, ?Text, " +
                                     "?Description, ?SitName, ?TouchName, " +
@@ -226,7 +226,7 @@ namespace OpenSim.Data.MySQL
                                     "?AttachedPosY, ?AttachedPosZ, " +
                                     "?PhysicsShapeType, ?Density, ?GravityModifier, " +
                                     "?Friction, ?Restitution, ?Vehicle, ?PhysInertia, ?DynAttrs," +
-                                    "?RotationAxisLocks)";
+                                    "?RotationAxisLocks, ?sopanims)";
 
                             FillPrimCommand(cmd, prim, obj.UUID, regionUUID);
 
@@ -598,7 +598,7 @@ namespace OpenSim.Data.MySQL
         // Legacy entry point for when terrain was always a 256x256 hieghtmap
         public void StoreTerrain(double[,] ter, UUID regionID)
         {
-            StoreTerrain(new HeightmapTerrainData(ter), regionID);
+            StoreTerrain(new TerrainData(ter), regionID);
         }
 
         public void StoreTerrain(TerrainData terrData, UUID regionID)
@@ -1403,7 +1403,10 @@ namespace OpenSim.Data.MySQL
 
             prim.Sound = DBGuid.FromDB(row["LoopedSound"].ToString());
             prim.SoundGain = (float)(double)row["LoopedSoundGain"];
-            prim.SoundFlags = 1; // If it's persisted at all, it's looped
+            if (prim.Sound != UUID.Zero)
+                prim.SoundFlags = 1; // If it's persisted at all, it's looped
+            else
+                prim.SoundFlags = 0;
 
             if (!(row["TextureAnimation"] is DBNull))
                 prim.TextureAnimation = (byte[])row["TextureAnimation"];
@@ -1463,7 +1466,7 @@ namespace OpenSim.Data.MySQL
             if (!(row["DynAttrs"] is System.DBNull))
                 prim.DynAttrs = DAMap.FromXml((string)row["DynAttrs"]);
             else
-                prim.DynAttrs = new DAMap();
+                prim.DynAttrs = null;
 
             if (!(row["KeyframeMotion"] is DBNull))
             {
@@ -1498,6 +1501,19 @@ namespace OpenSim.Data.MySQL
             if (row["PhysInertia"].ToString() != String.Empty)
                 pdata = PhysicsInertiaData.FromXml2(row["PhysInertia"].ToString());
             prim.PhysicsInertia = pdata;
+
+            if (!(row["sopanims"] is DBNull))
+            {
+                Byte[] data = (byte[])row["sopanims"];
+                if (data.Length > 0)
+                    prim.DeSerializeAnimations(data);
+                else
+                    prim.Animations = null;
+            }
+            else
+            {
+                prim.Animations = null;
+            }
 
             return prim;
         }
@@ -1867,7 +1883,7 @@ namespace OpenSim.Data.MySQL
             else
                 cmd.Parameters.AddWithValue("Vehicle", String.Empty);
 
-            if (prim.DynAttrs.CountNamespaces > 0)
+            if (prim.DynAttrs != null && prim.DynAttrs.CountNamespaces > 0)
                 cmd.Parameters.AddWithValue("DynAttrs", prim.DynAttrs.ToXml());
             else
                 cmd.Parameters.AddWithValue("DynAttrs", null);
@@ -1878,6 +1894,11 @@ namespace OpenSim.Data.MySQL
             cmd.Parameters.AddWithValue("Friction", (double)prim.Friction);
             cmd.Parameters.AddWithValue("Restitution", (double)prim.Restitution);
             cmd.Parameters.AddWithValue("RotationAxisLocks", prim.RotationAxisLocks);
+
+            if (prim.Animations!= null)
+                cmd.Parameters.AddWithValue("sopanims", prim.SerializeAnimations());
+            else
+                cmd.Parameters.AddWithValue("sopanims", null);
         }
 
         /// <summary>

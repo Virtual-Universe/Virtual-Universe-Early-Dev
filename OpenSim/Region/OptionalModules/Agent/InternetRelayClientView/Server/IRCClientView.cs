@@ -75,7 +75,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             m_client = client;
             m_scene = scene;
 
-            WorkManager.StartThread(InternalLoop, "IRCClientView", ThreadPriority.Normal, false, true);
+            WorkManager.StartThread(InternalLoop, "IRCClientView");
         }
 
         private void SendServerCommand(string command)
@@ -524,6 +524,8 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             set { }
         }
 
+        public float StartFar { get; set; }
+
         public bool TryGet<T>(out T iface)
         {
             iface = default(T);
@@ -539,6 +541,8 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         {
             get { return m_agentID; }
         }
+
+        public UUID ScopeId { get { return UUID.Zero; } }
 
         public void Disconnect(string reason)
         {
@@ -630,6 +634,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         public int NextAnimationSequenceNumber
         {
             get { return 0; }
+            set { }
         }
 
         public string Name
@@ -931,7 +936,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             OnSetAppearance(this, appearance.Texture, (byte[])appearance.VisualParams.Clone(),appearance.AvatarSize, new WearableCacheItem[0]);
         }
 
-        public void SendRegionHandshake(RegionInfo regionInfo, RegionHandshakeArgs args)
+        public void SendRegionHandshake()
         {
             m_log.Info("[IRCd ClientStack] Completing Handshake to Region");
 
@@ -942,7 +947,7 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
             if (OnCompleteMovementToRegion != null)
             {
-                OnCompleteMovementToRegion(this, true);
+                OnCompleteMovementToRegion(this, false);
             }
         }
 
@@ -962,11 +967,6 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         }
 
         public void SendCachedTextureResponse(ISceneEntity avatar, int serial, List<CachedTextureResponseArg> cachedTextures)
-        {
-
-        }
-
-        public void SendStartPingCheck(byte seq)
         {
 
         }
@@ -1013,19 +1013,16 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
             return false;
         }
 
-        public void SendLayerData(float[] map)
+        public void SendLayerData()
         {
-
         }
 
-        public void SendLayerData(int px, int py, float[] map)
+        public void SendLayerData(int[] map)
         {
-
         }
 
         public void SendWindData(int version, Vector2[] windSpeeds)
         {
-
         }
 
         public void SendCloudData(int version, float[] cloudCover)
@@ -1162,7 +1159,8 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
         }
 
-        public void SendXferPacket(ulong xferID, uint packet, byte[] data, bool isTaskInventory)
+        public void SendXferPacket(ulong xferID, uint packet, 
+                byte[] XferData, int XferDataOffset, int XferDatapktLen, bool isTaskInventory)
         {
 
         }
@@ -1779,5 +1777,11 @@ namespace OpenSim.Region.OptionalModules.Agent.InternetRelayClientView.Server
         {
             return 0;
         }
+
+        public uint GetViewerCaps()
+        {
+            return 0;
+        }
+
     }
 }

@@ -42,6 +42,8 @@ namespace OpenSim.Tests.Common
         private Scene m_scene;
         private List<ILandObject> m_parcels;
 
+        public float BanLineSafeHeight { get { return 100f; } }
+
         public TestLandChannel(Scene scene)
         {
             m_scene = scene;
@@ -117,6 +119,6 @@ namespace OpenSim.Tests.Common
 
         public void Join(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id) {}
         public void Subdivide(int start_x, int start_y, int end_x, int end_y, UUID attempting_user_id) {}
-        public void sendClientInitialLandInfo(IClientAPI remoteClient) { }
+        public void sendClientInitialLandInfo(IClientAPI remoteClient, bool overlay) { }
     }
 }

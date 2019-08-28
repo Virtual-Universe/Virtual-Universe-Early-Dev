@@ -1,5 +1,4 @@
-/* 10 March 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -29,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Threading.Tasks;
 
 using OpenSim.Framework;
 using OpenSim.Framework.Console;
@@ -52,7 +50,7 @@ namespace OpenSim.Region.CoreModules.Framework.UserManagement
     {
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		#region ISharedRegionModule
+        #region ISharedRegionModule
 
         public override void Initialise(IConfigSource config)
         {
@@ -118,58 +116,59 @@ namespace OpenSim.Region.CoreModules.Framework.UserManagement
                     string[] names = words[0].Split(new char[] { '.' });
                     if (names.Length >= 2)
                     {
+
                         string uriStr = "http://" + words[1];
-
-    					// Let's check that the last name is a valid address
-						try
-						{
-							new Uri(uriStr);
-						}
-						catch (UriFormatException)
-						{
-							m_log.DebugFormat("[USER MANAGEMENT MODULE]: Malformed address {0}", uriStr);
-							return;
-						}
-
-						UUID userID = UUID.Zero;
-						try
-						{
-							UserAgentServiceConnector uasConn = new UserAgentServiceConnector(uriStr);
-							userID = uasConn.GetUUID(names[0], names[1]);
-						}
-						catch
-						{
-							userID = UUID.Zero;
-						}
-
-						if (!userID.Equals(UUID.Zero))
-						{
-							UserData ud = new UserData();
-							ud.Id = userID;
-							ud.FirstName = words[0];
-							ud.LastName = "@" + words[1];
-							users.Add(ud);
-							// WARNING! that uriStr is not quite right... it may be missing the / at the end,
-							// which will cause trouble (duplicate entries on some tables). We should
-							// get the UUI instead from the UAS. TO BE FIXED. So... lets fix it.
-							if (!uriStr.EndsWith("/"))
-							{
-								uriStr = uriStr + "/";
-							}
-							AddUser(userID, names[0], names[1], uriStr);
-						}
-                        else // Failed to connect to that remote grid.
+                        // Let's check that the last name is a valid address
+                        try
                         {
-                            // We should report back something. Even if its just the name.
+                            new Uri(uriStr);
+                        }
+                        catch (UriFormatException)
+                        {
+                            m_log.DebugFormat("[USER MANAGEMENT MODULE]: Malformed address {0}", uriStr);
+                            return;
+                        }
+
+                        UserAgentServiceConnector uasConn = new UserAgentServiceConnector(uriStr);
+
+                        UUID userID = UUID.Zero;
+                        try
+                        {
+                            userID = uasConn.GetUUID(names[0], names[1]);
+                        }
+                        catch (Exception e)
+                        {
+                            m_log.Debug("[USER MANAGEMENT MODULE]: GetUUID call failed ", e);
+                        }
+
+                        if (!userID.Equals(UUID.Zero))
+                        {
                             UserData ud = new UserData();
-                            ud.Id = UUID.Zero;
+                            ud.Id = userID;
                             ud.FirstName = words[0];
                             ud.LastName = "@" + words[1];
-                            users.Add(ud); // unknown user for now. We report back but do not add.
+                            users.Add(ud);
+                            // WARNING! that uriStr is not quite right... it may be missing the / at the end,
+                            // which will cause trouble (duplicate entries on some tables). We should
+                            // get the UUI instead from the UAS. TO BE FIXED.
+                            AddUser(userID, names[0], names[1], uriStr);
+                            m_log.DebugFormat("[USER MANAGEMENT MODULE]: User {0}@{1} found", words[0], words[1]);
                         }
+                        else
+                            m_log.DebugFormat("[USER MANAGEMENT MODULE]: User {0}@{1} not found", words[0], words[1]);
                     }
                 }
             }
+            //else
+            //{
+            //    foreach (UserData d in m_UserCache.Values)
+            //    {
+            //        if (d.LastName.StartsWith("@") &&
+            //            (d.FirstName.ToLower().StartsWith(query.ToLower()) ||
+            //             d.LastName.ToLower().StartsWith(query.ToLower())))
+            //            users.Add(d);
+            //    }
+            //}
         }
 
     }

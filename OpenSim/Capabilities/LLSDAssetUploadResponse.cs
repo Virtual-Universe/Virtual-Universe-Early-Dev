@@ -1,5 +1,4 @@
-/* 15 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -64,7 +63,6 @@ namespace OpenSim.Framework.Capabilities
         public string uploader = String.Empty;
         public string state = String.Empty;
         public int upload_price = 0;
-        public string message;      //  Hyacinth ..  added correct message handling for Firestorm
         public LLSDAssetUploadResponseData data = null;
         public LLSDAssetUploadError error = null;
         public LLSDAssetUploadResponse()

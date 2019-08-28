@@ -1,5 +1,4 @@
-/* 22 April 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -31,6 +30,8 @@ using log4net;
 using System.Reflection;
 using System;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Collections.Generic;
 using OpenSim.Framework;
 using OpenSim.Framework.Servers;
@@ -53,13 +54,36 @@ namespace OpenSim.Server
                 new List<IServiceConnector>();
 
         protected static PluginLoader loader;
+        private static bool m_NoVerifyCertChain = false;
+        private static bool m_NoVerifyCertHostname = false;
+
+        public static bool ValidateServerCertificate(
+            object sender,
+            X509Certificate certificate,
+            X509Chain chain,
+            SslPolicyErrors sslPolicyErrors)
+        {
+            if (m_NoVerifyCertChain)
+                sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateChainErrors;
+ 
+            if (m_NoVerifyCertHostname)
+                sslPolicyErrors &= ~SslPolicyErrors.RemoteCertificateNameMismatch;
+
+            if (sslPolicyErrors == SslPolicyErrors.None)
+                return true;
+
+            return false;
+        }
 
         public static int Main(string[] args)
         {
+            Culture.SetCurrentCulture();
+            Culture.SetDefaultCurrentCulture();
+
             ServicePointManager.DefaultConnectionLimit = 64;
             ServicePointManager.Expect100Continue = false;
-
-            try { ServicePointManager.DnsRefreshTimeout = 300000; } catch { }
+            ServicePointManager.UseNagleAlgorithm = false;
+            ServicePointManager.ServerCertificateValidationCallback = ValidateServerCertificate;
 
             m_Server = new HttpServerBase("R.O.B.U.S.T.", args);
 
@@ -72,26 +96,16 @@ namespace OpenSim.Server
                 throw new Exception("Configuration error");
             }
 
-            try
-            {
-                string nagle = serverConfig.GetString("UseNagleAlgorithm", String.Empty);
-                if (nagle != String.Empty && nagle.ToLower() == "true")
-                {
-                    ServicePointManager.UseNagleAlgorithm = true;
-                }
-                else
-                {
-                    ServicePointManager.UseNagleAlgorithm = false;
-                }
-            }
-            catch
-            {
-                ServicePointManager.UseNagleAlgorithm = false;
-            }
+            int dnsTimeout = serverConfig.GetInt("DnsTimeout", 30000);
+            try { ServicePointManager.DnsRefreshTimeout = dnsTimeout; } catch { }
+
+            m_NoVerifyCertChain = serverConfig.GetBoolean("NoVerifyCertChain", m_NoVerifyCertChain);
+            m_NoVerifyCertHostname = serverConfig.GetBoolean("NoVerifyCertHostname", m_NoVerifyCertHostname);
+
 
             string connList = serverConfig.GetString("ServiceConnectors", String.Empty);
 
-            registryLocation = serverConfig.GetString("RegistryLocation", ".");
+            registryLocation = serverConfig.GetString("RegistryLocation",".");
 
             IConfig servicesConfig = m_Server.Config.Configs["ServiceList"];
             if (servicesConfig != null)
@@ -110,9 +124,9 @@ namespace OpenSim.Server
                 connList = String.Join(",", servicesList.ToArray());
             }
 
-            string[] conns = connList.Split(new char[] { ',', ' ', '\n', '\r', '\t' });
+            string[] conns = connList.Split(new char[] {',', ' ', '\n', '\r', '\t'});
 
-            //            int i = 0;
+//            int i = 0;
             foreach (string c in conns)
             {
                 if (c == String.Empty)
@@ -122,12 +136,12 @@ namespace OpenSim.Server
                 string conn = c;
                 uint port = 0;
 
-                string[] split1 = conn.Split(new char[] { '/' });
+                string[] split1 = conn.Split(new char[] {'/'});
                 if (split1.Length > 1)
                 {
                     conn = split1[1];
 
-                    string[] split2 = split1[0].Split(new char[] { '@' });
+                    string[] split2 = split1[0].Split(new char[] {'@'});
                     if (split2.Length > 1)
                     {
                         configName = split2[0];
@@ -138,7 +152,7 @@ namespace OpenSim.Server
                         port = Convert.ToUInt32(split1[0]);
                     }
                 }
-                string[] parts = conn.Split(new char[] { ':' });
+                string[] parts = conn.Split(new char[] {':'});
                 string friendlyName = parts[0];
                 if (parts.Length > 1)
                     friendlyName = parts[1];
@@ -178,7 +192,7 @@ namespace OpenSim.Server
 
             int res = m_Server.Run();
 
-            if (m_Server != null)
+            if(m_Server != null)
                 m_Server.Shutdown();
 
             Util.StopThreadPool();

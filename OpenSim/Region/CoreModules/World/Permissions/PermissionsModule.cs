@@ -1,5 +1,4 @@
-/* 12 April 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -95,7 +94,6 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         private bool m_forceGridAdminsOnly;
         private bool m_forceAdminModeAlwaysOn;
         private bool m_allowAdminActionsWithoutGodMode;
-        private bool m_SimpleBuildPermissions = false;   //  Hyacinth
 
         /// <value>
         /// The set of users that are allowed to create scripts.  This is only active if permissions are not being
@@ -164,33 +162,28 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
             string[] sections = new string[] { "Startup", "Permissions" };
 
-            m_SimpleBuildPermissions = Util.GetConfigVarFromSections<bool>(config, "simple_build_permissions", sections, false);  // Hyacinth
-            if (m_SimpleBuildPermissions)
-                m_log.Debug("[PERMISSIONS]: Enabling simple build permissions.");
-
             m_allowGridAdmins = Util.GetConfigVarFromSections<bool>(config, "allow_grid_gods", sections, false);
             m_bypassPermissions = !Util.GetConfigVarFromSections<bool>(config, "serverside_object_permissions", sections, true);
             m_propagatePermissions = Util.GetConfigVarFromSections<bool>(config, "propagate_permissions", sections, true);
 
             m_forceGridAdminsOnly = Util.GetConfigVarFromSections<bool>(config, "force_grid_gods_only", sections, false);
-            if (!m_forceGridAdminsOnly)
-            {
-                m_RegionOwnerIsAdmin = Util.GetConfigVarFromSections<bool>(config, "region_owner_is_god", sections, true);
-                m_RegionManagerIsAdmin = Util.GetConfigVarFromSections<bool>(config, "region_manager_is_god", sections, false);
+            if(!m_forceGridAdminsOnly)
+            {            
+                m_RegionOwnerIsAdmin = Util.GetConfigVarFromSections<bool>(config, "region_owner_is_god",sections, true);
+                m_RegionManagerIsAdmin = Util.GetConfigVarFromSections<bool>(config, "region_manager_is_god",sections, false);
             }
             else
                 m_allowGridAdmins = true;
 
             m_forceAdminModeAlwaysOn = Util.GetConfigVarFromSections<bool>(config, "automatic_gods", sections, false);
             m_allowAdminActionsWithoutGodMode = Util.GetConfigVarFromSections<bool>(config, "implicit_gods", sections, false);
-            if (m_allowAdminActionsWithoutGodMode)
+            if(m_allowAdminActionsWithoutGodMode)
                 m_forceAdminModeAlwaysOn = false;
 
             m_allowedScriptCreators
                 = ParseUserSetConfigSetting(config, "allowed_script_creators", m_allowedScriptCreators);
             m_allowedScriptEditors
                 = ParseUserSetConfigSetting(config, "allowed_script_editors", m_allowedScriptEditors);
-
 
             if (m_bypassPermissions)
                 m_log.Info("[PERMISSIONS]: serverside_object_permissions = false in ini file so disabling all region service permission checks");
@@ -311,7 +304,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             scenePermissions.OnSellGroupObject += CanSellGroupObject;
             scenePermissions.OnSellObjectByUserID += CanSellObjectByUserID;
             scenePermissions.OnSellObject += CanSellObject;
-
+            
             scenePermissions.OnCreateObjectInventory += CanCreateObjectInventory;
             scenePermissions.OnEditObjectInventory += CanEditObjectInventory;
             scenePermissions.OnCopyObjectInventory += CanCopyObjectInventory;
@@ -326,7 +319,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             scenePermissions.OnResetScript += CanResetScript;
             scenePermissions.OnRunScript += CanRunScript;
             scenePermissions.OnCompileScript += CanCompileScript;
-
+            
             scenePermissions.OnCreateUserInventory += CanCreateUserInventory;
             scenePermissions.OnCopyUserInventory += CanCopyUserInventory;
             scenePermissions.OnEditUserInventory += CanEditUserInventory;
@@ -411,7 +404,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             scenePermissions.OnSellGroupObject -= CanSellGroupObject;
             scenePermissions.OnSellObjectByUserID -= CanSellObjectByUserID;
             scenePermissions.OnSellObject -= CanSellObject;
-
+            
             scenePermissions.OnCreateObjectInventory -= CanCreateObjectInventory;
             scenePermissions.OnEditObjectInventory -= CanEditObjectInventory;
             scenePermissions.OnCopyObjectInventory -= CanCopyObjectInventory;
@@ -426,7 +419,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             scenePermissions.OnResetScript -= CanResetScript;
             scenePermissions.OnRunScript -= CanRunScript;
             scenePermissions.OnCompileScript -= CanCompileScript;
-
+            
             scenePermissions.OnCreateUserInventory -= CanCreateUserInventory;
             scenePermissions.OnCopyUserInventory -= CanCopyUserInventory;
             scenePermissions.OnEditUserInventory -= CanEditUserInventory;
@@ -571,7 +564,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             GroupMembershipData gmd = GroupsModule.GetMembershipData(groupID, userID);
-
+            
             if (gmd != null)
             {
                 powers = gmd.GroupPowers;
@@ -587,10 +580,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (client == null)
                 return false;
 
-            if (!client.IsGroupMember(groupID))
+            if(!client.IsGroupMember(groupID))
                 return false;
-
-            powers = client.GetGroupPowers(groupID);
+            
+            powers =  client.GetGroupPowers(groupID);
             return true;
         }
 
@@ -606,7 +599,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             UserSet userSet = defaultValue;
 
             string rawSetting = Util.GetConfigVarFromSections<string>(config, settingName,
-                new string[] { "Startup", "Permissions" }, defaultValue.ToString());
+                new string[] {"Startup", "Permissions"}, defaultValue.ToString());
 
             // Temporary measure to allow 'gods' to be specified in config for consistency's sake.  In the long term
             // this should disappear.
@@ -699,7 +692,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             return m_scene.RegionInfo.EstateSettings.IsEstateManagerOrOwner(user);
         }
 
-        #endregion
+#endregion
 
         public bool PropagatePermissions()
         {
@@ -716,12 +709,12 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public void SetBypassPermissions(bool value)
         {
-            m_bypassPermissions = value;
+            m_bypassPermissions=value;
         }
 
         #region Object Permissions
 
-        const uint DEFAULT_FLAGS = (uint)(
+        const uint DEFAULT_FLAGS  = (uint)(
             PrimFlags.ObjectCopy | // Tells client you can copy the object
             PrimFlags.ObjectModify | // tells client you can modify the object
             PrimFlags.ObjectMove |   // tells client that you can move the object (only, no mod)
@@ -731,7 +724,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             PrimFlags.ObjectOwnerModify // Tells client that you're the owner of the object
             );
 
-        const uint NOT_DEFAULT_FLAGS = (uint)~(
+        const uint NOT_DEFAULT_FLAGS  = (uint)~(
             PrimFlags.ObjectCopy | // Tells client you can copy the object
             PrimFlags.ObjectModify | // tells client you can modify the object
             PrimFlags.ObjectMove |   // tells client that you can move the object (only, no mod)
@@ -742,19 +735,19 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             );
 
         const uint EXTRAOWNERMASK = (uint)(
-                PrimFlags.ObjectYouOwner |
+                PrimFlags.ObjectYouOwner | 
                 PrimFlags.ObjectAnyOwner
                 );
 
         const uint EXTRAGODMASK = (uint)(
-                PrimFlags.ObjectYouOwner |
+                PrimFlags.ObjectYouOwner | 
                 PrimFlags.ObjectAnyOwner |
                 PrimFlags.ObjectOwnerModify |
                 PrimFlags.ObjectModify |
                 PrimFlags.ObjectMove
                 );
 
-        const uint GOD_FLAGS = (uint)(
+        const uint GOD_FLAGS  = (uint)(
             PrimFlags.ObjectCopy | // Tells client you can copy the object
             PrimFlags.ObjectModify | // tells client you can modify the object
             PrimFlags.ObjectMove |   // tells client that you can move the object (only, no mod)
@@ -764,14 +757,14 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             PrimFlags.ObjectOwnerModify // Tells client that you're the owner of the object
             );
 
-        const uint LOCKED_GOD_FLAGS = (uint)(
+        const uint LOCKED_GOD_FLAGS  = (uint)(
             PrimFlags.ObjectCopy | // Tells client you can copy the object
             PrimFlags.ObjectTransfer | // tells the client that you can /take/ the object if you don't own it
             PrimFlags.ObjectYouOwner | // Tells client that you're the owner of the object
             PrimFlags.ObjectAnyOwner // Tells client that someone owns the object
             );
 
-        const uint SHAREDMASK = (uint)(
+        const uint SHAREDMASK  = (uint)(
             PermissionMask.Move |
             PermissionMask.Modify |
             PermissionMask.Copy
@@ -779,16 +772,16 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
         public uint GenerateClientFlags(SceneObjectPart task, ScenePresence sp, uint curEffectivePerms)
         {
-            if (sp == null || task == null || curEffectivePerms == 0)
+            if(sp == null  || task == null || curEffectivePerms == 0)
                 return 0;
 
             // Remove any of the objectFlags that are temporary.  These will get added back if appropriate
-            uint objflags = curEffectivePerms & NOT_DEFAULT_FLAGS;
+            uint objflags = curEffectivePerms & NOT_DEFAULT_FLAGS ;
 
             uint returnMask;
 
             SceneObjectGroup grp = task.ParentGroup;
-            if (grp == null)
+            if(grp == null)
                 return 0;
 
             UUID taskOwnerID = task.OwnerID;
@@ -796,10 +789,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
             bool unlocked = (grp.RootPart.OwnerMask & (uint)PermissionMask.Move) != 0;
 
-            if (sp.IsGod)
+            if(sp.IsGod)
             {
                 // do locked on objects owned by admin
-                if (!unlocked && spID == taskOwnerID)
+                if(!unlocked && spID == taskOwnerID)
                     return objflags | LOCKED_GOD_FLAGS;
                 else
                     return objflags | GOD_FLAGS;
@@ -810,7 +803,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             {
                 returnMask = ApplyObjectModifyMasks(task.OwnerMask, objflags, true);  //??
                 returnMask |= EXTRAOWNERMASK;
-                if ((returnMask & (uint)PrimFlags.ObjectModify) != 0)
+                if((returnMask & (uint)PrimFlags.ObjectModify) != 0)
                     returnMask |= (uint)PrimFlags.ObjectOwnerModify;
                 return returnMask;
             }
@@ -820,13 +813,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             {
                 returnMask = ApplyObjectModifyMasks(grp.EffectiveOwnerPerms, objflags, unlocked);
                 returnMask |= EXTRAOWNERMASK;
-                if ((returnMask & (uint)PrimFlags.ObjectModify) != 0)
+                if((returnMask & (uint)PrimFlags.ObjectModify) != 0)
                     returnMask |= (uint)PrimFlags.ObjectOwnerModify;
                 return returnMask;
             }
 
             // if not god or owner, do attachments as everyone
-            if (task.ParentGroup.IsAttachment)
+            if(task.ParentGroup.IsAttachment)
             {
                 returnMask = ApplyObjectModifyMasks(grp.EffectiveEveryOnePerms, objflags, unlocked);
                 if (taskOwnerID != UUID.Zero)
@@ -842,17 +835,17 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             {
                 returnMask = ApplyObjectModifyMasks(grp.EffectiveOwnerPerms, objflags, unlocked);
                 returnMask |= EXTRAOWNERMASK;
-                if ((returnMask & (uint)PrimFlags.ObjectModify) != 0)
+                if((returnMask & (uint)PrimFlags.ObjectModify) != 0)
                     returnMask |= (uint)PrimFlags.ObjectOwnerModify;
                 return returnMask;
             }
 
             // group owned or shared ?
             IClientAPI client = sp.ControllingClient;
-            ulong powers = 0;
-            if (taskGroupID != UUID.Zero && GroupMemberPowers(taskGroupID, sp, ref powers))
+            ulong  powers = 0;
+            if(taskGroupID != UUID.Zero && GroupMemberPowers(taskGroupID, sp, ref powers))
             {
-                if (notGroupdOwned)
+                if(notGroupdOwned)
                 {
                     // group sharing or everyone
                     returnMask = ApplyObjectModifyMasks(grp.EffectiveGroupOrEveryOnePerms, objflags, unlocked);
@@ -862,7 +855,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 }
 
                 // object is owned by group, check role powers
-                if ((powers & (ulong)GroupPowers.ObjectManipulate) == 0)
+                if((powers & (ulong)GroupPowers.ObjectManipulate) == 0)
                 {
                     // group sharing or everyone
                     returnMask = ApplyObjectModifyMasks(grp.EffectiveGroupOrEveryOnePerms, objflags, unlocked);
@@ -874,13 +867,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
                 // we may have copy without transfer
                 uint grpEffectiveOwnerPerms = grp.EffectiveOwnerPerms;
-                if ((grpEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
+                if((grpEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
                     grpEffectiveOwnerPerms &= ~(uint)PermissionMask.Copy;
                 returnMask = ApplyObjectModifyMasks(grpEffectiveOwnerPerms, objflags, unlocked);
-                returnMask |=
+                returnMask |= 
                     (uint)PrimFlags.ObjectGroupOwned |
                     (uint)PrimFlags.ObjectYouOwner;
-                if ((returnMask & (uint)PrimFlags.ObjectModify) != 0)
+                if((returnMask & (uint)PrimFlags.ObjectModify) != 0)
                     returnMask |= (uint)PrimFlags.ObjectOwnerModify;
                 return returnMask;
             }
@@ -941,9 +934,9 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (IsAdministrator(user))
                 return PermissionClass.Owner;
 
-            if (!obj.ParentGroup.IsAttachment)
+            if(!obj.ParentGroup.IsAttachment)
             {
-                if (IsFriendWithPerms(user, objectOwner))
+                if (IsFriendWithPerms(user, objectOwner) )
                     return PermissionClass.Owner;
 
                 // Group permissions
@@ -970,18 +963,18 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (IsAdministrator(currentUser))
             {
                 // do lock on admin owned objects
-                if (locked && currentUser == objectOwner)
+                if(locked && currentUser == objectOwner)
                     return (uint)(PermissionMask.AllEffective & ~(PermissionMask.Modify | PermissionMask.Move));
                 return (uint)PermissionMask.AllEffective;
             }
 
             uint lockmask = (uint)PermissionMask.AllEffective;
-            if (locked)
+            if(locked)
                 lockmask &= ~(uint)(PermissionMask.Modify | PermissionMask.Move);
-
+           
             if (currentUser == objectOwner)
                 return group.EffectiveOwnerPerms & lockmask;
-
+            
             if (group.IsAttachment)
                 return 0;
 
@@ -989,19 +982,19 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             bool notgroudOwned = sogGroupID != objectOwner;
 
             if (notgroudOwned && IsFriendWithPerms(currentUser, objectOwner))
-                return group.EffectiveOwnerPerms & lockmask;
+                return group.EffectiveOwnerPerms  & lockmask;
 
             ulong powers = 0;
             if (sogGroupID != UUID.Zero && GroupMemberPowers(sogGroupID, currentUser, ref powers))
             {
-                if (notgroudOwned)
-                    return group.EffectiveGroupOrEveryOnePerms & lockmask;
+                if(notgroudOwned)
+                    return  group.EffectiveGroupOrEveryOnePerms & lockmask;
 
-                if ((powers & (ulong)GroupPowers.ObjectManipulate) == 0)
-                    return group.EffectiveGroupOrEveryOnePerms & lockmask;
+                if((powers & (ulong)GroupPowers.ObjectManipulate) == 0)
+                    return  group.EffectiveGroupOrEveryOnePerms & lockmask;
 
                 uint grpEffectiveOwnerPerms = group.EffectiveOwnerPerms & lockmask;
-                if ((grpEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
+                if((grpEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
                     grpEffectiveOwnerPerms &= ~(uint)PermissionMask.Copy;
                 return grpEffectiveOwnerPerms;
             }
@@ -1026,38 +1019,38 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
             if (sp.IsGod)
             {
-                if (locked && spID == objectOwner)
+                if(locked && spID == objectOwner)
                     return (uint)(PermissionMask.AllEffective & ~(PermissionMask.Modify | PermissionMask.Move));
                 return (uint)PermissionMask.AllEffective;
             }
 
             uint lockmask = (uint)PermissionMask.AllEffective;
-            if (locked)
+            if(locked)
                 lockmask &= ~(uint)(PermissionMask.Modify | PermissionMask.Move);
-
+           
             if (spID == objectOwner)
                 return group.EffectiveOwnerPerms & lockmask;
-
+            
             if (group.IsAttachment)
                 return 0;
-
+          
             UUID sogGroupID = group.GroupID;
             bool notgroudOwned = sogGroupID != objectOwner;
 
             if (notgroudOwned && IsFriendWithPerms(spID, objectOwner))
-                return group.EffectiveOwnerPerms & lockmask;
+                return group.EffectiveOwnerPerms  & lockmask;
 
             ulong powers = 0;
             if (sogGroupID != UUID.Zero && GroupMemberPowers(sogGroupID, sp, ref powers))
             {
-                if (notgroudOwned)
-                    return group.EffectiveGroupOrEveryOnePerms & lockmask;
+                if(notgroudOwned)
+                    return  group.EffectiveGroupOrEveryOnePerms & lockmask;
 
-                if ((powers & (ulong)GroupPowers.ObjectManipulate) == 0)
-                    return group.EffectiveGroupOrEveryOnePerms & lockmask;
+                if((powers & (ulong)GroupPowers.ObjectManipulate) == 0)
+                    return  group.EffectiveGroupOrEveryOnePerms & lockmask;
 
                 uint grpEffectiveOwnerPerms = group.EffectiveOwnerPerms & lockmask;
-                if ((grpEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
+                if((grpEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
                     grpEffectiveOwnerPerms &= ~(uint)PermissionMask.Copy;
                 return grpEffectiveOwnerPerms;
             }
@@ -1068,28 +1061,28 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         private uint GetObjectItemPermissions(UUID userID, TaskInventoryItem ti)
         {
             UUID tiOwnerID = ti.OwnerID;
-            if (tiOwnerID == userID)
+            if(tiOwnerID == userID)
                 return ti.CurrentPermissions;
-
-            if (IsAdministrator(userID))
+            
+            if(IsAdministrator(userID))
                 return (uint)PermissionMask.AllEffective;
             // ??           
             if (IsFriendWithPerms(userID, tiOwnerID))
                 return ti.CurrentPermissions;
 
             UUID tiGroupID = ti.GroupID;
-            if (tiGroupID != UUID.Zero)
+            if(tiGroupID != UUID.Zero)
             {
                 ulong powers = 0;
-                if (GroupMemberPowers(tiGroupID, userID, ref powers))
+                if(GroupMemberPowers(tiGroupID, userID, ref powers))
                 {
-                    if (tiGroupID == ti.OwnerID)
+                    if(tiGroupID == ti.OwnerID)
                     {
-                        if ((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                        if((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                             return ti.CurrentPermissions;
                     }
                     return ti.GroupPermissions;
-                }
+                } 
             }
 
             return 0;
@@ -1100,32 +1093,32 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             UUID tiOwnerID = ti.OwnerID;
             UUID spID = sp.UUID;
 
-            if (tiOwnerID == spID)
+            if(tiOwnerID == spID)
                 return ti.CurrentPermissions;
-
+ 
             // ??           
             if (IsFriendWithPerms(spID, tiOwnerID))
                 return ti.CurrentPermissions;
 
             UUID tiGroupID = ti.GroupID;
-            if (tiGroupID != UUID.Zero)
+            if(tiGroupID != UUID.Zero)
             {
                 ulong powers = 0;
-                if (GroupMemberPowers(tiGroupID, spID, ref powers))
+                if(GroupMemberPowers(tiGroupID, spID, ref powers))
                 {
-                    if (tiGroupID == ti.OwnerID)
+                    if(tiGroupID == ti.OwnerID)
                     {
-                        if ((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                        if((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                             return ti.CurrentPermissions;
                     }
                     uint p = ti.GroupPermissions;
-                    if (!notEveryone)
+                    if(!notEveryone)
                         p |= ti.EveryonePermissions;
                     return p;
-                }
+                } 
             }
 
-            if (notEveryone)
+            if(notEveryone)
                 return 0;
 
             return ti.EveryonePermissions;
@@ -1181,7 +1174,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
             return false;
         }
-        #endregion
+#endregion
 
         #region Permission Checks
         private bool CanAbandonParcel(UUID user, ILandObject parcel)
@@ -1197,7 +1190,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 
-            return GenericParcelOwnerPermission(user, parcel, 0, true);
+            return GenericParcelOwnerPermission(user, parcel, 0,true);
         }
 
         private bool CanDeedParcel(UUID user, ILandObject parcel)
@@ -1205,7 +1198,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 
-            if (parcel.LandData.GroupID == UUID.Zero)
+            if(parcel.LandData.GroupID == UUID.Zero)
                 return false;
 
             if (IsAdministrator(user))
@@ -1215,7 +1208,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             ScenePresence sp = m_scene.GetScenePresence(user);
-            if (sp == null)
+            if(sp == null)
                 return false;
 
             IClientAPI client = sp.ControllingClient;
@@ -1230,31 +1223,31 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 
-            if (sog == null || sog.IsDeleted || sp == null || sp.IsDeleted || targetGroupID == UUID.Zero)
+            if(sog == null || sog.IsDeleted || sp == null || sp.IsDeleted || targetGroupID == UUID.Zero)
                 return false;
 
             // object has group already?
-            if (sog.GroupID != targetGroupID)
+            if(sog.GroupID != targetGroupID)
                 return false;
 
             // is effectivelly shared?            
-            if (sog.EffectiveGroupPerms == 0)
+            if(sog.EffectiveGroupPerms == 0)
                 return false;
 
-            if (sp.IsGod)
+            if(sp.IsGod)
                 return true;
 
             // owned by requester?
-            if (sog.OwnerID != sp.UUID)
+            if(sog.OwnerID != sp.UUID)
                 return false;
 
             // owner can transfer?
-            if ((sog.EffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
+            if((sog.EffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
                 return false;
-
+            
             // group member ? 
             ulong powers = 0;
-            if (!GroupMemberPowers(targetGroupID, sp, ref powers))
+            if(!GroupMemberPowers(targetGroupID, sp, ref powers))
                 return false;
 
             // has group rights?
@@ -1273,10 +1266,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(sp, sog, false);
-            if ((perms & (uint)PermissionMask.Copy) == 0)
+            if((perms & (uint)PermissionMask.Copy) == 0)
                 return false;
 
-            if (sog.OwnerID != sp.UUID && (perms & (uint)PermissionMask.Transfer) == 0)
+            if(sog.OwnerID != sp.UUID && (perms & (uint)PermissionMask.Transfer) == 0)
                 return false;
 
             //If they can rez, they can duplicate
@@ -1293,13 +1286,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (sog == null || sog.IsDeleted || sp == null || sp.IsDeleted)
                 return false;
 
-            if (sog.IsAttachment)
+            if(sog.IsAttachment)
                 return false;
 
             UUID sogOwnerID = sog.OwnerID;
             UUID spID = sp.UUID;
 
-            if (sogOwnerID == spID)
+            if(sogOwnerID == spID)
                 return true;
 
             if (sp.IsGod)
@@ -1312,15 +1305,15 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (sogGroupID != UUID.Zero)
             {
                 ulong powers = 0;
-                if (GroupMemberPowers(sogGroupID, sp, ref powers))
+                if(GroupMemberPowers(sogGroupID, sp, ref powers))
                 {
-                    if (sogGroupID == sogOwnerID)
+                    if(sogGroupID == sogOwnerID)
                     {
-                        if ((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                        if((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                             return true;
                     }
-                    return (sog.EffectiveGroupPerms & (uint)PermissionMask.Modify) != 0;
-                }
+                    return  (sog.EffectiveGroupPerms & (uint)PermissionMask.Modify) != 0;
+                } 
             }
             return false;
         }
@@ -1336,12 +1329,12 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (sog == null)
                 return false;
 
-            if (sog.IsAttachment)
+            if(sog.IsAttachment)
                 return false;
 
             UUID sogOwnerID = sog.OwnerID;
 
-            if (sogOwnerID == userID)
+            if(sogOwnerID == userID)
                 return true;
 
             if (IsAdministrator(userID))
@@ -1354,15 +1347,15 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (sogGroupID != UUID.Zero)
             {
                 ulong powers = 0;
-                if (GroupMemberPowers(sogGroupID, userID, ref powers))
+                if(GroupMemberPowers(sogGroupID, userID, ref powers))
                 {
-                    if (sogGroupID == sogOwnerID)
+                    if(sogGroupID == sogOwnerID)
                     {
-                        if ((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                        if((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                             return true;
                     }
-                    return (sog.EffectiveGroupPerms & (uint)PermissionMask.Modify) != 0;
-                }
+                    return  (sog.EffectiveGroupPerms & (uint)PermissionMask.Modify) != 0;
+                } 
             }
             return false;
         }
@@ -1377,7 +1370,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(userID, sog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
             return true;
         }
@@ -1387,11 +1380,11 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 
-            if (sog == null || sog.IsDeleted || sp == null || sp.IsDeleted)
+            if(sog == null || sog.IsDeleted || sp == null || sp.IsDeleted)
                 return false;
 
             uint perms = GetObjectPermissions(sp, sog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
             return true;
         }
@@ -1404,21 +1397,21 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (sog == null)
                 return false;
 
-            if (sog.OwnerID == userID || IsAdministrator(userID))
+            if(sog.OwnerID == userID || IsAdministrator(userID))
                 return true;
 
             UUID sogGroupID = sog.GroupID;
-            if (sogGroupID == UUID.Zero || sogGroupID != sog.OwnerID)
+            if(sogGroupID == UUID.Zero || sogGroupID != sog.OwnerID)
                 return false;
 
             uint perms = sog.EffectiveOwnerPerms;
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
 
             ulong powers = 0;
-            if (GroupMemberPowers(sogGroupID, userID, ref powers))
+            if(GroupMemberPowers(sogGroupID, userID, ref powers))
             {
-                if ((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                if((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                     return true;
             }
 
@@ -1435,7 +1428,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(userID, sog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
             return true;
         }
@@ -1519,13 +1512,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
                 // check object mod right
                 uint perms = GetObjectPermissions(user, sog, true);
-                if ((perms & (uint)PermissionMask.Modify) == 0)
+                if((perms & (uint)PermissionMask.Modify) == 0)
                     return false;
 
                 TaskInventoryItem ti = part.Inventory.GetInventoryItem(notecard);
                 if (ti == null)
                     return false;
-
+               
                 if (ti.OwnerID != user)
                 {
                     UUID tiGroupID = ti.GroupID;
@@ -1533,10 +1526,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                         return false;
 
                     ulong powers = 0;
-                    if (!GroupMemberPowers(tiGroupID, user, ref powers))
+                    if(!GroupMemberPowers(tiGroupID, user, ref powers))
                         return false;
 
-                    if (tiGroupID == ti.OwnerID && (powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                    if(tiGroupID == ti.OwnerID && (powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                     {
                         if ((ti.CurrentPermissions & ((uint)PermissionMask.Modify | (uint)PermissionMask.Copy)) ==
                         ((uint)PermissionMask.Modify | (uint)PermissionMask.Copy))
@@ -1596,7 +1589,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         {
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
 
-            if (sog == null || sog.IsDeleted || sp == null || sp.IsDeleted)
+            if(sog == null || sog.IsDeleted || sp == null || sp.IsDeleted)
                 return false;
 
             if (m_bypassPermissions)
@@ -1607,7 +1600,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             }
 
             uint perms = GetObjectPermissions(sp, sog, true);
-            if ((perms & (uint)PermissionMask.Move) == 0)
+            if((perms & (uint)PermissionMask.Move) == 0)
                 return false;
             return true;
         }
@@ -1621,10 +1614,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
             // allow outside region this is needed for crossings
             if (newX < -1f || newX > (m_scene.RegionInfo.RegionSizeX + 1.0f) ||
-                newY < -1f || newY > (m_scene.RegionInfo.RegionSizeY + 1.0f))
+                newY < -1f || newY > (m_scene.RegionInfo.RegionSizeY + 1.0f) )
                 return true;
 
-            if (sog == null || sog.IsDeleted)
+            if(sog == null || sog.IsDeleted)
                 return false;
 
             if (m_bypassPermissions)
@@ -1660,7 +1653,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 if ((parcel.LandData.Flags & ((int)ParcelFlags.AllowGroupObjectEntry)) != 0)
                     return IsGroupMember(landGroupID, userID, 0);
 
-                if (landdata.IsGroupOwned && IsGroupMember(landGroupID, userID, (ulong)GroupPowers.AllowRez))
+                 if (landdata.IsGroupOwned && IsGroupMember(landGroupID, userID, (ulong)GroupPowers.AllowRez))
                     return true;
             }
 
@@ -1672,7 +1665,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
         {
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
 
-            if (sog == null || sog.IsDeleted)
+            if(sog == null || sog.IsDeleted)
                 return false;
 
             if (m_bypassPermissions)
@@ -1683,7 +1676,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
             int checkflags = ((int)ParcelFlags.AllowAPrimitiveEntry);
             bool scripts = (sog.ScriptCount() > 0);
-            if (scripts)
+            if(scripts)
                 checkflags |= ((int)ParcelFlags.AllowOtherScripts);
 
             if ((parcel.LandData.Flags & checkflags) == checkflags)
@@ -1702,13 +1695,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (landGroupID != UUID.Zero)
             {
                 checkflags = (int)ParcelFlags.AllowGroupObjectEntry;
-                if (scripts)
+                if(scripts)
                     checkflags |= ((int)ParcelFlags.AllowGroupScripts);
 
                 if ((parcel.LandData.Flags & checkflags) == checkflags)
                     return IsGroupMember(landGroupID, userID, 0);
 
-                if (landdata.IsGroupOwned && IsGroupMember(landGroupID, userID, (ulong)GroupPowers.AllowRez))
+                 if (landdata.IsGroupOwned && IsGroupMember(landGroupID, userID, (ulong)GroupPowers.AllowRez))
                     return true;
             }
 
@@ -1721,7 +1714,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 
-            if (sp == null)
+            if(sp == null)
                 return true;  // assuming that in this case rights are as owner
 
             UUID userID = sp.UUID;
@@ -1734,7 +1727,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
 
             foreach (SceneObjectGroup g in new List<SceneObjectGroup>(objects))
             {
-                if (g.IsAttachment)
+                if(g.IsAttachment)
                 {
                     objects.Remove(g);
                     continue;
@@ -1778,12 +1771,12 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                     // Not a group member, or no rights at all
                     //
                     powers = client.GetGroupPowers(lGroupID);
-                    if (powers == 0)
+                    if(powers == 0)
                     {
                         objects.Remove(g);
                         continue;
                     }
-
+ 
                     // Group deeded object?
                     //
                     if (g.OwnerID == lGroupID &&
@@ -1831,7 +1824,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (m_bypassPermissions)
                 return m_bypassPermissionsValue;
 
-            //            m_log.DebugFormat("[PERMISSIONS MODULE]: Checking rez object at {0} in {1}", objectPosition, m_scene.Name);
+//            m_log.DebugFormat("[PERMISSIONS MODULE]: Checking rez object at {0} in {1}", objectPosition, m_scene.Name);
 
             ILandObject parcel = m_scene.LandChannel.GetLandObject(objectPosition.X, objectPosition.Y);
             if (parcel == null || parcel.LandData == null)
@@ -1844,18 +1837,10 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if ((landdata.Flags & (uint)ParcelFlags.CreateObjects) != 0)
                 return true;
 
-            // Hyacinth - simple_build_permissions
-            // Small rewite by Nani. No need to find the index unless 
-            // m_SimpleBuildPermissions is true.
-            if (m_SimpleBuildPermissions && landdata.ParcelAccessList.FindIndex(
-                    delegate (LandAccessEntry e) {
-                        return e.AgentID == userID;
-                    }) >= 0) return true;
-
-            if (IsAdministrator(userID))
+            if(IsAdministrator(userID))
                 return true;
 
-            if (landdata.GroupID != UUID.Zero)
+            if(landdata.GroupID != UUID.Zero)
             {
                 if ((landdata.Flags & (uint)ParcelFlags.CreateGroupObjects) != 0)
                     return IsGroupMember(landdata.GroupID, userID, 0);
@@ -1881,11 +1866,11 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             DebugPermissionInformation(MethodInfo.GetCurrentMethod().Name);
             if (m_bypassPermissions) return m_bypassPermissionsValue;
 
-            if (scriptitem == null || part == null)
+            if(scriptitem == null || part == null)
                 return false;
 
             SceneObjectGroup sog = part.ParentGroup;
-            if (sog == null)
+            if(sog == null)
                 return false;
 
             Vector3 pos = sog.AbsolutePosition;
@@ -1894,13 +1879,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             LandData ldata = parcel.LandData;
-            if (ldata == null)
+            if(ldata == null)
                 return false;
 
             uint lflags = ldata.Flags;
-
+ 
             if ((lflags & (uint)ParcelFlags.AllowOtherScripts) != 0)
-                return true;
+               return true;
 
             if ((part.OwnerID == ldata.OwnerID))
                 return true;
@@ -1908,7 +1893,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (((lflags & (uint)ParcelFlags.AllowGroupScripts) != 0)
                     && (ldata.GroupID != UUID.Zero) && (ldata.GroupID == part.GroupID))
                 return true;
-
+            
             return GenericEstatePermission(part.OwnerID);
         }
 
@@ -1937,28 +1922,28 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             // sell is not a attachment op
-            if (sog.IsAttachment)
+            if(sog.IsAttachment)
                 return false;
 
-            if (IsAdministrator(userID))
+            if(IsAdministrator(userID))
                 return true;
 
             uint sogEffectiveOwnerPerms = sog.EffectiveOwnerPerms;
-            if ((sogEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
+            if((sogEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
                 return false;
 
-            if (saleType == (byte)SaleType.Copy &&
+            if(saleType == (byte)SaleType.Copy &&
                     (sogEffectiveOwnerPerms & (uint)PermissionMask.Copy) == 0)
                 return false;
 
             UUID sogOwnerID = sog.OwnerID;
 
-            if (sogOwnerID == userID)
+            if(sogOwnerID == userID)
                 return true;
 
             // else only group owned can be sold by members with powers
             UUID sogGroupID = sog.GroupID;
-            if (sog.OwnerID != sogGroupID || sogGroupID == UUID.Zero)
+            if(sog.OwnerID != sogGroupID || sogGroupID == UUID.Zero)
                 return false;
 
             return IsGroupMember(sogGroupID, userID, (ulong)GroupPowers.ObjectSetForSale);
@@ -1973,36 +1958,36 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             // sell is not a attachment op
-            if (sog.IsAttachment)
+            if(sog.IsAttachment)
                 return false;
 
-            if (sp.IsGod)
+            if(sp.IsGod)
                 return true;
 
             uint sogEffectiveOwnerPerms = sog.EffectiveOwnerPerms;
-            if ((sogEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
+            if((sogEffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
                 return false;
 
-            if (saleType == (byte)SaleType.Copy &&
+            if(saleType == (byte)SaleType.Copy &&
                     (sogEffectiveOwnerPerms & (uint)PermissionMask.Copy) == 0)
                 return false;
 
             UUID userID = sp.UUID;
             UUID sogOwnerID = sog.OwnerID;
 
-            if (sogOwnerID == userID)
+            if(sogOwnerID == userID)
                 return true;
 
             // else only group owned can be sold by members with powers
             UUID sogGroupID = sog.GroupID;
-            if (sog.OwnerID != sogGroupID || sogGroupID == UUID.Zero)
+            if(sog.OwnerID != sogGroupID || sogGroupID == UUID.Zero)
                 return false;
 
             ulong powers = 0;
-            if (!GroupMemberPowers(sogGroupID, sp, ref powers))
+            if(!GroupMemberPowers(sogGroupID, sp, ref powers))
                 return false;
 
-            if ((powers & (ulong)GroupPowers.ObjectSetForSale) == 0)
+            if((powers & (ulong)GroupPowers.ObjectSetForSale) == 0)
                 return false;
 
             return true;
@@ -2018,21 +2003,21 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             // take is not a attachment op
-            if (sog.IsAttachment)
+            if(sog.IsAttachment)
                 return false;
 
             UUID sogOwnerID = sog.OwnerID;
             UUID spID = sp.UUID;
 
-            if (sogOwnerID == spID)
+            if(sogOwnerID == spID)
                 return true;
 
             if (sp.IsGod)
                 return true;
 
-            if ((sog.EffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
+            if((sog.EffectiveOwnerPerms & (uint)PermissionMask.Transfer) == 0)
                 return false;
-
+ 
             if (IsFriendWithPerms(sog.UUID, sogOwnerID))
                 return true;
 
@@ -2040,15 +2025,15 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (sogGroupID != UUID.Zero)
             {
                 ulong powers = 0;
-                if (GroupMemberPowers(sogGroupID, sp, ref powers))
+                if(GroupMemberPowers(sogGroupID, sp, ref powers))
                 {
-                    if (sogGroupID == sogOwnerID)
+                    if(sogGroupID == sogOwnerID)
                     {
-                        if ((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                        if((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                             return true;
                     }
                     return (sog.EffectiveGroupPerms & (uint)PermissionMask.Modify) != 0;
-                }
+                } 
             }
             return false;
         }
@@ -2062,18 +2047,18 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             // refuse on attachments
-            if (sog.IsAttachment && !sp.IsGod)
+            if(sog.IsAttachment && !sp.IsGod)
                 return false;
 
             uint perms = GetObjectPermissions(sp, sog, true);
-            if ((perms & (uint)PermissionMask.Copy) == 0)
+            if((perms & (uint)PermissionMask.Copy) == 0)
             {
                 sp.ControllingClient.SendAgentAlertMessage("Copying this item has been denied by the permissions system", false);
                 return false;
             }
 
-            if (sog.OwnerID != sp.UUID && (perms & (uint)PermissionMask.Transfer) == 0)
-                return false;
+            if(sog.OwnerID != sp.UUID && (perms & (uint)PermissionMask.Transfer) == 0)
+                 return false;
             return true;
         }
 
@@ -2101,18 +2086,18 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             ILandObject parcel = m_scene.LandChannel.GetLandObject(X, Y);
             if (parcel == null)
                 return false;
-
+            
             LandData landdata = parcel.LandData;
             if (landdata == null)
                 return false;
-
+            
             if ((landdata.Flags & ((int)ParcelFlags.AllowTerraform)) != 0)
                 return true;
 
-            if (landdata.OwnerID == userID)
+            if(landdata.OwnerID == userID)
                 return true;
-
-            if (landdata.IsGroupOwned && parcel.LandData.GroupID != UUID.Zero &&
+            
+            if (landdata.IsGroupOwned && parcel.LandData.GroupID != UUID.Zero &&  
                     IsGroupMember(landdata.GroupID, userID, (ulong)GroupPowers.AllowEditLand))
                 return true;
 
@@ -2159,14 +2144,14 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 // readable only if it's really full perms
                 //
                 if ((assetRequestItem.CurrentPermissions &
-                        /*
-                                                ((uint)PermissionMask.Modify |
-                                                (uint)PermissionMask.Copy |
-                                                (uint)PermissionMask.Transfer)) !=
-                                                ((uint)PermissionMask.Modify |
-                                                (uint)PermissionMask.Copy |
-                                                (uint)PermissionMask.Transfer))
-                        */
+/*
+                        ((uint)PermissionMask.Modify |
+                        (uint)PermissionMask.Copy |
+                        (uint)PermissionMask.Transfer)) !=
+                        ((uint)PermissionMask.Modify |
+                        (uint)PermissionMask.Copy |
+                        (uint)PermissionMask.Transfer))
+*/
                         (uint)(PermissionMask.Modify | PermissionMask.Copy)) !=
                         (uint)(PermissionMask.Modify | PermissionMask.Copy))
                     return false;
@@ -2182,12 +2167,12 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                     return false;
 
                 uint perms = GetObjectPermissions(userID, sog, true);
-                if ((perms & (uint)PermissionMask.Modify) == 0)
+                if((perms & (uint)PermissionMask.Modify) == 0)
                     return false;
 
                 TaskInventoryItem ti = part.Inventory.GetInventoryItem(script);
 
-                //                if (ti == null || ti.InvType != (int)InventoryType.LSL)
+//                if (ti == null || ti.InvType != (int)InventoryType.LSL)
                 if (ti == null) // legacy may not have type
                     return false;
 
@@ -2196,14 +2181,14 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 // Require full perms
 
                 if ((itperms &
-                        /*
-                                                ((uint)(PermissionMask.Modify |
-                                                (uint)PermissionMask.Copy |
-                                                (uint)PermissionMask.Transfer)) !=
-                                                ((uint)PermissionMask.Modify |
-                                                (uint)PermissionMask.Copy |
-                                                (uint)PermissionMask.Transfer))
-                        */
+/*
+                        ((uint)(PermissionMask.Modify |
+                        (uint)PermissionMask.Copy |
+                        (uint)PermissionMask.Transfer)) !=
+                        ((uint)PermissionMask.Modify |
+                        (uint)PermissionMask.Copy |
+                        (uint)PermissionMask.Transfer))
+*/
                         (uint)(PermissionMask.Modify | PermissionMask.Copy)) !=
                         (uint)(PermissionMask.Modify | PermissionMask.Copy))
                     return false;
@@ -2259,12 +2244,12 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                     return false;
 
                 uint perms = GetObjectPermissions(userID, sog, true);
-                if ((perms & (uint)PermissionMask.Modify) == 0)
+                if((perms & (uint)PermissionMask.Modify) == 0)
                     return false;
 
                 TaskInventoryItem ti = part.Inventory.GetInventoryItem(notecard);
 
-                //                if (ti == null || ti.InvType != (int)InventoryType.Notecard)
+//                if (ti == null || ti.InvType != (int)InventoryType.Notecard)
                 if (ti == null)
                     return false;
 
@@ -2293,7 +2278,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(userID, sog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
             return true;
         }
@@ -2308,7 +2293,7 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(userID, sog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
             return true;
         }
@@ -2334,29 +2319,29 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (sog == null)
                 return false;
 
-            if (sog.OwnerID == userID || IsAdministrator(userID))
+            if(sog.OwnerID == userID || IsAdministrator(userID))
                 return true;
-
-            if (sog.IsAttachment)
+ 
+            if(sog.IsAttachment)
                 return false;
 
             UUID sogGroupID = sog.GroupID;
 
-            if (sogGroupID == UUID.Zero || sogGroupID != sog.OwnerID)
+            if(sogGroupID == UUID.Zero || sogGroupID != sog.OwnerID)
                 return false;
 
             TaskInventoryItem ti = part.Inventory.GetInventoryItem(itemID);
-            if (ti == null)
+            if(ti == null)
                 return false;
 
             ulong powers = 0;
-            if (GroupMemberPowers(sogGroupID, userID, ref powers))
+            if(GroupMemberPowers(sogGroupID, userID, ref powers))
             {
-                if ((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
+                if((powers & (ulong)GroupPowers.ObjectManipulate) != 0)
                     return true;
 
-                if ((ti.EveryonePermissions & (uint)PermissionMask.Copy) != 0)
-                    return true;
+                if((ti.EveryonePermissions & (uint)PermissionMask.Copy) != 0)
+                        return true;
             }
             return false;
         }
@@ -2378,34 +2363,34 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             // dest is locked
-            if ((destsog.EffectiveOwnerPerms & (uint)PermissionMask.Move) == 0)
+            if((destsog.EffectiveOwnerPerms & (uint)PermissionMask.Move) == 0)
                 return false;
 
             uint itperms = item.CurrentPermissions;
 
             // if item is no copy the source is modifed
-            if ((itperms & (uint)PermissionMask.Copy) == 0 && (srcsog.EffectiveOwnerPerms & (uint)PermissionMask.Modify) == 0)
+            if((itperms & (uint)PermissionMask.Copy) == 0 && (srcsog.EffectiveOwnerPerms & (uint)PermissionMask.Modify) == 0)
                 return false;
 
             UUID srcOwner = srcsog.OwnerID;
             UUID destOwner = destsog.OwnerID;
             bool notSameOwner = srcOwner != destOwner;
 
-            if (notSameOwner)
+            if(notSameOwner)
             {
-                if ((itperms & (uint)PermissionMask.Transfer) == 0)
+                if((itperms & (uint)PermissionMask.Transfer) == 0)
                     return false;
 
                 // scripts can't be droped
-                if (item.InvType == (int)InventoryType.LSL)
+                if(item.InvType == (int)InventoryType.LSL)
                     return false;
 
-                if ((destsog.RootPart.GetEffectiveObjectFlags() & (uint)PrimFlags.AllowInventoryDrop) == 0)
+                if((destsog.RootPart.GetEffectiveObjectFlags() & (uint)PrimFlags.AllowInventoryDrop) == 0)
                     return false;
             }
             else
             {
-                if ((destsog.RootPart.GetEffectiveObjectFlags() & (uint)PrimFlags.AllowInventoryDrop) == 0 &&
+                if((destsog.RootPart.GetEffectiveObjectFlags() & (uint)PrimFlags.AllowInventoryDrop) == 0 &&
                             (destsog.EffectiveOwnerPerms & (uint)PermissionMask.Modify) == 0)
                     return false;
             }
@@ -2427,11 +2412,11 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (m_bypassPermissions)
                 return m_bypassPermissionsValue;
 
-            if (sp.IsGod)
+            if(sp.IsGod)
                 return true;
 
             // dest is locked
-            if ((destsog.EffectiveOwnerPerms & (uint)PermissionMask.Move) == 0)
+            if((destsog.EffectiveOwnerPerms & (uint)PermissionMask.Move) == 0)
                 return false;
 
             UUID destOwner = destsog.OwnerID;
@@ -2439,23 +2424,23 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             bool spNotOwner = spID != destOwner;
 
             // scripts can't be droped
-            if (spNotOwner && item.InvType == (int)InventoryType.LSL)
+            if(spNotOwner && item.InvType == (int)InventoryType.LSL)
                 return false;
 
-            if (spNotOwner || item.Owner != destOwner)
+            if(spNotOwner || item.Owner != destOwner)
             {
                 // no copy item will be moved if it has transfer
                 uint itperms = item.CurrentPermissions;
-                if ((itperms & (uint)PermissionMask.Transfer) == 0)
+                if((itperms & (uint)PermissionMask.Transfer) == 0)
                     return false;
             }
 
             // allowdrop is a root part thing and does bypass modify rights
-            if ((destsog.RootPart.GetEffectiveObjectFlags() & (uint)PrimFlags.AllowInventoryDrop) != 0)
+            if((destsog.RootPart.GetEffectiveObjectFlags() & (uint)PrimFlags.AllowInventoryDrop) != 0)
                 return true;
 
             uint perms = GetObjectPermissions(spID, destsog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
 
             return true;
@@ -2475,11 +2460,11 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(userID, sog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
 
             TaskInventoryItem ti = part.Inventory.GetInventoryItem(itemID);
-            if (ti == null)
+            if(ti == null)
                 return false;
 
             //TODO item perm ?
@@ -2509,13 +2494,13 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(userID, sog, true);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
 
             if ((int)InventoryType.LSL == invType)
             {
                 if (m_allowedScriptCreators == UserSet.Administrators)
-                    return false;
+                 return false;
             }
 
             return true;
@@ -2599,32 +2584,28 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                 return false;
 
             uint perms = GetObjectPermissions(agentID, sog, false);
-            if ((perms & (uint)PermissionMask.Modify) == 0) // ??
+            if((perms & (uint)PermissionMask.Modify) == 0) // ??
                 return false;
             return true;
         }
 
         private bool CanCompileScript(UUID ownerUUID, int scriptType)
         {
-            //m_log.DebugFormat("check if {0} is allowed to compile {1}", ownerUUID, scriptType);
-            switch (scriptType)
-            {
+             //m_log.DebugFormat("check if {0} is allowed to compile {1}", ownerUUID, scriptType);
+            switch (scriptType) {
                 case 0:
-                    if (GrantLSL.Count == 0 || GrantLSL.ContainsKey(ownerUUID.ToString()))
-                    {
-                        return (true);
+                    if (GrantLSL.Count == 0 || GrantLSL.ContainsKey(ownerUUID.ToString())) {
+                        return(true);
                     }
                     break;
                 case 1:
-                    if (GrantCS.Count == 0 || GrantCS.ContainsKey(ownerUUID.ToString()))
-                    {
-                        return (true);
+                    if (GrantCS.Count == 0 || GrantCS.ContainsKey(ownerUUID.ToString())) {
+                        return(true);
                     }
                     break;
                 case 2:
-                    if (GrantVB.Count == 0 || GrantVB.ContainsKey(ownerUUID.ToString()))
-                    {
-                        return (true);
+                    if (GrantVB.Count == 0 || GrantVB.ContainsKey(ownerUUID.ToString())) {
+                        return(true);
                     }
                     break;
                 case 3:
@@ -2640,14 +2621,14 @@ namespace OpenSim.Region.CoreModules.World.Permissions
                     }
                     break;
             }
-            return (false);
+            return(false);
         }
 
         private bool CanControlPrimMedia(UUID agentID, UUID primID, int face)
         {
-            //            m_log.DebugFormat(
-            //                "[PERMISSONS]: Performing CanControlPrimMedia check with agentID {0}, primID {1}, face {2}",
-            //                agentID, primID, face);
+//            m_log.DebugFormat(
+//                "[PERMISSONS]: Performing CanControlPrimMedia check with agentID {0}, primID {1}, face {2}",
+//                agentID, primID, face);
 
             if (null == MoapModule)
                 return false;
@@ -2662,25 +2643,25 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (null == me)
                 return true;
 
-            //            m_log.DebugFormat(
-            //                "[PERMISSIONS]: Checking CanControlPrimMedia for {0} on {1} face {2} with control permissions {3}",
-            //                agentID, primID, face, me.ControlPermissions);
+//            m_log.DebugFormat(
+//                "[PERMISSIONS]: Checking CanControlPrimMedia for {0} on {1} face {2} with control permissions {3}",
+//                agentID, primID, face, me.ControlPermissions);
 
             SceneObjectGroup sog = part.ParentGroup;
             if (sog == null)
                 return false;
 
             uint perms = GetObjectPermissions(agentID, sog, false);
-            if ((perms & (uint)PermissionMask.Modify) == 0)
+            if((perms & (uint)PermissionMask.Modify) == 0)
                 return false;
             return true;
         }
 
         private bool CanInteractWithPrimMedia(UUID agentID, UUID primID, int face)
         {
-            //            m_log.DebugFormat(
-            //                "[PERMISSONS]: Performing CanInteractWithPrimMedia check with agentID {0}, primID {1}, face {2}",
-            //                agentID, primID, face);
+//            m_log.DebugFormat(
+//                "[PERMISSONS]: Performing CanInteractWithPrimMedia check with agentID {0}, primID {1}, face {2}",
+//                agentID, primID, face);
 
             if (null == MoapModule)
                 return false;
@@ -2695,17 +2676,17 @@ namespace OpenSim.Region.CoreModules.World.Permissions
             if (null == me)
                 return true;
 
-            //            m_log.DebugFormat(
-            //                "[PERMISSIONS]: Checking CanInteractWithPrimMedia for {0} on {1} face {2} with interact permissions {3}",
-            //                agentID, primID, face, me.InteractPermissions);
+//            m_log.DebugFormat(
+//                "[PERMISSIONS]: Checking CanInteractWithPrimMedia for {0} on {1} face {2} with interact permissions {3}",
+//                agentID, primID, face, me.InteractPermissions);
 
             return GenericPrimMediaPermission(part, agentID, me.InteractPermissions);
         }
 
         private bool GenericPrimMediaPermission(SceneObjectPart part, UUID agentID, MediaPermission perms)
         {
-            //            if (IsAdministrator(agentID))
-            //                return true;
+//            if (IsAdministrator(agentID))
+//                return true;
 
             if ((perms & MediaPermission.Anyone) == MediaPermission.Anyone)
                 return true;

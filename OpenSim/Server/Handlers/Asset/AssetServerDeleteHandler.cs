@@ -1,5 +1,4 @@
-/* 7 May 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -78,7 +77,6 @@ namespace OpenSim.Server.Handlers.Asset
             m_AssetService = service;
             m_allowedTypes = allowedTypes;
         }
-
         protected override byte[] ProcessRequest(string path, Stream request,
                 IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
@@ -110,7 +108,8 @@ namespace OpenSim.Server.Handlers.Asset
                 }
             }
 
-            return ServerUtils.SerializeResult(osXmlSerializer<bool>.ForType, result);
+            XmlSerializer xs = new XmlSerializer(typeof(bool));
+            return ServerUtils.SerializeResult(xs, result);
         }
     }
 }

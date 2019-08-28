@@ -1,5 +1,4 @@
-/* 6 March 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -54,9 +53,7 @@ namespace OpenSim.Region.Framework.Scenes
         private Timer m_timer;
         private Dictionary<KeyframeMotion, object> m_motions = new Dictionary<KeyframeMotion, object>();
         private object m_lockObject = new object();
-
-        private int m_timerFlag = 0;
-
+        private object m_timerLock = new object();
         private const double m_tickDuration = 50.0;
 
         public double TickDuration
@@ -83,39 +80,37 @@ namespace OpenSim.Region.Framework.Scenes
 
         private void OnTimer(object sender, ElapsedEventArgs ea)
         {
-            // Set the flag.
-            if (0 == Interlocked.CompareExchange(ref m_timerFlag, 1, 0))
+            if (!Monitor.TryEnter(m_timerLock))
+                return;
+
+            try
             {
-                try
+                List<KeyframeMotion> motions;
+
+                lock (m_lockObject)
                 {
-                    List<KeyframeMotion> motions;
+                    motions = new List<KeyframeMotion>(m_motions.Keys);
+                }
 
-                    lock (m_lockObject)
+                foreach (KeyframeMotion m in motions)
+                {
+                    try
                     {
-                        motions = new List<KeyframeMotion>(m_motions.Keys);
+                        m.OnTimer(TickDuration);
                     }
-
-                    foreach (KeyframeMotion m in motions)
+                    catch (Exception)
                     {
-                        try
-                        {
-                            m.OnTimer(TickDuration);
-                        }
-                        catch (Exception)
-                        {
-                            // Don't stop processing
-                        }
+                        // Don't stop processing
                     }
                 }
-                catch (Exception)
-                {
-                    // Keep running no matter what
-                }
-                finally
-                {
-                    // Release the flag
-                    Interlocked.Exchange(ref m_timerFlag, 0);
-                }
+            }
+            catch (Exception)
+            {
+                // Keep running no matter what
+            }
+            finally
+            {
+                Monitor.Exit(m_timerLock);
             }
         }
 
@@ -502,7 +497,7 @@ namespace OpenSim.Region.Framework.Scenes
 
             m_group.RootPart.Velocity = Vector3.Zero;
             m_group.RootPart.AngularVelocity = Vector3.Zero;
-            m_skippedUpdates = 1000;
+//            m_skippedUpdates = 1000;
 //            m_group.SendGroupRootTerseUpdate();
             m_group.RootPart.ScheduleTerseUpdate();
             m_group.Scene.EventManager.TriggerMovingEndEvent(m_group.RootPart.LocalId);
@@ -526,7 +521,7 @@ namespace OpenSim.Region.Framework.Scenes
                     return;
                 if (m_running && !m_waitingCrossing)
                     StartTimer();
-                m_skippedUpdates = 1000;
+//                m_skippedUpdates = 1000;
             }
         }
 
@@ -657,10 +652,10 @@ namespace OpenSim.Region.Framework.Scenes
             m_frames.Clear();
         }
 
-        [NonSerialized()] Vector3 m_lastPosUpdate;
-        [NonSerialized()] Quaternion m_lastRotationUpdate;
+//        [NonSerialized()] Vector3 m_lastPosUpdate;
+//        [NonSerialized()] Quaternion m_lastRotationUpdate;
         [NonSerialized()] Vector3 m_currentVel;
-        [NonSerialized()] int m_skippedUpdates;
+//        [NonSerialized()] int m_skippedUpdates;
         [NonSerialized()] double m_lasttickMS;
 
         private void DoOnTimer(double tickDuration)
@@ -674,14 +669,14 @@ namespace OpenSim.Region.Framework.Scenes
             if (m_group == null)
                 return;
 
-            bool update = false;
+//            bool update = false;
 
             if (m_selected)
             {
                 if (m_group.RootPart.Velocity != Vector3.Zero)
                 {
                     m_group.RootPart.Velocity = Vector3.Zero;
-                    m_skippedUpdates = 1000;
+//                    m_skippedUpdates = 1000;
 //                    m_group.SendGroupRootTerseUpdate();
                     m_group.RootPart.ScheduleTerseUpdate();
                 }
@@ -695,7 +690,7 @@ namespace OpenSim.Region.Framework.Scenes
                 // retry to set the position that evtually caused the outbound
                 // if still outside region this will call startCrossing below
                 m_isCrossing = false;
-                m_skippedUpdates = 1000;
+//                m_skippedUpdates = 1000;
                 m_group.AbsolutePosition = m_nextPosition;
 
                 if (!m_isCrossing)
@@ -729,7 +724,7 @@ namespace OpenSim.Region.Framework.Scenes
 
                 m_currentFrame.TimeMS += (int)tickDuration;
                 m_lasttickMS = nowMS - 50f;
-                update = true;
+//                update = true;
             }
 
             int elapsed = (int)(nowMS - m_lasttickMS);
@@ -766,7 +761,7 @@ namespace OpenSim.Region.Framework.Scenes
                     else
                         m_group.RootPart.Velocity = Vector3.Zero;
                 }
-                update = true;
+//                update = true;
             }
             else
             {
@@ -863,7 +858,7 @@ namespace OpenSim.Region.Framework.Scenes
             if (m_group.RootPart.Velocity != Vector3.Zero)
             {
                 m_group.RootPart.Velocity = Vector3.Zero;
-                m_skippedUpdates = 1000;
+//                m_skippedUpdates = 1000;
 //                m_group.SendGroupRootTerseUpdate();
                 m_group.RootPart.ScheduleTerseUpdate();
             }
@@ -876,7 +871,7 @@ namespace OpenSim.Region.Framework.Scenes
             if (m_group != null)
             {
                 m_group.RootPart.Velocity = Vector3.Zero;
-                m_skippedUpdates = 1000;
+//                m_skippedUpdates = 1000;
 //                m_group.SendGroupRootTerseUpdate();
                 m_group.RootPart.ScheduleTerseUpdate();
 

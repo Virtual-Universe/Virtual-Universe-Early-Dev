@@ -48,6 +48,8 @@ namespace OpenSim.Framework
                 sb.Append("<llsd>");
         }
 
+        public const string LLSDEmpty = "<llsd><map /></llsd>";
+
         // got tired of creating a stringbuilder all the time;
         public static StringBuilder Start(int size = 256, bool addxmlversion = false)
         {
@@ -95,6 +97,11 @@ namespace OpenSim.Framework
         public static void AddEndArray(StringBuilder sb)
         {
             sb.Append("</array>");
+        }
+
+        public static void AddEndMapAndArray(StringBuilder sb)
+        {
+            sb.Append("</map></array>");
         }
 
         public static void AddEmptyArray(StringBuilder sb)
@@ -147,9 +154,19 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<integer>");
-                sb.Append(e.ToString());     
+                sb.Append(e.ToString());
                 sb.Append("</integer>");
             }
+        }
+
+        public static void AddElem(uint e, StringBuilder sb)
+        {
+            AddElem(uintToByteArray(e), sb);
+        }
+
+        public static void AddElem(ulong e, StringBuilder sb)
+        {
+            AddElem(ulongToByteArray(e), sb);
         }
 
         public static void AddElem(float e, StringBuilder sb)
@@ -166,96 +183,96 @@ namespace OpenSim.Framework
 
         public static void AddElem(Vector2 e, StringBuilder sb)
         {
-            sb.Append("<map><key>x</key>");
+            sb.Append("<array>");
 
             if(e.X == 0)
-                sb.Append("<real /><key>y</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.X.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>y</key>");
+                sb.Append("</real>");
             }
 
             if(e.Y == 0)
-                sb.Append("<real /></map>");
+                sb.Append("<real /></array>");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Y.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real></map>");
+                sb.Append("</real></array>");
             }
         }
 
         public static void AddElem(Vector3 e, StringBuilder sb)
         {
-            sb.Append("<map>key>x</key>");
+            sb.Append("<array>");
 
             if(e.X == 0)
-                sb.Append("<real /><key>y</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.X.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>y</key>");
+                sb.Append("</real>");
             }
 
             if(e.Y == 0)
-                sb.Append("<real /><key>z</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Y.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>z</key>");
+                sb.Append("</real>");
             }
 
             if(e.Z == 0)
-                sb.Append("<real /></map>");
+                sb.Append("<real /></array>");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Z.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real></map>");
+                sb.Append("</real></array>");
             }
         }
 
         public static void AddElem(Quaternion e, StringBuilder sb)
         {
-            sb.Append("<map><key>x</key>");
+            sb.Append("<array><key>x</key>");
 
             if(e.X == 0)
-                sb.Append("<real /><key>y</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.X.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>y</key>");
+                sb.Append("</real>");
             }
 
             if(e.Y == 0)
-                sb.Append("<real /><key>z</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Y.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>z</key>");
+                sb.Append("</real>");
             }
             if(e.Z == 0)
-                sb.Append("<real /><key>w</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Z.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>w</key>");
+                sb.Append("</real>");
             }
 
             if(e.W == 0)
-                sb.Append("<real /></map>");
+                sb.Append("<real /></array>");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.W.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real></map>");
+                sb.Append("</real></array>");
             }
         }
 
@@ -266,7 +283,7 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<real>");
-                sb.Append(e.ToString(CultureInfo.InvariantCulture));     
+                sb.Append(e.ToString(CultureInfo.InvariantCulture));
                 sb.Append("</real>");
             }
         }
@@ -290,7 +307,7 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<string>");
-                EscapeToXML(e.ToString(), sb);
+                EscapeToXML(e, sb);
                 sb.Append("</string>");
             }
         }
@@ -298,13 +315,9 @@ namespace OpenSim.Framework
         public static void AddRawElem(string e, StringBuilder sb)
         {
             if(String.IsNullOrEmpty(e))
-                sb.Append("<string />");
-            else
-            {
-                sb.Append("<string>");
-                sb.Append(e);     
-                sb.Append("</string>");
-            }
+                return;
+
+            sb.Append(e);     
         }
 
         public static void AddElem(Uri e, StringBuilder sb)
@@ -376,6 +389,13 @@ namespace OpenSim.Framework
             sb.Append("</key><array>");
         }
 
+        public static void AddArrayAndMap(string name, StringBuilder sb)
+        {
+            sb.Append("<key>");
+            sb.Append(name);
+            sb.Append("</key><array><map>");
+        }
+
         public static void AddEmptyArray(string name, StringBuilder sb)
         {
             sb.Append("<key>");
@@ -414,7 +434,7 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<integer>");
-                sb.Append(e.ToString());     
+                sb.Append(e.ToString());
                 sb.Append("</integer>");
             }
         }
@@ -430,7 +450,7 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<binary>"); // encode64 is default
-                sb.Append(Convert.ToBase64String(e,Base64FormattingOptions.None));     
+                sb.Append(Convert.ToBase64String(e,Base64FormattingOptions.None));
                 sb.Append("</binary>");
             }
         }
@@ -446,9 +466,19 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<integer>");
-                sb.Append(e.ToString());     
+                sb.Append(e.ToString());
                 sb.Append("</integer>");
             }
+        }
+
+        public static void AddElem(string name, uint e, StringBuilder sb)
+        {
+            AddElem(name, uintToByteArray(e), sb);
+        }
+
+        public static void AddElem(string name, ulong e, StringBuilder sb)
+        {
+            AddElem(name, ulongToByteArray(e), sb);
         }
 
         public static void AddElem(string name, float e, StringBuilder sb)
@@ -471,24 +501,24 @@ namespace OpenSim.Framework
         {
             sb.Append("<key>");
             sb.Append(name);
-            sb.Append("</key><map><key>x</key>");
+            sb.Append("</key><array>>");
 
             if(e.X == 0)
-                sb.Append("<real /><key>y</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.X.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>y</key>");
+                sb.Append("</real>");
             }
 
             if(e.Y == 0)
-                sb.Append("<real /></map>");
+                sb.Append("<real /></array>");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Y.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real></map>");
+                sb.Append("</real></array>");
             }
         }
 
@@ -496,33 +526,33 @@ namespace OpenSim.Framework
         {
             sb.Append("<key>");
             sb.Append(name);
-            sb.Append("</key><map>key>x</key>");
+            sb.Append("</key><array>");
 
             if(e.X == 0)
-                sb.Append("<real /><key>y</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.X.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>y</key>");
+                sb.Append("</real>");
             }
 
             if(e.Y == 0)
-                sb.Append("<real /><key>z</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Y.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>z</key>");
+                sb.Append("</real>");
             }
 
             if(e.Z == 0)
-                sb.Append("<real /></map>");
+                sb.Append("<real /></array>");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Z.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real></map>");
+                sb.Append("</real></array>");
             }
         }
 
@@ -530,41 +560,41 @@ namespace OpenSim.Framework
         {
             sb.Append("<key>");
             sb.Append(name);
-            sb.Append("</key><map><key>x</key>");
+            sb.Append("</key><array>");
 
             if(e.X == 0)
-                sb.Append("<real /><key>y</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.X.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>y</key>");
+                sb.Append("</real>");
             }
 
             if(e.Y == 0)
-                sb.Append("<real /><key>z</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Y.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>z</key>");
+                sb.Append("</real>");
             }
             if(e.Z == 0)
-                sb.Append("<real /><key>w</key>");
+                sb.Append("<real />");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.Z.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real><key>w</key>");
+                sb.Append("</real>");
             }
 
             if(e.W == 0)
-                sb.Append("<real /></map>");
+                sb.Append("<real /></array>");
             else
             {
                 sb.Append("<real>");
                 sb.Append(e.W.ToString(CultureInfo.InvariantCulture));
-                sb.Append("</real></map>");
+                sb.Append("</real></array>");
             }
         }
 
@@ -579,7 +609,7 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<real>");
-                sb.Append(e.ToString(CultureInfo.InvariantCulture));     
+                sb.Append(e.ToString(CultureInfo.InvariantCulture));
                 sb.Append("</real>");
             }
         }
@@ -611,25 +641,20 @@ namespace OpenSim.Framework
             else
             {
                 sb.Append("<string>");
-                EscapeToXML(e.ToString(), sb);
+                EscapeToXML(e, sb);
                 sb.Append("</string>");
             }
         }
 
         public static void AddRawElem(string name, string e, StringBuilder sb)
         {
+            if (String.IsNullOrEmpty(e))
+                return;
+
             sb.Append("<key>");
             sb.Append(name);
             sb.Append("</key>");
-
-            if(String.IsNullOrEmpty(e))
-                sb.Append("<string />");
-            else
-            {
-                sb.Append("<string>");
-                sb.Append(e);     
-                sb.Append("</string>");
-            }
+            sb.Append(e);
         }
 
         public static void AddElem(string name, Uri e, StringBuilder sb)
@@ -686,7 +711,15 @@ namespace OpenSim.Framework
 
         public static void AddLLSD(string e, StringBuilder sb)
         {
-            sb.Append(e);     
+            sb.Append(e);
+        }
+
+        public static void AddLLSD(string name, string e, StringBuilder sb)
+        {
+            sb.Append("<key>");
+            sb.Append(name);
+            sb.Append("</key>");
+            sb.Append(e);
         }
 
         public static void EscapeToXML(string s, StringBuilder sb)
@@ -720,6 +753,32 @@ namespace OpenSim.Framework
                         break;
                 }
             }
-         }
+        }
+
+        public static byte[] ulongToByteArray(ulong uLongValue)
+        {
+            return new byte[8]
+            {
+                (byte)(uLongValue >> 56),
+                (byte)(uLongValue >> 48),
+                (byte)(uLongValue >> 40),
+                (byte)(uLongValue >> 32),
+                (byte)(uLongValue >> 24),
+                (byte)(uLongValue >> 16),
+                (byte)(uLongValue >> 8),
+                (byte)uLongValue
+            };
+        }
+
+        public static byte[] uintToByteArray(uint value)
+        {
+            return new byte[4]
+            {
+                (byte)(value >> 24),
+                (byte)(value >> 16),
+                (byte)(value >> 8),
+                (byte)value
+            };
+        }
     }
 }

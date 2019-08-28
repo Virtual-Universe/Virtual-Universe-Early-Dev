@@ -1,5 +1,4 @@
-/* 29 April 2019
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -63,20 +62,9 @@ namespace OpenSim.Tests.Common
 
         public void ClientOutgoingPacketHandler(IClientAPI client, bool resendUnacked, bool sendAcks, bool sendPing)
         {
-            if (resendUnacked)
-            {
-                m_elapsedMSOutgoingPacketHandler = 0;
-            }
-
-            if (sendAcks)
-            {
-                m_elapsed500MSOutgoingPacketHandler = 0;
-            }
-
-            if (sendPing)
-            {
-                m_elapsed5000MSOutgoingPacketHandler = 0;
-            }
+            m_resendUnacked = resendUnacked;
+            m_sendAcks = sendAcks;
+            m_sendPing = sendPing;
 
             ClientOutgoingPacketHandler(client);
         }

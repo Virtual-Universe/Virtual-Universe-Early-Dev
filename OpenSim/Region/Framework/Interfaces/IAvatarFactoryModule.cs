@@ -1,5 +1,4 @@
-/* 30 September 2018
- * 
+/*
  * Copyright (c) Contributors, http://opensimulator.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
@@ -32,7 +31,7 @@ using OpenSim.Framework;
 
 namespace OpenSim.Region.Framework.Interfaces
 {
-    public delegate void ReportOutputAction(string format, params object[] args);
+    public delegate void ReportOutputAction(string format, string level, params object[] args);
 
     public interface IAvatarFactoryModule
     {
@@ -64,7 +63,6 @@ namespace OpenSim.Region.Framework.Interfaces
         /// <param name="agentId"></param>
         /// <returns>true if a valid agent was found, false otherwise</returns>
         bool SaveBakedTextures(UUID agentId);
-        AssetBase SaveBakedTexture(UUID agentId, BakeType bakeType, string name);
 
         /// <summary>
         /// Validate that OpenSim can find the baked textures need to display a given avatar
