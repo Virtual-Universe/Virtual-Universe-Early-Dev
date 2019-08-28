@@ -1,36 +1,38 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using log4net;
-using Nini.Config;
 using Mono.Addins;
+using Nini.Config;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
 using OpenSim.Framework;
@@ -42,8 +44,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "ChatModule")]
     public class ChatModule : ISharedRegionModule
     {
-        private static readonly ILog m_log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         protected const int DEBUG_CHANNEL = 2147483647;
 
@@ -56,7 +57,9 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
         protected string m_adminPrefix = "";
         protected object m_syncy = new object();
         protected IConfig m_config;
+
         #region ISharedRegionModule Members
+
         public virtual void Initialise(IConfigSource config)
         {
             m_config = config.Configs["Chat"];
@@ -65,21 +68,24 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             {
                 if (!m_config.GetBoolean("enabled", true))
                 {
-                    m_log.Info("[CHAT]: plugin disabled by configuration");
+                    m_log.Info("[Chat]: plugin disabled by configuration");
                     m_enabled = false;
                     return;
                 }
 
-            m_whisperdistance = m_config.GetInt("whisper_distance", m_whisperdistance);
-            m_saydistance = m_config.GetInt("say_distance", m_saydistance);
-            m_shoutdistance = m_config.GetInt("shout_distance", m_shoutdistance);
-            m_adminPrefix = m_config.GetString("admin_prefix", "");
+                m_whisperdistance = m_config.GetInt("whisper_distance", m_whisperdistance);
+                m_saydistance = m_config.GetInt("say_distance", m_saydistance);
+                m_shoutdistance = m_config.GetInt("shout_distance", m_shoutdistance);
+                m_adminPrefix = m_config.GetString("admin_prefix", "");
             }
         }
 
         public virtual void AddRegion(Scene scene)
         {
-            if (!m_enabled) return;
+            if (!m_enabled)
+            {
+                return;
+            }
 
             lock (m_syncy)
             {
@@ -92,25 +98,31 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
                 }
             }
 
-            m_log.InfoFormat("[CHAT]: Initialized for {0} w:{1} s:{2} S:{3}", scene.RegionInfo.RegionName,
-                             m_whisperdistance, m_saydistance, m_shoutdistance);
+            m_log.InfoFormat("[Chat]: Initialized for {0} w:{1} s:{2} S:{3}", scene.RegionInfo.RegionName,
+                m_whisperdistance, m_saydistance, m_shoutdistance);
         }
 
         public virtual void RegionLoaded(Scene scene)
         {
             if (!m_enabled)
+            {
                 return;
+            }
 
             ISimulatorFeaturesModule featuresModule = scene.RequestModuleInterface<ISimulatorFeaturesModule>();
 
             if (featuresModule != null)
+            {
                 featuresModule.OnSimulatorFeaturesRequest += OnSimulatorFeaturesRequest;
-
+            }
         }
 
         public virtual void RemoveRegion(Scene scene)
         {
-            if (!m_enabled) return;
+            if (!m_enabled)
+            {
+                return;
+            }
 
             lock (m_syncy)
             {
@@ -144,7 +156,6 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
 
         #endregion
 
-
         public virtual void OnNewClient(IClientAPI client)
         {
             client.OnChatFromClient += OnChatFromClient;
@@ -154,8 +165,11 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
         {
             ScenePresence avatar;
             Scene scene = (Scene)c.Scene;
+
             if ((avatar = scene.GetScenePresence(c.Sender.AgentId)) != null)
+            {
                 c.Position = avatar.AbsolutePosition;
+            }
 
             return c;
         }
@@ -174,14 +188,16 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             // sanity check:
             if (c.Sender == null)
             {
-                m_log.ErrorFormat("[CHAT]: OnChatFromClient from {0} has empty Sender field!", sender);
+                m_log.ErrorFormat("[Chat]: OnChatFromClient from {0} has empty Sender field!", sender);
                 return;
             }
 
             if (FreezeCache.Contains(c.Sender.AgentId.ToString()))
             {
                 if (c.Type != ChatTypeEnum.StartTyping || c.Type != ChatTypeEnum.StopTyping)
+                {
                     c.Sender.SendAgentAlertMessage("You may not talk as you are frozen.", false);
+                }
             }
             else
             {
@@ -192,7 +208,10 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
         public virtual void OnChatFromWorld(Object sender, OSChatMessage c)
         {
             // early return if not on public or debug channel
-            if (c.Channel != 0 && c.Channel != DEBUG_CHANNEL) return;
+            if (c.Channel != 0 && c.Channel != DEBUG_CHANNEL)
+            {
+                return;
+            }
 
             DeliverChatToAvatars(ChatSourceType.Object, c);
         }
@@ -213,12 +232,14 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             UUID sourceParcelID = UUID.Zero;
             Vector3 hidePos = fromPos;
 
-            if (c.Channel == DEBUG_CHANNEL) c.Type = ChatTypeEnum.DebugChannel;
-
-            if(!m_scenes.Contains(scene))
+            if (c.Channel == DEBUG_CHANNEL)
             {
-                m_log.WarnFormat("[CHAT]: message from unkown scene {0} ignored",
-                                     scene.RegionInfo.RegionName);
+                c.Type = ChatTypeEnum.DebugChannel;
+            }
+
+            if (!m_scenes.Contains(scene))
+            {
+                m_log.WarnFormat("[Chat]: message from unkown scene {0} ignored", scene.RegionInfo.RegionName);
                 return;
             }
 
@@ -229,8 +250,10 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
                     fromPos = avatar.AbsolutePosition;
                     fromName = avatar.Name;
                     fromID = c.Sender.AgentId;
+
                     if (avatar.IsViewerUIGod)
-                    { // let gods speak to outside or things may get confusing
+                    {
+                        // let gods speak to outside or things may get confusing
                         fromNamePrefix = m_adminPrefix;
                         checkParcelHide = false;
                     }
@@ -238,6 +261,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
                     {
                         checkParcelHide = true;
                     }
+
                     destination = UUID.Zero; // Avatars cant "SayTo"
                     ownerID = c.Sender.AgentId;
 
@@ -250,6 +274,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
                     if (c.SenderObject != null && c.SenderObject is SceneObjectPart)
                     {
                         ownerID = ((SceneObjectPart)c.SenderObject).OwnerID;
+
                         if (((SceneObjectPart)c.SenderObject).ParentGroup.IsAttachment)
                         {
                             checkParcelHide = true;
@@ -261,20 +286,20 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
 
             // TODO: iterate over message
             if (message.Length >= 1000) // libomv limit
+            {
                 message = message.Substring(0, 1000);
-
-//            m_log.DebugFormat(
-//                "[CHAT]: DCTA: fromID {0} fromName {1}, region{2}, cType {3}, sType {4}",
-//                fromID, fromName, scene.RegionInfo.RegionName, c.Type, sourceType);
+            }
 
             HashSet<UUID> receiverIDs = new HashSet<UUID>();
 
             if (checkParcelHide)
             {
                 checkParcelHide = false;
+
                 if (c.Type < ChatTypeEnum.DebugChannel && destination == UUID.Zero)
                 {
                     ILandObject srcland = scene.LandChannel.GetLandObject(hidePos.X, hidePos.Y);
+
                     if (srcland != null && !srcland.LandData.SeeAVs)
                     {
                         sourceParcelID = srcland.LandData.GlobalID;
@@ -284,36 +309,48 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             }
 
             scene.ForEachScenePresence(
-                delegate(ScenePresence presence)
+                delegate (ScenePresence presence)
                 {
                     if (destination != UUID.Zero && presence.UUID != destination)
+                    {
                         return;
+                    }
 
-                    if(presence.IsChildAgent)
+                    if (presence.IsChildAgent)
+                    {
+                        if (checkParcelHide)
                         {
-                            if(checkParcelHide)
-                                return;
-                            if (TrySendChatMessage(presence, fromPos, regionPos, fromID,
-                                        ownerID, fromNamePrefix + fromName, c.Type,
-                                        message, sourceType, (destination != UUID.Zero)))
-                                receiverIDs.Add(presence.UUID);
                             return;
                         }
 
-                    ILandObject Presencecheck = scene.LandChannel.GetLandObject(presence.AbsolutePosition.X,            presence.AbsolutePosition.Y);
+                        if (TrySendChatMessage(presence, fromPos, regionPos, fromID,
+                            ownerID, fromNamePrefix + fromName, c.Type, message, sourceType, (destination != UUID.Zero)))
+                        {
+                            receiverIDs.Add(presence.UUID);
+                        }
+
+                        return;
+                    }
+
+                    ILandObject Presencecheck = scene.LandChannel.GetLandObject(presence.AbsolutePosition.X, presence.AbsolutePosition.Y);
+
                     if (Presencecheck != null)
                     {
                         if (checkParcelHide)
                         {
                             if (sourceParcelID != Presencecheck.LandData.GlobalID && !presence.IsViewerUIGod)
+                            {
                                 return;
+                            }
                         }
+
                         if (c.Sender == null || Presencecheck.IsEitherBannedOrRestricted(c.Sender.AgentId) != true)
                         {
                             if (TrySendChatMessage(presence, fromPos, regionPos, fromID,
-                                        ownerID, fromNamePrefix + fromName, c.Type,
-                                        message, sourceType, (destination != UUID.Zero)))
+                                ownerID, fromNamePrefix + fromName, c.Type, message, sourceType, (destination != UUID.Zero)))
+                            {
                                 receiverIDs.Add(presence.UUID);
+                            }
                         }
                     }
                 });
@@ -326,17 +363,27 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
 
         public virtual void OnChatBroadcast(Object sender, OSChatMessage c)
         {
-            if (c.Channel != 0 && c.Channel != DEBUG_CHANNEL) return;
+            if (c.Channel != 0 && c.Channel != DEBUG_CHANNEL)
+            {
+                return;
+            }
 
             ChatTypeEnum cType = c.Type;
+
             if (c.Channel == DEBUG_CHANNEL)
+            {
                 cType = ChatTypeEnum.DebugChannel;
+            }
 
             if (cType == ChatTypeEnum.Region)
+            {
                 cType = ChatTypeEnum.Say;
+            }
 
             if (c.Message.Length > 1100)
+            {
                 c.Message = c.Message.Substring(0, 1000);
+            }
 
             // broadcast chat works by redistributing every incoming chat
             // message to each avatar in the scene.
@@ -345,6 +392,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             UUID fromID = UUID.Zero;
             UUID ownerID = UUID.Zero;
             ChatSourceType sourceType = ChatSourceType.Object;
+
             if (null != c.Sender)
             {
                 ScenePresence avatar = (c.Scene as Scene).GetScenePresence(c.Sender.AgentId);
@@ -359,30 +407,29 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
                 ownerID = ((SceneObjectPart)c.SenderObject).OwnerID;
             }
 
-            // m_log.DebugFormat("[CHAT] Broadcast: fromID {0} fromName {1}, cType {2}, sType {3}", fromID, fromName, cType, sourceType);
             HashSet<UUID> receiverIDs = new HashSet<UUID>();
 
             if (c.Scene != null)
             {
                 ((Scene)c.Scene).ForEachRootClient
                 (
-                    delegate(IClientAPI client)
+                    delegate (IClientAPI client)
                     {
                         // don't forward SayOwner chat from objects to
                         // non-owner agents
-                        if ((c.Type == ChatTypeEnum.Owner) &&
-                            (null != c.SenderObject) &&
-                            (((SceneObjectPart)c.SenderObject).OwnerID != client.AgentId))
+                        if ((c.Type == ChatTypeEnum.Owner) && (null != c.SenderObject) && (((SceneObjectPart)c.SenderObject).OwnerID != client.AgentId))
+                        {
                             return;
+                        }
 
                         client.SendChatMessage(c.Message, (byte)cType, CenterOfRegion, fromName, fromID, fromID,
-                                               (byte)sourceType, (byte)ChatAudibleLevel.Fully);
+                            (byte)sourceType, (byte)ChatAudibleLevel.Fully);
                         receiverIDs.Add(client.AgentId);
-                    }
-                );
+                    });
+
                 (c.Scene as Scene).EventManager.TriggerOnChatToClients(
                     fromID, receiverIDs, c.Message, cType, CenterOfRegion, fromName, sourceType, ChatAudibleLevel.Fully);
-             }
+            }
         }
 
         /// <summary>
@@ -402,13 +449,14 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
         /// <param name="src"></param>
         /// <returns>true if the message was sent to the receiver, false if it was not sent due to failing a
         /// precondition</returns>
-        protected virtual bool TrySendChatMessage(
-            ScenePresence presence, Vector3 fromPos, Vector3 regionPos,
+        protected virtual bool TrySendChatMessage(ScenePresence presence, Vector3 fromPos, Vector3 regionPos,
             UUID fromAgentID, UUID ownerID, string fromName, ChatTypeEnum type,
             string message, ChatSourceType src, bool ignoreDistance)
         {
             if (presence.LifecycleState != ScenePresenceState.Running)
+            {
                 return false;
+            }
 
             if (!ignoreDistance)
             {
@@ -427,17 +475,18 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             }
 
             // TODO: should change so the message is sent through the avatar rather than direct to the ClientView
-            presence.ControllingClient.SendChatMessage(
-                message, (byte) type, fromPos, fromName,
+            presence.ControllingClient.SendChatMessage(message, (byte)type, fromPos, fromName,
                 fromAgentID, ownerID, (byte)src, (byte)ChatAudibleLevel.Fully);
 
             return true;
         }
 
         Dictionary<UUID, System.Threading.Timer> Timers = new Dictionary<UUID, System.Threading.Timer>();
+
         public virtual void ParcelFreezeUser(IClientAPI client, UUID parcelowner, uint flags, UUID target)
         {
             System.Threading.Timer Timer;
+
             if (flags == 0)
             {
                 FreezeCache.Add(target.ToString());
@@ -463,6 +512,7 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             Timers.Remove(target);
             Timer.Dispose();
         }
+
         #region SimulatorFeaturesRequest
 
         protected static OSDInteger m_SayRange, m_WhisperRange, m_ShoutRange;
@@ -470,10 +520,15 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
         protected virtual void OnSimulatorFeaturesRequest(UUID agentID, ref OSDMap features)
         {
             OSD extras = new OSDMap();
+
             if (features.ContainsKey("OpenSimExtras"))
+            {
                 extras = features["OpenSimExtras"];
+            }
             else
+            {
                 features["OpenSimExtras"] = extras;
+            }
 
             if (m_SayRange == null)
             {
@@ -486,7 +541,6 @@ namespace OpenSim.Region.CoreModules.Avatar.Chat
             ((OSDMap)extras)["say-range"] = m_SayRange;
             ((OSDMap)extras)["whisper-range"] = m_WhisperRange;
             ((OSDMap)extras)["shout-range"] = m_ShoutRange;
-
         }
 
         #endregion
