@@ -36,11 +36,16 @@ using System.Xml;
 using log4net;
 using Nini.Config;
 using OpenMetaverse;
+using OpenSim.Addons.Groups;
+using OpenSim.Addons.Groups.Hypergrid;
+using OpenSim.Addons.Groups.Local;
+using OpenSim.Addons.Groups.Remote;
+using OpenSim.Addons.Groups.Service;
 using OpenSim.Framework;
+using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Server.Base;
 using OpenSim.Server.Handlers.Base;
 using OpenSim.Services.Interfaces;
-using OpenSim.Framework.Servers.HttpServer;
 
 namespace OpenSim.Addons.Groups.Hypergrid
 {

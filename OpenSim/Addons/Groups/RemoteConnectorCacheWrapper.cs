@@ -32,6 +32,11 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using OpenMetaverse;
+using OpenSim.Addons.Groups;
+using OpenSim.Addons.Groups.Hypergrid;
+using OpenSim.Addons.Groups.Local;
+using OpenSim.Addons.Groups.Remote;
+using OpenSim.Addons.Groups.Service;
 using OpenSim.Framework;
 using OpenSim.Services.Interfaces;
 

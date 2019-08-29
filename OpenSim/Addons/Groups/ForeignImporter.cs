@@ -29,6 +29,11 @@
 
 using System;
 using System.Collections.Generic;
+using OpenSim.Addons.Groups;
+using OpenSim.Addons.Groups.Hypergrid;
+using OpenSim.Addons.Groups.Local;
+using OpenSim.Addons.Groups.Remote;
+using OpenSim.Addons.Groups.Service;
 using OpenSim.Framework;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Services.Interfaces;
