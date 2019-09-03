@@ -1,36 +1,38 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 // Uncomment to make asset Get requests for existing
 // #define WAIT_ON_INPROGRESS_REQUESTS
 
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -48,18 +50,12 @@ using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using OpenSim.Services.Interfaces;
 
-
-//[assembly: Addin("FlotsamAssetCache", "1.1")]
-//[assembly: AddinDependency("OpenSim", "0.8.1")]
-
 namespace OpenSim.Region.CoreModules.Asset
 {
     [Extension(Path = "/OpenSim/RegionModules", NodeName = "RegionModule", Id = "FlotsamAssetCache")]
     public class FlotsamAssetCache : ISharedRegionModule, IAssetCache, IAssetService
     {
-        private static readonly ILog m_log =
-                LogManager.GetLogger(
-                MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private bool m_Enabled;
         private bool m_timerRunning;
@@ -99,6 +95,7 @@ namespace OpenSim.Region.CoreModules.Asset
         // Expiration is expressed in hours.
         private double m_MemoryExpiration = 0.016;
         private const double m_DefaultFileExpiration = 48;
+
         // Negative cache is in seconds
         private int m_negativeExpiration = 120;
         private TimeSpan m_FileExpiration = TimeSpan.FromHours(m_DefaultFileExpiration);
@@ -114,7 +111,7 @@ namespace OpenSim.Region.CoreModules.Asset
         private List<Scene> m_Scenes = new List<Scene>();
         private object timerLock = new object();
 
-        private Dictionary<string,WeakReference> weakAssetReferences = new Dictionary<string, WeakReference>();
+        private Dictionary<string, WeakReference> weakAssetReferences = new Dictionary<string, WeakReference>();
         private object weakAssetReferencesLock = new object();
         private bool m_updateFileTimeOnCacheHit = false;
 
@@ -148,13 +145,14 @@ namespace OpenSim.Region.CoreModules.Asset
                     m_negativeCache = new ExpiringCache<string, object>();
                     m_Enabled = true;
 
-                    m_log.InfoFormat("[FLOTSAM ASSET CACHE]: {0} enabled", this.Name);
+                    m_log.InfoFormat("[Flotsam Asset Cache]: {0} enabled", this.Name);
 
                     IConfig assetConfig = source.Configs["AssetCache"];
+
                     if (assetConfig == null)
                     {
                         m_log.Debug(
-                           "[FLOTSAM ASSET CACHE]: AssetCache section missing from config (not copied config-include/FlotsamCache.ini.example?  Using defaults.");
+                           "[Flotsam Asset Cache]: AssetCache section missing from config (not copied config-include/FlotsamCache.ini.example?  Using defaults.");
                     }
                     else
                     {
@@ -170,9 +168,9 @@ namespace OpenSim.Region.CoreModules.Asset
                         m_negativeCacheSliding = assetConfig.GetBoolean("NegativeCacheSliding", m_negativeCacheSliding);
                         m_updateFileTimeOnCacheHit = assetConfig.GetBoolean("UpdateFileTimeOnCacheHit", m_updateFileTimeOnCacheHit);
 
-    #if WAIT_ON_INPROGRESS_REQUESTS
+#if WAIT_ON_INPROGRESS_REQUESTS
                         m_WaitOnInprogressTimeout = assetConfig.GetInt("WaitOnInprogressTimeout", 3000);
-    #endif
+#endif
 
                         m_LogLevel = assetConfig.GetInt("LogLevel", m_LogLevel);
                         m_HitRateDisplay = (ulong)assetConfig.GetLong("HitRateDisplay", (long)m_HitRateDisplay);
@@ -188,8 +186,7 @@ namespace OpenSim.Region.CoreModules.Asset
                         m_CacheWarnAt = assetConfig.GetInt("CacheWarnAt", m_CacheWarnAt);
                     }
 
-                    m_log.InfoFormat("[FLOTSAM ASSET CACHE]: Cache Directory {0}", m_CacheDirectory);
-
+                    m_log.InfoFormat("[Flotsam Asset Cache]: Cache Directory {0}", m_CacheDirectory);
 
                     if (m_CacheDirectoryTiers < 1)
                     {
@@ -210,7 +207,7 @@ namespace OpenSim.Region.CoreModules.Asset
                     }
 
                     MainConsole.Instance.Commands.AddCommand("Assets", true, "fcache status", "fcache status", "Display cache status", HandleConsoleCommand);
-                    MainConsole.Instance.Commands.AddCommand("Assets", true, "fcache clear",  "fcache clear [file] [memory]", "Remove all assets in the cache.  If file or memory is specified then only this cache is cleared.", HandleConsoleCommand);
+                    MainConsole.Instance.Commands.AddCommand("Assets", true, "fcache clear", "fcache clear [file] [memory]", "Remove all assets in the cache.  If file or memory is specified then only this cache is cleared.", HandleConsoleCommand);
                     MainConsole.Instance.Commands.AddCommand("Assets", true, "fcache assets", "fcache assets", "Attempt a deep scan and cache of all assets in all scenes", HandleConsoleCommand);
                     MainConsole.Instance.Commands.AddCommand("Assets", true, "fcache expire", "fcache expire <datetime>", "Purge cached assets older then the specified date/time", HandleConsoleCommand);
                 }
@@ -240,9 +237,10 @@ namespace OpenSim.Region.CoreModules.Asset
             {
                 scene.UnregisterModuleInterface<IAssetCache>(this);
                 m_Scenes.Remove(scene);
-                lock(timerLock)
+
+                lock (timerLock)
                 {
-                    if(m_timerRunning && m_Scenes.Count <= 0)
+                    if (m_timerRunning && m_Scenes.Count <= 0)
                     {
                         m_timerRunning = false;
                         m_CacheCleanTimer.Stop();
@@ -256,11 +254,14 @@ namespace OpenSim.Region.CoreModules.Asset
         {
             if (m_Enabled)
             {
-                if(m_AssetService == null)
-                    m_AssetService = scene.RequestModuleInterface<IAssetService>();
-                lock(timerLock)
+                if (m_AssetService == null)
                 {
-                    if(!m_timerRunning)
+                    m_AssetService = scene.RequestModuleInterface<IAssetService>();
+                }
+
+                lock (timerLock)
+                {
+                    if (!m_timerRunning)
                     {
                         if (m_FileCacheEnabled && (m_FileExpiration > TimeSpan.Zero) && (m_FileExpirationCleanupTimer > TimeSpan.Zero))
                         {
@@ -271,23 +272,29 @@ namespace OpenSim.Region.CoreModules.Asset
                             m_timerRunning = true;
                         }
                     }
-                 }
-                if (m_MemoryCacheEnabled)
-                    m_MemoryCache = new ExpiringCache<string, AssetBase>();
+                }
 
-                lock(weakAssetReferencesLock)
+                if (m_MemoryCacheEnabled)
+                {
+                    m_MemoryCache = new ExpiringCache<string, AssetBase>();
+                }
+
+                lock (weakAssetReferencesLock)
+                {
                     weakAssetReferences = new Dictionary<string, WeakReference>();
+                }
             }
         }
 
-        ////////////////////////////////////////////////////////////
         // IAssetCache
-        //
         private void UpdateWeakReference(string key, AssetBase asset)
         {
             WeakReference aref = new WeakReference(asset);
-            lock(weakAssetReferencesLock)
+
+            lock (weakAssetReferencesLock)
+            {
                 weakAssetReferences[key] = aref;
+            }
         }
 
         private void UpdateMemoryCache(string key, AssetBase asset)
@@ -343,8 +350,7 @@ namespace OpenSim.Region.CoreModules.Asset
             }
             catch (Exception e)
             {
-                m_log.ErrorFormat(
-                    "[FLOTSAM ASSET CACHE]: Failed to update cache for asset {0}.  Exception {1} {2}",
+                m_log.ErrorFormat("[Flotsam Asset Cache]: Failed to update cache for asset {0}.  Exception {1} {2}",
                     asset.ID, e.Message, e.StackTrace);
             }
         }
@@ -354,14 +360,17 @@ namespace OpenSim.Region.CoreModules.Asset
             // TODO: Spawn this off to some seperate thread to do the actual writing
             if (asset != null)
             {
-                //m_log.DebugFormat("[FLOTSAM ASSET CACHE]: Caching asset with id {0}", asset.ID);
                 UpdateWeakReference(asset.ID, asset);
 
                 if (m_MemoryCacheEnabled)
+                {
                     UpdateMemoryCache(asset.ID, asset);
+                }
 
                 if (m_FileCacheEnabled)
+                {
                     UpdateFileCache(asset.ID, asset);
+                }
             }
         }
 
@@ -370,9 +379,13 @@ namespace OpenSim.Region.CoreModules.Asset
             if (m_negativeCacheEnabled)
             {
                 if (m_negativeCacheSliding)
+                {
                     m_negativeCache.AddOrUpdate(id, null, TimeSpan.FromSeconds(m_negativeExpiration));
+                }
                 else
+                {
                     m_negativeCache.AddOrUpdate(id, null, m_negativeExpiration);
+                }
             }
         }
 
@@ -399,17 +412,23 @@ namespace OpenSim.Region.CoreModules.Asset
             AssetBase asset = null;
             WeakReference aref;
 
-            lock(weakAssetReferencesLock)
+            lock (weakAssetReferencesLock)
             {
                 if (weakAssetReferences.TryGetValue(id, out aref))
                 {
                     asset = aref.Target as AssetBase;
-                    if(asset == null)
+
+                    if (asset == null)
+                    {
                         weakAssetReferences.Remove(id);
+                    }
                     else
+                    {
                         m_weakRefHits++;
+                    }
                 }
             }
+
             return asset;
         }
 
@@ -423,7 +442,9 @@ namespace OpenSim.Region.CoreModules.Asset
             AssetBase asset = null;
 
             if (m_MemoryCache.TryGetValue(id, out asset))
+            {
                 m_MemoryHits++;
+            }
 
             return asset;
         }
@@ -437,7 +458,10 @@ namespace OpenSim.Region.CoreModules.Asset
         /// Try to get an asset from the file cache.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns>An asset retrieved from the file cache.  null if there was a problem retrieving an asset.</returns>
+        /// <returns>
+        /// An asset retrieved from the file cache.  
+        /// null if there was a problem retrieving an asset.
+        /// </returns>
         private AssetBase GetFromFileCache(string id)
         {
             string filename = GetFileName(id);
@@ -475,7 +499,10 @@ namespace OpenSim.Region.CoreModules.Asset
                     using (FileStream stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         if (stream.Length == 0) // Empty file will trigger exception below
+                        {
                             return null;
+                        }
+
                         BinaryFormatter bformatter = new BinaryFormatter();
 
                         asset = (AssetBase)bformatter.Deserialize(stream);
@@ -485,8 +512,7 @@ namespace OpenSim.Region.CoreModules.Asset
                 }
                 catch (System.Runtime.Serialization.SerializationException e)
                 {
-                    m_log.WarnFormat(
-                        "[FLOTSAM ASSET CACHE]: Failed to get file {0} for asset {1}.  Exception {2} {3}",
+                    m_log.WarnFormat("[Flotsam Asset Cache]: Failed to get file {0} for asset {1}.  Exception {2} {3}",
                         filename, id, e.Message, e.StackTrace);
 
                     // If there was a problem deserializing the asset, the asset may
@@ -497,8 +523,7 @@ namespace OpenSim.Region.CoreModules.Asset
                 }
                 catch (Exception e)
                 {
-                    m_log.WarnFormat(
-                        "[FLOTSAM ASSET CACHE]: Failed to get file {0} for asset {1}.  Exception {2} {3}",
+                    m_log.WarnFormat("[Flotsam Asset Cache]: Failed to get file {0} for asset {1}.  Exception {2} {3}",
                         filename, id, e.Message, e.StackTrace);
                 }
             }
@@ -519,13 +544,14 @@ namespace OpenSim.Region.CoreModules.Asset
                     using (FileStream stream = File.Open(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         if (stream != null)
+                        {
                             found = true;
+                        }
                     }
                 }
                 catch (Exception e)
                 {
-                    m_log.ErrorFormat(
-                        "[FLOTSAM ASSET CACHE]: Failed to check file {0} for asset {1}.  Exception {2} {3}",
+                    m_log.ErrorFormat("[Flotsam Asset Cache]: Failed to check file {0} for asset {1}.  Exception {2} {3}",
                         filename, id, e.Message, e.StackTrace);
                 }
             }
@@ -548,12 +574,14 @@ namespace OpenSim.Region.CoreModules.Asset
             m_Requests++;
 
             object dummy;
+
             if (m_negativeCache.TryGetValue(id, out dummy))
             {
                 return false;
             }
 
             asset = GetFromWeakReference(id);
+
             if (asset != null && m_updateFileTimeOnCacheHit)
             {
                 string filename = GetFileName(id);
@@ -563,9 +591,11 @@ namespace OpenSim.Region.CoreModules.Asset
             if (m_MemoryCacheEnabled && asset == null)
             {
                 asset = GetFromMemoryCache(id);
-                if(asset != null)
+
+                if (asset != null)
                 {
-                    UpdateWeakReference(id,asset);
+                    UpdateWeakReference(id, asset);
+
                     if (m_updateFileTimeOnCacheHit)
                     {
                         string filename = GetFileName(id);
@@ -577,18 +607,23 @@ namespace OpenSim.Region.CoreModules.Asset
             if (asset == null && m_FileCacheEnabled)
             {
                 asset = GetFromFileCache(id);
-                if(asset != null)
-                    UpdateWeakReference(id,asset);
+
+                if (asset != null)
+                {
+                    UpdateWeakReference(id, asset);
+                }
             }
 
             if (m_MemoryCacheEnabled && asset != null)
+            {
                 UpdateMemoryCache(id, asset);
+            }
 
             if (((m_LogLevel >= 1)) && (m_HitRateDisplay != 0) && (m_Requests % m_HitRateDisplay == 0))
             {
-                m_log.InfoFormat("[FLOTSAM ASSET CACHE]: Cache Get :: {0} :: {1}", id, asset == null ? "Miss" : "Hit");
+                m_log.InfoFormat("[Flotsam Asset Cache]: Cache Get :: {0} :: {1}", id, asset == null ? "Miss" : "Hit");
 
-                GenerateCacheHitReport().ForEach(l => m_log.InfoFormat("[FLOTSAM ASSET CACHE]: {0}", l));
+                GenerateCacheHitReport().ForEach(l => m_log.InfoFormat("[Flotsam Asset Cache]: {0}", l));
             }
 
             return true;
@@ -597,10 +632,15 @@ namespace OpenSim.Region.CoreModules.Asset
         public bool Check(string id)
         {
             if (m_MemoryCacheEnabled && CheckFromMemoryCache(id))
+            {
                 return true;
+            }
 
             if (m_FileCacheEnabled && CheckFromFileCache(id))
+            {
                 return true;
+            }
+
             return false;
         }
 
@@ -614,13 +654,16 @@ namespace OpenSim.Region.CoreModules.Asset
         public void Expire(string id)
         {
             if (m_LogLevel >= 2)
-                m_log.DebugFormat("[FLOTSAM ASSET CACHE]: Expiring Asset {0}", id);
+            {
+                m_log.DebugFormat("[Flotsam Asset Cache]: Expiring Asset {0}", id);
+            }
 
             try
             {
                 if (m_FileCacheEnabled)
                 {
                     string filename = GetFileName(id);
+
                     if (File.Exists(filename))
                     {
                         File.Delete(filename);
@@ -628,15 +671,18 @@ namespace OpenSim.Region.CoreModules.Asset
                 }
 
                 if (m_MemoryCacheEnabled)
+                {
                     m_MemoryCache.Remove(id);
+                }
 
-                lock(weakAssetReferencesLock)
+                lock (weakAssetReferencesLock)
+                {
                     weakAssetReferences.Remove(id);
+                }
             }
             catch (Exception e)
             {
-                m_log.WarnFormat(
-                    "[FLOTSAM ASSET CACHE]: Failed to expire cached file {0}.  Exception {1} {2}",
+                m_log.WarnFormat("[Flotsam Asset Cache]: Failed to expire cached file {0}.  Exception {1} {2}",
                     id, e.Message, e.StackTrace);
             }
         }
@@ -644,7 +690,9 @@ namespace OpenSim.Region.CoreModules.Asset
         public void Clear()
         {
             if (m_LogLevel >= 2)
-                m_log.Debug("[FLOTSAM ASSET CACHE]: Clearing caches.");
+            {
+                m_log.Debug("[Flotsam Asset Cache]: Clearing caches.");
+            }
 
             if (m_FileCacheEnabled && Directory.Exists(m_CacheDirectory))
             {
@@ -655,25 +703,38 @@ namespace OpenSim.Region.CoreModules.Asset
             }
 
             if (m_MemoryCacheEnabled)
+            {
                 m_MemoryCache = new ExpiringCache<string, AssetBase>();
-            if (m_negativeCacheEnabled)
-                m_negativeCache = new ExpiringCache<string, object>();
+            }
 
-            lock(weakAssetReferencesLock)
+            if (m_negativeCacheEnabled)
+            {
+                m_negativeCache = new ExpiringCache<string, object>();
+            }
+
+            lock (weakAssetReferencesLock)
+            {
                 weakAssetReferences = new Dictionary<string, WeakReference>();
+            }
         }
 
         private void CleanupExpiredFiles(object source, ElapsedEventArgs e)
         {
             if (m_LogLevel >= 2)
-                m_log.DebugFormat("[FLOTSAM ASSET CACHE]: Checking for expired files older then {0}.", m_FileExpiration);
-
-            lock(timerLock)
             {
-                if(!m_timerRunning || m_cleanupRunning)
+                m_log.DebugFormat("[Flotsam Asset Cache]: Checking for expired files older then {0}.", m_FileExpiration);
+            }
+
+            lock (timerLock)
+            {
+                if (!m_timerRunning || m_cleanupRunning)
+                {
                     return;
+                }
+
                 m_cleanupRunning = true;
             }
+
             // Purge all files last accessed prior to this point
             DateTime purgeLine = DateTime.Now - m_FileExpiration;
 
@@ -681,16 +742,22 @@ namespace OpenSim.Region.CoreModules.Asset
             // before cleaning up expired files we must scan the objects in the scene to make sure that we retain
             // such local assets if they have not been recently accessed.
             TouchAllSceneAssets(false);
-            if(Directory.Exists(m_CacheDirectory))
+
+            if (Directory.Exists(m_CacheDirectory))
             {
                 foreach (string dir in Directory.GetDirectories(m_CacheDirectory))
+                {
                     CleanExpiredFiles(dir, purgeLine);
+                }
             }
 
-            lock(timerLock)
+            lock (timerLock)
             {
-                if(m_timerRunning)
+                if (m_timerRunning)
+                {
                     m_CacheCleanTimer.Start();
+                }
+
                 m_cleanupRunning = false;
             }
         }
@@ -706,8 +773,10 @@ namespace OpenSim.Region.CoreModules.Asset
         {
             try
             {
-                if(!Directory.Exists(dir))
+                if (!Directory.Exists(dir))
+                {
                     return;
+                }
 
                 foreach (string file in Directory.GetFiles(dir))
                 {
@@ -725,6 +794,7 @@ namespace OpenSim.Region.CoreModules.Asset
 
                 // Check if a tier directory is empty, if so, delete it
                 int dirSize = Directory.GetFiles(dir).Length + Directory.GetDirectories(dir).Length;
+
                 if (dirSize == 0)
                 {
                     Directory.Delete(dir);
@@ -732,7 +802,7 @@ namespace OpenSim.Region.CoreModules.Asset
                 else if (dirSize >= m_CacheWarnAt)
                 {
                     m_log.WarnFormat(
-                        "[FLOTSAM ASSET CACHE]: Cache folder exceeded CacheWarnAt limit {0} {1}.  Suggest increasing tiers, tier length, or reducing cache expiration",
+                        "[Flotsam Asset Cache]: Cache folder exceeded CacheWarnAt limit {0} {1}.  Suggest increasing tiers, tier length, or reducing cache expiration",
                         dir, dirSize);
                 }
             }
@@ -744,7 +814,7 @@ namespace OpenSim.Region.CoreModules.Asset
             catch (Exception e)
             {
                 m_log.Warn(
-                    string.Format("[FLOTSAM ASSET CACHE]: Could not complete clean of expired files in {0}, exception  ", dir), e);
+                    string.Format("[Flotsam Asset Cache]: Could not complete clean of expired files in {0}, exception  ", dir), e);
             }
         }
 
@@ -762,6 +832,7 @@ namespace OpenSim.Region.CoreModules.Asset
             }
 
             string path = m_CacheDirectory;
+
             for (int p = 1; p <= m_CacheDirectoryTiers; p++)
             {
                 string pathPart = id.Substring((p - 1) * m_CacheDirectoryTierLen, m_CacheDirectoryTierLen);
@@ -804,7 +875,7 @@ namespace OpenSim.Region.CoreModules.Asset
                 catch (IOException e)
                 {
                     m_log.WarnFormat(
-                        "[FLOTSAM ASSET CACHE]: Failed to write asset {0} to temporary location {1} (final {2}) on cache in {3}.  Exception {4} {5}.",
+                        "[Flotsam Asset Cache]: Failed to write asset {0} to temporary location {1} (final {2}) on cache in {3}.  Exception {4} {5}.",
                         asset.ID, tempname, filename, directory, e.Message, e.StackTrace);
 
                     return;
@@ -815,27 +886,37 @@ namespace OpenSim.Region.CoreModules.Asset
                 finally
                 {
                     if (stream != null)
+                    {
                         stream.Close();
+                    }
                 }
 
                 try
                 {
-                    // Now that it's written, rename it so that it can be found.
-                    //
-    //                File.Copy(tempname, filename, true);
-    //                File.Delete(tempname);
-                    //
-                    // For a brief period, this was done as a separate copy and then temporary file delete operation to
-                    // avoid an IOException caused by move if some competing thread had already written the file.
-                    // However, this causes exceptions on Windows when other threads attempt to read a file
-                    // which is still being copied.  So instead, go back to moving the file and swallow any IOException.
-                    //
-                    // This situation occurs fairly rarely anyway.  We assume in this that moves are atomic on the
-                    // filesystem.
+                    /// <summary>
+                    /// Now that it is writte, rename it so it can be found.
+                    /// 
+                    ///     File.Copy(tempname, filename, true);
+                    ///     File.Delete(tempname);
+                    ///     
+                    /// FOr a brief period, this was done as a seperate copy
+                    /// and then temporary file delete operation to avoid an
+                    /// IOException caused by move if some competing thread
+                    /// had already written the file.
+                    /// 
+                    /// However, this causes exceptions on Windows when other
+                    /// threads attempt to read a file which is still being copied.
+                    /// So instead, go back to moving the file and wallow any IOException.
+                    /// 
+                    /// This situation occurs fairly rarely anyway.  We assume in this that
+                    /// moves are atomic on the filesystem.
+                    /// </summary>
                     File.Move(tempname, filename);
 
                     if (m_LogLevel >= 2)
-                        m_log.DebugFormat("[FLOTSAM ASSET CACHE]: Cache Stored :: {0}", asset.ID);
+                    {
+                        m_log.DebugFormat("[Flotsam Asset Cache]: Cache Stored :: {0}", asset.ID);
+                    }
                 }
                 catch (IOException)
                 {
@@ -872,8 +953,10 @@ namespace OpenSim.Region.CoreModules.Asset
         /// <returns></returns>
         private int GetFileCacheCount(string dir)
         {
-            if(!Directory.Exists(dir))
+            if (!Directory.Exists(dir))
+            {
                 return 0;
+            }
 
             int count = Directory.GetFiles(dir).Length;
 
@@ -910,9 +993,8 @@ namespace OpenSim.Region.CoreModules.Asset
             {
                 m_log.Warn(
                     string.Format(
-                        "[FLOTSAM ASSET CACHE]: Could not stamp region status file for region {0}.  Exception  ",
-                        regionID),
-                    e);
+                        "[Flotsam Asset Cache]: Could not stamp region status file for region {0}.  Exception  ",
+                        regionID), e);
             }
         }
 
@@ -935,16 +1017,20 @@ namespace OpenSim.Region.CoreModules.Asset
             {
                 StampRegionStatusFile(s.RegionInfo.RegionID);
 
-                s.ForEachSOG(delegate(SceneObjectGroup e)
+                s.ForEachSOG(delegate (SceneObjectGroup e)
                 {
-                    if(!m_timerRunning && !storeUncached)
+                    if (!m_timerRunning && !storeUncached)
+                    {
                         return;
+                    }
 
                     gatherer.AddForInspection(e);
                     gatherer.GatherAll();
 
-                    if(!m_timerRunning && !storeUncached)
+                    if (!m_timerRunning && !storeUncached)
+                    {
                         return;
+                    }
 
                     foreach (UUID assetID in gatherer.GatheredUuids.Keys)
                     {
@@ -960,29 +1046,42 @@ namespace OpenSim.Region.CoreModules.Asset
                             else if (storeUncached)
                             {
                                 AssetBase cachedAsset = m_AssetService.Get(assetID.ToString());
+
                                 if (cachedAsset == null && gatherer.GatheredUuids[assetID] != (sbyte)AssetType.Unknown)
+                                {
                                     assetsFound[assetID] = false;
+                                }
                                 else
+                                {
                                     assetsFound[assetID] = true;
+                                }
                             }
                         }
                         else if (!assetsFound[assetID])
                         {
                             m_log.DebugFormat(
-                                "[FLOTSAM ASSET CACHE]: Could not find asset {0}, type {1} referenced by object {2} at {3} in scene {4} when pre-caching all scene assets",
+                                "[Flotsam Asset Cache]: Could not find asset {0}, type {1} referenced by object {2} at {3} in scene {4} when pre-caching all scene assets",
                                 assetID, gatherer.GatheredUuids[assetID], e.Name, e.AbsolutePosition, s.Name);
                         }
                     }
 
                     gatherer.GatheredUuids.Clear();
-                    if(!m_timerRunning && !storeUncached)
-                        return;
 
-                    if(!storeUncached)
+                    if (!m_timerRunning && !storeUncached)
+                    {
+                        return;
+                    }
+
+                    if (!storeUncached)
+                    {
                         Thread.Sleep(50);
+                    }
                 });
-                if(!m_timerRunning && !storeUncached)
+
+                if (!m_timerRunning && !storeUncached)
+                {
                     break;
+                }
             }
 
             return assetsFound.Count;
@@ -993,8 +1092,10 @@ namespace OpenSim.Region.CoreModules.Asset
         /// </summary>
         private void ClearFileCache()
         {
-            if(!Directory.Exists(m_CacheDirectory))
+            if (!Directory.Exists(m_CacheDirectory))
+            {
                 return;
+            }
 
             foreach (string dir in Directory.GetDirectories(m_CacheDirectory))
             {
@@ -1005,7 +1106,7 @@ namespace OpenSim.Region.CoreModules.Asset
                 catch (Exception e)
                 {
                     m_log.WarnFormat(
-                        "[FLOTSAM ASSET CACHE]: Couldn't clear asset cache directory {0} from {1}.  Exception {2} {3}",
+                        "[Flotsam Asset Cache]: Couldn't clear asset cache directory {0} from {1}.  Exception {2} {3}",
                         dir, m_CacheDirectory, e.Message, e.StackTrace);
                 }
             }
@@ -1019,7 +1120,7 @@ namespace OpenSim.Region.CoreModules.Asset
                 catch (Exception e)
                 {
                     m_log.WarnFormat(
-                        "[FLOTSAM ASSET CACHE]: Couldn't clear asset cache file {0} from {1}.  Exception {1} {2}",
+                        "[Flotsam Asset Cache]: Couldn't clear asset cache file {0} from {1}.  Exception {1} {2}",
                         file, m_CacheDirectory, e.Message, e.StackTrace);
                 }
             }
@@ -1040,7 +1141,7 @@ namespace OpenSim.Region.CoreModules.Asset
             outputLines.Add(
                 string.Format("Total requests: {0}", m_Requests));
             outputLines.Add(
-                string.Format("unCollected Hit Rate: {0}% ({1} entries)", weakHitRate.ToString("0.00"),weakEntries));
+                string.Format("unCollected Hit Rate: {0}% ({1} entries)", weakHitRate.ToString("0.00"), weakEntries));
             outputLines.Add(
                 string.Format("File Hit Rate: {0}%", fileHitRate.ToString("0.00")));
 
@@ -1063,6 +1164,7 @@ namespace OpenSim.Region.CoreModules.Asset
         }
 
         #region Console Commands
+
         private void HandleConsoleCommand(string module, string[] cmdparams)
         {
             ICommandConsole con = MainConsole.Instance;
@@ -1075,9 +1177,13 @@ namespace OpenSim.Region.CoreModules.Asset
                 {
                     case "status":
                         if (m_MemoryCacheEnabled)
+                        {
                             con.Output("Memory Cache: {0} assets", null, m_MemoryCache.Count);
+                        }
                         else
+                        {
                             con.Output("Memory cache disabled");
+                        }
 
                         if (m_FileCacheEnabled)
                         {
@@ -1097,7 +1203,7 @@ namespace OpenSim.Region.CoreModules.Asset
 
                             foreach (string s in Directory.GetFiles(m_CacheDirectory, "*.fac"))
                             {
-                                string RegionID = s.Remove(0,s.IndexOf("_")).Replace(".fac","");
+                                string RegionID = s.Remove(0, s.IndexOf("_")).Replace(".fac", "");
                                 DateTime RegionDeepScanTMStamp = File.GetLastWriteTime(s);
                                 con.Output("Region: {0}, {1}", null, RegionID, RegionDeepScanTMStamp.ToString("MM/dd/yyyy hh:mm:ss"));
                             }
@@ -1122,9 +1228,13 @@ namespace OpenSim.Region.CoreModules.Asset
                         foreach (string s in cmdparams)
                         {
                             if (s.ToLower() == "memory")
+                            {
                                 clearMemory = true;
+                            }
                             else if (s.ToLower() == "file")
+                            {
                                 clearFile = true;
+                            }
                         }
 
                         if (clearMemory)
@@ -1156,13 +1266,14 @@ namespace OpenSim.Region.CoreModules.Asset
                         break;
 
                     case "assets":
-                        lock(timerLock)
+                        lock (timerLock)
                         {
-                            if(m_cleanupRunning)
+                            if (m_cleanupRunning)
                             {
                                 con.Output("Flotsam assets check already running");
                                 return;
                             }
+
                             m_cleanupRunning = true;
                         }
 
@@ -1170,10 +1281,11 @@ namespace OpenSim.Region.CoreModules.Asset
 
                         WorkManager.RunInThreadPool(delegate
                         {
-                            bool wasRunning= false;
-                            lock(timerLock)
+                            bool wasRunning = false;
+
+                            lock (timerLock)
                             {
-                                if(m_timerRunning)
+                                if (m_timerRunning)
                                 {
                                     m_CacheCleanTimer.Stop();
                                     m_timerRunning = false;
@@ -1181,17 +1293,21 @@ namespace OpenSim.Region.CoreModules.Asset
                                     Thread.Sleep(100);
                                 }
                             }
+
                             int assetReferenceTotal = TouchAllSceneAssets(true);
                             GC.Collect();
-                            lock(timerLock)
+
+                            lock (timerLock)
                             {
-                                if(wasRunning)
+                                if (wasRunning)
                                 {
                                     m_CacheCleanTimer.Start();
                                     m_timerRunning = true;
                                 }
+
                                 m_cleanupRunning = false;
                             }
+
                             con.Output("Completed check with {0} assets.", null, assetReferenceTotal);
                         }, null, "TouchAllSceneAssets", false);
 
@@ -1223,9 +1339,13 @@ namespace OpenSim.Region.CoreModules.Asset
                         }
 
                         if (m_FileCacheEnabled)
+                        {
                             CleanExpiredFiles(m_CacheDirectory, expirationDate);
+                        }
                         else
+                        {
                             con.Output("File cache not active, not clearing.");
+                        }
 
                         break;
                     default:
@@ -1250,6 +1370,12 @@ namespace OpenSim.Region.CoreModules.Asset
         {
             AssetBase asset;
             Get(id, out asset);
+
+            if (asset == null)
+            {
+                return null;
+            }
+
             return asset.Metadata;
         }
 
@@ -1257,14 +1383,24 @@ namespace OpenSim.Region.CoreModules.Asset
         {
             AssetBase asset;
             Get(id, out asset);
+
+            if (asset == null)
+            {
+                return null;
+            }
+
             return asset.Data;
         }
 
         public bool Get(string id, object sender, AssetRetrieved handler)
         {
             AssetBase asset;
+
             if (!Get(id, out asset))
+            {
                 return false;
+            }
+
             handler(id, sender, asset);
             return true;
         }
@@ -1296,8 +1432,12 @@ namespace OpenSim.Region.CoreModules.Asset
         public bool UpdateContent(string id, byte[] data)
         {
             AssetBase asset;
+
             if (!Get(id, out asset))
+            {
                 return false;
+            }
+
             asset.Data = data;
             Cache(asset);
             return true;
