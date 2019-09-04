@@ -62,7 +62,7 @@ using Mono.Addins;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 
-[assembly : AssemblyVersion(OpenSim.VersionInfo.AssemblyVersionNumber)]
+[assembly : AssemblyVersion("2.0.1.*")]
 
 [assembly: Addin("OpenSim.ApplicationPlugins.LoadRegions", OpenSim.VersionInfo.VersionNumber)]
 [assembly: AddinDependency("OpenSim", OpenSim.VersionInfo.VersionNumber)]
