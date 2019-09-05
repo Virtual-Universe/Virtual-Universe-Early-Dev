@@ -65,7 +65,7 @@ namespace OpenSim
             {
                 Version ver = typeof(VersionInfo).Assembly.GetName().Version;
                 _version = String.Format("{0}.{1}.{2}", ver.Major / 10, ver.Major % 10, ver.Minor);
-                _revision = ver.Build.ToString();
+                _revision = ver.Revision.ToString();
             }
 
             return _revision;
