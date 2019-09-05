@@ -1,4 +1,4 @@
-﻿/// <license>
+/// <license>
 ///     Copyright (c) Contributors, https://virtual-planets.org/
 ///     See CONTRIBUTORS.TXT for a full list of copyright holders.
 ///     For an explanation of the license of each contributor and the content it
@@ -38,7 +38,7 @@ using System.Runtime.InteropServices;
 /// We change these attribute values to modify the
 /// information associated with an assembly.
 /// </summary>
-[assembly: AssemblyTitle("OpenSim.Region.ScriptEngine.Shared.Api")]
+[assembly: AssemblyTitle("OpenSim.Framework")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Virtual World Research Inc.")]
@@ -62,7 +62,7 @@ using System.Runtime.InteropServices;
 /// The following GUID is for the ID of the typelib
 /// if this project is exposed to COM.
 /// </summary>
-[assembly: Guid("369ed06e-a3ca-40f0-98e3-3cd3ec1443c3")]
+[assembly: Guid("a08e20c7-f191-4137-b1f0-9291408fa521")]
 
 /// <summary>
 /// Version Information

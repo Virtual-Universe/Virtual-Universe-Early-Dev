@@ -1,4 +1,4 @@
-﻿/// <license>
+/// <license>
 ///     Copyright (c) Contributors, https://virtual-planets.org/
 ///     See CONTRIBUTORS.TXT for a full list of copyright holders.
 ///     For an explanation of the license of each contributor and the content it
@@ -30,6 +30,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using Mono.Addins;
 
 /// <summary>
 /// General Information
@@ -38,7 +39,7 @@ using System.Runtime.InteropServices;
 /// We change these attribute values to modify the
 /// information associated with an assembly.
 /// </summary>
-[assembly: AssemblyTitle("OpenSim.Region.ScriptEngine.Shared.Api")]
+[assembly: AssemblyTitle("OpenSim.Region.PhysicsModule.Ode")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Virtual World Research Inc.")]
@@ -62,7 +63,7 @@ using System.Runtime.InteropServices;
 /// The following GUID is for the ID of the typelib
 /// if this project is exposed to COM.
 /// </summary>
-[assembly: Guid("369ed06e-a3ca-40f0-98e3-3cd3ec1443c3")]
+[assembly: Guid("af116f31-78df-4c1d-869d-e65f5c47c17c")]
 
 /// <summary>
 /// Version Information
@@ -80,3 +81,6 @@ using System.Runtime.InteropServices;
 ///     [assembly: AssemblyVersion("2.0.1.*")]
 /// </summary>
 [assembly: AssemblyVersion("2.0.1.*")]
+
+[assembly: Addin("OpenSim.Region.PhysicsModule.ODE", "2.0.1.*")]
+[assembly: AddinDependency("OpenSim.Region.Framework", "2.0.1.*")]

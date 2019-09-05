@@ -32,34 +32,55 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using Mono.Addins;
 
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
+/// <summary>
+/// General Information
+/// General information about an assembly is
+/// controlled through the following set of attributes.
+/// We change these attribute values to modify the
+/// information associated with an assembly.
+/// </summary>
 [assembly: AssemblyTitle("OpenSim.Addons.OfflineIM")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://opensimulator.org")]
-[assembly: AssemblyProduct("OpenSim.Addons.OfflineIM")]
-[assembly: AssemblyCopyright("Copyright (c) OpenSimulator.org Developers")]
+[assembly: AssemblyCompany("Virtual World Research Inc.")]
+[assembly: AssemblyProduct("Virtual Universe")]
+[assembly: AssemblyCopyright("Virtual World Research Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// Setting ComVisible to false makes the types in this assembly not visible
-// to COM components.  If you need to access a type in this assembly from
-// COM, set the ComVisible attribute to true on that type.
+/// <summary>
+/// ComVisible Settings
+/// Setting ComVisible to false makes the types
+/// in this assembly not visible to COM components.
+/// If we need to access a type in this assembly
+/// from COM, we set the ComVisible attribute to
+/// true on that type.
+/// </summary>
 [assembly: ComVisible(false)]
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM
+/// <summary>
+/// GUID Information
+/// The following GUID is for the ID of the typelib
+/// if this project is exposed to COM.
+/// </summary>
 [assembly: Guid("a16a9905-4393-4872-9fca-4c81bedbd9f2")]
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version
-//      Build Number
-//      Revision
-//
+/// <summary>
+/// Version Information
+/// The version information for an assembly consists
+/// of the following four values:
+/// 
+///     Major Version
+///     Minor Version
+///     Build Number
+///     Revision Number
+///     
+/// We can specify all the values or we can default
+/// the Build and Revision Numbers by the '*' as shown below:
+/// 
+///     [assembly: AssemblyVersion("2.0.1.*")]
+/// </summary>
 [assembly: AssemblyVersion("2.0.1.*")]
 
-[assembly: Addin("OpenSim.OfflineIM", OpenSim.VersionInfo.VersionNumber)]
-[assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.VersionNumber)]
+[assembly: Addin("OpenSim.OfflineIM", "2.0.1.*")]
+[assembly: AddinDependency("OpenSim.Region.Framework", "2.0.1.*")]

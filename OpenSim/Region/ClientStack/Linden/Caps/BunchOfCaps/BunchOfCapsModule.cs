@@ -40,8 +40,8 @@ using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
 using Caps = OpenSim.Framework.Capabilities.Caps;
 
-[assembly: Addin("LindenCaps", OpenSim.VersionInfo.VersionNumber)]
-[assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.VersionNumber)]
+[assembly: Addin("LindenCaps", "2.0.1.*")]
+[assembly: AddinDependency("OpenSim.Region.Framework", "2.0.1.*")]
 namespace OpenSim.Region.ClientStack.Linden
 {
 

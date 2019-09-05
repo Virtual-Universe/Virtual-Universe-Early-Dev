@@ -60,8 +60,8 @@ using LSL_Rotation = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Quaternion;
 using LSL_String = OpenSim.Region.ScriptEngine.Shared.LSL_Types.LSLString;
 using LSL_Vector = OpenSim.Region.ScriptEngine.Shared.LSL_Types.Vector3;
 
-[assembly: Addin("YEngine", OpenSim.VersionInfo.VersionNumber)]
-[assembly: AddinDependency("OpenSim.Region.Framework", OpenSim.VersionInfo.VersionNumber)]
+[assembly: Addin("YEngine", "2.0.1.*")]
+[assembly: AddinDependency("OpenSim.Region.Framework", "2.0.1.*")]
 
 namespace OpenSim.Region.ScriptEngine.Yengine
 {
