@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.IO;
@@ -93,16 +95,21 @@ namespace OpenSim.Framework.Servers.HttpServer
                 request.ContentLength = length;
 
                 using (Stream requestStream = request.GetRequestStream())
+                {
                     requestStream.Write(buffer.ToArray(), 0, length);
+                }
             }
 
             TResponse deserial = default(TResponse);
+
             using (WebResponse resp = request.GetResponse())
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(TResponse));
 
                 using (Stream respStream = resp.GetResponseStream())
+                {
                     deserial = (TResponse)deserializer.Deserialize(respStream);
+                }
             }
 
             return deserial;
@@ -148,29 +155,30 @@ namespace OpenSim.Framework.Servers.HttpServer
                 request.ContentLength = length;
 
                 using (Stream requestStream = request.GetRequestStream())
+                {
                     requestStream.Write(buffer.ToArray(), 0, length);
+                }
             }
 
-            // IAsyncResult result = request.BeginGetResponse(AsyncCallback, request);
             request.BeginGetResponse(AsyncCallback, request);
         }
 
         private void AsyncCallback(IAsyncResult result)
         {
             WebRequest request = (WebRequest)result.AsyncState;
+
             using (WebResponse resp = request.EndGetResponse(result))
             {
                 TResponse deserial;
                 XmlSerializer deserializer = new XmlSerializer(typeof(TResponse));
                 Stream stream = resp.GetResponseStream();
 
-                // This is currently a bad debug stanza since it gobbles us the response...
-                //                StreamReader reader = new StreamReader(stream);
-                //                m_log.DebugFormat("[REST OBJECT POSTER RESPONSE]: Received {0}", reader.ReadToEnd());
-
                 deserial = (TResponse)deserializer.Deserialize(stream);
+
                 if (stream != null)
+                {
                     stream.Close();
+                }
 
                 if (deserial != null && ResponseCallback != null)
                 {
@@ -185,14 +193,12 @@ namespace OpenSim.Framework.Servers.HttpServer
     public class RestDeserialiseSecureHandler<TRequest, TResponse> : BaseOutputStreamHandler, IStreamHandler
         where TRequest : new()
     {
-        private static readonly ILog m_log
-            = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private RestDeserialiseMethod<TRequest, TResponse> m_method;
         private CheckIdentityMethod m_smethod;
 
-        public RestDeserialiseSecureHandler(
-             string httpMethod, string path,
+        public RestDeserialiseSecureHandler(string httpMethod, string path,
              RestDeserialiseMethod<TRequest, TResponse> method, CheckIdentityMethod smethod)
             : base(httpMethod, path)
         {
@@ -201,7 +207,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         }
 
         protected override void ProcessRequest(string path, Stream request, Stream responseStream,
-                           IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+            IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
             RestSessionObject<TRequest> deserial = default(RestSessionObject<TRequest>);
             bool fail = false;
@@ -215,12 +221,13 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
                 catch (Exception e)
                 {
-                    m_log.Error("[REST]: Deserialization problem. Ignoring request. " + e);
+                    m_log.Error("[Rest]: Deserialization problem. Ignoring request. " + e);
                     fail = true;
                 }
             }
 
             TResponse response = default(TResponse);
+
             if (!fail && m_smethod(deserial.SessionID, deserial.AvatarID))
             {
                 response = m_method(deserial.Body);
@@ -260,7 +267,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         }
 
         protected override void ProcessRequest(string path, Stream request, Stream responseStream,
-                           IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+            IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
             TRequest deserial = default(TRequest);
             bool fail = false;
@@ -274,12 +281,13 @@ namespace OpenSim.Framework.Servers.HttpServer
                 }
                 catch (Exception e)
                 {
-                    m_log.Error("[REST]: Deserialization problem. Ignoring request. " + e);
+                    m_log.Error("[Rest]: Deserialization problem. Ignoring request. " + e);
                     fail = true;
                 }
             }
 
             TResponse response = default(TResponse);
+
             if (!fail && m_tmethod(httpRequest.RemoteIPEndPoint))
             {
                 response = m_method(deserial);

@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System.IO;
 using System.Net;
@@ -47,45 +49,17 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </remarks>
         public virtual string ContentType
         {
-            get
-            {
-                return _httpResponse.ContentType;
-            }
-
-            set
-            {
-                _httpResponse.ContentType = value;
-            }
+            get { return _httpResponse.ContentType; }
+            set { _httpResponse.ContentType = value; }
         }
-
-        /// <summary>
-        /// Boolean property indicating whether the content type
-        /// property actively has been set.
-        /// </summary>
-        /// <remarks>
-        /// IsContentTypeSet will go away together with .NET base.
-        /// </remarks>
-        // public bool IsContentTypeSet
-        // {
-        //     get { return _contentTypeSet; }
-        // }
-        // private bool _contentTypeSet;
-
 
         /// <summary>
         /// Length of the body content; 0 if there is no body.
         /// </summary>
         public long ContentLength
         {
-            get
-            {
-                return _httpResponse.ContentLength;
-            }
-
-            set
-            {
-                _httpResponse.ContentLength = value;
-            }
+            get { return _httpResponse.ContentLength; }
+            set { _httpResponse.ContentLength = value; }
         }
 
         /// <summary>
@@ -102,30 +76,23 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </summary>
         public Encoding ContentEncoding
         {
-            get
-            {
-                return _httpResponse.Encoding;
-            }
-
-            set
-            {
-                _httpResponse.Encoding = value;
-            }
+            get { return _httpResponse.Encoding; }
+            set { _httpResponse.Encoding = value; }
         }
 
         public bool KeepAlive
         {
-            get
-            {
-                return _httpResponse.Connection == ConnectionType.KeepAlive;
-            }
-
+            get { return _httpResponse.Connection == ConnectionType.KeepAlive; }
             set
             {
                 if (value)
+                {
                     _httpResponse.Connection = ConnectionType.KeepAlive;
+                }
                 else
+                {
                     _httpResponse.Connection = ConnectionType.Close;
+                }
             }
         }
 
@@ -136,11 +103,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </summary>
         public int KeepAliveTimeout
         {
-            get
-            {
-                return _httpResponse.KeepAlive;
-            }
-
+            get { return _httpResponse.KeepAlive; }
             set
             {
                 if (value == 0)
@@ -148,7 +111,6 @@ namespace OpenSim.Framework.Servers.HttpServer
                     _httpResponse.Connection = ConnectionType.Close;
                     _httpResponse.KeepAlive = 0;
                 }
-
                 else
                 {
                     _httpResponse.Connection = ConnectionType.KeepAlive;
@@ -165,23 +127,13 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </remarks>
         public Stream OutputStream
         {
-            get
-            {
-                return _httpResponse.Body;
-            }
+            get { return _httpResponse.Body; }
         }
 
         public string ProtocolVersion
         {
-            get
-            {
-                return _httpResponse.ProtocolVersion;
-            }
-
-            set
-            {
-                _httpResponse.ProtocolVersion = value;
-            }
+            get { return _httpResponse.ProtocolVersion; }
+            set { _httpResponse.ProtocolVersion = value; }
         }
 
         /// <summary>
@@ -189,46 +141,25 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </summary>
         public Stream Body
         {
-            get
-            {
-                return _httpResponse.Body;
-            }
+            get { return _httpResponse.Body; }
         }
 
         public byte[] RawBuffer
         {
-            get
-            {
-                return _httpResponse.RawBuffer;
-            }
-            set
-            {
-                _httpResponse.RawBuffer = value;
-            }
+            get { return _httpResponse.RawBuffer; }
+            set { _httpResponse.RawBuffer = value; }
         }
 
         public int RawBufferStart
         {
-            get
-            {
-                return _httpResponse.RawBufferStart;
-            }
-            set
-            {
-                _httpResponse.RawBufferStart = value;
-            }
+            get { return _httpResponse.RawBufferStart; }
+            set { _httpResponse.RawBufferStart = value; }
         }
 
         public int RawBufferLen
         {
-            get
-            {
-                return _httpResponse.RawBufferLen;
-            }
-            set
-            {
-                _httpResponse.RawBufferLen = value;
-            }
+            get { return _httpResponse.RawBufferLen; }
+            set { _httpResponse.RawBufferLen = value; }
         }
 
         /// <summary>
@@ -236,28 +167,16 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </summary>
         public string RedirectLocation
         {
-            // get { return _redirectLocation; }
-            set
-            {
-                _httpResponse.Redirect(value);
-            }
+            set { _httpResponse.Redirect(value); }
         }
-
 
         /// <summary>
         /// Chunk transfers.
         /// </summary>
         public bool SendChunked
         {
-            get
-            {
-               return _httpResponse.Chunked;
-            }
-
-            set
-            {
-               _httpResponse.Chunked = value;
-            }
+            get { return _httpResponse.Chunked; }
+            set { _httpResponse.Chunked = value; }
         }
 
         /// <summary>
@@ -265,15 +184,8 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </summary>
         public virtual int StatusCode
         {
-            get
-            {
-                return (int)_httpResponse.Status;
-            }
-
-            set
-            {
-                _httpResponse.Status = (HttpStatusCode)value;
-            }
+            get { return (int)_httpResponse.Status; }
+            set { _httpResponse.Status = (HttpStatusCode)value; }
         }
 
 
@@ -282,15 +194,8 @@ namespace OpenSim.Framework.Servers.HttpServer
         /// </summary>
         public string StatusDescription
         {
-            get
-            {
-                return _httpResponse.Reason;
-            }
-
-            set
-            {
-                _httpResponse.Reason = value;
-            }
+            get { return _httpResponse.Reason; }
+            set { _httpResponse.Reason = value; }
         }
 
         protected IHttpResponse _httpResponse;
@@ -311,7 +216,6 @@ namespace OpenSim.Framework.Servers.HttpServer
         public OSHttpResponse(OSHttpRequest req)
         {
             _httpResponse = new HttpResponse(req.IHttpClientContext, req.IHttpRequest);
-
         }
 
         public OSHttpResponse(HttpResponse resp)

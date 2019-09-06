@@ -1,39 +1,14 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Threading;
 using System.Reflection;
+using Amib.Threading;
 using log4net;
 using OpenSim.Framework.Monitoring;
-using Amib.Threading;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
 
 namespace OpenSim.Framework.Servers.HttpServer
 {
@@ -53,8 +28,7 @@ namespace OpenSim.Framework.Servers.HttpServer
 
         private SmartThreadPool m_threadPool;
 
-        public PollServiceRequestManager(
-            bool performResponsesAsync, uint pWorkerThreadCount, int pTimeout)
+        public PollServiceRequestManager(bool performResponsesAsync, uint pWorkerThreadCount, int pTimeout)
         {
             m_WorkerThreadCount = pWorkerThreadCount;
             m_workerThreads = new Thread[m_WorkerThreadCount];
@@ -74,11 +48,15 @@ namespace OpenSim.Framework.Servers.HttpServer
 
         public void Start()
         {
-            if(m_running)
+            if (m_running)
+            {
                 return;
+            }
+
             m_running = true;
             m_threadPool.Start();
-            //startup worker threads
+            
+            // startup worker threads
             for (uint i = 0; i < m_WorkerThreadCount; i++)
             {
                 m_workerThreads[i]
@@ -105,13 +83,16 @@ namespace OpenSim.Framework.Servers.HttpServer
         private void ReQueueEvent(PollServiceHttpRequest req)
         {
             if (m_running)
+            {
                 m_retryRequests.Enqueue(req);
+            }
         }
 
         public void Enqueue(PollServiceHttpRequest req)
         {
             Queue<PollServiceHttpRequest> ctxQeueue;
             int rhash = req.contextHash;
+
             lock (m_bycontext)
             {
                 if (m_bycontext.TryGetValue(rhash, out ctxQeueue))
@@ -131,6 +112,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         {
             Queue<PollServiceHttpRequest> ctxQeueue;
             int rhash = req.contextHash;
+
             lock (m_bycontext)
             {
                 if (m_bycontext.TryGetValue(rhash, out ctxQeueue))
@@ -152,6 +134,7 @@ namespace OpenSim.Framework.Servers.HttpServer
         {
             Queue<PollServiceHttpRequest> ctxQeueue;
             int rhash = req.contextHash;
+
             lock (m_bycontext)
             {
                 if (m_bycontext.TryGetValue(rhash, out ctxQeueue))
@@ -165,46 +148,62 @@ namespace OpenSim.Framework.Servers.HttpServer
         public void EnqueueInt(PollServiceHttpRequest req)
         {
             if (m_running)
+            {
                 m_requests.Add(req);
+            }
         }
 
         private void CheckRetries()
         {
             PollServiceHttpRequest preq;
+
             while (m_running)
             {
                 Thread.Sleep(100);
                 Watchdog.UpdateThread();
+
                 while (m_running && m_retryRequests.TryDequeue(out preq))
+                {
                     m_requests.Add(preq);
+                }
             }
         }
 
         public void Stop()
         {
-            if(!m_running)
+            if (!m_running)
+            {
                 return;
+            }
 
             m_running = false;
 
             Thread.Sleep(100); // let the world move
 
             foreach (Thread t in m_workerThreads)
+            {
                 Watchdog.AbortThread(t.ManagedThreadId);
+            }
 
             m_threadPool.Shutdown();
 
             // any entry in m_bycontext should have a active request on the other queues
             // so just delete contents to easy GC
             foreach (Queue<PollServiceHttpRequest> qu in m_bycontext.Values)
+            {
                 qu.Clear();
+            }
+
             m_bycontext.Clear();
 
             PollServiceHttpRequest req;
+
             try
             {
-                while(m_retryRequests.TryDequeue(out req))
+                while (m_retryRequests.TryDequeue(out req))
+                {
                     req.DoHTTPstop();
+                }
             }
             catch
             {
@@ -212,27 +211,29 @@ namespace OpenSim.Framework.Servers.HttpServer
 
             try
             {
-                while(m_requests.TryTake(out req, 0))
+                while (m_requests.TryTake(out req, 0))
+                {
                     req.DoHTTPstop();
+                }
             }
             catch
             {
             }
 
             m_requests.Dispose();
-
         }
 
         // work threads
-
         private void PoolWorkerJob()
         {
             PollServiceHttpRequest req;
+
             while (m_running)
             {
                 try
                 {
                     req = null;
+
                     if (!m_requests.TryTake(out req, 4500) || req == null)
                     {
                         Watchdog.UpdateThread();
@@ -256,7 +257,9 @@ namespace OpenSim.Framework.Servers.HttpServer
                             byContextDequeue(req);
                         }
                         else
+                        {
                             ReQueueEvent(req);
+                        }
                         continue;
                     }
 
@@ -270,7 +273,9 @@ namespace OpenSim.Framework.Servers.HttpServer
                                 Hashtable responsedata = nreq.PollServiceArgs.GetEvents(nreq.RequestID, nreq.PollServiceArgs.Id);
                                 nreq.DoHTTPGruntWork(responsedata);
                             }
-                            catch (ObjectDisposedException) { }
+                            catch (ObjectDisposedException)
+                            {
+                            }
                             finally
                             {
                                 byContextDequeue(nreq);
@@ -290,7 +295,9 @@ namespace OpenSim.Framework.Servers.HttpServer
                                 {
                                     nreq.DoHTTPGruntWork(nreq.PollServiceArgs.NoEvents(nreq.RequestID, nreq.PollServiceArgs.Id));
                                 }
-                                catch (ObjectDisposedException) { }
+                                catch (ObjectDisposedException)
+                                {
+                                }
                                 finally
                                 {
                                     byContextDequeue(nreq);
@@ -308,6 +315,7 @@ namespace OpenSim.Framework.Servers.HttpServer
                 catch (ThreadAbortException)
                 {
                     Thread.ResetAbort();
+                    
                     // Shouldn't set this to 'false', the normal shutdown should cause things to exit
                     // but robust is still not normal neither is mono
                     m_running = false;

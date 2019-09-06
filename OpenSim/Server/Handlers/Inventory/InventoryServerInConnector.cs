@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections;
@@ -33,12 +35,12 @@ using System.Reflection;
 using log4net;
 using Nini.Config;
 using Nwc.XmlRpc;
-using OpenSim.Server.Base;
-using OpenSim.Services.Interfaces;
+using OpenMetaverse;
 using OpenSim.Framework;
 using OpenSim.Framework.Servers.HttpServer;
+using OpenSim.Server.Base;
 using OpenSim.Server.Handlers.Base;
-using OpenMetaverse;
+using OpenSim.Services.Interfaces;
 
 namespace OpenSim.Server.Handlers.Inventory
 {
@@ -50,9 +52,6 @@ namespace OpenSim.Server.Handlers.Inventory
 
         private bool m_doLookup = false;
 
-        //private static readonly int INVENTORY_DEFAULT_SESSION_TIME = 30; // secs
-        //private AuthedSessionCache m_session_cache = new AuthedSessionCache(INVENTORY_DEFAULT_SESSION_TIME);
-
         private string m_userserver_url;
         protected string m_ConfigName = "InventoryService";
 
@@ -60,27 +59,32 @@ namespace OpenSim.Server.Handlers.Inventory
                 base(config, server, configName)
         {
             if (configName != string.Empty)
+            {
                 m_ConfigName = configName;
+            }
 
             IConfig serverConfig = config.Configs[m_ConfigName];
-            if (serverConfig == null)
-                throw new Exception(String.Format("No section '{0}' in config file", m_ConfigName));
 
-            string inventoryService = serverConfig.GetString("LocalServiceModule",
-                    String.Empty);
+            if (serverConfig == null)
+            {
+                throw new Exception(String.Format("No section '{0}' in config file", m_ConfigName));
+            }
+
+            string inventoryService = serverConfig.GetString("LocalServiceModule", String.Empty);
 
             if (inventoryService == String.Empty)
+            {
                 throw new Exception("No LocalServiceModule in config file");
+            }
 
             Object[] args = new Object[] { config };
-            m_InventoryService =
-                    ServerUtils.LoadPlugin<IInventoryService>(inventoryService, args);
+            m_InventoryService = ServerUtils.LoadPlugin<IInventoryService>(inventoryService, args);
 
             m_userserver_url = serverConfig.GetString("UserServerURI", String.Empty);
             m_doLookup = serverConfig.GetBoolean("SessionAuthentication", false);
 
             AddHttpHandlers(server);
-            m_log.Debug("[INVENTORY HANDLER]: handlers initialized");
+            m_log.Debug("[Inventory Handler]: handlers initialized");
         }
 
         protected virtual void AddHttpHandlers(IHttpServer m_httpServer)
@@ -151,7 +155,6 @@ namespace OpenSim.Server.Handlers.Inventory
 
             m_httpServer.AddStreamHandler(new InventoryServerMoveItemsHandler(m_InventoryService));
 
-
             // for persistent active gestures
             m_httpServer.AddStreamHandler(
                 new RestDeserialiseTrustedHandler<Guid, List<InventoryItemBase>>
@@ -185,23 +188,30 @@ namespace OpenSim.Server.Handlers.Inventory
         private Dictionary<AssetType, InventoryFolderBase> GetSystemFolders(UUID userID)
         {
             InventoryFolderBase root = m_InventoryService.GetRootFolder(userID);
+
             if (root != null)
             {
                 InventoryCollection content = m_InventoryService.GetFolderContent(userID, root.ID);
+
                 if (content != null)
                 {
                     Dictionary<AssetType, InventoryFolderBase> folders = new Dictionary<AssetType, InventoryFolderBase>();
+
                     foreach (InventoryFolderBase folder in content.Folders)
                     {
                         if ((folder.Type != (short)AssetType.Folder) && (folder.Type != (short)AssetType.Unknown))
+                        {
                             folders[(AssetType)folder.Type] = folder;
+                        }
                     }
+
                     // Put the root folder there, as type Folder
                     folders[AssetType.Folder] = root;
                     return folders;
                 }
             }
-            m_log.WarnFormat("[INVENTORY SERVICE]: System folders for {0} not found", userID);
+
+            m_log.WarnFormat("[Inventory Service]: System folders for {0} not found", userID);
             return new Dictionary<AssetType, InventoryFolderBase>();
         }
 
@@ -234,21 +244,19 @@ namespace OpenSim.Server.Handlers.Inventory
             {
                 allItems.InsertRange(0, items);
             }
+
             return allItems;
         }
 
         public bool CreateUsersInventory(Guid rawUserID)
         {
             UUID userID = new UUID(rawUserID);
-
-
             return m_InventoryService.CreateUserInventory(userID);
         }
 
         public List<InventoryItemBase> GetActiveGestures(Guid rawUserID)
         {
             UUID userID = new UUID(rawUserID);
-
             return m_InventoryService.GetActiveGestures(userID);
         }
 
@@ -266,8 +274,12 @@ namespace OpenSim.Server.Handlers.Inventory
         public bool DeleteFolders(List<Guid> items)
         {
             List<UUID> uuids = new List<UUID>();
+
             foreach (Guid g in items)
+            {
                 uuids.Add(new UUID(g));
+            }
+            
             // oops we lost the user info here. Bad bad handlers
             return m_InventoryService.DeleteFolders(UUID.Zero, uuids);
         }
@@ -275,8 +287,12 @@ namespace OpenSim.Server.Handlers.Inventory
         public bool DeleteItems(List<Guid> items)
         {
             List<UUID> uuids = new List<UUID>();
+
             foreach (Guid g in items)
+            {
                 uuids.Add(new UUID(g));
+            }
+
             // oops we lost the user info here. Bad bad handlers
             return m_InventoryService.DeleteItems(UUID.Zero, uuids);
         }
@@ -286,10 +302,15 @@ namespace OpenSim.Server.Handlers.Inventory
             // oops we lost the user info here. Bad bad handlers
             // let's peek at one item
             UUID ownerID = UUID.Zero;
+
             if (items.Count > 0)
+            {
                 ownerID = items[0].Owner;
+            }
+
             return m_InventoryService.MoveItems(ownerID, items);
         }
+
         #endregion
 
         /// <summary>
@@ -301,9 +322,10 @@ namespace OpenSim.Server.Handlers.Inventory
         {
             if (m_doLookup)
             {
-                m_log.InfoFormat("[INVENTORY IN CONNECTOR]: Checking trusted source {0}", peer);
+                m_log.InfoFormat("[Inventory In Connector]: Checking trusted source {0}", peer);
                 UriBuilder ub = new UriBuilder(m_userserver_url);
                 IPAddress[] uaddrs = Dns.GetHostAddresses(ub.Host);
+
                 foreach (IPAddress uaddr in uaddrs)
                 {
                     if (uaddr.Equals(peer.Address))
@@ -313,8 +335,7 @@ namespace OpenSim.Server.Handlers.Inventory
                 }
 
                 m_log.WarnFormat(
-                    "[INVENTORY IN CONNECTOR]: Rejecting request since source {0} was not in the list of trusted sources",
-                    peer);
+                    "[Inventory In Connector]: Rejecting request since source {0} was not in the list of trusted sources", peer);
 
                 return false;
             }
@@ -325,7 +346,8 @@ namespace OpenSim.Server.Handlers.Inventory
         }
 
         /// <summary>
-        /// Check that the source of an inventory request for a particular agent is a current session belonging to
+        /// Check that the source of an inventory request 
+        /// for a particular agent is a current session belonging to
         /// that agent.
         /// </summary>
         /// <param name="session_id"></param>
@@ -335,6 +357,5 @@ namespace OpenSim.Server.Handlers.Inventory
         {
             return true;
         }
-
     }
 }

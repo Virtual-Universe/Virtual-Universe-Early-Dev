@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections;
@@ -31,23 +33,20 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.IO.Compression;
-using System.Reflection;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Web;
-
+using log4net;
+using Nini.Config;
+using OpenMetaverse;
+using OpenMetaverse.StructuredData;
+using OpenSim.Framework;
+using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Server.Base;
 using OpenSim.Server.Handlers.Base;
 using OpenSim.Services.Interfaces;
 using GridRegion = OpenSim.Services.Interfaces.GridRegion;
-using OpenSim.Framework;
-using OpenSim.Framework.Servers.HttpServer;
-
-using OpenMetaverse;
-using OpenMetaverse.StructuredData;
-using Nini.Config;
-using log4net;
-
 
 namespace OpenSim.Server.Handlers.Simulation
 {
@@ -66,25 +65,17 @@ namespace OpenSim.Server.Handlers.Simulation
 
         public Hashtable Handler(Hashtable request)
         {
-//            m_log.Debug("[CONNECTION DEBUGGING]: AgentHandler Called");
-//
-//            m_log.Debug("---------------------------");
-//            m_log.Debug(" >> uri=" + request["uri"]);
-//            m_log.Debug(" >> content-type=" + request["content-type"]);
-//            m_log.Debug(" >> http-method=" + request["http-method"]);
-//            m_log.Debug("---------------------------\n");
-
             Hashtable responsedata = new Hashtable();
             responsedata["content_type"] = "text/html";
             responsedata["keepalive"] = false;
 
-
             UUID agentID;
             UUID regionID;
             string action;
+
             if (!Utils.GetParams((string)request["uri"], out agentID, out regionID, out action))
             {
-                m_log.InfoFormat("[AGENT HANDLER]: Invalid parameters for agent message {0}", request["uri"]);
+                m_log.InfoFormat("[Agent Handler]: Invalid parameters for agent message {0}", request["uri"]);
                 responsedata["int_response_code"] = 404;
                 responsedata["str_response_string"] = "false";
 
@@ -93,11 +84,15 @@ namespace OpenSim.Server.Handlers.Simulation
 
             // Next, let's parse the verb
             string method = (string)request["http-method"];
+
             if (method.Equals("DELETE"))
             {
                 string auth_token = string.Empty;
+
                 if (request.ContainsKey("auth"))
+                {
                     auth_token = request["auth"].ToString();
+                }
 
                 DoAgentDelete(request, responsedata, agentID, action, regionID, auth_token);
                 return responsedata;
@@ -109,7 +104,7 @@ namespace OpenSim.Server.Handlers.Simulation
             }
             else
             {
-                m_log.ErrorFormat("[AGENT HANDLER]: method {0} not supported in agent message {1} (caller is {2})", method, (string)request["uri"], Util.GetCallerIP(request));
+                m_log.ErrorFormat("[Agent Handler]: method {0} not supported in agent message {1} (caller is {2})", method, (string)request["uri"], Util.GetCallerIP(request));
                 responsedata["int_response_code"] = HttpStatusCode.MethodNotAllowed;
                 responsedata["str_response_string"] = "Method not allowed";
 
@@ -121,7 +116,7 @@ namespace OpenSim.Server.Handlers.Simulation
         {
             if (m_SimulationService == null)
             {
-                m_log.Debug("[AGENT HANDLER]: Agent QUERY called. Harmless but useless.");
+                m_log.Debug("[Agent Handler]: Agent QUERY called. Harmless but useless.");
                 responsedata["content_type"] = "application/json";
                 responsedata["int_response_code"] = HttpStatusCode.NotImplemented;
                 responsedata["str_response_string"] = string.Empty;
@@ -131,35 +126,50 @@ namespace OpenSim.Server.Handlers.Simulation
 
             Culture.SetCurrentCulture();
 
-            // m_log.DebugFormat("[AGENT HANDLER]: Received QUERYACCESS with {0}", (string)request["body"]);
             OSDMap args = Utils.GetOSDMap((string)request["body"]);
 
             bool viaTeleport = true;
             OSD tmpOSD;
-            if (args.TryGetValue("viaTeleport",out tmpOSD))
+
+            if (args.TryGetValue("viaTeleport", out tmpOSD))
+            {
                 viaTeleport = tmpOSD.AsBoolean();
+            }
 
             Vector3 position = Vector3.Zero;
+
             if (args.TryGetValue("position", out tmpOSD))
+            {
                 position = Vector3.Parse(tmpOSD.AsString());
+            }
 
             string agentHomeURI = null;
+
             if (args.TryGetValue("agent_home_uri", out tmpOSD))
+            {
                 agentHomeURI = tmpOSD.AsString();
+            }
 
             // Decode the legacy (string) version and extract the number
             float theirVersion = 0f;
+
             if (args.TryGetValue("my_version", out tmpOSD))
             {
                 string theirVersionStr = tmpOSD.AsString();
-                string[] parts = theirVersionStr.Split(new char[] {'/'});
+                string[] parts = theirVersionStr.Split(new char[] { '/' });
+
                 if (parts.Length > 1)
+                {
                     theirVersion = float.Parse(parts[1], Culture.FormatProvider);
+                }
             }
 
             EntityTransferContext ctx = new EntityTransferContext();
+
             if (args.TryGetValue("context", out tmpOSD) && tmpOSD is OSDMap)
+            {
                 ctx.Unpack((OSDMap)tmpOSD);
+            }
 
             // Decode the new versioning data
             float minVersionRequired = 0f;
@@ -168,14 +178,24 @@ namespace OpenSim.Server.Handlers.Simulation
             float maxVersionProvided = 0f;
 
             if (args.TryGetValue("simulation_service_supported_min", out tmpOSD))
+            {
                 minVersionProvided = (float)tmpOSD.AsReal();
+            }
+
             if (args.TryGetValue("simulation_service_supported_max", out tmpOSD))
+            {
                 maxVersionProvided = (float)tmpOSD.AsReal();
+            }
 
             if (args.TryGetValue("simulation_service_accepted_min", out tmpOSD))
+            {
                 minVersionRequired = (float)tmpOSD.AsReal();
+            }
+
             if (args.TryGetValue("simulation_service_accepted_max", out tmpOSD))
+            {
                 maxVersionRequired = (float)tmpOSD.AsReal();
+            }
 
             responsedata["int_response_code"] = HttpStatusCode.OK;
             OSDMap resp = new OSDMap(3);
@@ -219,6 +239,7 @@ namespace OpenSim.Server.Handlers.Simulation
                     responsedata["str_response_string"] = OSDParser.SerializeJsonString(resp, true);
                     return;
                 }
+
                 if (minVersionRequired > VersionInfo.SimulationServiceVersionSupportedMax ||
                     maxVersionRequired < VersionInfo.SimulationServiceVersionSupportedMin)
                 {
@@ -243,16 +264,20 @@ namespace OpenSim.Server.Handlers.Simulation
                 OSDArray array = (OSDArray)tmpOSD;
 
                 foreach (OSD o in array)
+                {
                     features.Add(new UUID(o.AsString()));
+                }
             }
 
             GridRegion destination = new GridRegion();
             destination.RegionID = regionID;
 
             string reason;
+            
             // We're sending the version numbers down to the local connector to do the varregion check.
             ctx.InboundVersion = inboundVersion;
             ctx.OutboundVersion = outboundVersion;
+
             if (minVersionProvided == 0f)
             {
                 ctx.InboundVersion = version;
@@ -260,7 +285,7 @@ namespace OpenSim.Server.Handlers.Simulation
             }
 
             bool result = m_SimulationService.QueryAccess(destination, agentID, agentHomeURI, viaTeleport, position, features, ctx, out reason);
-            m_log.DebugFormat("[AGENT HANDLER]: QueryAccess returned {0} ({1}). Version={2}, {3}/{4}",
+            m_log.DebugFormat("[Agent Handler]: QueryAccess returned {0} ({1}). Version={2}, {3}/{4}",
                 result, reason, version, inboundVersion, outboundVersion);
 
             resp["success"] = OSD.FromBoolean(result);
@@ -271,37 +296,44 @@ namespace OpenSim.Server.Handlers.Simulation
             resp["negotiated_outbound_version"] = OSD.FromReal(outboundVersion);
 
             OSDArray featuresWanted = new OSDArray();
+
             foreach (UUID feature in features)
+            {
                 featuresWanted.Add(OSD.FromString(feature.ToString()));
+            }
 
             resp["features"] = featuresWanted;
 
             // We must preserve defaults here, otherwise a false "success" will not be put into the JSON map!
             responsedata["str_response_string"] = OSDParser.SerializeJsonString(resp, true);
-
-//            Console.WriteLine("str_response_string [{0}]", responsedata["str_response_string"]);
         }
 
         protected void DoAgentDelete(Hashtable request, Hashtable responsedata, UUID id, string action, UUID regionID, string auth_token)
         {
             if (string.IsNullOrEmpty(action))
-                m_log.DebugFormat("[AGENT HANDLER]: >>> DELETE <<< RegionID: {0}; from: {1}; auth_code: {2}", regionID, Util.GetCallerIP(request), auth_token);
+            {
+                m_log.DebugFormat("[Agent Handler]: >>> DELETE <<< RegionID: {0}; from: {1}; auth_code: {2}", regionID, Util.GetCallerIP(request), auth_token);
+            }
             else
-                m_log.DebugFormat("[AGENT HANDLER]: Release {0} to RegionID: {1}", id, regionID);
+            {
+                m_log.DebugFormat("[Agent Handler]: Release {0} to RegionID: {1}", id, regionID);
+            }
 
             GridRegion destination = new GridRegion();
             destination.RegionID = regionID;
 
             if (action.Equals("release"))
+            {
                 ReleaseAgent(regionID, id);
+            }
             else
+            {
                 Util.FireAndForget(
                     o => m_SimulationService.CloseAgent(destination, id, auth_token), null, "AgentHandler.DoAgentDelete");
+            }
 
             responsedata["int_response_code"] = HttpStatusCode.OK;
             responsedata["str_response_string"] = "OpenSim agent " + id.ToString();
-
-            //m_log.DebugFormat("[AGENT HANDLER]: Agent {0} Released/Deleted from region {1}", id, regionID);
         }
 
         protected virtual void ReleaseAgent(UUID regionID, UUID id)
@@ -317,23 +349,19 @@ namespace OpenSim.Server.Handlers.Simulation
         private ISimulationService m_SimulationService;
         protected bool m_Proxy = false;
 
-        public AgentPostHandler(ISimulationService service) :
-                base("POST", "/agent")
+        public AgentPostHandler(ISimulationService service) : base("POST", "/agent")
         {
             m_SimulationService = service;
         }
 
-        public AgentPostHandler(string path) :
-                base("POST", path)
+        public AgentPostHandler(string path) : base("POST", path)
         {
             m_SimulationService = null;
         }
 
         protected override byte[] ProcessRequest(string path, Stream request,
-                IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+            IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
-//            m_log.DebugFormat("[SIMULATION]: Stream handler called");
-
             Hashtable keysvals = new Hashtable();
             Hashtable headervals = new Hashtable();
 
@@ -345,10 +373,14 @@ namespace OpenSim.Server.Handlers.Simulation
             keysvals.Add("http-method", httpRequest.HttpMethod);
 
             foreach (string queryname in querystringkeys)
+            {
                 keysvals.Add(queryname, httpRequest.QueryString[queryname]);
+            }
 
             foreach (string headername in rHeaders)
+            {
                 headervals[headername] = httpRequest.Headers[headername];
+            }
 
             keysvals.Add("headers", headervals);
             keysvals.Add("querystringkeys", querystringkeys);
@@ -368,6 +400,7 @@ namespace OpenSim.Server.Handlers.Simulation
 
             Stream inputStream = request;
             Stream innerStream = null;
+
             try
             {
                 if ((httpRequest.ContentType == "application/x-gzip" || httpRequest.Headers["Content-Encoding"] == "gzip") || (httpRequest.Headers["X-Content-Encoding"] == "gzip"))
@@ -384,7 +417,10 @@ namespace OpenSim.Server.Handlers.Simulation
             finally
             {
                 if (innerStream != null)
+                {
                     innerStream.Dispose();
+                }
+
                 inputStream.Dispose();
             }
 
@@ -398,7 +434,7 @@ namespace OpenSim.Server.Handlers.Simulation
 
             if (!Utils.GetParams((string)keysvals["uri"], out agentID, out regionID, out action))
             {
-                m_log.InfoFormat("[AGENT HANDLER]: Invalid parameters for agent message {0}", keysvals["uri"]);
+                m_log.InfoFormat("[Agent Handler]: Invalid parameters for agent message {0}", keysvals["uri"]);
 
                 httpResponse.StatusCode = 404;
 
@@ -414,6 +450,7 @@ namespace OpenSim.Server.Handlers.Simulation
         protected void DoAgentPost(Hashtable request, Hashtable responsedata, UUID id)
         {
             OSDMap args = Utils.GetOSDMap((string)request["body"]);
+
             if (args == null)
             {
                 responsedata["int_response_code"] = HttpStatusCode.BadRequest;
@@ -423,8 +460,11 @@ namespace OpenSim.Server.Handlers.Simulation
 
             OSD tmpOSD;
             EntityTransferContext ctx = new EntityTransferContext();
+
             if (args.TryGetValue("context", out tmpOSD) && tmpOSD is OSDMap)
+            {
                 ctx.Unpack((OSDMap)tmpOSD);
+            }
 
             AgentDestinationData data = CreateAgentDestinationData();
             UnpackData(args, data, request);
@@ -438,13 +478,14 @@ namespace OpenSim.Server.Handlers.Simulation
             GridRegion gatekeeper = ExtractGatekeeper(data);
 
             AgentCircuitData aCircuit = new AgentCircuitData();
+
             try
             {
                 aCircuit.UnpackAgentCircuitData(args);
             }
             catch (Exception ex)
             {
-                m_log.InfoFormat("[AGENT HANDLER]: exception on unpacking ChildCreate message {0}", ex.Message);
+                m_log.InfoFormat("[Agent Handler]: exception on unpacking ChildCreate message {0}", ex.Message);
                 responsedata["int_response_code"] = HttpStatusCode.BadRequest;
                 responsedata["str_response_string"] = "Bad request";
                 return;
@@ -461,22 +502,23 @@ namespace OpenSim.Server.Handlers.Simulation
                 source.RegionName = args["source_name"].AsString();
 
                 if (args.TryGetValue("source_server_uri", out tmpOSD))
+                {
                     source.RawServerURI = tmpOSD.AsString();
+                }
                 else
+                {
                     source.RawServerURI = null;
+                }
             }
 
             OSDMap resp = new OSDMap(2);
             string reason = String.Empty;
 
-            // This is the meaning of POST agent
-            //m_regionClient.AdjustUserInformation(aCircuit);
-            //bool result = m_SimulationService.CreateAgent(destination, aCircuit, teleportFlags, out reason);
-
             bool result = CreateAgent(source, gatekeeper, destination, aCircuit, data.flags, data.fromLogin, ctx, out reason);
 
             resp["reason"] = OSD.FromString(reason);
             resp["success"] = OSD.FromBoolean(result);
+
             // Let's also send out the IP address of the caller back to the caller (HG 1.5)
             resp["your_ip"] = OSD.FromString(GetCallerIP(request));
 
@@ -493,25 +535,40 @@ namespace OpenSim.Server.Handlers.Simulation
         protected virtual void UnpackData(OSDMap args, AgentDestinationData data, Hashtable request)
         {
             OSD tmpOSD;
+
             // retrieve the input arguments
             if (args.TryGetValue("destination_x", out tmpOSD) && tmpOSD != null)
+            {
                 Int32.TryParse(tmpOSD.AsString(), out data.x);
+            }
             else
+            {
                 m_log.WarnFormat("  -- request didn't have destination_x");
+            }
 
             if (args.TryGetValue("destination_y", out tmpOSD) && tmpOSD != null)
+            {
                 Int32.TryParse(tmpOSD.AsString(), out data.y);
+            }
             else
+            {
                 m_log.WarnFormat("  -- request didn't have destination_y");
+            }
 
             if (args.TryGetValue("destination_uuid", out tmpOSD) && tmpOSD != null)
+            {
                 UUID.TryParse(tmpOSD.AsString(), out data.uuid);
+            }
 
             if (args.TryGetValue("destination_name", out tmpOSD) && tmpOSD != null)
+            {
                 data.name = tmpOSD.ToString();
+            }
 
             if (args.TryGetValue("teleport_flags", out tmpOSD) && tmpOSD != null)
+            {
                 data.flags = tmpOSD.AsUInteger();
+            }
         }
 
         protected virtual GridRegion ExtractGatekeeper(AgentDestinationData data)
@@ -525,26 +582,26 @@ namespace OpenSim.Server.Handlers.Simulation
             {
                 Hashtable headers = (Hashtable)request["headers"];
 
-                //// DEBUG
-                //foreach (object o in headers.Keys)
-                //    m_log.DebugFormat("XXX {0} = {1}", o.ToString(), (headers[o] == null? "null" : headers[o].ToString()));
-
                 string xff = "X-Forwarded-For";
+
                 if (!headers.ContainsKey(xff))
+                {
                     xff = xff.ToLower();
+                }
 
                 if (!headers.ContainsKey(xff) || headers[xff] == null)
                 {
-//                    m_log.WarnFormat("[AGENT HANDLER]: No XFF header");
                     return Util.GetCallerIP(request);
                 }
 
-//                m_log.DebugFormat("[AGENT HANDLER]: XFF is {0}", headers[xff]);
-
                 IPEndPoint ep = Util.GetClientIPFromXFF((string)headers[xff]);
+
                 if (ep != null)
+                {
                     return ep.Address.ToString();
+                }
             }
+
             // Oops
             return Util.GetCallerIP(request);
         }
@@ -554,29 +611,11 @@ namespace OpenSim.Server.Handlers.Simulation
             AgentCircuitData aCircuit, uint teleportFlags, bool fromLogin, EntityTransferContext ctx, out string reason)
         {
             reason = String.Empty;
+
             // The data and protocols are already defined so this is just a dummy to satisfy the interface
             // TODO: make this end-to-end
-
-/* this needs to be sync
-            if ((teleportFlags & (uint)TeleportFlags.ViaLogin) == 0)
-            {
-                Util.FireAndForget(x =>
-                {
-                    string r;
-                    m_SimulationService.CreateAgent(source, destination, aCircuit, teleportFlags, ctx, out r);
-                    m_log.DebugFormat("[AGENT HANDLER]: ASYNC CreateAgent {0}", r);
-                });
-
-                return true;
-            }
-            else
-            {
-*/
-
                 bool ret = m_SimulationService.CreateAgent(source, destination, aCircuit, teleportFlags, ctx, out reason);
-//                m_log.DebugFormat("[AGENT HANDLER]: SYNC CreateAgent {0} {1}", ret.ToString(), reason);
                 return ret;
-//            }
         }
     }
 
@@ -587,23 +626,18 @@ namespace OpenSim.Server.Handlers.Simulation
         private ISimulationService m_SimulationService;
         protected bool m_Proxy = false;
 
-        public AgentPutHandler(ISimulationService service) :
-                base("PUT", "/agent")
+        public AgentPutHandler(ISimulationService service) : base("PUT", "/agent")
         {
             m_SimulationService = service;
         }
 
-        public AgentPutHandler(string path) :
-                base("PUT", path)
+        public AgentPutHandler(string path) : base("PUT", path)
         {
             m_SimulationService = null;
         }
 
-        protected override byte[] ProcessRequest(string path, Stream request,
-                IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
+        protected override byte[] ProcessRequest(string path, Stream request, IOSHttpRequest httpRequest, IOSHttpResponse httpResponse)
         {
-//            m_log.DebugFormat("[SIMULATION]: Stream handler called");
-
             Hashtable keysvals = new Hashtable();
             Hashtable headervals = new Hashtable();
 
@@ -615,10 +649,14 @@ namespace OpenSim.Server.Handlers.Simulation
             keysvals.Add("http-method", httpRequest.HttpMethod);
 
             foreach (string queryname in querystringkeys)
+            {
                 keysvals.Add(queryname, httpRequest.QueryString[queryname]);
+            }
 
             foreach (string headername in rHeaders)
+            {
                 headervals[headername] = httpRequest.Headers[headername];
+            }
 
             keysvals.Add("headers", headervals);
             keysvals.Add("querystringkeys", querystringkeys);
@@ -628,6 +666,7 @@ namespace OpenSim.Server.Handlers.Simulation
 
             Stream inputStream = request;
             Stream innerStream = null;
+
             try
             {
                 if ((httpRequest.ContentType == "application/x-gzip" || httpRequest.Headers["Content-Encoding"] == "gzip") || (httpRequest.Headers["X-Content-Encoding"] == "gzip"))
@@ -644,7 +683,10 @@ namespace OpenSim.Server.Handlers.Simulation
             finally
             {
                 if (innerStream != null)
+                {
                     innerStream.Dispose();
+                }
+
                 inputStream.Dispose();
             }
 
@@ -662,7 +704,7 @@ namespace OpenSim.Server.Handlers.Simulation
 
             if (!Utils.GetParams((string)keysvals["uri"], out agentID, out regionID, out action))
             {
-                m_log.InfoFormat("[AGENT HANDLER]: Invalid parameters for agent message {0}", keysvals["uri"]);
+                m_log.InfoFormat("[Agent Handler]: Invalid parameters for agent message {0}", keysvals["uri"]);
 
                 httpResponse.StatusCode = 404;
 
@@ -680,6 +722,7 @@ namespace OpenSim.Server.Handlers.Simulation
             // TODO: Encode the ENtityTransferContext
 
             OSDMap args = Utils.GetOSDMap((string)request["body"]);
+
             if (args == null)
             {
                 responsedata["int_response_code"] = HttpStatusCode.BadRequest;
@@ -693,16 +736,31 @@ namespace OpenSim.Server.Handlers.Simulation
             int x = 0, y = 0;
             UUID uuid = UUID.Zero;
             string regionname = string.Empty;
+
             if (args.TryGetValue("destination_x", out tmpOSD) && tmpOSD != null)
+            {
                 Int32.TryParse(tmpOSD.AsString(), out x);
+            }
+
             if (args.TryGetValue("destination_y", out tmpOSD) && tmpOSD != null)
+            {
                 Int32.TryParse(tmpOSD.AsString(), out y);
+            }
+
             if (args.TryGetValue("destination_uuid", out tmpOSD) && tmpOSD != null)
+            {
                 UUID.TryParse(tmpOSD.AsString(), out uuid);
+            }
+
             if (args.TryGetValue("destination_name", out tmpOSD) && tmpOSD != null)
+            {
                 regionname = tmpOSD.ToString();
+            }
+
             if (args.TryGetValue("context", out tmpOSD) && tmpOSD is OSDMap)
+            {
                 ctx.Unpack((OSDMap)tmpOSD);
+            }
 
             GridRegion destination = new GridRegion();
             destination.RegionID = uuid;
@@ -711,55 +769,58 @@ namespace OpenSim.Server.Handlers.Simulation
             destination.RegionName = regionname;
 
             string messageType;
+
             if (args["message_type"] != null)
+            {
                 messageType = args["message_type"].AsString();
+            }
             else
             {
-                m_log.Warn("[AGENT HANDLER]: Agent Put Message Type not found. ");
+                m_log.Warn("[Agent Handler]: Agent Put Message Type not found. ");
                 messageType = "AgentData";
             }
 
             bool result = true;
+
             if ("AgentData".Equals(messageType))
             {
                 AgentData agent = new AgentData();
+
                 try
                 {
                     agent.Unpack(args, m_SimulationService.GetScene(destination.RegionID), ctx);
                 }
                 catch (Exception ex)
                 {
-                    m_log.InfoFormat("[AGENT HANDLER]: exception on unpacking ChildAgentUpdate message {0}", ex.Message);
+                    m_log.InfoFormat("[Agent Handler]: exception on unpacking ChildAgentUpdate message {0}", ex.Message);
                     responsedata["int_response_code"] = HttpStatusCode.BadRequest;
                     responsedata["str_response_string"] = "Bad request";
                     return;
                 }
 
-                //agent.Dump();
                 // This is one of the meanings of PUT agent
                 result = UpdateAgent(destination, agent);
             }
             else if ("AgentPosition".Equals(messageType))
             {
                 AgentPosition agent = new AgentPosition();
+
                 try
                 {
                     agent.Unpack(args, m_SimulationService.GetScene(destination.RegionID), ctx);
                 }
                 catch (Exception ex)
                 {
-                    m_log.InfoFormat("[AGENT HANDLER]: exception on unpacking ChildAgentUpdate message {0}", ex.Message);
+                    m_log.InfoFormat("[Agent Handler]: exception on unpacking ChildAgentUpdate message {0}", ex.Message);
                     return;
                 }
-                //agent.Dump();
+
                 // This is one of the meanings of PUT agent
                 result = m_SimulationService.UpdateAgent(destination, agent);
-
             }
 
             responsedata["int_response_code"] = HttpStatusCode.OK;
             responsedata["str_response_string"] = result.ToString();
-            //responsedata["str_response_string"] = OSDParser.SerializeJsonString(resp); ??? instead
         }
 
         // subclasses can override this
