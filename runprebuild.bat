@@ -41,7 +41,7 @@ if %framework%==4_5 set %vstudio%=2012
 
 for /f "tokens=4-5 delims=. " %%i in ('ver') do set VERSION=%%i.%%j
 if %version% == 10.0 (
-	set framework=4_7_2
+	set framework=4_6
 	echo Windows 10
 	rem ## As of April update 2018
 )

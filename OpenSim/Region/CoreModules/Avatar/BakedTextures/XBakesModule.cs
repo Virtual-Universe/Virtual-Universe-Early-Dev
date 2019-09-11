@@ -159,6 +159,7 @@ namespace OpenSim.Region.CoreModules.Avatar.BakedTextures
                                     sr.ReadEndElement();
                                 }
                             }
+
                             while (sr.LocalName == "BESetA")
                             {
                                 string sTextureIndex = sr.GetAttribute("TextureIndex");
