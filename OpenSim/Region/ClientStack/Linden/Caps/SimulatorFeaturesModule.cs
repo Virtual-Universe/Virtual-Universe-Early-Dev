@@ -1,31 +1,29 @@
-/// <license>
-///     Copyright (c) Contributors, https://virtual-planets.org/
-///     See CONTRIBUTORS.TXT for a full list of copyright holders.
-///     For an explanation of the license of each contributor and the content it
-///     covers please see the Licenses directory.
-///
-///     Redistribution and use in source and binary forms, with or without
-///     modification, are permitted provided that the following conditions are met:
-///         * Redistributions of source code must retain the above copyright
-///         notice, this list of conditions and the following disclaimer.
-///         * Redistributions in binary form must reproduce the above copyright
-///         notice, this list of conditions and the following disclaimer in the
-///         documentation and/or other materials provided with the distribution.
-///         * Neither the name of the Virtual Universe Project nor the
-///         names of its contributors may be used to endorse or promote products
-///         derived from this software without specific prior written permission.
-///
-///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
-///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
-///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-/// </license>
+/*
+ * Copyright (c) Contributors, http://opensimulator.org/
+ * See CONTRIBUTORS.TXT for a full list of copyright holders.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *     * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above copyright
+ *       notice, this list of conditions and the following disclaimer in the
+ *       documentation and/or other materials provided with the distribution.
+ *     * Neither the name of the OpenSimulator Project nor the
+ *       names of its contributors may be used to endorse or promote products
+ *       derived from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+ * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+ * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 using System;
 using System.Collections;
@@ -42,6 +40,7 @@ using OpenSim.Framework;
 using OpenSim.Framework.Servers.HttpServer;
 using OpenSim.Region.Framework.Interfaces;
 using OpenSim.Region.Framework.Scenes;
+// using OpenSim.Services.Interfaces;
 using Caps = OpenSim.Framework.Capabilities.Caps;
 
 namespace OpenSim.Region.ClientStack.Linden
@@ -79,7 +78,7 @@ namespace OpenSim.Region.ClientStack.Linden
         private string m_GridURL = string.Empty;
 
         private bool m_doScriptSyntax;
-        private bool m_BoMSupported = false;
+
         static private object m_scriptSyntaxLock = new object();
         static private UUID m_scriptSyntaxID = UUID.Zero;
         static private string m_scriptSyntaxXML;
@@ -113,7 +112,6 @@ namespace OpenSim.Region.ClientStack.Linden
                     m_GridName = Util.GetConfigVarFromSections<string>(
                         source, "gridname", new string[] { "GridInfo", "SimulatorFeatures" }, String.Empty);
                 m_doScriptSyntax = config.GetBoolean("ScriptSyntax", m_doScriptSyntax);
-                m_BoMSupported = config.GetBoolean("BoMSupported", m_BoMSupported);
             }
 
             ReadScriptSyntax();
@@ -157,17 +155,13 @@ namespace OpenSim.Region.ClientStack.Linden
         /// </remarks>
         private void AddDefaultFeatures()
         {
-
             lock (m_features)
             {
                 m_features["MeshRezEnabled"] = true;
                 m_features["MeshUploadEnabled"] = true;
                 m_features["MeshXferEnabled"] = true;
 
-                if (m_BoMSupported)
-                {
-                    m_features["BakesOnMeshEnabled"] = true;
-                }
+                m_features["BakesOnMeshEnabled"] = true;
 
                 m_features["PhysicsMaterialsEnabled"] = true;
 

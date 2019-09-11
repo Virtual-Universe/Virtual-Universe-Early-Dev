@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
@@ -48,17 +50,15 @@ namespace OpenSim.Framework
     public delegate void ImprovedInstantMessage(IClientAPI remoteclient, GridInstantMessage im);
 
     public delegate void RezObject(IClientAPI remoteClient, UUID itemID, UUID GroupID,
-                                Vector3 RayEnd, Vector3 RayStart,
-                                UUID RayTargetID, byte BypassRayCast, bool RayEndIsIntersection,
-                                bool RezSelected, bool RemoveItem, UUID fromTaskID);
+        Vector3 RayEnd, Vector3 RayStart, UUID RayTargetID, byte BypassRayCast, bool RayEndIsIntersection,
+        bool RezSelected, bool RemoveItem, UUID fromTaskID);
 
     public delegate void RezRestoreToWorld(IClientAPI remoteClient, UUID itemId);
     public delegate ISceneEntity RezSingleAttachmentFromInv(IClientAPI remoteClient, UUID itemID, uint AttachmentPt);
 
     public delegate void RezMultipleAttachmentsFromInv(IClientAPI remoteClient, List<KeyValuePair<UUID, uint>> rezlist );
 
-    public delegate void ObjectAttach(
-        IClientAPI remoteClient, uint objectLocalID, uint AttachmentPt, bool silent);
+    public delegate void ObjectAttach(IClientAPI remoteClient, uint objectLocalID, uint AttachmentPt, bool silent);
 
     public delegate void ModifyTerrain(UUID user,
         float height, float seconds, byte size, byte action, float north, float west, float south, float east,
@@ -86,8 +86,7 @@ namespace OpenSim.Framework
     public delegate void TeleportLocationRequest(
         IClientAPI remoteClient, ulong regionHandle, Vector3 position, Vector3 lookAt, uint flags);
 
-    public delegate void TeleportLandmarkRequest(
-        IClientAPI remoteClient, AssetLandmark lm);
+    public delegate void TeleportLandmarkRequest(IClientAPI remoteClient, AssetLandmark lm);
 
     public delegate void TeleportCancel(IClientAPI remoteClient);
 
@@ -148,9 +147,7 @@ namespace OpenSim.Framework
     public delegate void ObjectDuplicate(uint localID, Vector3 offset, uint dupeFlags, UUID AgentID, UUID GroupID);
 
     public delegate void ObjectDuplicateOnRay(uint localID, uint dupeFlags, UUID AgentID, UUID GroupID,
-                                              UUID RayTargetObj, Vector3 RayEnd, Vector3 RayStart,
-                                              bool BypassRaycast, bool RayEndIsIntersection, bool CopyCenters,
-                                              bool CopyRotates);
+        UUID RayTargetObj, Vector3 RayEnd, Vector3 RayStart, bool BypassRaycast, bool RayEndIsIntersection, bool CopyCenters, bool CopyRotates);
 
     public delegate void StatusChange(bool status);
 
@@ -183,7 +180,7 @@ namespace OpenSim.Framework
         UUID agentID, UUID sessionID, uint flags, int sequenceID, int landLocalID, IClientAPI remote_client);
 
     public delegate void ParcelAccessListUpdateRequest(UUID agentID, uint flags, UUID transactionID,
-                    int landLocalID, List<LandAccessEntry> entries, IClientAPI remote_client);
+        int landLocalID, List<LandAccessEntry> entries, IClientAPI remote_client);
 
     public delegate void ParcelPropertiesRequest(
         int start_x, int start_y, int end_x, int end_y, int sequence_id, bool snap_selection, IClientAPI remote_client);
@@ -221,14 +218,11 @@ namespace OpenSim.Framework
 
     public delegate void AddNewPrim(
         UUID ownerID, UUID groupID, Vector3 RayEnd, Quaternion rot, PrimitiveBaseShape shape, byte bypassRaycast, Vector3 RayStart,
-        UUID RayTargetID,
-        byte RayEndIsIntersection);
+        UUID RayTargetID, byte RayEndIsIntersection);
 
-    public delegate void RequestGodlikePowers(
-        UUID AgentID, UUID SessionID, UUID token, bool GodLike);
+    public delegate void RequestGodlikePowers(UUID AgentID, UUID SessionID, UUID token, bool GodLike);
 
-    public delegate void GodKickUser(
-        UUID GodAgentID, UUID AgentID, uint kickflags, byte[] reason);
+    public delegate void GodKickUser(UUID GodAgentID, UUID AgentID, uint kickflags, byte[] reason);
 
     public delegate void CreateInventoryFolder(
         IClientAPI remoteClient, UUID folderID, ushort folderType, string folderName, UUID parentID);
@@ -236,8 +230,7 @@ namespace OpenSim.Framework
     public delegate void UpdateInventoryFolder(
         IClientAPI remoteClient, UUID folderID, ushort type, string name, UUID parentID);
 
-    public delegate void MoveInventoryFolder(
-        IClientAPI remoteClient, UUID folderID, UUID parentID);
+    public delegate void MoveInventoryFolder(IClientAPI remoteClient, UUID folderID, UUID parentID);
 
     public delegate void CreateNewInventoryItem(
         IClientAPI remoteClient, UUID transActionID, UUID folderID, uint callbackID, string description, string name,
@@ -250,16 +243,11 @@ namespace OpenSim.Framework
     public delegate void FetchInventoryDescendents(
         IClientAPI remoteClient, UUID folderID, UUID ownerID, bool fetchFolders, bool fetchItems, int sortOrder);
 
-    public delegate void PurgeInventoryDescendents(
-        IClientAPI remoteClient, UUID folderID);
+    public delegate void PurgeInventoryDescendents(IClientAPI remoteClient, UUID folderID);
 
     public delegate void FetchInventory(IClientAPI remoteClient, UUID itemID, UUID ownerID);
 
     public delegate void RequestTaskInventory(IClientAPI remoteClient, uint localID);
-
-/*    public delegate void UpdateInventoryItem(
-        IClientAPI remoteClient, UUID transactionID, UUID itemID, string name, string description,
-        uint nextOwnerMask);*/
 
     public delegate void UpdateInventoryItem(
         IClientAPI remoteClient, UUID transactionID, UUID itemID, InventoryItemBase itemUpd);
@@ -268,17 +256,13 @@ namespace OpenSim.Framework
         IClientAPI remoteClient, uint callbackID, UUID oldAgentID, UUID oldItemID, UUID newFolderID,
         string newName);
 
-    public delegate void MoveInventoryItem(
-        IClientAPI remoteClient, List<InventoryItemBase> items);
+    public delegate void MoveInventoryItem(IClientAPI remoteClient, List<InventoryItemBase> items);
 
-    public delegate void MoveItemsAndLeaveCopy(
-        IClientAPI remoteClient, List<InventoryItemBase> items, UUID destFolder);
+    public delegate void MoveItemsAndLeaveCopy(IClientAPI remoteClient, List<InventoryItemBase> items, UUID destFolder);
 
-    public delegate void RemoveInventoryItem(
-        IClientAPI remoteClient, List<UUID> itemIDs);
+    public delegate void RemoveInventoryItem(IClientAPI remoteClient, List<UUID> itemIDs);
 
-    public delegate void RemoveInventoryFolder(
-        IClientAPI remoteClient, List<UUID> folderIDs);
+    public delegate void RemoveInventoryFolder(IClientAPI remoteClient, List<UUID> folderIDs);
 
     public delegate void RequestAsset(IClientAPI remoteClient, RequestAssetArgs transferRequest);
 
@@ -312,8 +296,7 @@ namespace OpenSim.Framework
         UUID sourceID, UUID destID, int amount, int transactionType, string description);
 
     public delegate void ParcelBuy(UUID agentId, UUID groupId, bool final, bool groupOwned,
-                                   bool removeContribution, int parcelLocalID, int parcelArea, int parcelPrice,
-                                   bool authenticated);
+        bool removeContribution, int parcelLocalID, int parcelArea, int parcelPrice, bool authenticated);
 
     // We keep all this information for fraud purposes in the future.
     public delegate void MoneyBalanceRequest(IClientAPI remoteClient, UUID agentID, UUID sessionID, UUID TransactionID);
@@ -344,7 +327,7 @@ namespace OpenSim.Framework
     public delegate void GodLandStatRequest(
         int parcelID, uint reportType, uint requestflags, string filter, IClientAPI remoteClient);
 
-    //Estate Requests
+    // Estate Requests
     public delegate void DetailedEstateDataRequest(IClientAPI remoteClient, UUID invoice);
 
     public delegate void SetEstateFlagsRequest(
@@ -355,8 +338,7 @@ namespace OpenSim.Framework
 
     public delegate void SetEstateTerrainDetailTexture(IClientAPI remoteClient, int corner, UUID side);
 
-    public delegate void SetEstateTerrainTextureHeights(IClientAPI remoteClient, int corner, float lowVal, float highVal
-        );
+    public delegate void SetEstateTerrainTextureHeights(IClientAPI remoteClient, int corner, float lowVal, float highVal);
 
     public delegate void CommitEstateTerrainTextureRequest(IClientAPI remoteClient);
 
@@ -371,7 +353,6 @@ namespace OpenSim.Framework
     public delegate void RequestTerrain(IClientAPI remoteClient, string clientFileName);
 
     public delegate void BakeTerrain(IClientAPI remoteClient);
-
 
     public delegate void EstateRestartSimRequest(IClientAPI remoteClient, int secondsTilReboot);
 
@@ -508,7 +489,6 @@ namespace OpenSim.Framework
 
     public delegate void GroupVoteHistoryRequest(IClientAPI client,UUID agentID, UUID groupID, UUID transactionID, UUID sessionID);
 
-
     public delegate void SimWideDeletesDelegate(IClientAPI client,UUID agentID, int flags, UUID targetID);
 
     public delegate void SendPostcard(IClientAPI client);
@@ -605,9 +585,13 @@ namespace OpenSim.Framework
             if (m_flags.HasFlag(PrimUpdateFlags.CancelKill))
             {
                 if (m_flags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                {
                     m_flags = PrimUpdateFlags.UpdateProbe;
+                }
                 else
+                {
                     m_flags = PrimUpdateFlags.FullUpdatewithAnim;
+                }
             }
         }
 
@@ -615,17 +599,27 @@ namespace OpenSim.Framework
         {
             // we are on the new one
             PrimUpdateFlags updateFlags = oldupdate.Flags;
+
             if (updateFlags.HasFlag(PrimUpdateFlags.UpdateProbe))
+            {
                 updateFlags &= ~PrimUpdateFlags.UpdateProbe;
+            }
+
             if (m_flags.HasFlag(PrimUpdateFlags.CancelKill))
             {
-                if(m_flags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                if (m_flags.HasFlag(PrimUpdateFlags.UpdateProbe))
+                {
                     m_flags = PrimUpdateFlags.UpdateProbe;
+                }
                 else
+                {
                     m_flags = PrimUpdateFlags.FullUpdatewithAnim;
+                }
             }
             else
+            {
                 m_flags |= updateFlags;
+            }
         }
 
         public EntityUpdate(ISceneEntity entity, PrimUpdateFlags flags)
@@ -696,15 +690,6 @@ namespace OpenSim.Framework
         Kill =          0x80000000 // 1 << 31
     }
 
-/* included in .net 4.0
-    public static class PrimUpdateFlagsExtensions
-    {
-        public static bool HasFlag(this PrimUpdateFlags updateFlags, PrimUpdateFlags flag)
-        {
-            return (updateFlags & flag) == flag;
-        }
-    }
-*/
     public interface IClientAPI
     {
         Vector3 StartPos { get; set; }
@@ -713,9 +698,11 @@ namespace OpenSim.Framework
         UUID AgentId { get; }
 
         UUID ScopeId { get; }
+
         /// <summary>
-        /// The scene agent for this client.  This will only be set if the client has an agent in a scene (i.e. if it
-        /// is connected).
+        /// The scene agent for this client.  
+        /// This will only be set if the client has 
+        /// an agent in a scene (i.e. if it is connected).
         /// </summary>
         ISceneAgent SceneAgent { get; set; }
 
@@ -746,12 +733,15 @@ namespace OpenSim.Framework
         List<uint> SelectedObjects { get; }
 
         /// <summary>
-        /// Returns the full name of the agent/avatar represented by this client
+        /// Returns the full name of the agent/avatar 
+        /// represented by this client
         /// </summary>
         string Name { get; }
 
         /// <summary>
-        /// True if the client is active (sending and receiving new UDP messages).  False if the client is being closed.
+        /// True if the client is active (sending and 
+        /// receiving new UDP messages).  
+        /// False if the client is being closed.
         /// </summary>
         bool IsActive { get; set; }
 
@@ -761,8 +751,10 @@ namespace OpenSim.Framework
         /// Set if the client is closing due to a logout request
         /// </summary>
         /// <remarks>
-        /// Do not use this flag if you want to know if the client is closing, since it will not be set in other
-        /// circumstances (e.g. if a child agent is closed or the agent is kicked off the simulator).  Use IsActive
+        /// Do not use this flag if you want to know if the 
+        /// client is closing, since it will not be set in other
+        /// circumstances (e.g. if a child agent is closed or 
+        /// the agent is kicked off the simulator).  Use IsActive
         /// instead with a IClientAPI.SceneAgent.IsChildAgent check if necessary.
         ///
         /// Only set for root agents.
@@ -773,30 +765,22 @@ namespace OpenSim.Framework
 
         int NextAnimationSequenceNumber {get; set;}
 
-        // [Obsolete("LLClientView Specific - Circuits are unique to LLClientView")]
         uint CircuitCode { get; }
 
         IPEndPoint RemoteEndPoint { get; }
 
         event GenericMessage OnGenericMessage;
 
-        // [Obsolete("LLClientView Specific - Replace with more bare-bones arguments.")]
         event ImprovedInstantMessage OnInstantMessage;
-        // [Obsolete("LLClientView Specific - Replace with more bare-bones arguments. Rename OnChat.")]
         event ChatMessage OnChatFromClient;
-        // [Obsolete("LLClientView Specific - Replace with more bare-bones arguments.")]
         event TextureRequest OnRequestTexture;
-        // [Obsolete("LLClientView Specific - Remove bitbuckets. Adam, can you be more specific here..  as I don't see any bit buckets.")]
         event RezObject OnRezObject;
-        // [Obsolete("LLClientView Specific - Replace with more suitable arguments.")]
         event ModifyTerrain OnModifyTerrain;
         event BakeTerrain OnBakeTerrain;
         event EstateChangeInfo OnEstateChangeInfo;
         event EstateManageTelehub OnEstateManageTelehub;
-        // [Obsolete("LLClientView Specific.")]
         event CachedTextureRequest OnCachedTextureRequest;
         event SetAppearance OnSetAppearance;
-        // [Obsolete("LLClientView Specific - Replace and rename OnAvatarUpdate. Difference from SetAppearance?")]
         event AvatarNowWearing OnAvatarNowWearing;
         event RezSingleAttachmentFromInv OnRezSingleAttachmentFromInv;
         event RezMultipleAttachmentsFromInv OnRezMultipleAttachmentsFromInv;
@@ -824,18 +808,24 @@ namespace OpenSim.Framework
         event Action<IClientAPI, bool> OnCompleteMovementToRegion;
 
         /// <summary>
-        /// Called when an AgentUpdate message is received and before OnAgentUpdate.
+        /// Called when an AgentUpdate message is 
+        /// received and before OnAgentUpdate.
         /// </summary>
         /// <remarks>
-        /// Listeners must not retain a reference to AgentUpdateArgs since this object may be reused for subsequent AgentUpdates.
+        /// Listeners must not retain a reference 
+        /// to AgentUpdateArgs since this object may 
+        /// be reused for subsequent AgentUpdates.
         /// </remarks>
         event UpdateAgent OnPreAgentUpdate;
 
         /// <summary>
-        /// Called when an AgentUpdate message is received and after OnPreAgentUpdate.
+        /// Called when an AgentUpdate message is 
+        /// received and after OnPreAgentUpdate.
         /// </summary>
         /// <remarks>
-        /// Listeners must not retain a reference to AgentUpdateArgs since this object may be reused for subsequent AgentUpdates.
+        /// Listeners must not retain a reference to 
+        /// AgentUpdateArgs since this object may be 
+        /// reused for subsequent AgentUpdates.
         /// </remarks>
         event UpdateAgent OnAgentUpdate;
 
@@ -1063,8 +1053,10 @@ namespace OpenSim.Framework
         event GodlikeMessage onGodlikeMessage;
         event GodUpdateRegionInfoUpdate OnGodUpdateRegionInfoUpdate;
         event GenericCall2 OnUpdateThrottles;
+        
         /// <summary>
-        /// Set the debug level at which packet output should be printed to console.
+        /// Set the debug level at which packet 
+        /// output should be printed to console.
         /// </summary>
         int DebugPacketLevel { get; set; }
 
@@ -1080,7 +1072,8 @@ namespace OpenSim.Framework
         /// Close this client
         /// </summary>
         /// <param name='force'>
-        /// If true, attempts the close without checking active status.  You do not want to try this except as a last
+        /// If true, attempts the close without checking active status.  
+        /// You do not want to try this except as a last
         /// ditch attempt where Active == false but the ScenePresence still exists.
         /// </param>
         void Close(bool sendStop, bool force);
@@ -1094,20 +1087,19 @@ namespace OpenSim.Framework
 
         void Stop();
 
-        //     void ActivateGesture(UUID assetId, UUID gestureId);
-
         /// <summary>
         /// Tell this client what items it should be wearing now
         /// </summary>
         void SendWearables(AvatarWearable[] wearables, int serial);
 
         /// <summary>
-        /// Send information about the given agent's appearance to another client.
+        /// Send information about the given agent's 
+        /// appearance to another client.
         /// </summary>
         /// <param name="agentID">The id of the agent associated with the appearance</param>
         /// <param name="visualParams"></param>
         /// <param name="textureEntry"></param>
-        void SendAppearance(UUID agentID, byte[] visualParams, byte[] textureEntry);
+        void SendAppearance(UUID agentID, byte[] visualParams, byte[] textureEntry, float hoverheight);
 
         void SendCachedTextureResponse(ISceneEntity avatar, int serial, List<CachedTextureResponseArg> cachedTextures);
 
@@ -1116,8 +1108,6 @@ namespace OpenSim.Framework
         /// </summary>
         /// <param name="localID"></param>
         void SendKillObject(List<uint> localID);
-
-//        void SendPartFullUpdate(ISceneEntity ent, uint? parentID);
 
         void SendAnimations(UUID[] animID, int[] seqs, UUID sourceAgentId, UUID[] objectIDs);
         void SendRegionHandshake();
@@ -1154,7 +1144,8 @@ namespace OpenSim.Framework
         /// Sent when an agent completes its movement into a region.
         /// </summary>
         /// <remarks>
-        /// This packet marks completion of the arrival of a root avatar in a region, whether through login, region
+        /// This packet marks completion of the arrival 
+        /// of a root avatar in a region, whether through login, region
         /// crossing or direct teleport.
         /// </remarks>
         void MoveAgentIntoRegion(RegionInfo regInfo, Vector3 pos, Vector3 look);
@@ -1167,14 +1158,13 @@ namespace OpenSim.Framework
         /// <returns></returns>
         AgentCircuitData RequestClientInfo();
 
-        void CrossRegion(ulong newRegionHandle, Vector3 pos, Vector3 lookAt, IPEndPoint newRegionExternalEndPoint,
-                         string capsURL);
+        void CrossRegion(ulong newRegionHandle, Vector3 pos, Vector3 lookAt, IPEndPoint newRegionExternalEndPoint, string capsURL);
 
         void SendMapBlock(List<MapBlockData> mapBlocks, uint flag);
         void SendLocalTeleport(Vector3 position, Vector3 lookAt, uint flags);
 
         void SendRegionTeleport(ulong regionHandle, byte simAccess, IPEndPoint regionExternalEndPoint, uint locationID,
-                                uint flags, string capsURL);
+            uint flags, string capsURL);
 
         void SendTeleportFailed(string reason);
         void SendTeleportStart(uint flags);
@@ -1206,8 +1196,7 @@ namespace OpenSim.Framework
         void FlushPrimUpdates();
 
         void SendInventoryFolderDetails(UUID ownerID, UUID folderID, List<InventoryItemBase> items,
-                                        List<InventoryFolderBase> folders, int version, bool fetchFolders,
-                                        bool fetchItems);
+            List<InventoryFolderBase> folders, int version, bool fetchFolders, bool fetchItems);
 
         void SendInventoryItemDetails(UUID ownerID, InventoryItemBase item);
 
@@ -1227,38 +1216,34 @@ namespace OpenSim.Framework
         void SendTelehubInfo(UUID ObjectID, string ObjectName, Vector3 ObjectPos, Quaternion ObjectRot, List<Vector3> SpawnPoint);
 
         /// <summary>
-        /// Used by the server to inform the client of new inventory items and folders.
-        /// </summary>
-        ///
+        /// Used by the server to inform the client 
+        /// of new inventory items and folders.
+        /// 
         /// If the node is a folder then the contents will be transferred
         /// (including all descendent folders) as well as the folder itself.
-        ///
+        /// </summary>
         /// <param name="node"></param>
         void SendBulkUpdateInventory(InventoryNodeBase node);
 
-        void SendXferPacket(ulong xferID, uint packet,
-                byte[] XferData, int XferDataOffset, int XferDatapktLen, bool isTaskInventory);
+        void SendXferPacket(ulong xferID, uint packet, byte[] XferData, int XferDataOffset, 
+            int XferDatapktLen, bool isTaskInventory);
 
         void SendAbortXferPacket(ulong xferID);
 
         void SendEconomyData(float EnergyEfficiency, int ObjectCapacity, int ObjectCount, int PriceEnergyUnit,
-                             int PriceGroupCreate, int PriceObjectClaim, float PriceObjectRent,
-                             float PriceObjectScaleFactor,
-                             int PriceParcelClaim, float PriceParcelClaimFactor, int PriceParcelRent,
-                             int PricePublicObjectDecay,
-                             int PricePublicObjectDelete, int PriceRentLight, int PriceUpload, int TeleportMinPrice,
-                             float TeleportPriceExponent);
+            int PriceGroupCreate, int PriceObjectClaim, float PriceObjectRent, float PriceObjectScaleFactor,
+            int PriceParcelClaim, float PriceParcelClaimFactor, int PriceParcelRent, int PricePublicObjectDecay,
+            int PricePublicObjectDelete, int PriceRentLight, int PriceUpload, int TeleportMinPrice, float TeleportPriceExponent);
 
         void SendAvatarPickerReply(AvatarPickerReplyAgentDataArgs AgentData, List<AvatarPickerReplyDataArgs> Data);
 
         void SendAgentDataUpdate(UUID agentid, UUID activegroupid, string firstname, string lastname, ulong grouppowers,
-                                 string groupname, string grouptitle);
+            string groupname, string grouptitle);
 
         void SendPreLoadSound(UUID objectID, UUID ownerID, UUID soundID);
         void SendPlayAttachedSound(UUID soundID, UUID objectID, UUID ownerID, float gain, byte flags);
 
-        void SendTriggeredSound(UUID soundID, UUID ownerID, UUID objectID, UUID parentID, ulong handle, Vector3 position,
-                                float gain);
+        void SendTriggeredSound(UUID soundID, UUID ownerID, UUID objectID, UUID parentID, ulong handle, Vector3 position, float gain);
 
         void SendAttachedSoundGainChange(UUID objectID, float gain);
 
@@ -1282,8 +1267,8 @@ namespace OpenSim.Framework
         /// <param name="textureID"></param>
         /// <param name="ch"></param>
         /// <param name="buttonlabels"></param>
-        void SendDialog(string objectname, UUID objectID, UUID ownerID, string ownerFirstName, string ownerLastName, string msg, UUID textureID, int ch,
-                        string[] buttonlabels);
+        void SendDialog(string objectname, UUID objectID, UUID ownerID, string ownerFirstName, 
+            string ownerLastName, string msg, UUID textureID, int ch, string[] buttonlabels);
 
         /// <summary>
         /// Update the client as to where the sun is currently located.
@@ -1294,18 +1279,17 @@ namespace OpenSim.Framework
         /// <param name="SecondsPerSunCycle"></param>
         /// <param name="SecondsPerYear"></param>
         /// <param name="OrbitalPosition">The orbital position is given in radians, and must be "adjusted" for the linden client, see LLClientView</param>
-        void SendSunPos(Vector3 sunPos, Vector3 sunVel, ulong CurrentTime, uint SecondsPerSunCycle, uint SecondsPerYear,
-                        float OrbitalPosition);
+        void SendSunPos(Vector3 sunPos, Vector3 sunVel, ulong CurrentTime, uint SecondsPerSunCycle, 
+            uint SecondsPerYear, float OrbitalPosition);
 
         void SendViewerEffect(ViewerEffectPacket.EffectBlock[] effectBlocks);
         void SendViewerTime(int phase);
 
         void SendAvatarProperties(UUID avatarID, string aboutText, string bornOn, Byte[] membershipType, string flAbout,
-                                  uint flags, UUID flImageID, UUID imageID, string profileURL, UUID partnerID);
+            uint flags, UUID flImageID, UUID imageID, string profileURL, UUID partnerID);
 
         void SendScriptQuestion(UUID taskID, string taskName, string ownerName, UUID itemID, int question);
         void SendHealth(float health);
-
 
         void SendEstateList(UUID invoice, int code, UUID[] Data, uint estateID);
 
@@ -1315,7 +1299,7 @@ namespace OpenSim.Framework
         void SendEstateCovenantInformation(UUID covenant);
 
         void SendDetailedEstateData(UUID invoice, string estateName, uint estateID, uint parentEstate, uint estateFlags,
-                                    uint sunPosition, UUID covenant, uint covenantChanged, string abuseEmail, UUID estateOwner);
+            uint sunPosition, UUID covenant, uint covenantChanged, string abuseEmail, UUID estateOwner);
 
         /// <summary>
         /// Send land properties to the client.
@@ -1328,8 +1312,7 @@ namespace OpenSim.Framework
         /// <param name="simObjectCapacity"></param>
         /// <param name="regionFlags"></param>
         void SendLandProperties(int sequence_id, bool snap_selection, int request_result, ILandObject lo,
-                                float simObjectBonusFactor, int parcelObjectCapacity, int simObjectCapacity,
-                                uint regionFlags);
+            float simObjectBonusFactor, int parcelObjectCapacity, int simObjectCapacity, uint regionFlags);
 
         void SendLandAccessListData(List<LandAccessEntry> accessList, uint accessFlag, int localLandID);
         void SendForceClientSelectObjects(List<uint> objectIDs);
@@ -1341,9 +1324,8 @@ namespace OpenSim.Framework
 
         void SendParcelMediaCommand(uint flags, ParcelMediaCommandEnum command, float time);
 
-        void SendParcelMediaUpdate(string mediaUrl, UUID mediaTextureID,
-                                   byte autoScale, string mediaType, string mediaDesc, int mediaWidth, int mediaHeight,
-                                   byte mediaLoop);
+        void SendParcelMediaUpdate(string mediaUrl, UUID mediaTextureID, byte autoScale, string mediaType, 
+            string mediaDesc, int mediaWidth, int mediaHeight, byte mediaLoop);
 
         #endregion
 
@@ -1354,7 +1336,8 @@ namespace OpenSim.Framework
         void SendInitiateDownload(string simFileName, string clientFileName);
 
         /// <summary>
-        /// Send the first part of a texture.  For sufficiently small textures, this may be the only packet.
+        /// Send the first part of a texture.  
+        /// For sufficiently small textures, this may be the only packet.
         /// </summary>
         /// <param name="numParts"></param>
         /// <param name="ImageUUID"></param>
@@ -1364,7 +1347,8 @@ namespace OpenSim.Framework
         void SendImageFirstPart(ushort numParts, UUID ImageUUID, uint ImageSize, byte[] ImageData, byte imageCodec);
 
         /// <summary>
-        /// Send the next packet for a series of packets making up a single texture,
+        /// Send the next packet for a series of packets 
+        /// making up a single texture,
         /// as established by SendImageFirstPart()
         /// </summary>
         /// <param name="partNumber"></param>
@@ -1400,7 +1384,7 @@ namespace OpenSim.Framework
         void SendFindAgent(UUID HunterID, UUID PreyID, double GlobalX, double GlobalY);
 
         void SendSitResponse(UUID TargetID, Vector3 OffsetPos, Quaternion SitOrientation, bool autopilot,
-                             Vector3 CameraAtOffset, Vector3 CameraEyeOffset, bool ForceMouseLook);
+            Vector3 CameraAtOffset, Vector3 CameraEyeOffset, bool ForceMouseLook);
 
         void SendAdminResponse(UUID Token, uint AdminLevel);
 
@@ -1434,11 +1418,13 @@ namespace OpenSim.Framework
 
         void SendLogoutPacket();
 
-        // WARNING WARNING WARNING
-        //
-        // The two following methods are EXCLUSIVELY for the load balancer.
-        // they cause a MASSIVE performance hit!
-        //
+        /// <summary>
+        /// WARNING!
+        /// The following two methods are EXCLUSIVELY
+        /// for the load balancer.  They cause a MASSIVE
+        /// performance hit
+        /// </summary>
+        /// <returns></returns>
         ClientInfo GetClientInfo();
         void SetClientInfo(ClientInfo info);
 

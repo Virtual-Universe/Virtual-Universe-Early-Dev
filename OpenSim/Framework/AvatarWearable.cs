@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
@@ -46,9 +48,11 @@ namespace OpenSim.Framework
 
     public class AvatarWearable
     {
-        // these are guessed at by the list here -
-        // http://wiki.secondlife.com/wiki/Avatar_Appearance.  We'll
-        // correct them over time for when were are wrong.
+        /// <summary>
+        /// These are guessed at by the list here:
+        /// http://wiki.secondlife.com/wiki/Avatar_Appearance.
+        /// We will correct them over time for when we are wrong
+        /// </summary>
         public static readonly int BODY = 0;
         public static readonly int SKIN = 1;
         public static readonly int HAIR = 2;
@@ -67,11 +71,14 @@ namespace OpenSim.Framework
 
         public static readonly int ALPHA = 13;
         public static readonly int TATTOO = 14;
-
         public static readonly int LEGACY_VERSION_MAX_WEARABLES = 15;
-//        public static readonly int PHYSICS = 15;
-//        public static int MAX_WEARABLES = 16;
 
+        public static readonly int PHYSICS = 15;
+
+        public static int MAX_WEARABLES_PV7 = 16;
+
+        public static readonly int UNIVERSAL = 16;
+        public static int MAX_WEARABLES = 17;
 
         public static readonly UUID DEFAULT_BODY_ITEM = new UUID("66c41e39-38f9-f75a-024e-585989bfaba9");
         public static readonly UUID DEFAULT_BODY_ASSET = new UUID("66c41e39-38f9-f75a-024e-585989bfab73");
@@ -133,6 +140,7 @@ namespace OpenSim.Framework
         {
             Clear();
             OSD tmpOSDA, tmpOSDB;
+
             foreach (OSDMap weardata in args)
             {
                 tmpOSDA = weardata["item"];
@@ -149,14 +157,20 @@ namespace OpenSim.Framework
         public void Add(UUID itemID, UUID assetID)
         {
             if (itemID == UUID.Zero)
+            {
                 return;
+            }
+
             if (m_items.ContainsKey(itemID))
             {
                 m_items[itemID] = assetID;
                 return;
             }
+
             if (m_ids.Count >= 5)
+            {
                 return;
+            }
 
             m_ids.Add(itemID);
             m_items[itemID] = assetID;
@@ -213,7 +227,9 @@ namespace OpenSim.Framework
             get
             {
                 if (idx >= m_ids.Count || idx < 0)
+                {
                     return new WearableItem(UUID.Zero, UUID.Zero);
+                }
 
                 return new WearableItem(m_ids[idx], m_items[m_ids[idx]]);
             }
@@ -222,7 +238,10 @@ namespace OpenSim.Framework
         public UUID GetAsset(UUID itemID)
         {
             if (!m_items.ContainsKey(itemID))
+            {
                 return UUID.Zero;
+            }
+
             return m_items[itemID];
         }
 
@@ -230,8 +249,12 @@ namespace OpenSim.Framework
         {
             get
             {
-                // We use the legacy count here because this is just a fallback anyway
+                /// <summary>
+                /// We use the legacy count here
+                /// because this is just a fallback anyway
+                /// </summary>
                 AvatarWearable[] defaultWearables = new AvatarWearable[LEGACY_VERSION_MAX_WEARABLES];
+
                 for (int i = 0; i < LEGACY_VERSION_MAX_WEARABLES; i++)
                 {
                     defaultWearables[i] = new AvatarWearable();
@@ -254,15 +277,6 @@ namespace OpenSim.Framework
 
                 // Pants
                 defaultWearables[PANTS].Add(DEFAULT_PANTS_ITEM, DEFAULT_PANTS_ASSET);
-
-//                // Alpha
-//                defaultWearables[ALPHA].Add(DEFAULT_ALPHA_ITEM, DEFAULT_ALPHA_ASSET);
-
-                //                // Tattoo
-                //                defaultWearables[TATTOO].Add(DEFAULT_TATTOO_ITEM, DEFAULT_TATTOO_ASSET);
-
-                //                // Physics
-                //                defaultWearables[PHYSICS].Add(DEFAULT_TATTOO_ITEM, DEFAULT_TATTOO_ASSET);
 
                 return defaultWearables;
             }

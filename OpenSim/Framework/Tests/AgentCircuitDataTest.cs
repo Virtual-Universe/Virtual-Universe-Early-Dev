@@ -1,34 +1,36 @@
-﻿/*
- * Copyright (c) Contributors, http://opensimulator.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the OpenSimulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+﻿/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System.Collections.Generic;
+using NUnit.Framework;
 using OpenMetaverse;
 using OpenMetaverse.StructuredData;
-using NUnit.Framework;
 using OpenSim.Tests.Common;
 
 namespace OpenSim.Framework.Tests
@@ -49,7 +51,6 @@ namespace OpenSim.Framework.Tests
         private UUID SessionId;
         private Vector3 StartPos;
 
-
         [SetUp]
         public void setup()
         {
@@ -68,12 +69,12 @@ namespace OpenSim.Framework.Tests
             AvAppearance = new AvatarAppearance();
             VisualParams = new byte[218];
 
-            //body
+            // body
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_HEIGHT] = 155;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_THICKNESS] = 00;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_BODY_FAT] = 0;
 
-            //Torso
+            // Torso
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_TORSO_MUSCLES] = 48;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_NECK_THICKNESS] = 43;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_NECK_LENGTH] = 255;
@@ -95,7 +96,6 @@ namespace OpenSim.Framework.Tests
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_BOWED_LEGS] = 127;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_FOOT_SIZE] = 45;
 
-
             // head
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_HEAD_SIZE] = 255;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_SQUASH_STRETCH_HEAD] = 0; // head stretch
@@ -109,8 +109,6 @@ namespace OpenSim.Framework.Tests
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_PUFFY_UPPER_CHEEKS] = 0; //  upper cheeks
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_DOUBLE_CHIN] = 122; //  lower cheeks
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_HIGH_CHEEK_BONES] = 130;
-
-
 
             // eyes
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_EYE_SIZE] = 105;
@@ -146,7 +144,6 @@ namespace OpenSim.Framework.Tests
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_BULBOUS_NOSE_TIP] = 25;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_CROOKED_NOSE] = 127;
 
-
             // Mouth
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_LIP_WIDTH] = 122;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_TALL_LIPS] = 10; // lip fullness
@@ -158,7 +155,6 @@ namespace OpenSim.Framework.Tests
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_WIDE_LIP_CLEFT] = 84;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_SHIFT_MOUTH] = 127;
 
-
             // chin
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_WEAK_CHIN] = 119;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_SQUARE_JAW] = 5;
@@ -169,7 +165,6 @@ namespace OpenSim.Framework.Tests
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_CLEFT_CHIN] = 89;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_CLEFT_CHIN_UPPER] = 89;
             VisualParams[(int)AvatarAppearance.VPElement.SHAPE_DOUBLE_CHIN] = 0;
-
 
             // hair color
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_WHITE_HAIR] = 0;
@@ -204,14 +199,14 @@ namespace OpenSim.Framework.Tests
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_HAIR_PART_LEFT] = 0;
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_BANGS_PART_MIDDLE] = 155;
 
-            //Eyebrows
+            // Eyebrows
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_EYEBROW_SIZE] = 20;
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_EYEBROW_DENSITY] = 140;
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_LOWER_EYEBROWS] = 200; // eyebrow height
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_ARCED_EYEBROWS] = 124;
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_POINTY_EYEBROWS] = 65;
 
-            //Facial hair
+            // Facial hair
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_HAIR_THICKNESS] = 65;
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_SIDEBURNS] = 235;
             VisualParams[(int)AvatarAppearance.VPElement.HAIR_MOUSTACHE] = 75;
@@ -220,19 +215,16 @@ namespace OpenSim.Framework.Tests
 
             AvAppearance.VisualParams = VisualParams;
 
-            List<byte> wearbyte = new List<byte>();
-            for (int i = 0; i < VisualParams.Length; i++)
-            {
-                wearbyte.Add(VisualParams[i]);
-            }
-
             AvAppearance.SetAppearance(AvAppearance.Texture, (byte[])VisualParams.Clone());
         }
 
         /// <summary>
-        /// Test to ensure that the serialization format is the same and the underlying types don't change without notice
-        /// oldSerialization is just a json serialization of the OSDMap packed for the AgentCircuitData.
-        /// The idea is that if the current json serializer cannot parse the old serialization, then the underlying types
+        /// Test to ensure that the serialization format 
+        /// is the same and the underlying types don't change without notice
+        /// oldSerialization is just a json serialization 
+        /// of the OSDMap packed for the AgentCircuitData.
+        /// The idea is that if the current json serializer 
+        /// cannot parse the old serialization, then the underlying types
         /// have changed and are incompatible.
         /// </summary>
         [Test]
@@ -254,12 +246,11 @@ namespace OpenSim.Framework.Tests
             Agent1Data.SessionID = new UUID("aa06f798-9d70-4bdb-9bbf-012a02ee2baf");
             Agent1Data.startpos = StartPos;
 
-
             OSDMap map2;
+
             try
             {
                 map2 = (OSDMap) OSDParser.DeserializeJson(oldSerialization);
-
 
                 AgentCircuitData Agent2Data = new AgentCircuitData();
                 Agent2Data.UnpackAgentCircuitData(map2);
@@ -280,14 +271,8 @@ namespace OpenSim.Framework.Tests
             }
             catch (LitJson.JsonException)
             {
-                //intermittant litjson errors :P
                 Assert.That(1 == 1);
             }
-            /*
-            Enable this once VisualParams go in the packing method
-            for (int i=0;i<208;i++)
-               Assert.That((Agent1Data.Appearance.VisualParams[i] == Agent2Data.Appearance.VisualParams[i]));
-            */
        }
 
        /// <summary>
@@ -314,15 +299,14 @@ namespace OpenSim.Framework.Tests
             EntityTransferContext ctx = new EntityTransferContext();
             OSDMap map2;
             OSDMap map = Agent1Data.PackAgentCircuitData(ctx);
+
             try
             {
                 string str = OSDParser.SerializeJsonString(map);
-                //System.Console.WriteLine(str);
                 map2 = (OSDMap) OSDParser.DeserializeJson(str);
             }
             catch (System.NullReferenceException)
             {
-                //spurious litjson errors :P
                 map2 = map;
                 Assert.That(1==1);
                 return;
@@ -344,14 +328,6 @@ namespace OpenSim.Framework.Tests
            Assert.That((Agent1Data.SecureSessionID == Agent2Data.SecureSessionID));
            Assert.That((Agent1Data.SessionID == Agent2Data.SessionID));
            Assert.That((Agent1Data.startpos == Agent2Data.startpos));
-
-           /*
-            Enable this once VisualParams go in the packing method
-           for (int i = 0; i < 208; i++)
-               Assert.That((Agent1Data.Appearance.VisualParams[i] == Agent2Data.Appearance.VisualParams[i]));
-           */
-
-
         }
     }
 }
