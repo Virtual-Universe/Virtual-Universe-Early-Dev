@@ -28,6 +28,6 @@ Coverity: <a href="https://scan.coverity.com/projects/virtual-universe-virtual-u
 
 ## Build Tools Status
 
-AppVeyor:
+Windows X64: [![Build status](https://ci.appveyor.com/api/projects/status/clvr0jo62uvo26t1/branch/master?svg=true)](https://ci.appveyor.com/project/emperorstarfinder/virtual-universe-early-dev/branch/master)
 
-Travis CI:
+Linux X64: [![Build Status](https://travis-ci.org/Virtual-Universe/Virtual-Universe-Early-Dev.svg?branch=master)](https://travis-ci.org/Virtual-Universe/Virtual-Universe-Early-Dev.svg?branch=master)
