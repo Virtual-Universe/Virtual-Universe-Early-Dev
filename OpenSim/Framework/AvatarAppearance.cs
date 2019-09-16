@@ -44,12 +44,12 @@ namespace OpenSim.Framework
     public class AvatarAppearance
     {
         /// <summary>
-        /// SL box different to size
+        /// SL Box difference to size
         /// </summary>
         const float AVBOXAJUST = 0.2f;
-
+        
         /// <summary>
-        /// Constraints for UbODE physics
+        /// Constraints for UbODE Physics
         /// </summary>
         const float AVBOXMINX = 0.2f;
         const float AVBOXMINY = 0.3f;
@@ -58,20 +58,20 @@ namespace OpenSim.Framework
         private static readonly ILog m_log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
-        /// This is viewer capabilities and
-        /// weared things dependent should only
-        /// be used as initial default value (V1 viewers)
+        /// This is viewer capabilities and weared
+        /// things dependent should only be used as
+        /// initial default value (v1 viewers)
         /// </summary>
         public const int VISUALPARAM_COUNT = 218;
 
         /// <summary>
-        /// Regions and viewer capability
+        /// Regions and viewer compatibility
         /// </summary>
         public readonly static int TEXTURE_COUNT = 45;
         public const int TEXTURE_COUNT_PV7 = 26;
         public const int BAKES_COUNT_PV7 = 6;
         public const int MAXWEARABLE_PV7 = 16;
-        public const int MAXWEARABLE_LEGACY = 14;
+        public const int MAXWEARABLE_LEGACY = 15;
 
         public readonly static byte[] BAKE_INDICES = new byte[] { 8, 9, 10, 11, 19, 20, 40, 41, 42, 43, 44 };
 
@@ -268,8 +268,8 @@ namespace OpenSim.Framework
             SetSize(appearance.AvatarSize);
 
             /// <summary>
-            /// Copy the attachment, force append
-            /// mode since that ensures consistency
+            /// Copy the attachment, force append mode
+            /// since that ensures consistency
             /// </summary>
             m_attachments = new Dictionary<int, List<AvatarAttachment>>();
 
@@ -326,8 +326,7 @@ namespace OpenSim.Framework
         }
 
         /// <summary>
-        /// Invalidate all of the baked textures 
-        /// in the appearance, useful
+        /// Invalidate all of the baked textures in the appearance, useful
         /// if you know that none are valid
         /// </summary>
         public virtual void ResetAppearance()
@@ -376,8 +375,8 @@ namespace OpenSim.Framework
             Primitive.TextureEntryFace tmpFace;
 
             /// <summary>
-            /// Make sure textureEntry.DefaultTexture
-            /// is the unused one (DEFAULT_AVATAR_TEXTURE).
+            /// Make sure textureEntry.DefaultTexture is
+            /// the unused one (DEFAULT_AVATAR_TEXTURE).
             /// </summary>
             Primitive.TextureEntry converted = new Primitive.TextureEntry(AppearanceManager.DEFAULT_AVATAR_TEXTURE);
 
@@ -388,7 +387,13 @@ namespace OpenSim.Framework
                 if (newface.TextureID != AppearanceManager.DEFAULT_AVATAR_TEXTURE)
                 {
                     tmpFace = converted.GetFace(i);
-                    tmpFace.TextureID = newface.TextureID; // we need a full high level copy, assuming all other parameters are the same.
+
+                    /// <summary>
+                    /// We need a full high level copy,
+                    /// assuming all other parameters are 
+                    /// the same
+                    /// </summary>
+                    tmpFace.TextureID = newface.TextureID;
 
                     if (m_texture.FaceTextures[i] == null || newface.TextureID != m_texture.FaceTextures[i].TextureID)
                     {
@@ -431,13 +436,9 @@ namespace OpenSim.Framework
                 return false;
             }
 
-            /// <summary>
-            /// There are much simpler versions of
-            /// this copy that could be made.  We 
-            /// determine if any of the visual parameters
-            /// actually changed to know if the appearance
-            /// should be saved later.
-            /// </summary>
+            // There are much simpler versions of this copy that could be
+            // made. We determine if any of the visual parameters actually
+            // changed to know if the appearance should be saved later
             bool changed = false;
 
             int newsize = visualParams.Length;
@@ -459,10 +460,6 @@ namespace OpenSim.Framework
                 }
             }
 
-            /// <summary>
-            /// Reset the height if the visual
-            /// parameters actually change
-            /// </summary>
             return changed;
         }
 
@@ -478,7 +475,6 @@ namespace OpenSim.Framework
         /// </summary>
         public virtual void SetHeight()
         {
-            // TODO: Determine if this is still needed
         }
 
         public void SetSize(Vector3 avSize)
@@ -676,18 +672,19 @@ namespace OpenSim.Framework
                     return false;
                 }
 
+                
                 /// <summary>
-                /// When a user logs in, the attachment item ids
+                /// WHen a user logs in, the attachment item ids
                 /// are pulled from persistence in the Avatars table.
-                /// However, the asset ids are not saved.  When the
+                /// However, the asset ids are not saved.  When the 
                 /// avatar enters a simulator the attachments are set
-                /// again.  If we simply perform an item check here then
-                /// the asset ids (which are now present) are never set,
-                /// and NPC attachments later fail unless the attachment
-                /// is detached and reattached.
+                /// again.  If we simply perform an item check here
+                /// then the asset ids (which are now present) are 
+                /// never set, and NPC attachments later fail unless
+                /// the attachment is detached and reattached.
                 /// 
-                /// Therefore, we will carry on with the set if the existing
-                /// attachment has no asset id.
+                /// Therefore, we will carry on with the set if the 
+                /// existing attachment has no asset id.
                 /// </summary>
                 AvatarAttachment existingAttachment = GetAttachmentForItem(item);
 
@@ -705,8 +702,8 @@ namespace OpenSim.Framework
                     {
                         /// <summary>
                         /// Remove it here so that the later append
-                        /// does not add a second attachment but we still
-                        /// update the assetID
+                        /// does not add a second attachment but we
+                        /// still update the assetID
                         /// </summary>
                         DetachAttachment(existingAttachment.ItemID);
                     }
@@ -719,7 +716,7 @@ namespace OpenSim.Framework
                 if ((attachpoint & 0x80) > 0)
                 {
                     /// <summary>
-                    /// Strip the append a bit
+                    /// Strip the append bit
                     /// </summary>
                     int point = attachpoint & 0x7F;
                     AppendAttachment(new AvatarAttachment(point, item, asset));
@@ -737,9 +734,7 @@ namespace OpenSim.Framework
         /// If the item is already attached, return it.
         /// </summary>
         /// <param name="itemID"></param>
-        /// <returns>
-        /// Returns null if this item is not attached.
-        /// </returns>
+        /// <returns>Returns null if this item is not attached.</returns>
         public AvatarAttachment GetAttachmentForItem(UUID itemID)
         {
             lock (m_attachments)
@@ -787,14 +782,14 @@ namespace OpenSim.Framework
                     if (index >= 0)
                     {
                         /// <summary>
-                        /// Remove it from the list of
-                        /// attachments at that attach point
+                        /// Remove it from the list of attachments
+                        /// at that attach point
                         /// </summary>
                         m_attachments[kvp.Key].RemoveAt(index);
 
                         /// <summary>
-                        /// And remove the list if there is no
-                        /// more attachments here
+                        /// And remove the list if there are
+                        /// no more attachments here
                         /// </summary>
                         if (m_attachments[kvp.Key].Count == 0)
                         {
@@ -837,12 +832,9 @@ namespace OpenSim.Framework
 
             bool sendPV8 = false;
 
-            if (ctx != null)
-            {
-                sendPV8 = ctx.OutboundVersion >= 0.8;
-            }
-
-            // Wearables
+            /// <summary>
+            /// Wearables
+            /// </summary>
             OSDArray wears;
             int count;
 
@@ -852,36 +844,37 @@ namespace OpenSim.Framework
             }
             else
             {
-                int wbcount = ctx.WearablesCount;
-
-                if (wbcount == -1)
+                if (ctx.OutboundVersion >= 0.8)
                 {
-                    wbcount = m_wearables.Length;
+                    sendPV8 = true;
+                    count = m_wearables.Length;
                 }
-
-                count = wbcount;
-
-                if (count > MAXWEARABLE_PV7)
+                else if (ctx.OutboundVersion >= 0.6)
                 {
                     count = MAXWEARABLE_PV7;
+                }
+                else
+                {
+                    count = MAXWEARABLE_LEGACY;
+                }
 
-                    if (sendPV8)
+                if (sendPV8 && count > MAXWEARABLE_PV7)
+                {
+                    wears = new OSDArray(count - MAXWEARABLE_PV7);
+
+                    for (int i = MAXWEARABLE_PV7; i < count; ++i)
                     {
-                        wears = new OSDArray(wbcount - MAXWEARABLE_PV7);
-
-                        for (int i = MAXWEARABLE_PV7; i < wbcount; ++i)
-                        {
-                            wears.Add(m_wearables[i].Pack());
-                        }
-
-                        data["wrbls8"] = wears;
+                        wears.Add(m_wearables[i].Pack());
                     }
+
+                    data["wrbls8"] = wears;
+                    count = MAXWEARABLE_PV7;
                 }
             }
 
             wears = new OSDArray(count);
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < count; ++i)
             {
                 wears.Add(m_wearables[i].Pack());
             }
@@ -889,7 +882,7 @@ namespace OpenSim.Framework
             data["wearables"] = wears;
 
             /// <summary>
-            /// Avatar Textures and preferences hover
+            /// Avatar textures
             /// </summary>
             OSDArray textures;
 
@@ -902,7 +895,7 @@ namespace OpenSim.Framework
             {
                 textures = new OSDArray(TEXTURE_COUNT_PV7);
 
-                for (uint i = 0; i < TEXTURE_COUNT_PV7; i++)
+                for (uint i = 0; i < TEXTURE_COUNT_PV7; ++i)
                 {
                     textures.Add(OSD.FromUUID(m_texture.GetFace(i).TextureID));
                 }
@@ -927,13 +920,104 @@ namespace OpenSim.Framework
                 }
             }
 
-            // Visual Parameters
+            /// <summary>
+            /// Visual parameters
+            /// </summary>
             OSDBinary visualparams = new OSDBinary(m_visualparams);
             data["visualparams"] = visualparams;
 
             lock (m_attachments)
             {
-                // Attachments
+                /// <summary>
+                /// Attachments
+                /// </summary>
+                OSDArray attachs = new OSDArray(m_attachments.Count);
+
+                foreach (AvatarAttachment attach in GetAttachments())
+                {
+                    attachs.Add(attach.Pack());
+                }
+
+                data["attachments"] = attachs;
+            }
+
+            return data;
+        }
+
+        public OSDMap PackForNotecard()
+        {
+            OSDMap data = new OSDMap();
+
+            data["serial"] = OSD.FromInteger(m_serial);
+            data["height"] = OSD.FromReal(m_avatarHeight);
+            data["aphz"] = OSD.FromReal(AvatarPreferencesHoverZ);
+
+            /// <summary>
+            /// Old regions may not like missing/ empty wears
+            /// </summary>
+            OSDArray wears = new OSDArray(MAXWEARABLE_LEGACY);
+
+            for (int i = 0; i < MAXWEARABLE_LEGACY; ++i)
+            {
+                wears.Add(new OSDArray());
+            }
+
+            data["wearables"] = wears;
+
+            /// <summary>
+            /// Avatar textures
+            /// </summary>
+            OSDArray textures;
+
+            /// <summary>
+            /// Allow old regions to still see something
+            /// </summary>
+            textures = new OSDArray(TEXTURE_COUNT_PV7);
+            textures.Add(OSD.FromUUID(AppearanceManager.DEFAULT_AVATAR_TEXTURE));
+
+            for (uint i = 1; i < TEXTURE_COUNT_PV7; ++i)
+            {
+                textures.Add(OSD.FromUUID(m_texture.GetFace(i).TextureID));
+            }
+
+            data["textures"] = textures;
+
+            bool needExtra = false;
+
+            for (int i = BAKES_COUNT_PV7; i < BAKE_INDICES.Length; ++i)
+            {
+                int idx = BAKE_INDICES[i];
+
+                if (m_texture.FaceTextures[idx] == null)
+                {
+                    continue;
+                }
+
+                if (m_texture.FaceTextures[idx].TextureID == AppearanceManager.DEFAULT_AVATAR_TEXTURE || m_texture.FaceTextures[idx].TextureID == UUID.Zero)
+                {
+                    continue;
+                }
+
+                needExtra = true;
+            }
+
+            if (needExtra)
+            {
+                byte[] te = m_texture.GetBakesBytes();
+                data["te8"] = OSD.FromBinary(te);
+            }
+
+            /// <summary>
+            /// Visual parameters
+            /// </summary>
+            OSDBinary visualparams = new OSDBinary(m_visualparams);
+            data["visualparams"] = visualparams;
+
+            lock (m_attachments)
+            {
+                /// <summary>
+                /// Attachments
+                /// </summary>
                 OSDArray attachs = new OSDArray(m_attachments.Count);
 
                 foreach (AvatarAttachment attach in GetAttachments())
@@ -983,7 +1067,9 @@ namespace OpenSim.Framework
 
             try
             {
-                // Wearables
+                /// <summary>
+                /// Wearables
+                /// </summary>
                 OSD tmpOSD8;
                 OSDArray wears8 = null;
                 int wears8Count = 0;
@@ -997,27 +1083,33 @@ namespace OpenSim.Framework
                 if (data.TryGetValue("wearables", out tmpOSD) && (tmpOSD is OSDArray))
                 {
                     OSDArray wears = (OSDArray)tmpOSD;
-                    m_wearables = new AvatarWearable[wears.Count + wears8Count];
 
-                    for (int i = 0; i < wears.Count; ++i)
+                    if (wears.Count + wears8Count > 0)
                     {
-                        m_wearables[i] = new AvatarWearable((OSDArray)wears[i]);
-                    }
+                        m_wearables = new AvatarWearable[wears.Count + wears8Count];
 
-                    if (wears8Count > 0)
-                    {
-                        for (int i = 0; i < wears8Count; ++i)
+                        for (int i = 0; i < wears.Count; ++i)
                         {
-                            m_wearables[i + wears.Count] = new AvatarWearable((OSDArray)wears8[i]);
+                            m_wearables[i] = new AvatarWearable((OSDArray)wears[i]);
+                        }
+
+                        if (wears8Count > 0)
+                        {
+                            for (int i = 0; i < wears8Count; ++i)
+                            {
+                                m_wearables[i + wears.Count] = new AvatarWearable((OSDArray)wears8[i]);
+                            }
                         }
                     }
                 }
-                else
-                {
-                    m_log.Warn("[Avatar Appearance]: failed to unpack wearables");
-                }
 
-                if (data.TryGetValue("textures", out tmpOSD) && (tmpOSD is OSDArray))
+                if (data.TryGetValue("te8", out tmpOSD))
+                {
+                    byte[] teb = tmpOSD.AsBinary();
+                    Primitive.TextureEntry te = new Primitive.TextureEntry(teb, 0, teb.Length);
+                    m_texture = te;
+                }
+                else if (data.TryGetValue("textures", out tmpOSD) && (tmpOSD is OSDArray))
                 {
                     OSDArray textures = (OSDArray)tmpOSD;
 
@@ -1030,13 +1122,6 @@ namespace OpenSim.Framework
                             m_texture.CreateFace((uint)i).TextureID = tmpOSD.AsUUID();
                         }
                     }
-                }
-
-                if (data.TryGetValue("te8", out tmpOSD))
-                {
-                    byte[] teb = tmpOSD.AsBinary();
-                    Primitive.TextureEntry te = new Primitive.TextureEntry(teb, 0, teb.Length);
-                    m_texture = te;
                 }
 
                 if (data.TryGetValue("bakedcache", out tmpOSD) && (tmpOSD is OSDArray))
@@ -1080,7 +1165,9 @@ namespace OpenSim.Framework
                     }
                 }
 
-                // Visual Parameters
+                /// <summary>
+                /// Visual parameters
+                /// </summary>
                 if (data.TryGetValue("visualparams", out tmpOSD))
                 {
                     if (tmpOSD is OSDBinary || tmpOSD is OSDArray)
@@ -1133,8 +1220,10 @@ namespace OpenSim.Framework
                 }
             }
 
-            // also check baked
-            for(int i = BAKES_COUNT_PV7; i < BAKE_INDICES.Length; i++)
+            /// <summary>
+            /// Also check baked
+            /// </summary>
+            for (int i = BAKES_COUNT_PV7; i < BAKE_INDICES.Length; i++)
             {
                 int idx = BAKE_INDICES[i];
 
@@ -1143,9 +1232,7 @@ namespace OpenSim.Framework
                     continue;
                 }
 
-                UUID tid = m_texture.FaceTextures[idx].TextureID;
-
-                if (tid == AppearanceManager.DEFAULT_AVATAR_TEXTURE || tid == UUID.Zero)
+                if (m_texture.FaceTextures[idx].TextureID == AppearanceManager.DEFAULT_AVATAR_TEXTURE || m_texture.FaceTextures[idx].TextureID == UUID.Zero)
                 {
                     continue;
                 }
@@ -1168,7 +1255,7 @@ namespace OpenSim.Framework
             /// Brow Size - Small 0--+255 Large
             /// </summary>
             SHAPE_BIG_BROW = 0,
-            
+        
             /// <summary>
             /// Nose Size - Small 0--+255 Large
             /// </summary>
@@ -1319,7 +1406,7 @@ namespace OpenSim.Framework
             /// </summary>
             SHAPE_TORSO_LENGTH = 30,
             SHAPE_MALE = 31,
-
+            
             /// <summary>
             ///  - Short 0--+255 Long
             /// </summary>
@@ -1445,7 +1532,7 @@ namespace OpenSim.Framework
             /// Full Hair Sides - Mowhawk 0--+255 Full Sides
             /// </summary>
             HAIR_HAIR_SIDES_FULL = 57,
-
+            
             /// <summary>
             ///  - Less 0--+255 More
             /// </summary>
@@ -1617,7 +1704,7 @@ namespace OpenSim.Framework
             /// Jacket Length - Short 0--+255 Long
             /// </summary>
             JACKET_BOTTOM_LENGTH_LOWER = 93,
-            
+
             /// <summary>
             /// Open Front - Open 0--+255 Closed
             /// </summary>
@@ -1732,7 +1819,7 @@ namespace OpenSim.Framework
             /// Shear Back - Full Back 0--+255 Sheared Back
             /// </summary>
             HAIR_HAIR_SHEAR_BACK = 116,
-
+            
             /// <summary>
             ///  - Small Hands 0--+255 Large Hands
             /// </summary>
@@ -1748,7 +1835,7 @@ namespace OpenSim.Framework
             /// Head Size - Small Head 0--+255 Big Head
             /// </summary>
             SHAPE_HEAD_SIZE = 120,
-            
+
             /// <summary>
             ///  - Skinny Neck 0--+255 Thick Neck
             /// </summary>
@@ -1828,7 +1915,7 @@ namespace OpenSim.Framework
             ///  - No Eyeshadow 0--+255 More Eyeshadow
             /// </summary>
             SKIN_INNER_SHADOW = 136,
-            
+
             /// <summary>
             ///  - No Polish 0--+255 Painted Nails
             /// </summary>
@@ -1955,7 +2042,7 @@ namespace OpenSim.Framework
             ///  - Short Pigtails 0--+255 Long Pigtails
             /// </summary>
             HAIR_PIGTAILS = 163,
-
+            
             /// <summary>
             ///  - Short Ponytail 0--+255 Long Ponytail
             /// </summary>
@@ -2100,7 +2187,8 @@ namespace OpenSim.Framework
 
             /// <summary>
             /// Avatar Physics section.  
-            /// These are 0 type visual params which get transmitted.
+            /// These are 0 type visual params 
+            /// which get transmitted.
             /// </summary>
 
             /// <summary>
@@ -2152,9 +2240,9 @@ namespace OpenSim.Framework
             BREAST_PHYSICS_LEFTRIGHT_GAIN = 249,
             BREAST_PHYSICS_LEFTRIGHT_DAMPING = 250,
 
-            _APPEARANCEMESSAGE_VERSION = 251,    //ID 11000
+            _APPEARANCEMESSAGE_VERSION = 251,
 
-            SHAPE_HOVER = 252,    //ID 11001
+            SHAPE_HOVER = 252,
         }
 
         #endregion
