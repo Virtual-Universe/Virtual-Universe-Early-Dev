@@ -4993,9 +4993,6 @@ namespace OpenSim.Region.Framework.Scenes
         {
             m_callbackURI = cAgent.CallbackURI;
             m_newCallbackURI = cAgent.NewCallbackURI;
-            //            m_log.DebugFormat(
-            //                "[SCENE PRESENCE]: Set callback for {0} in {1} to {2} in CopyFrom()",
-            //                Name, m_scene.RegionInfo.RegionName, m_callbackURI);
 
             GodController.SetState(cAgent.GodData);
 
@@ -5016,7 +5013,6 @@ namespace OpenSim.Region.Framework.Scenes
             // changes, then start using the agent's drawdistance rather than the
             // region's draw distance.
             DrawDistance = cAgent.Far;
-            //DrawDistance = Scene.DefaultDrawDistance;
 
             if (cAgent.ChildrenCapSeeds != null && cAgent.ChildrenCapSeeds.Count > 0)
             {
@@ -5024,11 +5020,14 @@ namespace OpenSim.Region.Framework.Scenes
                 {
                     Scene.CapsModule.SetChildrenSeed(UUID, cAgent.ChildrenCapSeeds);
                 }
+
                 KnownRegions = cAgent.ChildrenCapSeeds;
             }
 
             if ((cAgent.Throttles != null) && cAgent.Throttles.Length > 0)
+            {
                 ControllingClient.SetChildAgentThrottle(cAgent.Throttles);
+            }
 
             m_headrotation = cAgent.HeadRotation;
             Rotation = cAgent.BodyRotation;
@@ -5037,18 +5036,11 @@ namespace OpenSim.Region.Framework.Scenes
             SetAlwaysRun = cAgent.AlwaysRun;
 
             Appearance = new AvatarAppearance(cAgent.Appearance);
-/*
-            bool isFlying = ((m_AgentControlFlags & AgentManager.ControlFlags.AGENT_CONTROL_FLY) != 0);
-
-            if (PhysicsActor != null)
-            {
-                RemoveFromPhysicalScene();
-                AddToPhysicalScene(isFlying);
-            }
-*/
 
             if (Scene.AttachmentsModule != null)
+            {
                 Scene.AttachmentsModule.CopyAttachments(cAgent, this);
+            }
 
             try
             {
@@ -5075,71 +5067,108 @@ namespace OpenSim.Region.Framework.Scenes
             }
             catch { }
 
-            Animator.ResetAnimations();
+            // we are losing animator somewhere
+            if (Animator == null)
+            {
+                Animator = new ScenePresenceAnimator(this);
+            }
+            else
+            {
+                Animator.ResetAnimations();
+            }
 
             Overrides.CopyAOPairsFrom(cAgent.MovementAnimationOverRides);
             int nanim = ControllingClient.NextAnimationSequenceNumber;
+
             // FIXME: Why is this null check necessary?  Where are the cases where we get a null Anims object?
             if (cAgent.DefaultAnim != null)
             {
                 if (cAgent.DefaultAnim.SequenceNum > nanim)
+                {
                     nanim = cAgent.DefaultAnim.SequenceNum;
+                }
+
                 Animator.Animations.SetDefaultAnimation(cAgent.DefaultAnim.AnimID, cAgent.DefaultAnim.SequenceNum, UUID.Zero);
             }
+
             if (cAgent.AnimState != null)
             {
                 if (cAgent.AnimState.SequenceNum > nanim)
+                {
                     nanim = cAgent.AnimState.SequenceNum;
+                }
+
                 Animator.Animations.SetImplicitDefaultAnimation(cAgent.AnimState.AnimID, cAgent.AnimState.SequenceNum, UUID.Zero);
             }
+
             if (cAgent.Anims != null)
             {
                 int canim = Animator.Animations.FromArray(cAgent.Anims);
-                if(canim > nanim)
+
+                if (canim > nanim)
+                {
                     nanim = canim;
+                }
             }
+
             ControllingClient.NextAnimationSequenceNumber = ++nanim;
 
             if (cAgent.MotionState != 0)
-                Animator.currentControlState = (ScenePresenceAnimator.motionControlStates) cAgent.MotionState;
+            {
+                Animator.currentControlState = (ScenePresenceAnimator.motionControlStates)cAgent.MotionState;
+            }
 
             m_crossingFlags = cAgent.CrossingFlags;
             m_gotCrossUpdate = (m_crossingFlags != 0);
-            if(m_gotCrossUpdate)
+
+            if (m_gotCrossUpdate)
             {
                 LastCommands &= ~(ScriptControlled.CONTROL_LBUTTON | ScriptControlled.CONTROL_ML_LBUTTON);
-                if((cAgent.CrossExtraFlags & 1) != 0)
+
+                if ((cAgent.CrossExtraFlags & 1) != 0)
+                {
                     LastCommands |= ScriptControlled.CONTROL_LBUTTON;
-                if((cAgent.CrossExtraFlags & 2) != 0)
+                }
+
+                if ((cAgent.CrossExtraFlags & 2) != 0)
+                {
                     LastCommands |= ScriptControlled.CONTROL_ML_LBUTTON;
+                }
+
                 MouseDown = (cAgent.CrossExtraFlags & 3) != 0;
             }
 
             m_haveGroupInformation = false;
+
             // using this as protocol detection don't want to mess with the numbers for now
-            if(cAgent.ActiveGroupTitle != null)
+            if (cAgent.ActiveGroupTitle != null)
             {
                 m_haveGroupInformation = true;
                 COF = cAgent.agentCOF;
-                if(ControllingClient.IsGroupMember(cAgent.ActiveGroupID))
+
+                if (ControllingClient.IsGroupMember(cAgent.ActiveGroupID))
                 {
                     ControllingClient.ActiveGroupId = cAgent.ActiveGroupID;
                     ControllingClient.ActiveGroupName = cAgent.ActiveGroupName;
                     Grouptitle = cAgent.ActiveGroupTitle;
-                    ControllingClient.ActiveGroupPowers =
-                            ControllingClient.GetGroupPowers(cAgent.ActiveGroupID);
+                    ControllingClient.ActiveGroupPowers = ControllingClient.GetGroupPowers(cAgent.ActiveGroupID);
                 }
                 else
                 {
                     // we got a unknown active group so get what groups thinks about us
                     IGroupsModule gm = m_scene.RequestModuleInterface<IGroupsModule>();
+
                     if (gm != null)
+                    {
                         gm.SendAgentGroupDataUpdate(ControllingClient);
+                    }
                 }
             }
 
             lock (m_originRegionIDAccessLock)
+            {
                 m_originRegionID = cAgent.RegionID;
+            }
         }
 
         public bool CopyAgent(out IAgentData agent)
