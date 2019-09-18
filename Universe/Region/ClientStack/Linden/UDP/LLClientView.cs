@@ -1,29 +1,31 @@
-/*
- * Copyright (c) Contributors, http://virtual-planets.org/
- * See CONTRIBUTORS.TXT for a full list of copyright holders.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+/// <license>
+///     Copyright (c) Contributors, https://virtual-planets.org/
+///     See CONTRIBUTORS.TXT for a full list of copyright holders.
+///     For an explanation of the license of each contributor and the content it
+///     covers please see the Licenses directory.
+///
+///     Redistribution and use in source and binary forms, with or without
+///     modification, are permitted provided that the following conditions are met:
+///         * Redistributions of source code must retain the above copyright
+///         notice, this list of conditions and the following disclaimer.
+///         * Redistributions in binary form must reproduce the above copyright
+///         notice, this list of conditions and the following disclaimer in the
+///         documentation and/or other materials provided with the distribution.
+///         * Neither the name of the Virtual Universe Project nor the
+///         names of its contributors may be used to endorse or promote products
+///         derived from this software without specific prior written permission.
+///
+///     THIS SOFTWARE IS PROVIDED BY THE DEVELOPERS ``AS IS'' AND ANY
+///     EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+///     WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+///     DISCLAIMED. IN NO EVENT SHALL THE CONTRIBUTORS BE LIABLE FOR ANY
+///     DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+///     (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+///     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+///     ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+///     (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/// </license>
 
 using System;
 using System.Collections.Generic;
@@ -32,27 +34,23 @@ using System.Reflection;
 using System.Runtime;
 using System.Text;
 using System.Threading;
-
 using log4net;
 using OpenMetaverse;
-using OpenMetaverse.Packets;
 using OpenMetaverse.Messages.Linden;
+using OpenMetaverse.Packets;
 using OpenMetaverse.StructuredData;
-
-using Universe.Framework;
-using Universe.Framework.Client;
-using Universe.Framework.Monitoring;
-using Universe.Region.Framework.Interfaces;
-using Universe.Region.Framework.Scenes;
-using Universe.Services.Interfaces;
-
-
-using AssetLandmark = Universe.Framework.AssetLandmark;
-using Caps = Universe.Framework.Capabilities.Caps;
-using PermissionMask = Universe.Framework.PermissionMask;
+using OpenSim.Framework;
+using OpenSim.Framework.Client;
+using OpenSim.Framework.Monitoring;
+using OpenSim.Region.Framework.Interfaces;
+using OpenSim.Region.Framework.Scenes;
+using OpenSim.Services.Interfaces;
+using AssetLandmark = OpenSim.Framework.AssetLandmark;
+using Caps = OpenSim.Framework.Capabilities.Caps;
+using PermissionMask = OpenSim.Framework.PermissionMask;
 using RegionFlags = OpenMetaverse.RegionFlags;
 
-namespace Universe.Region.ClientStack.LindenUDP
+namespace OpenSim.Region.ClientStack.LindenUDP
 {
     public delegate bool PacketMethod(IClientAPI simClient, Packet packet);
 
@@ -63,7 +61,7 @@ namespace Universe.Region.ClientStack.LindenUDP
     public class LLClientView : IClientAPI, IClientCore, IClientIM, IClientChat, IClientInventory, IStatsCollector, IClientIPEndpoint
     {
         /// <value>
-        /// Debug packet level.  See Universe.RegisterConsoleCommands() for more details.
+        /// Debug packet level.  See OpenSim.RegisterConsoleCommands() for more details.
         /// </value>
         public int DebugPacketLevel { get; set; }
 
@@ -1679,7 +1677,7 @@ namespace Universe.Region.ClientStack.LindenUDP
                 for (int i = 0; i < numberPatchs; i++)
                 {
                     s = 2 * i;
-                    UniverseTerrainCompressor.CreatePatchFromTerrainData(bitpack, terrData, map[s], map[s + 1]);
+                    OpenSimTerrainCompressor.CreatePatchFromTerrainData(bitpack, terrData, map[s], map[s + 1]);
                     if (bitpack.BytePos > 900 && i != numberPatchs - 1)
                     {
                         //finish this packet
@@ -1789,7 +1787,7 @@ namespace Universe.Region.ClientStack.LindenUDP
                 byte layerType = (byte)TerrainPatch.LayerType.Wind;
 
                 LayerDataPacket layerpack =
-                     UniverseTerrainCompressor.CreateLayerDataPacketStandardSize(
+                     OpenSimTerrainCompressor.CreateLayerDataPacketStandardSize(
                         patches, layerType);
                 layerpack.Header.Zerocoded = true;
                 lock(lastWindPackets)
@@ -1848,7 +1846,7 @@ namespace Universe.Region.ClientStack.LindenUDP
                 byte layerType = (byte)TerrainPatch.LayerType.Cloud;
 
                 LayerDataPacket layerpack =
-                    UniverseTerrainCompressor.CreateLayerDataPacketStandardSize(
+                    OpenSimTerrainCompressor.CreateLayerDataPacketStandardSize(
                         patches, layerType);
                 layerpack.Header.Zerocoded = true;
                 lock(lastCloudPackets)
@@ -11297,10 +11295,9 @@ namespace Universe.Region.ClientStack.LindenUDP
                     if (lma == null)
                     {
                         // Really doesn't exist
-                        TeleportCancelPacket tpCancel = (TeleportCancelPacket)PacketPool.Instance.GetPacket(PacketType.TeleportCancel);
-                        tpCancel.Info.SessionID = tpReq.Info.SessionID;
-                        tpCancel.Info.AgentID = tpReq.Info.AgentID;
-                        OutPacket(tpCancel, ThrottleOutPacketType.Task);
+                        m_log.WarnFormat("[llClient]: landmark asset {0} not found",lmid.ToString());
+                        SendTeleportFailed("Could not find the landmark asset data");
+                        return true;
                     }
                 }
 
@@ -11311,10 +11308,7 @@ namespace Universe.Region.ClientStack.LindenUDP
                 catch (NullReferenceException)
                 {
                     // asset not found generates null ref inside the assetlandmark constructor.
-                    TeleportCancelPacket tpCancel = (TeleportCancelPacket)PacketPool.Instance.GetPacket(PacketType.TeleportCancel);
-                    tpCancel.Info.SessionID = tpReq.Info.SessionID;
-                    tpCancel.Info.AgentID = tpReq.Info.AgentID;
-                    OutPacket(tpCancel, ThrottleOutPacketType.Task);
+                    SendTeleportFailed("Could not find the landmark asset data");
                     return true;
                 }
             }
@@ -11337,11 +11331,7 @@ namespace Universe.Region.ClientStack.LindenUDP
             else
             {
                 //no event handler so cancel request
-                TeleportCancelPacket tpCancel = (TeleportCancelPacket)PacketPool.Instance.GetPacket(PacketType.TeleportCancel);
-                tpCancel.Info.AgentID = tpReq.Info.AgentID;
-                tpCancel.Info.SessionID = tpReq.Info.SessionID;
-                OutPacket(tpCancel, ThrottleOutPacketType.Task);
-
+                SendTeleportFailed("Could not find the landmark asset data");
             }
             return true;
         }
@@ -11402,10 +11392,7 @@ namespace Universe.Region.ClientStack.LindenUDP
             else
             {
                 //no event handler so cancel request
-                TeleportCancelPacket tpCancel = (TeleportCancelPacket)PacketPool.Instance.GetPacket(PacketType.TeleportCancel);
-                tpCancel.Info.SessionID = tpLocReq.AgentData.SessionID;
-                tpCancel.Info.AgentID = tpLocReq.AgentData.AgentID;
-                OutPacket(tpCancel, ThrottleOutPacketType.Task);
+                SendTeleportFailed("Could not process the teleport");
             }
             return true;
         }
