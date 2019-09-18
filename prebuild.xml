@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <Prebuild version="1.10" xmlns="http://dnpb.sourceforge.net/schemas/prebuild-1.10.xsd">
   <Solution activeConfig="Debug" name="Universe" path="./" version="0.5.0-$Rev$">
-    <Configuration name="Debug" platform="x86">
+    <Configuration name="Debug" >
       <Options>
         <CompilerDefines>TRACE;DEBUG</CompilerDefines>
         <OptimizeCode>false</OptimizeCode>
@@ -9,29 +9,17 @@
         <AllowUnsafe>true</AllowUnsafe>
         <WarningLevel>4</WarningLevel>
         <WarningsAsErrors>false</WarningsAsErrors>
+        <SuppressWarnings/>
         <OutputPath>bin</OutputPath>
         <DebugInformation>true</DebugInformation>
         <IncrementalBuild>true</IncrementalBuild>
         <NoStdLib>false</NoStdLib>
+        <Prefer32Bit>false</Prefer32Bit>
       </Options>
     </Configuration>
-    <Configuration name="Debug" platform="x64">
+    <Configuration name="Release">
       <Options>
-        <CompilerDefines>TRACE;DEBUG</CompilerDefines>
-        <OptimizeCode>false</OptimizeCode>
-        <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
-        <AllowUnsafe>true</AllowUnsafe>
-        <WarningLevel>4</WarningLevel>
-        <WarningsAsErrors>false</WarningsAsErrors>
-        <OutputPath>bin</OutputPath>
-        <DebugInformation>true</DebugInformation>
-        <IncrementalBuild>true</IncrementalBuild>
-        <NoStdLib>false</NoStdLib>
-      </Options>
-    </Configuration>
-    <Configuration name="Release" platform="x86">
-      <Options>
-        <CompilerDefines></CompilerDefines>
+        <CompilerDefines>TRACE</CompilerDefines>
         <OptimizeCode>true</OptimizeCode>
         <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
         <AllowUnsafe>true</AllowUnsafe>
@@ -42,21 +30,7 @@
         <DebugInformation>false</DebugInformation>
         <IncrementalBuild>true</IncrementalBuild>
         <NoStdLib>false</NoStdLib>
-      </Options>
-    </Configuration>
-    <Configuration name="Release" platform="x64">
-      <Options>
-        <CompilerDefines></CompilerDefines>
-        <OptimizeCode>true</OptimizeCode>
-        <CheckUnderflowOverflow>false</CheckUnderflowOverflow>
-        <AllowUnsafe>true</AllowUnsafe>
-        <WarningLevel>4</WarningLevel>
-        <WarningsAsErrors>false</WarningsAsErrors>
-        <SuppressWarnings/>
-        <OutputPath>bin</OutputPath>
-        <DebugInformation>false</DebugInformation>
-        <IncrementalBuild>true</IncrementalBuild>
-        <NoStdLib>false</NoStdLib>
+        <Prefer32Bit>false</Prefer32Bit>
       </Options>
     </Configuration>
  
