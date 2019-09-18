@@ -34,9 +34,9 @@
       </Options>
     </Configuration>
  
-    <!-- Core OpenSim Projects -->
+    <!-- Core Universe Projects -->
 <!--
-        <Project frameworkVersion="v4_6" name="OpenSim.Model" path="OpenSim/Model" type="Library">
+        <Project frameworkVersion="v4_6" name="Universe.Model" path="Universe/Model" type="Library">
           <Configuration name="Debug">
             <Options>
               <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -81,7 +81,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework" path="OpenSim/Framework" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework" path="Universe/Framework" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../VirtualUniverse/bin/</OutputPath>
@@ -106,8 +106,8 @@
       <Reference name="OpenMetaverse" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../VirtualUniverse/bin/"/>
-      <!-- <Reference name="OpenSim.Framework.Console"/> -->
-      <!-- <Reference name="OpenSim.Framework.Servers.HttpServer"/> -->
+      <!-- <Reference name="Universe.Framework.Console"/> -->
+      <!-- <Reference name="Universe.Framework.Servers.HttpServer"/> -->
       <Reference name="Nini" path="../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../VirtualUniverse/bin/"/>
@@ -125,7 +125,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.Interfaces" path="OpenSim/Services/Interfaces" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.Interfaces" path="Universe/Services/Interfaces" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -142,9 +142,9 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
       <Reference name="System.Xml"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
@@ -157,7 +157,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Monitoring" path="OpenSim/Framework/Monitoring" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Monitoring" path="Universe/Framework/Monitoring" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -177,7 +177,7 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
+      <Reference name="Universe.Framework"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true">
@@ -186,7 +186,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Servers.HttpServer" path="OpenSim/Framework/Servers/HttpServer" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Servers.HttpServer" path="Universe/Framework/Servers/HttpServer" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -203,13 +203,13 @@
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
       <Reference name="System.Web"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="HttpServer_OpenSim" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="HttpServer_Universe" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="SmartThreadPool"/>
 
       <Files>
@@ -227,7 +227,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Console" path="OpenSim/Framework/Console" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Console" path="Universe/Framework/Console" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -246,8 +246,8 @@
       <Reference name="System.Web"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
@@ -256,7 +256,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Serialization" path="OpenSim/Framework/Serialization" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Serialization" path="Universe/Framework/Serialization" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -275,8 +275,8 @@
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Services.Interfaces"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true">
@@ -286,7 +286,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Data" path="OpenSim/Data" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Data" path="Universe/Data" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../VirtualUniverse/bin/</OutputPath>
@@ -307,7 +307,7 @@
       <Reference name="OpenMetaverse" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
+      <Reference name="Universe.Framework"/>
       <Reference name="log4net" path="../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../VirtualUniverse/bin/"/>
       <Files>
@@ -317,7 +317,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.AssetLoader.Filesystem" path="OpenSim/Framework/AssetLoader/Filesystem" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.AssetLoader.Filesystem" path="Universe/Framework/AssetLoader/Filesystem" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -332,8 +332,8 @@
       <ReferencePath>../../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
@@ -344,7 +344,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Servers" path="OpenSim/Framework/Servers" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Servers" path="Universe/Framework/Servers" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -360,16 +360,16 @@
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="HttpServer_OpenSim" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="HttpServer_Universe" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
 
       <Files>
@@ -377,7 +377,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Capabilities" path="OpenSim/Capabilities" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Capabilities" path="Universe/Capabilities" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../VirtualUniverse/bin/</OutputPath>
@@ -393,11 +393,11 @@
       <Reference name="System"/>
       <Reference name="System.Xml"/>
       <Reference name="System.Web"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="OpenMetaverse" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../VirtualUniverse/bin/"/>
@@ -413,7 +413,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModules.SharedBase" path="OpenSim/Region/PhysicsModules/SharedBase" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModules.SharedBase" path="Universe/Region/PhysicsModules/SharedBase" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -429,8 +429,8 @@
       <Reference name="System"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
       <Reference name="nunit.framework" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
@@ -440,7 +440,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.Framework" path="OpenSim/Region/Framework" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.Framework" path="Universe/Region/Framework" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -461,16 +461,16 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Serialization"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
 
       <!-- For scripting in funny languages by default -->
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
@@ -490,7 +490,7 @@
     <!-- OGS projects -->
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Server.Base" path="OpenSim/Server/Base" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Server.Base" path="Universe/Server/Base" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -512,11 +512,11 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins.Setup" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -527,7 +527,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.Base" path="OpenSim/Services/Base" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.Base" path="Universe/Services/Base" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -543,9 +543,9 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -556,40 +556,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.UserAccountService" path="OpenSim/Services/UserAccountService" type="Library">
-      <Configuration name="Debug">
-        <Options>
-          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-        </Options>
-      </Configuration>
-      <Configuration name="Release">
-        <Options>
-          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
-        </Options>
-      </Configuration>
-
-      <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
-      <Reference name="System"/>
-      <Reference name="System.Web"/>
-      <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
-
-      <Files>
-        <Match pattern="*.cs" recurse="true">
-         <Exclude name="obj" pattern="obj"/>
-        </Match>
-      </Files>
-    </Project>
-
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.FriendsService" path="OpenSim/Services/Friends" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.UserAccountService" path="Universe/Services/UserAccountService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -606,12 +573,12 @@
       <Reference name="System.Web"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -622,7 +589,40 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.Connectors" path="OpenSim/Services/Connectors" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.FriendsService" path="Universe/Services/Friends" type="Library">
+      <Configuration name="Debug">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+      <Configuration name="Release">
+        <Options>
+          <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
+        </Options>
+      </Configuration>
+
+      <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
+      <Reference name="System"/>
+      <Reference name="System.Web"/>
+      <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
+
+      <Files>
+        <Match pattern="*.cs" recurse="true">
+         <Exclude name="obj" pattern="obj"/>
+        </Match>
+      </Files>
+    </Project>
+
+    <Project frameworkVersion="v4_6" name="Universe.Services.Connectors" path="Universe/Services/Connectors" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -644,16 +644,16 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
@@ -665,7 +665,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.SimulationService" path="OpenSim/Services/SimulationService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.SimulationService" path="Universe/Services/SimulationService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -685,11 +685,11 @@
       <Reference name="System.Drawing"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
@@ -701,7 +701,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.AssetService" path="OpenSim/Services/AssetService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.AssetService" path="Universe/Services/AssetService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -717,14 +717,14 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -735,7 +735,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.FSAssetService" path="OpenSim/Services/FSAssetService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.FSAssetService" path="Universe/Services/FSAssetService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -752,15 +752,15 @@
       <Reference name="System.Core"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Serialization"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -771,7 +771,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.AuthorizationService" path="OpenSim/Services/AuthorizationService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.AuthorizationService" path="Universe/Services/AuthorizationService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -787,13 +787,13 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -804,7 +804,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.FreeswitchService" path="OpenSim/Services/FreeswitchService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.FreeswitchService" path="Universe/Services/FreeswitchService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -821,13 +821,13 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -838,7 +838,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.AuthenticationService" path="OpenSim/Services/AuthenticationService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.AuthenticationService" path="Universe/Services/AuthenticationService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -854,15 +854,15 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -873,7 +873,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.GridService" path="OpenSim/Services/GridService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.GridService" path="Universe/Services/GridService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -891,14 +891,14 @@
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Server.Base"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Server.Base"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -909,7 +909,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.EstateService" path="OpenSim/Services/EstateService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.EstateService" path="Universe/Services/EstateService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -926,10 +926,10 @@
       <Reference name="System.Core"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -940,7 +940,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.PresenceService" path="OpenSim/Services/PresenceService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.PresenceService" path="Universe/Services/PresenceService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -956,13 +956,13 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -973,7 +973,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.AvatarService" path="OpenSim/Services/AvatarService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.AvatarService" path="Universe/Services/AvatarService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -989,13 +989,13 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -1006,7 +1006,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.InventoryService" path="OpenSim/Services/InventoryService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.InventoryService" path="Universe/Services/InventoryService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1023,13 +1023,13 @@
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -1042,7 +1042,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.LLLoginService" path="OpenSim/Services/LLLoginService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.LLLoginService" path="Universe/Services/LLLoginService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1057,13 +1057,13 @@
       <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Server.Base"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Server.Base"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
@@ -1077,7 +1077,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.HypergridService" path="OpenSim/Services/HypergridService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.HypergridService" path="Universe/Services/HypergridService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1095,19 +1095,19 @@
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.AssetService"/>
-      <Reference name="OpenSim.Services.FSAssetService"/>
-      <Reference name="OpenSim.Services.FriendsService"/>
-      <Reference name="OpenSim.Services.InventoryService"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Server.Base"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Serialization"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.AssetService"/>
+      <Reference name="Universe.Services.FSAssetService"/>
+      <Reference name="Universe.Services.FriendsService"/>
+      <Reference name="Universe.Services.InventoryService"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Server.Base"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -1118,7 +1118,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.MapImageService" path="OpenSim/Services/MapImageService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.MapImageService" path="Universe/Services/MapImageService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1135,11 +1135,11 @@
       <Reference name="System.Drawing"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -1150,7 +1150,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.MuteListService" path="OpenSim/Services/MuteListService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.MuteListService" path="Universe/Services/MuteListService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1164,10 +1164,10 @@
 
       <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Data"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>	  
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
@@ -1180,7 +1180,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.UserProfilesService" path="OpenSim/Services/UserProfilesService" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.UserProfilesService" path="Universe/Services/UserProfilesService" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1195,15 +1195,15 @@
       <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Core"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.UserAccountService"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.UserAccountService"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Data"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
@@ -1217,7 +1217,7 @@
       </Files>
     </Project>
  
-    <Project frameworkVersion="v4_6" name="OpenSim.Server.Handlers" path="OpenSim/Server/Handlers" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Server.Handlers" path="Universe/Server/Handlers" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1236,13 +1236,13 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.UserAccountService"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.UserAccountService"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
@@ -1258,7 +1258,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Capabilities.Handlers" path="OpenSim/Capabilities/Handlers" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Capabilities.Handlers" path="Universe/Capabilities/Handlers" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1279,14 +1279,14 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="DotNetOpenId" path="../../../VirtualUniverse/bin/"/>
@@ -1300,7 +1300,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="Robust" path="OpenSim/Server" type="Exe">
+    <Project frameworkVersion="v4_6" name="Robust" path="Universe/Server" type="Exe">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../VirtualUniverse/bin/</OutputPath>
@@ -1318,12 +1318,12 @@
       <Reference name="OpenMetaverseTypes" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
       <Reference name="Nini" path="../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../VirtualUniverse/bin/"/>
@@ -1337,7 +1337,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.ConsoleClient" path="OpenSim/ConsoleClient" type="Exe">
+    <Project frameworkVersion="v4_6" name="Universe.ConsoleClient" path="Universe/ConsoleClient" type="Exe">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../VirtualUniverse/bin/</OutputPath>
@@ -1355,11 +1355,11 @@
       <Reference name="OpenMetaverseTypes" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
       <Reference name="Nini" path="../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../VirtualUniverse/bin/"/>
 
@@ -1372,7 +1372,7 @@
     </Project>
 
     <!-- ClientStack Plugins -->
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ClientStack.LindenUDP" path="OpenSim/Region/ClientStack/Linden/UDP" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ClientStack.LindenUDP" path="Universe/Region/ClientStack/Linden/UDP" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../VirtualUniverse/bin/</OutputPath>
@@ -1394,15 +1394,15 @@
       <Reference name="OpenMetaverseTypes" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Data"/>
-	  <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Data"/>
+	  <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Nini" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="C5" path="../../../../../VirtualUniverse/bin/"/>
@@ -1417,7 +1417,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ClientStack.LindenCaps" path="OpenSim/Region/ClientStack/Linden/Caps" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ClientStack.LindenCaps" path="Universe/Region/ClientStack/Linden/Caps" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../VirtualUniverse/bin/</OutputPath>
@@ -1438,16 +1438,16 @@
       <Reference name="OpenMetaverse" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Capabilities.Handlers"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Capabilities.Handlers"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Mono.Addins" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../VirtualUniverse/bin/"/>
@@ -1464,7 +1464,7 @@
 
 	
     <!-- Data Base Modules -->
-    <Project frameworkVersion="v4_6" name="OpenSim.Data.MySQL" path="OpenSim/Data/MySQL" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Data.MySQL" path="Universe/Data/MySQL" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1482,14 +1482,14 @@
       <Reference name="System.Data"/>
       <Reference name="System.Drawing"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Data"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="MySql.Data" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.Framework"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
 
@@ -1504,7 +1504,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Data.PGSQL" path="OpenSim/Data/PGSQL" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Data.PGSQL" path="Universe/Data/PGSQL" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1522,10 +1522,10 @@
       <Reference name="System.Xml"/>
       <Reference name="System.Data"/>
       <Reference name="System.Drawing"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
 	  <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
@@ -1542,7 +1542,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Data.SQLite" path="OpenSim/Data/SQLite" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Data.SQLite" path="Universe/Data/SQLite" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1560,10 +1560,10 @@
       <Reference name="System.Data"/>
       <Reference name="System.Drawing"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.Framework"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
@@ -1583,7 +1583,7 @@
     </Project>
 	
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.CoreModules" path="OpenSim/Region/CoreModules" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.CoreModules" path="Universe/Region/CoreModules" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1612,23 +1612,23 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="CSJ2K" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Warp3D" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenUDP"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Data.MySQL"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Serialization"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.ClientStack.LindenUDP"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Data.MySQL"/>
       <Reference name="Ionic.Zip" path="../../../VirtualUniverse/bin/"/>
       <Reference name="MySql.Data" path="../../../VirtualUniverse/bin/"/>
 
@@ -1652,7 +1652,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.OptionalModules" path="OpenSim/Region/OptionalModules" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.OptionalModules" path="Universe/Region/OptionalModules" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1678,22 +1678,22 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Data.SqliteClient" path="../../../VirtualUniverse/bin/"/>
       <Reference name="netcd" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenUDP"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.ClientStack.LindenUDP"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
 
       <!-- For scripting in funny languages by default -->
@@ -1712,7 +1712,7 @@
     </Project>
 
     <!-- Datastore Plugins -->
-    <Project frameworkVersion="v4_6" name="OpenSim.Data.Null" path="OpenSim/Data/Null" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Data.Null" path="Universe/Data/Null" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -1728,11 +1728,11 @@
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Data"/>
+      <Reference name="Universe.Data"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
       <Files>
@@ -1742,7 +1742,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet" path="OpenSim/Region/PhysicsModules/ConvexDecompositionDotNet" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModules.ConvexDecompositionDotNet" path="Universe/Region/PhysicsModules/ConvexDecompositionDotNet" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1759,7 +1759,7 @@
       <Reference name="System.Core"/>
       <Reference name="System.Data"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Framework"/>
+      <Reference name="Universe.Framework"/>
 	  <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
 
       <Files>
@@ -1770,7 +1770,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.Meshing" path="OpenSim/Region/PhysicsModules/Meshing" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.Meshing" path="Universe/Region/PhysicsModules/Meshing" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1790,10 +1790,10 @@
       <Reference name="OpenMetaverse" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.Framework"/>
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
@@ -1805,7 +1805,7 @@
     </Project>
 
     <!-- Physics Plug-ins -->
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.BasicPhysics" path="OpenSim/Region/PhysicsModules/BasicPhysics" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.BasicPhysics" path="Universe/Region/PhysicsModules/BasicPhysics" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1821,9 +1821,9 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.Framework"/>
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
@@ -1832,7 +1832,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.POS" path="OpenSim/Region/PhysicsModules/POS" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.POS" path="Universe/Region/PhysicsModules/POS" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1848,9 +1848,9 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.Framework"/>
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Files>
         <Match pattern="*.cs" recurse="true">
@@ -1859,7 +1859,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.Ode" path="OpenSim/Region/PhysicsModules/Ode" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.Ode" path="Universe/Region/PhysicsModules/Ode" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1876,10 +1876,10 @@
       <Reference name="System.Core"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.Framework"/>
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
@@ -1891,7 +1891,7 @@
       </Files>
     </Project>
 
-   <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.ubOde" path="OpenSim/Region/PhysicsModules/ubOde" type="Library">
+   <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.ubOde" path="Universe/Region/PhysicsModules/ubOde" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1909,11 +1909,11 @@
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
 
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.PhysicsModules.ConvexDecompositionDotNet"/>
 	  <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
@@ -1925,7 +1925,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.ubOdeMeshing" path="OpenSim/Region/PhysicsModules/ubOdeMeshing" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.ubOdeMeshing" path="Universe/Region/PhysicsModules/ubOdeMeshing" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1945,11 +1945,11 @@
       <Reference name="OpenMetaverse" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-	  <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+	  <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.PhysicsModules.ConvexDecompositionDotNet"/>
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
@@ -1960,7 +1960,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.BulletS" path="OpenSim/Region/PhysicsModules/BulletS" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.BulletS" path="Universe/Region/PhysicsModules/BulletS" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -1980,13 +1980,13 @@
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini.dll"  path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.PhysicsModule.Meshing" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Region.PhysicsModules.ConvexDecompositionDotNet"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.PhysicsModule.Meshing" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="Universe.Region.PhysicsModules.ConvexDecompositionDotNet"/>
       <Reference name="Mono.Addins" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="BulletXNA.dll" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net.dll" path="../../../../VirtualUniverse/bin/"/>
@@ -1999,8 +1999,8 @@
       </Files>
     </Project>
 
-    <!-- OpenSim app -->
-    <Project frameworkVersion="v4_6" name="OpenSim" path="OpenSim/Region/Application" type="Exe">
+    <!-- Universe app -->
+    <Project frameworkVersion="v4_6" name="Universe" path="Universe/Region/Application" type="Exe">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2021,19 +2021,19 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.UserAccountService"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.UserAccountService"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
@@ -2045,7 +2045,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.ApplicationPlugins.LoadRegions" path="OpenSim/ApplicationPlugins/LoadRegions" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.ApplicationPlugins.LoadRegions" path="Universe/ApplicationPlugins/LoadRegions" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2063,13 +2063,13 @@
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
       <Files>
@@ -2080,7 +2080,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.ApplicationPlugins.RegionModulesController" path="OpenSim/ApplicationPlugins/RegionModulesController" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.ApplicationPlugins.RegionModulesController" path="Universe/ApplicationPlugins/RegionModulesController" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2095,10 +2095,10 @@
       <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Region.Framework"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Region.Framework"/>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
@@ -2111,7 +2111,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.ApplicationPlugins.RemoteController" path="OpenSim/ApplicationPlugins/RemoteController" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.ApplicationPlugins.RemoteController" path="Universe/ApplicationPlugins/RemoteController" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2133,14 +2133,14 @@
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
       <Files>
@@ -2153,7 +2153,7 @@
 
     <!-- Scene Server API Example Apps -->
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.Shared" path="OpenSim/Region/ScriptEngine/Shared" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.Shared" path="Universe/Region/ScriptEngine/Shared" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -2171,12 +2171,12 @@
       <Reference name="System.Web"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
@@ -2189,7 +2189,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime" path="OpenSim/Region/ScriptEngine/Shared/Api/Runtime" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.Shared.Api.Runtime" path="Universe/Region/ScriptEngine/Shared/Api/Runtime" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../../VirtualUniverse/bin/</OutputPath>
@@ -2207,12 +2207,12 @@
       <Reference name="System.Web"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
       <Reference name="Nini" path="../../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../../VirtualUniverse/bin/"/>
 
@@ -2223,7 +2223,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.Shared.Api" path="OpenSim/Region/ScriptEngine/Shared/Api/Implementation" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.Shared.Api" path="Universe/Region/ScriptEngine/Shared/Api/Implementation" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../../VirtualUniverse/bin/</OutputPath>
@@ -2245,17 +2245,17 @@
       <Reference name="OpenMetaverseTypes" path="../../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-	  <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Services.Interfaces"/>
+	  <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api.Runtime"/>
       <Reference name="Nini" path="../../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../../VirtualUniverse/bin/"/>
 
@@ -2266,7 +2266,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.Shared.CodeTools" path="OpenSim/Region/ScriptEngine/Shared/CodeTools" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.Shared.CodeTools" path="Universe/Region/ScriptEngine/Shared/CodeTools" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../VirtualUniverse/bin/</OutputPath>
@@ -2280,10 +2280,10 @@
 
       <ReferencePath>../../../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.CoreModules"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../VirtualUniverse/bin/"/>
@@ -2297,7 +2297,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.Shared.Instance" path="OpenSim/Region/ScriptEngine/Shared/Instance" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.Shared.Instance" path="Universe/Region/ScriptEngine/Shared/Instance" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../VirtualUniverse/bin/</OutputPath>
@@ -2315,15 +2315,15 @@
       <Reference name="System.Web"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.CodeTools"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.CodeTools"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api.Runtime"/>
       <Reference name="SmartThreadPool"/>
       <Reference name="Nini" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../VirtualUniverse/bin/"/>
@@ -2336,7 +2336,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.XEngine.Api.Runtime" path="OpenSim/Region/ScriptEngine/XEngine/Api/Runtime" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.XEngine.Api.Runtime" path="Universe/Region/ScriptEngine/XEngine/Api/Runtime" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../../VirtualUniverse/bin/</OutputPath>
@@ -2354,13 +2354,13 @@
       <Reference name="System.Web"/>
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api.Runtime"/>
       <Reference name="Nini" path="../../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../../VirtualUniverse/bin/"/>
 
@@ -2371,7 +2371,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.XEngine" path="OpenSim/Region/ScriptEngine/XEngine" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.XEngine" path="Universe/Region/ScriptEngine/XEngine" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -2391,17 +2391,17 @@
       <Reference name="System.Xml"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.CodeTools"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Instance"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime"/>
-      <Reference name="OpenSim.Region.ScriptEngine.XEngine.Api.Runtime"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.CodeTools"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Instance"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api.Runtime"/>
+      <Reference name="Universe.Region.ScriptEngine.XEngine.Api.Runtime"/>
       <Reference name="SmartThreadPool"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
@@ -2418,7 +2418,7 @@
     </Project>
 
     <!-- YEngine/core XMRengine -->   
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.YEngine" path="OpenSim/Region/ScriptEngine/YEngine" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.YEngine" path="Universe/Region/ScriptEngine/YEngine" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -2437,16 +2437,16 @@
       <Reference name="OpenMetaverse"/>
       <Reference name="OpenMetaverse.StructuredData"/>
       <Reference name="OpenMetaverseTypes"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenCaps"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Region.ClientStack.LindenCaps"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api.Runtime"/>
+      <Reference name="Universe.Services.Interfaces"/>
       <Reference name="System"/>
       <Reference name="System.Drawing"/>
       <Reference name="System.Xml"/>
@@ -2464,7 +2464,7 @@
     
     <!-- Addons -->
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Addons.OfflineIM" path="OpenSim/Addons/OfflineIM" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Addons.OfflineIM" path="Universe/Addons/OfflineIM" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2490,15 +2490,15 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
 
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Data.MySQL"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Data.MySQL"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
 
       <!-- To allow regions to have mono addins -->
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/" />
@@ -2512,7 +2512,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Addons.Groups" path="OpenSim/Addons/Groups" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Addons.Groups" path="Universe/Addons/Groups" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2538,16 +2538,16 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
 
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
 
       <!-- To allow regions to have mono addins -->
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/" />
@@ -2565,7 +2565,7 @@
 
     <!-- Tools -->
 
-    <Project frameworkVersion="v4_6" name="pCampBot" path="OpenSim/Tools/pCampBot" type="Exe">
+    <Project frameworkVersion="v4_6" name="pCampBot" path="Universe/Tools/pCampBot" type="Exe">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2582,9 +2582,9 @@
       <Reference name="System.Core"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -2595,7 +2595,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Tools.lslc" path="OpenSim/Tools/Compiler" type="Exe">
+    <Project frameworkVersion="v4_6" name="Universe.Tools.lslc" path="Universe/Tools/Compiler" type="Exe">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2611,9 +2611,9 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.CodeTools"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.CodeTools"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -2624,7 +2624,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Tools.Configger" path="OpenSim/Tools/Configger" type="Exe">
+    <Project frameworkVersion="v4_6" name="Universe.Tools.Configger" path="Universe/Tools/Configger" type="Exe">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2639,7 +2639,7 @@
       <ReferencePath>../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Framework"/>
+      <Reference name="Universe.Framework"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
 
@@ -2651,7 +2651,7 @@
     </Project>
 
     <!-- Test Clients -->
-    <Project frameworkVersion="v4_6" name="OpenSim.Tests.Clients.AssetClient" path="OpenSim/Tests/Clients/Assets" type="Exe">
+    <Project frameworkVersion="v4_6" name="Universe.Tests.Clients.AssetClient" path="Universe/Tests/Clients/Assets" type="Exe">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -2667,9 +2667,9 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Connectors"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Connectors"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
@@ -2681,7 +2681,7 @@
     </Project>
 
     <!-- Test assemblies -->
-    <Project frameworkVersion="v4_6" name="OpenSim.Tests.Common" path="OpenSim/Tests/Common" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Tests.Common" path="Universe/Tests/Common" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2700,7 +2700,7 @@
       <Reference name="System.Drawing"/>
       <Reference name="System.Xml"/>
       <Reference name="System.Web"/>
-      <Reference name="HttpServer_OpenSim" path="../../../VirtualUniverse/bin/"/>
+      <Reference name="HttpServer_Universe" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
@@ -2708,22 +2708,22 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Data.Null"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenCaps"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenUDP"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.OptionalModules"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.PhysicsModule.BasicPhysics"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Data.Null"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.ClientStack.LindenCaps"/>
+      <Reference name="Universe.Region.ClientStack.LindenUDP"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.OptionalModules"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.PhysicsModule.BasicPhysics"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
 
       <Files>
         <Match pattern="*.cs" recurse="true">
@@ -2732,7 +2732,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Tests" path="OpenSim/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Tests" path="Universe/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../VirtualUniverse/bin/</OutputPath>
@@ -2747,15 +2747,15 @@
       <ReferencePath>../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="Nini" path="../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Tests.Common"/>
       <Files>
         <Match pattern="*.cs" recurse="false"/>
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Services.InventoryService.Tests" path="OpenSim/Services/InventoryService/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Services.InventoryService.Tests" path="Universe/Services/InventoryService/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -2777,17 +2777,17 @@
       <Reference name="OpenMetaverse" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Capabilities.Handlers"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Capabilities.Handlers"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="Nini" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
 
@@ -2798,7 +2798,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="Robust.Tests" path="OpenSim/Tests/Robust" type="Library">
+    <Project frameworkVersion="v4_6" name="Robust.Tests" path="Universe/Tests/Robust" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2814,15 +2814,15 @@
       <Reference name="System"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.Connectors"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.Connectors"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="Robust"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
@@ -2836,7 +2836,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Capabilities.Handlers.Tests" path="OpenSim/Capabilities/Handlers" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Capabilities.Handlers.Tests" path="Universe/Capabilities/Handlers" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2858,17 +2858,17 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Capabilities.Handlers"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Capabilities.Handlers"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="DotNetOpenId" path="../../../VirtualUniverse/bin/"/>
@@ -2891,7 +2891,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Data.Tests" path="OpenSim/Data/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Data.Tests" path="Universe/Data/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2911,18 +2911,18 @@
       <Reference name="System.Data"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
 
-      <Reference name="OpenSim.Data.MySQL"/>
-      <Reference name="OpenSim.Data.SQLite"/>
+      <Reference name="Universe.Data.MySQL"/>
+      <Reference name="Universe.Data.SQLite"/>
 
       <Reference name="MySql.Data" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Mono.Data.Sqlite" path="../../../VirtualUniverse/bin/"/>
@@ -2934,7 +2934,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Tests" path="OpenSim/Framework/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Tests" path="Universe/Framework/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -2954,10 +2954,10 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../VirtualUniverse/bin/"/>
       <Files>
@@ -2965,7 +2965,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Serialization.Tests" path="OpenSim/Framework/Serialization/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Serialization.Tests" path="Universe/Framework/Serialization/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -2982,11 +2982,11 @@
       <Reference name="OpenMetaverse" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Tests.Common"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Serialization"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../../VirtualUniverse/bin/"/>
 
@@ -2997,7 +2997,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Framework.Servers.Tests" path="OpenSim/Framework/Servers/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Framework.Servers.Tests" path="Universe/Framework/Servers/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../VirtualUniverse/bin/</OutputPath>
@@ -3011,14 +3011,14 @@
 
       <ReferencePath>../../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Tests.Common"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
       <Reference name="log4net" path="../../../../VirtualUniverse/bin/"/>
-      <Reference name="HttpServer_OpenSim" path="../../../../VirtualUniverse/bin/"/>
+      <Reference name="HttpServer_Universe" path="../../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../../VirtualUniverse/bin/"/>
 
       <Files>
@@ -3028,7 +3028,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.CoreModules.Tests" path="OpenSim/Region/CoreModules" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.CoreModules.Tests" path="Universe/Region/CoreModules" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -3048,24 +3048,24 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Data.Null"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.OptionalModules"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.XEngine"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Data.Null"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Serialization"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.OptionalModules"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.XEngine"/>
+      <Reference name="Universe.Services.Interfaces"/>
 
       <!-- Unit tests -->
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../VirtualUniverse/bin/"/>
 
@@ -3145,7 +3145,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.Framework.Tests" path="OpenSim/Region/Framework" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.Framework.Tests" path="Universe/Region/Framework" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -3166,26 +3166,26 @@
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.ApplicationPlugins.RegionModulesController"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Data"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Framework.Serialization"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenCaps"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.OptionalModules"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.ApplicationPlugins.RegionModulesController"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Data"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Framework.Serialization"/>
+      <Reference name="Universe.Region.ClientStack.LindenCaps"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.OptionalModules"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Services.Interfaces"/>
 
       <!-- Unit tests -->
-      <!-- <Reference name="OpenSim.Tests.Common"/> -->
-      <Reference name="OpenSim.Tests.Common"/>
+      <!-- <Reference name="Universe.Tests.Common"/> -->
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../VirtualUniverse/bin/"/>
 
@@ -3207,7 +3207,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ClientStack.LindenCaps.Tests" path="OpenSim/Region/ClientStack/Linden/Caps" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ClientStack.LindenCaps.Tests" path="Universe/Region/ClientStack/Linden/Caps" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../VirtualUniverse/bin/</OutputPath>
@@ -3222,25 +3222,25 @@
       <ReferencePath>../../../../../VirtualUniverse/bin/</ReferencePath>
       <Reference name="System"/>
       <Reference name="System.Xml"/>
-      <Reference name="HttpServer_OpenSim" path="../../../../../VirtualUniverse/bin/"/>
+      <Reference name="HttpServer_Universe" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Capabilities"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenCaps"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenUDP"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.OptionalModules"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Capabilities"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.ClientStack.LindenCaps"/>
+      <Reference name="Universe.Region.ClientStack.LindenUDP"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.OptionalModules"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Tests.Common"/>
 
       <Files>
         <Match path="Tests" pattern="*.cs" recurse="false"/>
@@ -3248,7 +3248,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ClientStack.LindenUDP.Tests" path="OpenSim/Region/ClientStack/Linden/UDP/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ClientStack.LindenUDP.Tests" path="Universe/Region/ClientStack/Linden/UDP/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../../VirtualUniverse/bin/</OutputPath>
@@ -3268,13 +3268,13 @@
       <Reference name="nunit.framework" path="../../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Monitoring"/>
-      <Reference name="OpenSim.Region.ClientStack.LindenUDP"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Monitoring"/>
+      <Reference name="Universe.Region.ClientStack.LindenUDP"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Tests.Common"/>
 
       <Files>
         <Match pattern="*.cs" recurse="false"/>
@@ -3282,7 +3282,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.ScriptEngine.Tests" path="OpenSim/Region/ScriptEngine" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.ScriptEngine.Tests" path="Universe/Region/ScriptEngine" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -3298,27 +3298,27 @@
       <Reference name="System"/>
       <Reference name="System.Core"/>
       <Reference name="System.Xml"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Servers"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.OptionalModules"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Api.Runtime"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.Instance"/>
-      <Reference name="OpenSim.Region.ScriptEngine.XEngine"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Servers"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.OptionalModules"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Api.Runtime"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.Instance"/>
+      <Reference name="Universe.Region.ScriptEngine.XEngine"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="log4net" path="../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared.CodeTools"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared.CodeTools"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
       <Reference name="Tools" path="../../../VirtualUniverse/bin/"/>
 
       <!--
@@ -3348,7 +3348,7 @@
            TODO: this is kind of lame, we basically build a duplicate
            assembly but with tests added in, just because we can't resolve cross-bin-dir-refs.
       -->
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.Ode.Tests" path="OpenSim/Region/PhysicsModules/Ode/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.Ode.Tests" path="Universe/Region/PhysicsModules/Ode/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../VirtualUniverse/bin/</OutputPath>
@@ -3365,12 +3365,12 @@
       <Reference name="System.Core"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="Nini" path="../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.PhysicsModule.Ode"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.PhysicsModule.Ode"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="nunit.framework" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="log4net" path="../../../../../VirtualUniverse/bin/"/>
 
@@ -3381,7 +3381,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Region.PhysicsModule.BulletS.Tests" path="OpenSim/Region/PhysicsModules/BulletS/Tests" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Region.PhysicsModule.BulletS.Tests" path="Universe/Region/PhysicsModules/BulletS/Tests" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../../../VirtualUniverse/bin/</OutputPath>
@@ -3402,12 +3402,12 @@
       <Reference name="nunit.framework" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Tests.Common"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.PhysicsModule.Meshing"/>
-      <Reference name="OpenSim.Region.PhysicsModules.SharedBase"/>
-      <Reference name="OpenSim.Region.PhysicsModule.BulletS"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Tests.Common"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.PhysicsModule.Meshing"/>
+      <Reference name="Universe.Region.PhysicsModules.SharedBase"/>
+      <Reference name="Universe.Region.PhysicsModule.BulletS"/>
 
       <Files>
         <Match pattern="*.cs" recurse="false"/>
@@ -3415,7 +3415,7 @@
     </Project>
 
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Server.Handlers.Tests" path="OpenSim/Server/Handlers" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Server.Handlers.Tests" path="Universe/Server/Handlers" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -3438,16 +3438,16 @@
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Server.Base"/>
-      <Reference name="OpenSim.Server.Handlers"/>
-      <Reference name="OpenSim.Services.AssetService"/>
-      <Reference name="OpenSim.Services.Base"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.UserAccountService"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Server.Base"/>
+      <Reference name="Universe.Server.Handlers"/>
+      <Reference name="Universe.Services.AssetService"/>
+      <Reference name="Universe.Services.Base"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.UserAccountService"/>
+      <Reference name="Universe.Tests.Common"/>
 
       <!--
            TODO: this is kind of lame, we basically build a duplicate
@@ -3463,7 +3463,7 @@
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Tests.Stress" path="OpenSim/Tests/Stress" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Tests.Stress" path="Universe/Tests/Stress" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -3487,23 +3487,23 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.OptionalModules"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.XEngine"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.AvatarService"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.OptionalModules"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.XEngine"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.AvatarService"/>
+      <Reference name="Universe.Tests.Common"/>
       <Files>
         <Match pattern="*.cs" recurse="false"/>
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Tests.Performance" path="OpenSim/Tests/Performance" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Tests.Performance" path="Universe/Tests/Performance" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -3526,23 +3526,23 @@
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse.StructuredData" path="../../../VirtualUniverse/bin/"/>
       <Reference name="XMLRPC" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Framework.Console"/>
-      <Reference name="OpenSim.Framework.Servers.HttpServer"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.OptionalModules"/>
-      <Reference name="OpenSim.Region.ScriptEngine.Shared"/>
-      <Reference name="OpenSim.Region.ScriptEngine.XEngine"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
-      <Reference name="OpenSim.Services.AvatarService"/>
-      <Reference name="OpenSim.Tests.Common"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Framework.Console"/>
+      <Reference name="Universe.Framework.Servers.HttpServer"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.OptionalModules"/>
+      <Reference name="Universe.Region.ScriptEngine.Shared"/>
+      <Reference name="Universe.Region.ScriptEngine.XEngine"/>
+      <Reference name="Universe.Services.Interfaces"/>
+      <Reference name="Universe.Services.AvatarService"/>
+      <Reference name="Universe.Tests.Common"/>
       <Files>
         <Match pattern="*.cs" recurse="false"/>
       </Files>
     </Project>
 
-    <Project frameworkVersion="v4_6" name="OpenSim.Tests.Permissions" path="OpenSim/Tests/Permissions" type="Library">
+    <Project frameworkVersion="v4_6" name="Universe.Tests.Permissions" path="Universe/Tests/Permissions" type="Library">
       <Configuration name="Debug">
         <Options>
           <OutputPath>../../../VirtualUniverse/bin/</OutputPath>
@@ -3561,16 +3561,16 @@
       <Reference name="Mono.Addins" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverseTypes" path="../../../VirtualUniverse/bin/"/>
       <Reference name="OpenMetaverse" path="../../../VirtualUniverse/bin/"/>
-      <Reference name="OpenSim"/>
-      <Reference name="OpenSim.ApplicationPlugins.RegionModulesController"/>
-      <Reference name="OpenSim.Framework"/>
-      <Reference name="OpenSim.Region.Framework"/>
-      <Reference name="OpenSim.Region.CoreModules"/>
-      <Reference name="OpenSim.Services.Interfaces"/>
+      <Reference name="Universe"/>
+      <Reference name="Universe.ApplicationPlugins.RegionModulesController"/>
+      <Reference name="Universe.Framework"/>
+      <Reference name="Universe.Region.Framework"/>
+      <Reference name="Universe.Region.CoreModules"/>
+      <Reference name="Universe.Services.Interfaces"/>
 
       <!-- Unit tests -->
-      <!-- <Reference name="OpenSim.Tests.Common"/> -->
-      <Reference name="OpenSim.Tests.Common"/>
+      <!-- <Reference name="Universe.Tests.Common"/> -->
+      <Reference name="Universe.Tests.Common"/>
       <Reference name="Nini" path="../../../VirtualUniverse/bin/"/>
       <Reference name="nunit.framework" path="../../../VirtualUniverse/bin/"/>
 

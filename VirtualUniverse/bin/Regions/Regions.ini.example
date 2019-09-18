@@ -1,9 +1,9 @@
 ; * This is an example region config file.
 ; * 
-; * If OpenSimulator is started up without any regions, it will ask you configuration questions to generate a Regions.ini file for you.
+; * If Universeulator is started up without any regions, it will ask you configuration questions to generate a Regions.ini file for you.
 ; * So there is no need to change this file directly, it is only for reference.
 ; * However, if you prefer you can also copy this file to Regions.ini and appropriately change the parameters below.
-; * Only files ending with .ini and .xml in this directly will be loaded by OpenSimulator.
+; * Only files ending with .ini and .xml in this directly will be loaded by Universeulator.
 ; *
 ; * You can multiple regions into one file or make one file per region
 ; * The section name is the region name
@@ -63,12 +63,12 @@ ExternalHostName = SYSTEMIP
 
 ; * Region Specific Static Maptiles:
 ; * Important: To use any kind of texture *assets* as a static maptile, the following
-; * things must be set in the [Map] section of OpenSim.ini :
+; * things must be set in the [Map] section of Universe.ini :
 ; *
 ; *  MapImageModule = "MapImageModule"
 ; *  GenerateMaptiles = false
 ; *
-; * Now, there is a setting in [Map] in OpenSim.ini called
+; * Now, there is a setting in [Map] in Universe.ini called
 ; *
 ; *  MaptileStaticUUID = 00000000-0000-0000-0000-000000000000
 ; *
@@ -84,7 +84,7 @@ ExternalHostName = SYSTEMIP
 ; * and supported formats (bmp,png,jpg in RGB 24bpp format)
 ; *
 ; * Important: To use any kind of texture *files* as a static maptile, the following
-; * things must be set in the [Map] section of OpenSim.ini :
+; * things must be set in the [Map] section of Universe.ini :
 ; *
 ; *  MapImageModule = "MapImageModule"
 ; *  GenerateMaptiles = true

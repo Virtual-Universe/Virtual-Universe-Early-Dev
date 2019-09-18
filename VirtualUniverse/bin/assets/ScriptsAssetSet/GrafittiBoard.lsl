@@ -1,4 +1,4 @@
-// Grafitti board 0.0.2 for OpenSim
+// Grafitti board 0.0.2 for Universe
 // By Justin Clark-Casey (justincc)
 // http://justincc.wordpress.com
 
@@ -8,7 +8,7 @@ string text = "";
 
 integer LISTENING_CHANNEL = 43;
 
-// XXX Only putting this here as well to get around OpenSim's int -> string casting oddness
+// XXX Only putting this here as well to get around Universe's int -> string casting oddness
 string LISTENING_CHANNEL_STRING = "43";
 
 // FIXME: Should be dynamic!

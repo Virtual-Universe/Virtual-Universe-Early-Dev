@@ -69,7 +69,7 @@ using System.Resources;
                              "David Hudson," +
                              "John Hurliman" +
                              "WhiteCore Development" +
-                             "OpenSimulator developers")]
+                             "Universeulator developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]

@@ -1,0 +1,12 @@
+<Addin id="Universe.Data" isroot="true" version="0.5">
+    <Runtime>
+        <Import assembly="Universe.Data.dll" />
+        <Import assembly="Universe.Framework.dll" />
+    </Runtime>
+    <ExtensionPoint path = "/Universe/AssetData">
+        <ExtensionNode name="Plugin" type="Universe.Framework.PluginExtensionNode" objectType="Universe.Data.IAssetDataPlugin" />
+    </ExtensionPoint>
+    <ExtensionPoint path = "/Universe/InventoryData">
+        <ExtensionNode name="Plugin" type="Universe.Framework.PluginExtensionNode" objectType="Universe.Data.IInventoryDataPlugin" />
+    </ExtensionPoint>
+</Addin>

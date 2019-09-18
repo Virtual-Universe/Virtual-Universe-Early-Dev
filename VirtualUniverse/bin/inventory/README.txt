@@ -1,10 +1,10 @@
 README
 
 Folders and items which will appear in the standard common library for all
-avatars can be configured here.  The root folder (currently called OpenSim
+avatars can be configured here.  The root folder (currently called Universe
 Library) is hardcoded, but you can add your own configuration of folders and
 items directly beneath this, in addition to (or instead of) the contents of the 
-default OpenSim library.
+default Universe library.
 
 To add a new library, edit Libraries.xml.  The entry in here needs to point to
 two further xml files, one which details your library inventory folders and another

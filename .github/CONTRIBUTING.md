@@ -89,7 +89,7 @@ We hope you enjoy Virtual-Universe and all the great things we are working on to
 
  For more information please see Documentation/Licenses/VirtualUniverseLicense for more information.
 
- The Name WhiteCore, WhiteCore-Sim, Aurora-Sim, OpenSimulator, OpenSim, OSCore, Halcyon, MOSES, etc. are the property of their respective developers and is obtained
+ The Name WhiteCore, WhiteCore-Sim, Aurora-Sim, Universeulator, Universe, OSCore, Halcyon, MOSES, etc. are the property of their respective developers and is obtained
  by the Virtual Universe project under the open source licenses provided by the respective project.  You can find their licenses in
  the Licenses directory.** 
  

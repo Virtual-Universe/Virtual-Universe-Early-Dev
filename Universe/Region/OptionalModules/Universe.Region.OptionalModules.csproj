@@ -1,0 +1,479 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+	<PropertyGroup>
+	  <ProjectType>Local</ProjectType>
+	  <ProductVersion>14.0.23107.0</ProductVersion>
+	  <SchemaVersion>2.0</SchemaVersion>
+	  <ProjectGuid>{E40B1EC2-0000-0000-0000-000000000000}</ProjectGuid>
+	  <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	  <ApplicationIcon></ApplicationIcon>
+	  <AssemblyKeyContainerName>
+	  </AssemblyKeyContainerName>
+	  <AssemblyName>Universe.Region.OptionalModules</AssemblyName>
+	  <DefaultClientScript>JScript</DefaultClientScript>
+	  <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+	  <DefaultTargetSchema>IE50</DefaultTargetSchema>
+	  <DelaySign>false</DelaySign>
+	  <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+	  <OutputType>Library</OutputType>
+	  <AppDesignerFolder></AppDesignerFolder>
+	  <RootNamespace>Universe.Region.OptionalModules</RootNamespace>
+	  <StartupObject></StartupObject>
+	  <StartArguments></StartArguments>
+	  <FileUpgradeFlags>
+	  </FileUpgradeFlags>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	  <BaseAddress>285212672</BaseAddress>
+	  <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	  <ConfigurationOverrideFile>
+	  </ConfigurationOverrideFile>
+	  <DefineConstants>TRACE;DEBUG;</DefineConstants>
+	  <DocumentationFile></DocumentationFile>
+	  <DebugSymbols>True</DebugSymbols>
+	  <FileAlignment>4096</FileAlignment>
+	  <Optimize>False</Optimize>
+	  <OutputPath>..\..\..\VirtualUniverse\bin\</OutputPath>
+	  <RegisterForComInterop>False</RegisterForComInterop>
+	  <RemoveIntegerChecks>False</RemoveIntegerChecks>
+	  <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+	  <WarningLevel>4</WarningLevel>
+	  <NoStdLib>False</NoStdLib>
+	  <NoWarn></NoWarn>
+	  <PlatformTarget>AnyCPU</PlatformTarget>
+	  <Prefer32Bit>False</Prefer32Bit>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+	  <BaseAddress>285212672</BaseAddress>
+	  <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+	  <ConfigurationOverrideFile>
+	  </ConfigurationOverrideFile>
+	  <DefineConstants>TRACE;</DefineConstants>
+	  <DocumentationFile></DocumentationFile>
+	  <DebugSymbols>False</DebugSymbols>
+	  <FileAlignment>4096</FileAlignment>
+	  <Optimize>True</Optimize>
+	  <OutputPath>..\..\..\VirtualUniverse\bin\</OutputPath>
+	  <RegisterForComInterop>False</RegisterForComInterop>
+	  <RemoveIntegerChecks>False</RemoveIntegerChecks>
+	  <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+	  <WarningLevel>4</WarningLevel>
+	  <NoStdLib>False</NoStdLib>
+	  <NoWarn></NoWarn>
+	  <PlatformTarget>AnyCPU</PlatformTarget>
+	  <Prefer32Bit>False</Prefer32Bit>
+	</PropertyGroup>
+	<ItemGroup>
+	  <Reference Include="DotNetOpenMail" >
+		  <Name>DotNetOpenMail</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\DotNetOpenMail.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="Ionic.Zip" >
+		  <Name>Ionic.Zip</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\Ionic.Zip.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="log4net" >
+		  <Name>log4net</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\log4net.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="Mono.Addins" >
+		  <Name>Mono.Addins</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\Mono.Addins.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="Mono.Data.SqliteClient" >
+		  <Name>Mono.Data.SqliteClient</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\Mono.Data.SqliteClient.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="NDesk.Options" >
+		  <Name>NDesk.Options</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\NDesk.Options.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="netcd" >
+		  <Name>netcd</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\netcd.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="Nini" >
+		  <Name>Nini</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\Nini.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="OpenMetaverse" >
+		  <Name>OpenMetaverse</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\OpenMetaverse.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="OpenMetaverse.StructuredData" >
+		  <Name>OpenMetaverse.StructuredData</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\OpenMetaverse.StructuredData.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="OpenMetaverseTypes" >
+		  <Name>OpenMetaverseTypes</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\OpenMetaverseTypes.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="System" >
+		  <Name>System</Name>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="System.Core" >
+		  <Name>System.Core</Name>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="System.Data" >
+		  <Name>System.Data</Name>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="System.Drawing" >
+		  <Name>System.Drawing</Name>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="System.Web" >
+		  <Name>System.Web</Name>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="System.Xml" >
+		  <Name>System.Xml</Name>
+		<Private>False</Private>
+	  </Reference>
+	  <Reference Include="XMLRPC" >
+		  <Name>XMLRPC</Name>
+		<HintPath>..\..\..\VirtualUniverse\bin\XMLRPC.dll</HintPath>
+		<Private>False</Private>
+	  </Reference>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\..\Capabilities\Universe.Capabilities.csproj">
+		<Name>Universe.Capabilities</Name>
+		<Project>{766AFF79-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Data\Universe.Data.csproj">
+		<Name>Universe.Data</Name>
+		<Project>{89E11DA3-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Framework\Universe.Framework.csproj">
+		<Name>Universe.Framework</Name>
+		<Project>{4042F657-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Framework\Console\Universe.Framework.Console.csproj">
+		<Name>Universe.Framework.Console</Name>
+		<Project>{15A4661C-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Framework\Monitoring\Universe.Framework.Monitoring.csproj">
+		<Name>Universe.Framework.Monitoring</Name>
+		<Project>{A99C5AD5-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Framework\Servers\Universe.Framework.Servers.csproj">
+		<Name>Universe.Framework.Servers</Name>
+		<Project>{85EF7BDB-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Framework\Servers\HttpServer\Universe.Framework.Servers.HttpServer.csproj">
+		<Name>Universe.Framework.Servers.HttpServer</Name>
+		<Project>{3A9D5AAE-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\ClientStack\Linden\UDP\Universe.Region.ClientStack.LindenUDP.csproj">
+		<Name>Universe.Region.ClientStack.LindenUDP</Name>
+		<Project>{5632E24D-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\CoreModules\Universe.Region.CoreModules.csproj">
+		<Name>Universe.Region.CoreModules</Name>
+		<Project>{E38917FB-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\Framework\Universe.Region.Framework.csproj">
+		<Name>Universe.Region.Framework</Name>
+		<Project>{5548C659-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\PhysicsModules\SharedBase\Universe.Region.PhysicsModules.SharedBase.csproj">
+		<Name>Universe.Region.PhysicsModules.SharedBase</Name>
+		<Project>{C6B78EE9-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Server\Base\Universe.Server.Base.csproj">
+		<Name>Universe.Server.Base</Name>
+		<Project>{BE86F625-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Server\Handlers\Universe.Server.Handlers.csproj">
+		<Name>Universe.Server.Handlers</Name>
+		<Project>{B7794FF7-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Services\Base\Universe.Services.Base.csproj">
+		<Name>Universe.Services.Base</Name>
+		<Project>{B5DAD5B4-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Services\Connectors\Universe.Services.Connectors.csproj">
+		<Name>Universe.Services.Connectors</Name>
+		<Project>{B66D95BF-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	  <ProjectReference Include="..\..\Services\Interfaces\Universe.Services.Interfaces.csproj">
+		<Name>Universe.Services.Interfaces</Name>
+		<Project>{977BCE8D-0000-0000-0000-000000000000}</Project>
+		<Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
+		<Private>False</Private>
+	  </ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Include="Agent\InternetRelayClientView\IRCStackModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Agent\InternetRelayClientView\Server\IRCClientView.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Agent\InternetRelayClientView\Server\IRCServer.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Agent\TextureSender\J2KDecoderCommandModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Agent\UDP\Linden\LindenUDPInfoModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Asset\AssetInfoModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Animations\AnimationsCommandModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Appearance\AppearanceInfoModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Chat\ChannelState.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Chat\IRCBridgeModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Chat\IRCConnector.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Chat\RegionState.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Concierge\ConciergeModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Friends\FriendsCommandsModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\SitStand\SitStandCommandsModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Voice\FreeSwitchVoice\FreeSwitchVoiceModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\Voice\VivoxVoice\VivoxVoiceModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\XmlRpcGroups\GroupsMessagingModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\XmlRpcGroups\GroupsModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\XmlRpcGroups\IGroupsServicesConnector.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\XmlRpcGroups\SimianGroupsServicesConnectorModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Avatar\XmlRpcGroups\XmlRpcGroupsServicesConnectorModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\DataRequestHandler.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\DataSnapshotManager.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\EstateSnapshot.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\LandSnapshot.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\LLSDDiscovery.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\ObjectSnapshot.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\SnapshotStore.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\Interfaces\IDataSnapshot.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="DataSnapshot\Interfaces\IDataSnapshotProvider.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Example\BareBonesNonShared\BareBonesNonSharedModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Example\BareBonesShared\BareBonesSharedModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Example\WebSocketEchoTest\WebSocketEchoModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Framework\Monitoring\EtcdMonitoringModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Materials\MaterialsModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="PhysicsParameters\PhysicsParameters.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="PrimLimitsModule\PrimLimitsModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Properties\AssemblyInfo.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Scripting\JsonStore\JsonStore.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Scripting\JsonStore\JsonStoreCommands.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Scripting\JsonStore\JsonStoreModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Scripting\JsonStore\JsonStoreScriptModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Scripting\RegionReadyModule\RegionReadyModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Scripting\XmlRpcRouterModule\XmlRpcGridRouterModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="Scripting\XmlRpcRouterModule\XmlRpcRouterModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="ServiceConnectorsIn\Freeswitch\FreeswitchServiceInConnectorModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\ActiveConnectionsAJAX.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\Clients_report.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\Default_Report.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\HTMLUtil.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\IStatsReport.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\LogLinesAJAX.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\Prototype_distributor.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\Sessions_Report.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\SimStatsAJAX.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\Updater_distributor.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="UserStatistics\WebStatsModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="ViewerSupport\CameraOnlyModeModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="ViewerSupport\DynamicFloaterModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="ViewerSupport\DynamicMenuModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="ViewerSupport\GodNamesModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="ViewerSupport\SimulatorFeaturesHelper.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="ViewerSupport\SpecialUIModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\AutoBackup\AutoBackupModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\AutoBackup\AutoBackupModuleState.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\MoneyModule\SampleMoneyModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\NPC\NPCAvatar.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\NPC\NPCModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\SceneCommands\SceneCommandsModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\TreePopulator\TreePopulatorModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\WorldView\WorldViewModule.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+	  <Compile Include="World\WorldView\WorldViewRequestHandler.cs">
+		<SubType>Code</SubType>
+	  </Compile>
+  </ItemGroup>
+	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+	<PropertyGroup>
+	  <PreBuildEvent>
+	  </PreBuildEvent>
+	  <PostBuildEvent>
+	  </PostBuildEvent>
+	</PropertyGroup>
+</Project>

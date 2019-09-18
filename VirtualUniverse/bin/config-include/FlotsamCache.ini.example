@@ -6,7 +6,7 @@
     ; cache directory can be shared by multiple instances
     CacheDirectory = ./assetcache
     ; Other examples:
-    ;CacheDirectory = /directory/writable/by/OpenSim/instance
+    ;CacheDirectory = /directory/writable/by/Universe/instance
 
     ; Log level
     ; 0 - (Error) Errors only

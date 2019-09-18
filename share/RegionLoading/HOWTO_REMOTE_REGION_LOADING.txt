@@ -1,5 +1,5 @@
 The remote region loading ability allows easier management of what regions a simulator run s from a webserver.
-In OpenSim.ini, change the 'region_info_source = filesystem' under [Startup] to 'region_info_source = web'. 
+In Universe.ini, change the 'region_info_source = filesystem' under [Startup] to 'region_info_source = web'. 
 Then change the line 'regionload_webserver_url = ' to 'regionload_webserver_url = http://127.0.0.1/default.xml'
 replacing 'http://127.0.0.1/default.xml' with the URL of the region XML file.
 

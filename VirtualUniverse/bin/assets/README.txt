@@ -7,5 +7,5 @@ File AssetSets.xml lists all the sets to include
 You can add more assets or sets. Use the provided ones as example
 
 
-To add items with your assets to OpenSim Inventory library, you need to define them in folder 
+To add items with your assets to Universe Inventory library, you need to define them in folder 
 VirtualUniverse/bin/inventory. See that folder README file

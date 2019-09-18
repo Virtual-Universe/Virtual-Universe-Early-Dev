@@ -402,7 +402,7 @@
   </Section>
 
 <!-- .Other testing scripts == <Key Name="folderID" Value="30000112-000f-0000-0000-000100bba025"/> -->
-<!-- OpenSim Specific Scripts == <Key Name="folderID" Value="284858c8-9391-6bf1-ddf5-b936f73de853"/> -->
+<!-- Universe Specific Scripts == <Key Name="folderID" Value="284858c8-9391-6bf1-ddf5-b936f73de853"/> -->
 
   <Section Name="osTextBoard">
     <Key Name="inventoryID" Value="2ddcb059-20c5-d169-4c42-673f16d3284b" />

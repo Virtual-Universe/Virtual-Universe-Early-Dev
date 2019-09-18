@@ -16,7 +16,7 @@ addons:
       description: "Opensource virtual world grid archictecture"
     notification_email: secondgalaxy2013@gmail.com
     build_command_prepend: "./runprebuild.sh -c Debug -a x64 -b Yes"
-    build_command: "msbuild OpenSim.sln"
+    build_command: "msbuild Universe.sln"
     branch_pattern: coverity_scan
 
 mono:

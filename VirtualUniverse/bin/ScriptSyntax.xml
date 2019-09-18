@@ -744,7 +744,7 @@
  <key>CHANGED_ANIMATION</key><map>
   <key>type</key><string>integer</string>
   <key>value</key><string>16384</string>
-  <key>tooltip</key><string>opensim specific</string>
+  <key>tooltip</key><string>universe specific</string>
  </map>
  <key>CHANGED_COLOR</key><map>
   <key>type</key><string>integer</string>
@@ -769,7 +769,7 @@
  <key>CHANGED_POSITION</key><map>
   <key>type</key><string>integer</string>
   <key>value</key><string>32768</string>
-  <key>tooltip</key><string>opensim specific</string>
+  <key>tooltip</key><string>universe specific</string>
  </map>
  <key>CHANGED_REGION</key><map>
   <key>type</key><string>integer</string>
