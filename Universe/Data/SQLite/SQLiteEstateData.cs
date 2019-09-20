@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -124,7 +124,7 @@ namespace Universe.Data.SQLite
             }
             catch (SqliteException)
             {
-                m_log.Error("[SQLITE]: There was an issue loading the estate settings.  This can happen the first time running Universeulator with CSharpSqlite the first time.  Universeulator will probably crash, restart it and it should be good to go.");
+                m_log.Error("[SQLITE]: There was an issue loading the estate settings.  This can happen the first time running Virtual Universe with CSharpSqlite the first time.  Virtual Universe will probably crash, restart it and it should be good to go.");
             }
 
             if (r != null && r.Read())

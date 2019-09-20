@@ -2,7 +2,7 @@
 <!-- please leave the top comment for us emacs folks -->
 <property name="nunitcmd" value="nunit-console" />
 
-<!-- This target produces a source distribution of Universeulator -->
+<!-- This target produces a source distribution of Virtual Universe -->
 <!-- TODO: A few parameters still need to be tweaked after running this - need to do this automatically with sed or similar -->
 <target name="distsrc">
   <copy file="bin/Universe.ini.example" tofile="bin/Universe.ini"/>

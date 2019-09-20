@@ -1,5 +1,5 @@
-;; This is the main configuration file for Universeulator.
-;; If it's named Universe.ini then it will be loaded by Universeulator.
+;; This is the main configuration file for Virtual Universe.
+;; If it's named Universe.ini then it will be loaded by Virtual Universe.
 ;; If it's named Universe.ini.example then you will need to copy it to
 ;; Universe.ini first (if that file does not already exist)
 ;;
@@ -18,7 +18,7 @@
 ;; deleting the initial semicolon (;) and then change the value.  This will
 ;; override the value in UniverseDefaults.ini
 ;;
-;; If you want to find out what configuration Universeulator has finished with
+;; If you want to find out what configuration Virtual Universe has finished with
 ;; once all the configuration files are loaded then type "config show" on the
 ;; region console command line.
 ;;
@@ -101,7 +101,7 @@
     ;# {save_crashes} {} {Save crashes to disk?} {true false} false
     ;; Set this to true if you want to log crashes to disk
     ;; this can be useful when submitting bug reports.
-    ;; However, this will only log crashes within Universeulator that cause the
+    ;; However, this will only log crashes within Virtual Universe that cause the
     ;; entire program to exit
     ;; It will not log crashes caused by virtual machine failures, which
     ;; includes mono and ODE failures.
@@ -131,7 +131,7 @@
     ; ConfigDirectory = "."
 
     ;# {region_info_source} {} {Where to load region from?} {filesystem web} filesystem
-    ;; Determine where Universeulator looks for the files which tell it
+    ;; Determine where Virtual Universe looks for the files which tell it
     ;; which regions to server
     ;; Default is "filesystem"
     ; region_info_source = "filesystem"
@@ -140,7 +140,7 @@
     ;# {regionload_regionsdir} {region_info_source} {Location of file?} {} Regions
     ;; Determines where the region XML files are stored if you are loading
     ;; these from the filesystem.
-    ;; Defaults to bin/Regions in your Universeulator installation directory
+    ;; Defaults to bin/Regions in your Virtual Universe installation directory
     ; regionload_regionsdir="C:\somewhere\xmlfiles\"
 
     ;# {regionload_webserver_url} {region_info_source} {URL to load region from?} {}
@@ -256,7 +256,7 @@
     ;# {physics} {} {Select physics engine} {OpenDynamicsEngine BulletSim basicphysics POS} BulletSim
     ;; BulletSim is the default physics engine.  It provides the best performance and most functionality.
     ;; BulletSim supports varregions.
-    ;; OpenDynamicsEngine was the previous default physics engine in Universeulator 0.7.6.1 and before.
+    ;; OpenDynamicsEngine was the previous default physics engine in Virtual Universe 0.7.6.1 and before.
     ;; It continues to provide a workable physics implementation.  It does not currently support varregions.
     ;; basicphysics effectively does not model physics at all, making all objects phantom.
     ;; Default is BulletSim
@@ -564,7 +564,7 @@
     ;# {http_listener_cert_pass}{} {main server ssl certificate password)} {} ""
     ;http_listener_cert_pass = "mycertpass" ; the cert passwork
     
-    ; By default, Universeulator does not allow scripts to make HTTP calls to addresses on the simulator's LAN.
+    ; By default, Virtual Universe does not allow scripts to make HTTP calls to addresses on the simulator's LAN.
     ; See the OutboundDisallowForUserScripts parameter in UniverseDefaults.ini for more information on this filter.
     ; If you need to allow scripts to make some LAN calls use the OutboundDisallowForUserScriptsExcept parameter below.
     ; We recommend that you do not override OutboundDisallowForUserScripts directly unless you are very sure about what you're doing.
@@ -918,7 +918,7 @@
 
     ;# {SellEnabled} {} {Enable selling for 0?} {true false} true
     ; The default economy module only implements just enough to allow free actions (transfer of objects, etc).
-    ; There is no intention to implement anything further in core Universeulator.
+    ; There is no intention to implement anything further in core Virtual Universe.
     ; This functionality has to be provided by third party modules.
 
     ;; Enables selling things for $0.  Default is true.

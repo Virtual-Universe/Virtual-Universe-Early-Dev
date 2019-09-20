@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("http://virtual-planets.org")]
 [assembly: AssemblyProduct("OpenSIm")]
-[assembly: AssemblyCopyright("Universeulator developers")]
+[assembly: AssemblyCopyright("Virtual Universe developers")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

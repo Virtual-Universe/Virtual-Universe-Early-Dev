@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -2840,7 +2840,7 @@ namespace Universe.Region.CoreModules.Framework.EntityTransfer
         /// Cross the attachments for an avatar into the destination region.
         /// </summary>
         /// <remarks>
-        /// This is only invoked for simulators released prior to April 2011.  Versions of Universeulator since then
+        /// This is only invoked for simulators released prior to April 2011.  Versions of Virtual Universe since then
         /// transfer attachments in one go as part of the ChildAgentDataUpdate data passed in the update agent call.
         /// </remarks>
         /// <param name='destination'></param>

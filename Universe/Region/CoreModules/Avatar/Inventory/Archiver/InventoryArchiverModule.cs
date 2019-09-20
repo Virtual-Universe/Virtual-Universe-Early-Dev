@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -43,7 +43,7 @@ using Mono.Addins;
 namespace Universe.Region.CoreModules.Avatar.Inventory.Archiver
 {
     /// <summary>
-    /// This module loads and saves Universeulator inventory archives
+    /// This module loads and saves Virtual Universe inventory archives
     /// </summary>
     [Extension(Path = "/Universe/RegionModules", NodeName = "RegionModule", Id = "InventoryArchiverModule")]
     public class InventoryArchiverModule : ISharedRegionModule, IInventoryArchiverModule

@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -1348,7 +1348,7 @@ namespace Universe.Region.CoreModules.Avatar.UserProfiles
 
             if (avatarID == m_MrUniverseID)
             {
-                remoteClient.SendAvatarProperties(avatarID, "Creator of Universeulator shared assets library", m_MrUniverseBorn.ToString(),
+                remoteClient.SendAvatarProperties(avatarID, "Creator of Virtual Universe shared assets library", m_MrUniverseBorn.ToString(),
                       Utils.StringToBytes("System agent"), "MrUniverse has no life", 0x10,
                       UUID.Zero, UUID.Zero, "", UUID.Zero);
                 remoteClient.SendAvatarInterestsReply(avatarID, 0, "",

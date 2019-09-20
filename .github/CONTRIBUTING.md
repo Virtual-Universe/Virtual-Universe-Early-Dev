@@ -1,20 +1,20 @@
-### Contributing to Virtual Universe
+### Contributing to the Virtual Universe Open Source Project Arm
 
-**The Virtual Universe project is an open source project.  We welcome and encourage those who
+**The Virtual Universe Open Source Project Arm is an open source project.  We welcome and encourage those who
  want to contribute code to do so.  By working together we all can bring a virtual planetary grid
  that encourages improvement of the future of virtual worlds.**
  
  ### How to contribute code
- **Contributing code to Virtual Universe is actually really easy to do.  Just follow these steps and we will
+ **Contributing code to Virtual Universe Open Source Project Arm is actually really easy to do.  Just follow these steps and we will
  take it from there.
 
 1. Fork a copy of one of the following repositories to your github account:
 
-1-A For contributing to the stable version of the architecture use Virtual-Universe/Virtual-Universe
+1-A For contributing to the stable release version of the architecture use https://github.com/Virtual-Universe/Virtual-Universe-Release
 
-1-B For contributing to the development version of the architecture use Virtual-Universe/Virtual-Dev
+1-B For contributing to the stable development version of the architecture use https://github.com/Virtual-Universe/Virtual-Universe-Stable-Dev
 
-1-c For contributing to the development of the next generation version of the architecture use Virtual-Universe/Virtual-Universe-NXG
+1-c For contributing to the early development of the next generation version of the architecture use https://github.com/Virtual-Universe/Virtual-Universe-Early-Dev
 
 2. If you are contributing code which:
 
@@ -31,34 +31,38 @@ Note: Be sure your code does not contain Windows line endings.  The coding stand
 
 4. When you have completed steps described in number 2 and 3 then you must do the following:
 
-4-A. Commit your changes in your local repository.
+4-A. Create a branch in your repository on github and then update your local repository with the command git pull.
 
-4-B. Push your commits to your repository on github.
+4-B. Right click on the new branch under the origin and select check out.  It will offer to create a new local branch which you must do.
 
-4-C. Create an issue at the appropriate repository you are contributing to describing your request:
+4-C. Commit your proposed changes to the branch you have now created.
 
-4-C-1. For pull requests being submitted to the stable architecture open issue at https://github.com/Virtual-Universe/Virtual-Universe/issues
+4-D. Push your commits to your repository on github.
 
-4-C-2. For pull requests being submitted to the development architecture open issue at https://github.com/Virtual-Universe/Virtual-Dev/issues
+4-E. Create an issue at the appropriate repository you are contributing to describing your request:
 
-4-C-3. For pull requests being submitted to the next generation VU architecture open issue at https://github.com/Virtual-Universe/Virtual-Universe-NXG/issues
+4-E-1. For pull requests being submitted to the stable architecture open issue at https://github.com/Virtual-Universe/Virtual-Universe-Release/issues
 
-4-D. Create a pull request.  Make sure to click the "compare across forks" link.  The forks must be as follows:
+4-E-2. For pull requests being submitted to the stable development architecture open issue at https://github.com/Virtual-Universe/Virtual-Universe-Stable-Dev/issues
 
-For the stable architecture repository:
+4-E-3. For pull requests being submitted to the development of the next generation VU architecture open issue at https://github.com/Virtual-Universe/Virtual-Universe-Early-Dev/issues
 
- base fork Virtual-Universe/Virtual-Universe base master
- head fork <user>/Virtual-Universe compare master
+4-F. Create a pull request.  Make sure to click the "compare across forks" link.  The forks must be as follows:
+
+For the stable release architecture repository:
+
+ base fork Virtual-Universe/Virtual-Universe-Release base master
+ head fork <user>/Virtual-Universe-Release compare <branch_name>
 
 For the development architecture repository:
 
- base fork Virtual-Universe/Virtual-Dev base master
- head fork <user>/Virtual-Dev compare master
+ base fork Virtual-Universe/Virtual-Stable-Dev base master
+ head fork <user>/Virtual-Stable-Dev compare <branch_name>
 
 For the next generation development architecture repository:
 
- base fork Virtual-Universe/Virtual-Universe-NXG base master
- head fork <user>/Virtual-Universe-NXG compare master
+ base fork Virtual-Universe/Virtual-Universe-Early-Dev base master
+ head fork <user>/Virtual-Universe-Early-Dev compare <branch_name>
 
 Then click the Create Pull Request button when your commit shows up and press the green button to submit the request.
   Be sure to reference your issue number in your pull request.
@@ -78,19 +82,19 @@ Then click the Create Pull Request button when your commit shows up and press th
 Thats all there is to it.  If you successfully contribute code and your name is not in our CONTRIBUTORS.txt then don't worry it
  will get added.
 
-We hope you enjoy Virtual-Universe and all the great things we are working on to make our new virtual planetary grid architecture 
+We hope you enjoy the Virtual Universe Open Source Virtual World Grid Architecture and all the great things we are working on to make our new virtual planetary grid architecture 
  even better.**
  
  ### Legal Notice
  
- **The Virtual Universe Open Source Project the name Virtual-planets, Virtual-Universe, Second Galaxy, Galaxy Futures, 
- the GalaxyGrid virtual world architecture, GalaxyScript, GalaxyPhysX are the property of the Second Galaxy Development Team 
+ **The Virtual Universe Open Source Project the name Virtual-planets, Virtual-Universe, Second Galaxy, Galaxy Futures, A Galaxy Beyond, Avatar Odyssey, 
+ the GalaxyGrid virtual world architecture, GalaxyScript, GalaxyPhysX are the property of Virtual World Research Inc.
  ALL RIGHTS RESERVED!
 
  For more information please see Documentation/Licenses/VirtualUniverseLicense for more information.
 
- The Name WhiteCore, WhiteCore-Sim, Aurora-Sim, Universeulator, Universe, OSCore, Halcyon, MOSES, etc. are the property of their respective developers and is obtained
- by the Virtual Universe project under the open source licenses provided by the respective project.  You can find their licenses in
+ The Name ArribaSim, Aurora-Sim, Dreamworld, Halcyon, MOSES, OpenSimulator, OSCore, OSCore2, WhiteCore, WhiteCore-Sim, etc. are the property of their respective developers and is obtained
+ by Virtual World Research Inc. on behalf of the Virtual Universe Open Soruce Project Arm under the open source licenses provided by the respective project.  You can find their licenses in
  the Licenses directory.** 
  
- **The Second Galaxy Development Team**
+ **Virtual World Research Inc.**

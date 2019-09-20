@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -38,7 +38,7 @@ using Universe.Framework.Console;
 namespace Universe
 {
     /// <summary>
-    /// Starting class for the Universeulator Region
+    /// Starting class for the Virtual Universe Region
     /// </summary>
     public class Application
     {
@@ -174,16 +174,16 @@ namespace Universe
                 m_log.Warn("[OPENSIM MAIN]: Threadpool reconfiguration failed, runtime defaults still in effect.");
             }
 
-            // Check if the system is compatible with Universeulator.
+            // Check if the system is compatible with Virtual Universe.
             // Ensures that the minimum system requirements are met
             string supported = String.Empty;
             if (Util.IsEnvironmentSupported(ref supported))
             {
-                m_log.Info("[OPENSIM MAIN]: Environment is supported by Universeulator.");
+                m_log.Info("[OPENSIM MAIN]: Environment is supported by Virtual Universe.");
             }
             else
             {
-                m_log.Warn("[OPENSIM MAIN]: Environment is not supported by Universeulator (" + supported + ")\n");
+                m_log.Warn("[OPENSIM MAIN]: Environment is not supported by Virtual Universe (" + supported + ")\n");
             }
 
             m_log.InfoFormat("Default culture changed to {0}",Culture.GetDefaultCurrentCulture().DisplayName);
@@ -220,7 +220,7 @@ namespace Universe
             {
                 MainConsole.Instance = new LocalConsole("Region");
                 string resp = MainConsole.Instance.CmdPrompt(
-                                        "\n\n*************Required Configuration files not found.*************\n\n   Universeulator will not run without these files.\n\nRemember, these file names are Case Sensitive in Linux and Proper Cased.\n1. ./Universe.ini\nand\n2. ./config-include/StandaloneCommon.ini \nor\n3. ./config-include/GridCommon.ini\n\nAlso, you will want to examine these files in great detail because only the basic system will load by default. Universeulator can do a LOT more if you spend a little time going through these files.\n\n" + ": " + "Do you want to copy the most basic Defaults from standalone?",
+                                        "\n\n*************Required Configuration files not found.*************\n\n   Virtual Universe will not run without these files.\n\nRemember, these file names are Case Sensitive in Linux and Proper Cased.\n1. ./Universe.ini\nand\n2. ./config-include/StandaloneCommon.ini \nor\n3. ./config-include/GridCommon.ini\n\nAlso, you will want to examine these files in great detail because only the basic system will load by default. Virtual Universe can do a LOT more if you spend a little time going through these files.\n\n" + ": " + "Do you want to copy the most basic Defaults from standalone?",
                                         "yes");
                 if (resp == "yes")
                 {

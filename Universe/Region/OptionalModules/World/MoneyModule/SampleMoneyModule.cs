@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -819,7 +819,7 @@ namespace Universe.Region.OptionalModules.World.MoneyModule
 
             Scene s = LocateSceneClientIn(remoteClient.AgentId);
 
-            // Implmenting base sale data checking here so the default Universeulator implementation isn't useless
+            // Implmenting base sale data checking here so the default Virtual Universe implementation isn't useless
             // combined with other implementations.  We're actually validating that the client is sending the data
             // that it should.   In theory, the client should already know what to send here because it'll see it when it
             // gets the object data.   If the data sent by the client doesn't match the object, the viewer probably has an

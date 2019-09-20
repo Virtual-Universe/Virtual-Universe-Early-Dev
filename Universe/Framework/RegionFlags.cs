@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -30,7 +30,7 @@ using System;
 namespace Universe.Framework
 {
     /// <summary>
-    /// Region flags used internally by Universeulator to store installation specific information about regions.
+    /// Region flags used internally by Virtual Universe to store installation specific information about regions.
     /// </summary>
     /// <remarks>
     /// Don't confuse with OpenMetaverse.RegionFlags which are client facing flags (i.e. they go over the wire).

@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -31,7 +31,7 @@ using Mono.Addins;
 namespace Universe
 {
     /// <summary>
-    /// Universeulator Application Plugin framework interface
+    /// Virtual Universe Application Plugin framework interface
     /// </summary>
     [TypeExtensionPoint(NodeName="Plugin", NodeType = typeof(PluginExtensionNode), Path="/Universe/Startup")]
     public interface IApplicationPlugin : IPlugin

@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -2958,7 +2958,7 @@ namespace Universe.Region.PhysicsModule.ODE
 
                 latertickcount = Util.EnvironmentTickCountSubtract(tickCountFrameRun);
 
-                // Universeulator above does 10 fps.  10 fps = means that the main thread loop and physics
+                // Virtual Universe above does 10 fps.  10 fps = means that the main thread loop and physics
                 // has a max of 100 ms to run theoretically.
                 // If the main loop stalls, it calls Simulate later which makes the tick count ms larger.
                 // If Physics stalls, it takes longer which makes the tick count ms larger.

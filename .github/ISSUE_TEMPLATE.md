@@ -1,6 +1,6 @@
 ### Notice
 
-**If you are using Universeulator, Halcyon, OSCore2, WhiteCore-Sim, or any of their forks and derivitave projects, please do not submit an issue report to Virtual Universe if your issue is from one of these projects, as we are unable to assist you.  Any issues reported to Virtual Universe which involve your use of another project will immediately be closed and you will be referred to that project.**
+**If you are using OpenSimulator, ArribaSim, Halcyon, OSCore2, WhiteCore-Sim, or any of their forks and derivitave projects, please do not submit an issue report to Virtual Universe if your issue is from one of these projects, as we are unable to assist you.  Any issues reported to Virtual Universe which involve your use of another project will immediately be closed and you will be referred to that project.**
 
 **In addition please do not submit issue reports regarding Virtual Universe to another project's issues tracker as they cannot help you and they will be immediately closed and you will be referred to Virtual Universe**
 

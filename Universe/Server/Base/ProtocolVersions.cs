@@ -32,11 +32,11 @@ namespace Universe.Server.Base
     public class ProtocolVersions
     {
         /// <summary>
-        /// This is the external protocol versions.  It is separate from the Universeulator project version.
+        /// This is the external protocol versions.  It is separate from the Virtual Universe project version.
         ///
         /// These version numbers should be increased by 1 every time a code
         /// change in the Service.Connectors and Server.Handlers, espectively,
-        /// makes the previous Universeulator revision incompatible
+        /// makes the previous Virtual Universe revision incompatible
         /// with the new revision.
         ///
         /// Changes which are compatible with an older revision (e.g. older revisions experience degraded functionality

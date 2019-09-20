@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -72,7 +72,7 @@ namespace Universe.Region.Framework.Scenes
         /// These are the IDs of stats sent in the StatsPacket to the viewer.
         /// </summary>
         /// <remarks>
-        /// Some of these are not relevant to Universeulator since it is architected differently to other simulators
+        /// Some of these are not relevant to Virtual Universe since it is architected differently to other simulators
         /// (e.g. script instructions aren't executed as part of the frame loop so 'script time' is tricky).
         /// </remarks>
         public enum Stats : uint

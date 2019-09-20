@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyrightD
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -818,7 +818,7 @@ public sealed class BSCharacter : BSPhysObject
         RawPosition = entprop.Position;
         RawOrientation = entprop.Rotation;
 
-        // Smooth velocity. Universeulator is VERY sensitive to changes in velocity of the avatar
+        // Smooth velocity. Virtual Universe is VERY sensitive to changes in velocity of the avatar
         //    and will send agent updates to the clients if velocity changes by more than
         //    0.001m/s. Bullet introduces a lot of jitter in the velocity which causes many
         //    extra updates.

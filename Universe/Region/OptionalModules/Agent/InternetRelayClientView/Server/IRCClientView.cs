@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -288,7 +288,7 @@ namespace Universe.Region.OptionalModules.Agent.InternetRelayClientView.Server
         {
             if (m_hasUser && m_hasNick)
             {
-                SendServerCommand("001 " + m_nick + " :Welcome to Universeulator IRCd");
+                SendServerCommand("001 " + m_nick + " :Welcome to Virtual Universe IRCd");
                 SendServerCommand("002 " + m_nick + " :Running UniverseVersion");
                 SendServerCommand("003 " + m_nick + " :This server was created over 9000 years ago");
                 SendServerCommand("004 " + m_nick + " :universeirc r1 aoOirw abeiIklmnoOpqrstv");
@@ -305,7 +305,7 @@ namespace Universe.Region.OptionalModules.Agent.InternetRelayClientView.Server
                 m_nick = m_username.Replace(" ", "");
 
                 IRC_SendReplyJoin();
-                IRC_SendChannelPrivmsg("System", "Welcome to Universeulator.");
+                IRC_SendChannelPrivmsg("System", "Welcome to Virtual Universe.");
                 IRC_SendChannelPrivmsg("System", "You are in a maze of twisty little passages, all alike.");
                 IRC_SendChannelPrivmsg("System", "It is pitch black. You are likely to be eaten by a grue.");
 
@@ -408,14 +408,14 @@ namespace Universe.Region.OptionalModules.Agent.InternetRelayClientView.Server
 
         private void IRC_SendMOTD()
         {
-            SendServerCommand("375 :- Universeulator Message of the day -");
+            SendServerCommand("375 :- Virtual Universe Message of the day -");
             SendServerCommand("372 :- Hiya!");
             SendServerCommand("376 :End of /MOTD command");
         }
 
         private void IRC_SendReplyTopic()
         {
-            SendServerCommand("332 " + IrcRegionName + " :Universeulator IRC Server");
+            SendServerCommand("332 " + IrcRegionName + " :Virtual Universe IRC Server");
         }
 
         private void IRC_SendReplyUsers()

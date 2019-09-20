@@ -9,7 +9,7 @@
  *     * Redistributions in binary form must reproduce the above copyright
  *       notice, this list of conditions and the following disclaimer in the
  *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Universeulator Project nor the
+ *     * Neither the name of the Virtual Universe Project nor the
  *       names of its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
@@ -196,7 +196,7 @@ namespace Universe.Region.OptionalModules.Avatar.XmlRpcGroups.Tests
             List<GroupNoticeData> notices = mgsc.GetGroupNotices(UUID.Zero, groupID);
             Assert.AreEqual(1, notices.Count);
 
-            // Universeulator (possibly also SL) transport the notice ID as the session ID!
+            // Virtual Universe (possibly also SL) transport the notice ID as the session ID!
             Assert.AreEqual(notices[0].NoticeID.Guid, spReceivedMessages[0].imSessionID);
 
             Assert.That(sp2ReceivedMessages.Count, Is.EqualTo(0));
