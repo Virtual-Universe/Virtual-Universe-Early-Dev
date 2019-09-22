@@ -1752,7 +1752,7 @@ namespace Universe.Region.ClientStack.LindenUDP
                 for (int i = 0; i < numberPatchs; i++)
                 {
                     s = 2 * i;
-                    OpenSimTerrainCompressor.CreatePatchFromTerrainData(bitpack, terrData, map[s], map[s + 1]);
+                    UniverseTerrainCompressor.CreatePatchFromTerrainData(bitpack, terrData, map[s], map[s + 1]);
                     if (bitpack.BytePos > 900 && i != numberPatchs - 1)
                     {
                         //finish this packet
@@ -1862,7 +1862,7 @@ namespace Universe.Region.ClientStack.LindenUDP
                 byte layerType = (byte)TerrainPatch.LayerType.Wind;
 
                 LayerDataPacket layerpack =
-                     OpenSimTerrainCompressor.CreateLayerDataPacketStandardSize(
+                     UniverseTerrainCompressor.CreateLayerDataPacketStandardSize(
                         patches, layerType);
                 layerpack.Header.Zerocoded = true;
                 lock (lastWindPackets)
@@ -1921,7 +1921,7 @@ namespace Universe.Region.ClientStack.LindenUDP
                 byte layerType = (byte)TerrainPatch.LayerType.Cloud;
 
                 LayerDataPacket layerpack =
-                    OpenSimTerrainCompressor.CreateLayerDataPacketStandardSize(
+                    UniverseTerrainCompressor.CreateLayerDataPacketStandardSize(
                         patches, layerType);
                 layerpack.Header.Zerocoded = true;
                 lock (lastCloudPackets)

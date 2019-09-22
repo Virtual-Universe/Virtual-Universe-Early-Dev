@@ -103,7 +103,7 @@ namespace Universe.Framework.Console
                 return;
             }
 
-            string m_historyFile = startupConfig.GetString("ConsoleHistoryFile", "OpenSimConsoleHistory.txt");
+            string m_historyFile = startupConfig.GetString("ConsoleHistoryFile", "UniverseConsoleHistory.txt");
             int m_historySize = startupConfig.GetInt("ConsoleHistoryFileLines", 100);
             m_historyPath = Path.GetFullPath(Path.Combine(Util.configDir(), m_historyFile));
             m_historytimestamps = startupConfig.GetBoolean("ConsoleHistoryTimeStamp", false);

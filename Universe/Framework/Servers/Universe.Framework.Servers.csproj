@@ -141,7 +141,7 @@
 	  </ProjectReference>
 	</ItemGroup>
 	<ItemGroup>
-	  <Compile Include="BaseOpenSimServer.cs">
+	  <Compile Include="BaseServer.cs">
 		<SubType>Code</SubType>
 	  </Compile>
 	  <Compile Include="MainServer.cs">
