@@ -1,6 +1,6 @@
 @echo OFF
 
-bin\Prebuild.exe /target vs2015
+Prebuild.exe /target vs2015
 
 setlocal ENABLEEXTENSIONS
 set VALUE_NAME=MSBuildToolsPath
