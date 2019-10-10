@@ -229,7 +229,7 @@
     ; Uncomment these lines if you want to use MySQL storage
     ; Change the connection string to your db details
     StorageProvider = "OpenSim.Data.MySQL.dll"
-    ConnectionString = "Data Source=localhost;Database=opensim;User ID=opensim;Password=*****;Old Guids=true;"
+    ConnectionString = "Data Source=localhost;Database=opensim;User ID=opensim;Password=*****;Old Guids=true;CharSet=utf8mb4;"
 
 
 ; * As an example, the below configuration precisely mimicks the legacy
