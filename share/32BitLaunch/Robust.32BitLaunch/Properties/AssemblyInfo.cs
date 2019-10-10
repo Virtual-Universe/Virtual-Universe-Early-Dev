@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://virtual-planets.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Robust.32BitLaunch")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("http://virtual-planets.org")]
+[assembly: AssemblyCompany("http://opensimulator.org")]
 [assembly: AssemblyProduct("Robust.32BitLaunch")]
 [assembly: AssemblyCopyright("Copyright (c) 2008")]
 [assembly: AssemblyTrademark("")]

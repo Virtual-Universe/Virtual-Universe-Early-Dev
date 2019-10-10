@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Contributors, http://virtual-planets.org/
+ * Copyright (c) Contributors, https://virtual-planets.org/
  * See CONTRIBUTORS.TXT for a full list of copyright holders.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,7 +33,7 @@ namespace Robust32
     {
         static void Main(string[] args)
         {
-                global::Universe.Server.UniverseServer.Main(args);
+                global::OpenSim.Server.OpenSimServer.Main(args);
         }
     }
 }

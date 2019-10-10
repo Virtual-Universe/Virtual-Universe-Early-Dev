@@ -52,7 +52,7 @@ Mono, you must use httpcfg in the Mono-1.9.1/lib/mono/2.0 folder.
  pvk -in host.key -nocrypt -out host.pvk -topvk" and use -pvk host.pvk
  pvk is a package on FreeBSD that gets installed as part of the Mono installation
 
-After that, make sure to set-up your Universe.ini!
+After that, make sure to set-up your opensim.ini!
 
 
 OpenSSL can be found:

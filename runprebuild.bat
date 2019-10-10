@@ -1,6 +1,6 @@
 @echo OFF
 
-Prebuild.exe /target vs2015
+bin\Prebuild.exe /target vs2015
 
 setlocal ENABLEEXTENSIONS
 set VALUE_NAME=MSBuildToolsPath
@@ -55,7 +55,7 @@ goto :done
     @echo Found msbuild at %ValueValue%
     @echo Creating compile.bat
 rem To compile in debug mode
-    @echo %ValueValue% universe.sln > compile.bat
+    @echo %ValueValue% opensim.sln > compile.bat
 rem To compile in release mode comment line (add rem to start) above and uncomment next (remove rem)
-rem @echo %ValueValue% /P:Config=Release universe.sln > compile.bat
+rem @echo %ValueValue% /P:Config=Release opensim.sln > compile.bat
 :done

@@ -1,6 +1,6 @@
 # hey, emacs! this is a -*- makefile -*-
 #
-# Universe makefile
+# OpenSim makefile
 #
 
 RUBY    = $(strip $(shell which ruby 2>/dev/null))
@@ -13,11 +13,11 @@ endif
 all: prebuild
 	# @export PATH=/usr/local/bin:$(PATH)
 	${NANT}
-	find Universe -name \*.mdb -exec cp {} bin \; 
+	find OpenSim -name \*.mdb -exec cp {} bin \; 
 
 release: prebuild
 	${NANT} -D:project.config=Release
-	find Universe -name \*.mdb -exec cp {} bin \;
+	find OpenSim -name \*.mdb -exec cp {} bin \;
 
 prebuild:
 	./runprebuild.sh
@@ -33,10 +33,10 @@ test-xml: prebuild
 	${NANT} test-xml
 
 tags:
-	find Universe -name \*\.cs | xargs etags 
+	find OpenSim -name \*\.cs | xargs etags 
 
 cscope-tags:
-	find Universe -name \*\.cs -fprint cscope.files
+	find OpenSim -name \*\.cs -fprint cscope.files
 	cscope -b
 
 include $(wildcard Makefile.local)

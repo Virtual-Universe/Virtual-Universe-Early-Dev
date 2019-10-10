@@ -363,7 +363,7 @@ namespace Prebuild.Core.Parse
 		}
 
         /// <summary>
-        /// Taken from current Prebuild included in Universe 0.7.x
+        /// Taken from current Prebuild included in OpenSim 0.7.x
         /// </summary>
         /// <param name="readerStack">
         /// A <see cref="Stack<XmlReader>"/>

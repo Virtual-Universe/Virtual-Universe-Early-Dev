@@ -1,8 +1,0 @@
-<Addin id="Universe.Region.ReplaceableModules.MoneyModule" version="0.2">
-    <Runtime>
-        <Import assembly="Universe.Region.ReplaceableModules.MoneyModule.dll"/>
-    </Runtime>
-    <Dependencies>
-        <Addin id="Universe" version="0.5" />
-    </Dependencies>
-</Addin>

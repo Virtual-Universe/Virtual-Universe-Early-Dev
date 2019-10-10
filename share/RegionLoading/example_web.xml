@@ -1,5 +1,5 @@
 <Nini>
-	<Section Name="Universe Test">
+	<Section Name="OpenSim Test">
 		<Key Name="RegionUUID" Value="e3be865f-35b6-4f7c-9aea-9ab017b07635"/>
 		<Key Name="InternalAddress" Value="0.0.0.0"/>
 		<Key Name="InternalPort" Value="9000"/>
@@ -11,7 +11,7 @@
 		<Key Name="SizeY" Value="256"/>
 		<Key Name="ClampPrimSize" Value="False"/>
 	</Section>
-	<Section Name="Universe Test2">
+	<Section Name="OpenSim Test2">
 		<Key Name="RegionUUID" Value="e3be865f-35b6-4f7c-9aea-9ab017b07636"/>
 		<Key Name="InternalAddress" Value="0.0.0.0"/>
 		<Key Name="InternalPort" Value="9001"/>
