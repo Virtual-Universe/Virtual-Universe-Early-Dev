@@ -27,11 +27,74 @@
 ///     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// </license>
 
-using System;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Resources;
 
-namespace Universe
-{
-	public class()
-	{
-	}
-}
+/// <summary>
+/// General Information
+/// 
+///     THe general information about an
+///     assembly is controlled through the
+///     following set of attributes.  We 
+///     change these attribute values to
+///     modify the information associated
+///     with an assembly.
+/// </summary>
+[assembly: AssemblyTitle("Universe.Core.Simulation.Base")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Virtual World Research Inc.")]
+[assembly: AssemblyProduct("Universe.Core.Simulation.Base")]
+[assembly: AssemblyCopyright("Copyright (c) 2020-2028")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+/// <summary>
+/// ComVisible Settings
+/// 
+///     Setting ComVisible to false makes
+///     the types in this assembly not visible
+///     to COM components.  If we want to
+///     change access a type a type in this
+///     assembly from COM, then we set the
+///     ComVisible attribute to true on that
+///     type.
+/// </summary>
+[assembly: ComVisible(false)]
+
+/// <summary>
+/// GUID Information
+/// 
+///     The following GUID is for the ID of
+///     the typelib if this project is exposed
+///     to COM.
+/// </summary>
+[assembly: Guid("9c59d6a6-8d7b-44f1-9cab-9440540c7d9d")]
+
+/// <summary>
+/// Version Information
+/// 
+///     These are the version information settings
+///     for an assembly.  Version information 
+///     consists of the following four values:
+///     
+///         Major Version
+///         Minor Version
+///         Build Number
+///         Revision
+///         
+///     We can specify all four values or we can
+///     default the Build and Revision numbers by
+///     using the "*" as shown below:
+///     
+///         [assembly: AssemblyVersion("2.0.1.*")]
+///         
+///     However you should be careful here.  This
+///     is generally overriden by the verison number
+///     settings in:
+///        
+///         Universe.Core.Framework.Utilities.VersionInfo.tt
+/// </summary>
+[assembly: AssemblyVersion("2.0.1.*")]
+[assembly: NeutralResourcesLanguageAttribute("en")]
