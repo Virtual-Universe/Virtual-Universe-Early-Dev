@@ -75,6 +75,16 @@ namespace Universe.Core.Framework.Utilities
 		public const string DEFAULT_USER_ARCHIVES_DIR = "../Data/UserArchives";
 
 		/// <summary>
+		/// Default File Names
+		/// 
+		///		Default names for various files.
+		///		These can be overridden in the
+		///		appropriate configuration files.
+		/// </summary>
+		// Default file name for a newly created region archive (OAR)
+		public const string DEFAULT_OAR_BACKUP_FILENAME = "region.oar";
+
+		/// <summary>
 		/// Default Textures
 		/// 
 		///		These are the default textures
