@@ -2,6 +2,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Universe", "Universe\Core\Application\Universe.csproj", "{E586BF1E-0000-0000-0000-000000000000}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Universe.Core.Framework", "Universe\Core\Framework\Universe.Core.Framework.csproj", "{BCCDBB55-0000-0000-0000-000000000000}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Universe.Core.Simulation.Base", "Universe\Core\Simulation\Base\Universe.Core.Simulation.Base.csproj", "{08BF5FD8-0000-0000-0000-000000000000}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Root Files", "Root Files", "{7E0BFFF7-4E41-46E8-9414-DD25EEDE002C}"
@@ -24,6 +26,10 @@ Global
 		{E586BF1E-0000-0000-0000-000000000000}.Debug|x64.Build.0 = Debug|x64
 		{E586BF1E-0000-0000-0000-000000000000}.Release|x64.ActiveCfg = Release|x64
 		{E586BF1E-0000-0000-0000-000000000000}.Release|x64.Build.0 = Release|x64
+		{BCCDBB55-0000-0000-0000-000000000000}.Debug|x64.ActiveCfg = Debug|x64
+		{BCCDBB55-0000-0000-0000-000000000000}.Debug|x64.Build.0 = Debug|x64
+		{BCCDBB55-0000-0000-0000-000000000000}.Release|x64.ActiveCfg = Release|x64
+		{BCCDBB55-0000-0000-0000-000000000000}.Release|x64.Build.0 = Release|x64
 		{08BF5FD8-0000-0000-0000-000000000000}.Debug|x64.ActiveCfg = Debug|x64
 		{08BF5FD8-0000-0000-0000-000000000000}.Debug|x64.Build.0 = Debug|x64
 		{08BF5FD8-0000-0000-0000-000000000000}.Release|x64.ActiveCfg = Release|x64
