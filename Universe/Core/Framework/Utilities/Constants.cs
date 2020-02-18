@@ -45,6 +45,11 @@ namespace Universe.Core.Framework.Utilities
 		///		are defined here and can be overridden
 		///		in the ini files.
 		/// </summary>
+		// Default asset cache directory.  I am not sure if we will
+		// or will not need this yet so adding it for the time being
+		// - NoahStarfinder - February 18, 2020
+		public const string DEFAULT_ASSETCACHE_DIR = "../Data/AssetCache";
+
 		// Default Configuration Directory
 		public const string DEFAULT_CONFIG_DIR = "../Configuration";
 
@@ -55,8 +60,16 @@ namespace Universe.Core.Framework.Utilities
 		// are stored in this directory)
 		public const string DEFAULT_LOGS_DIR = "../Data/Logs";
 
+		// Default directory to store MapTile assets in.
+		public const string DEFAULT_MAPTILE_DIR = "../Data/MapTiles";
+
 		// Default Region Archive storage directory (OARS)
 		public const string DEFAULT_REGION_ARCHIVES_DIR = "../Data/RegionArchives";
+
+		// Default directory to store the script dlls.  I am not sure if we will
+		// or will not need this yet so adding it for the time being
+		// - NoahStarfinder - February 18, 2020
+		public const string DEFAULT_SCRIPTENGINE_DIR = "../Data/ScriptEngines";
 
 		// Default User Archive storage directory (IARS)
 		public const string DEFAULT_USER_ARCHIVES_DIR = "../Data/UserArchives";
