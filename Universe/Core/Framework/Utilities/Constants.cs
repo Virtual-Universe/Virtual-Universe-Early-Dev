@@ -60,5 +60,25 @@ namespace Universe.Core.Framework.Utilities
 
 		// Default User Archive storage directory (IARS)
 		public const string DEFAULT_USER_ARCHIVES_DIR = "../Data/UserArchives";
+
+		/// <summary>
+		/// Default Textures
+		/// 
+		///		These are the default textures
+		///		either required by the viewer
+		///		or specific to our architecture
+		///		in order to make sure things don't
+		///		start looking awful if a texture
+		///		goes missing.
+		/// </summary>
+		// Default texture, this appears to be required by the viewer
+		public const string DefaultTexture = "89556747-24cb-43ed-920b-47caed15465f";
+
+		// When all else fails and textures cannot be located for whatever
+		// the reason might be, we will use this texture to temporarily fill
+		// the need.
+		public const string MISSING_TEXTURE_ID = "41fcdbb9-0896-495d-8889-1eb6fad88da3";
+
+
 	}
 }
