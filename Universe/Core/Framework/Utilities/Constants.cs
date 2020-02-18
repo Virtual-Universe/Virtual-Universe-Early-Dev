@@ -28,10 +28,37 @@
 /// </license>
 
 using System;
+using OpenMetaverse;
 
-namespace Universe
+namespace Universe.Core.Framework.Utilities
 {
-	public class()
+	public class Constants
 	{
+		/// <summary>
+		/// Default Directories
+		/// 
+		///		These are the default directories
+		///		where Virtual Universe stores
+		///		certian things such as configuration
+		///		files, logs, user archives, region
+		///		archives, etc.  These directories
+		///		are defined here and can be overridden
+		///		in the ini files.
+		/// </summary>
+		// Default Configuration Directory
+		public const string DEFAULT_CONFIG_DIR = "../Configuration";
+
+		// Default Crash Logs storage directory
+		public const string DEFAULT_CRASH_DIR = "../Data/Logs/Crashes";
+
+		// Default Logs directory (Logs for grid and region servers
+		// are stored in this directory)
+		public const string DEFAULT_LOGS_DIR = "../Data/Logs";
+
+		// Default Region Archive storage directory (OARS)
+		public const string DEFAULT_REGION_ARCHIVES_DIR = "../Data/RegionArchives";
+
+		// Default User Archive storage directory (IARS)
+		public const string DEFAULT_USER_ARCHIVES_DIR = "../Data/UserArchives";
 	}
 }
