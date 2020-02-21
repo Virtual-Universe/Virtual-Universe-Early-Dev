@@ -189,6 +189,9 @@
 	    <Compile Include="Configuration\ConfigurationLoader.cs">
 		<SubType>Code</SubType>
 		</Compile>
+		<Compile Include="Modules\ISimulationBase.cs">
+		<SubType>Code</SubType>
+		</Compile>
 		<Compile Include="Properties\AssemblyInfo.cs">
 		<SubType>Code</SubType>
 		</Compile>

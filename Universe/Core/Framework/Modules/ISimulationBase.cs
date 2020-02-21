@@ -28,71 +28,50 @@
 /// </license>
 
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
 using Nini.Config;
-using Universe.Core.Framework.Modules;
+using Universe.Core.Framework.Configuration;
+using Universe.Core.Framework.Servers.HttpServer.Interfaces;
+using Universe.Core.Framework.Services.ClassHelpers.Other;
 
-namespace Universe.Core.Framework.Services
+namespace Universe.Core.Framework.Modules
 {
 	/// <summary>
-	/// Application Plugin Framework Interface
+	/// Simulation Framework Interface
 	/// 
-	///		This is the framework interface for
-	///		the application plugins that run the 
-	///		server
+	///		This is the framework that handles
+	///		the backend pieces of the simulation
 	/// </summary>
-	public interface IApplicationPlugin
+	public interface ISimulationBase
 	{
 		/// <summary>
-		/// Returns the name of the plugin
+		/// Get the configuration settings
 		/// </summary>
-		string Name { get; }
+		IConfigSource configSource { get; set; }
 
 		/// <summary>
-		/// This is called before any other
-		/// calls are made by the servers and
-		/// the console is setup
+		/// Now we get the base instance
+		/// of the application (Module) registry
 		/// </summary>
-		/// <param name="simBase"></param>
-		void PreStartup(ISimulationBase simBase);
+		IRegistryCore ApplicationRegistry { get; }
 
 		/// <summary>
-		/// Now we initialize the plugin
+		/// We also need to get the time and
+		/// date this instance was started
 		/// </summary>
-		/// <param name="simBase">The application instance</param>
-		void Initialize(ISimulationBase simBase);
+		DateTime StartupTime { get; }
 
 		/// <summary>
-		/// We call this when the application
-		/// has complted its initialization
+		/// Now we hook up the event manager
+		/// for the simulation base
 		/// </summary>
-		void PostIntialize();
+		EventManager EventManager { get; }
 
 		/// <summary>
-		/// We call this when the application
-		/// has completed loading
+		/// Version String
+		/// 
+		///		Now we get the version string
+		///		for Virtual Universe
 		/// </summary>
-		void Start();
-
-		/// <summary>
-		/// This is also called when the 
-		/// application has completed loading
-		/// </summary>
-		void PostStart();
-
-		/// <summary>
-		/// We call this to close out a module
-		/// </summary>
-		void Close();
-
-		/// <summary>
-		/// When the configuration of one of the
-		/// servers has changed, we can be sure the
-		/// server has the new updated information
-		/// </summary>
-		/// <param name="m_config"></param>
-		void ReloadConfiguration(IConfigSource m_config);
+		string Version { get; }
 	}
 }

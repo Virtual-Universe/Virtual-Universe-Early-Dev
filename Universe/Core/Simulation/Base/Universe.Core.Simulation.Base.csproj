@@ -116,7 +116,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Universe\Core\Simulation\Base\Universe.Core.Simulation.Base.csproj">
+    <ProjectReference Include="Universe.Core.Simulation.Base.csproj">
       <Name>OpenSim.Base</Name>
       <Project>{08BF5FD8-0000-0000-0000-000000000000}</Project>
       <Package>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</Package>
