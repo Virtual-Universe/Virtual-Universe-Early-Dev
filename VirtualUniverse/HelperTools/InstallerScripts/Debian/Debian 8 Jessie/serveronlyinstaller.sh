@@ -13,10 +13,10 @@ sudo apt-get install mariadb-server
 # Install Git
 sudo apt-get install git
 # Install Virtual Universe
-cd /
-mkdir Github
-cd Github/
-git clone --recursive https://github.com/Virtual-Universe/Virtual-Universe-Early-Dev.git
-cd Virtual-Universe-Early-Dev/
-./runprebuild.sh
-msbuild
+#cd /
+#mkdir Github
+#cd Github/
+#git clone --recursive https://github.com/Virtual-Universe/Virtual-Universe-Early-Dev.git
+#cd Virtual-Universe-Early-Dev/
+#./runprebuild.sh
+#msbuild
